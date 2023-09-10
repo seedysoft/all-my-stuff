@@ -1,0 +1,14 @@
+{
+  "profiles": {
+    "OutboxConsoleApp": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "environment": "Development",
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    },
+    "Docker": {
+      "commandName": "Docker"
+    }
+  }
+}

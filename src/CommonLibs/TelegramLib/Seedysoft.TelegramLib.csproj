@@ -1,0 +1,63 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPublishable>False</IsPublishable>
+  </PropertyGroup>
+  
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <AssemblyVersion>$([System.DateTime]::UtcNow.ToString(yy.MM.dd.HHmm))</AssemblyVersion>
+    <FileVersion>$(AssemblyVersion)</FileVersion>
+    <Version>$(AssemblyVersion)</Version>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="appsettings.TelegramSettings.Development.json" />
+    <None Remove="appsettings.TelegramSettings.json" />
+    <None Remove="appsettings.TelegramSettings.Production.json" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(Configuration)' == 'Debug'">
+    <Content Include="appsettings.TelegramSettings.Development.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <DependentUpon>appsettings.TelegramSettings.json</DependentUpon>
+    </Content>
+    <Content Include="appsettings.TelegramSettings.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
+    <None Include="appsettings.TelegramSettings.Production.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <DependentUpon>appsettings.TelegramSettings.json</DependentUpon>
+    </None>
+  </ItemGroup>
+  <ItemGroup Condition="'$(Configuration)' == 'Release'">
+    <None Include="appsettings.TelegramSettings.Development.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <DependentUpon>appsettings.TelegramSettings.json</DependentUpon>
+    </None>
+    <Content Include="appsettings.TelegramSettings.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
+    <Content Include="appsettings.TelegramSettings.Production.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <DependentUpon>appsettings.TelegramSettings.json</DependentUpon>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="EFCore.BulkExtensions.Sqlite" Version="7.1.6" />
+    <PackageReference Include="Telegram.Bot" Version="19.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\ObtainPvpc\ObtainPvpcLib\Seedysoft.ObtainPvpcLib.csproj" />
+    <ProjectReference Include="..\CoreLib\Seedysoft.CoreLib.csproj" />
+    <ProjectReference Include="..\CronBackgroundServiceLib\Seedysoft.CronBackgroundServiceLib.csproj" />
+    <ProjectReference Include="..\Seedysoft.InfrastructureLib\Seedysoft.InfrastructureLib.csproj" />
+    <ProjectReference Include="..\SmtpServiceLib\Seedysoft.SmtpServiceLib.csproj" />
+    <ProjectReference Include="..\UtilsLib\Seedysoft.UtilsLib.csproj" />
+  </ItemGroup>
+
+</Project>

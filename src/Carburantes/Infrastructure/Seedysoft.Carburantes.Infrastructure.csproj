@@ -1,0 +1,103 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <AssemblyVersion>$([System.DateTime]::UtcNow.ToString(yy.MM.dd.HHmm))</AssemblyVersion>
+    <FileVersion>$(AssemblyVersion)</FileVersion>
+    <Version>$(AssemblyVersion)</Version>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="appsettings.CarburantesConnectionStrings.Development.json" />
+    <None Remove="appsettings.CarburantesConnectionStrings.Production.json" />
+    <Content Include="appsettings.CarburantesConnectionStrings.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
+    <None Remove="appsettings.Infrastructure.Development.json" />
+    <None Remove="appsettings.Infrastructure.Production.json" />
+    <Content Include="appsettings.Infrastructure.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <None Remove="appsettings.Serilog.Development.json" />
+    <None Remove="appsettings.Serilog.Production.json" />
+    <Content Include="appsettings.Serilog.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(Configuration)' == 'Debug'">
+    <None Include="appsettings.Infrastructure.Development.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <DependentUpon>appsettings.Infrastructure.json</DependentUpon>
+    </None>
+    <None Include="appsettings.Infrastructure.Production.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <DependentUpon>appsettings.Infrastructure.json</DependentUpon>
+    </None>
+    <Content Include="appsettings.CarburantesConnectionStrings.Development.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <DependentUpon>appsettings.CarburantesConnectionStrings.json</DependentUpon>
+    </Content>
+    <None Include="appsettings.CarburantesConnectionStrings.Production.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <DependentUpon>appsettings.CarburantesConnectionStrings.json</DependentUpon>
+    </None>
+    <Content Include="appsettings.Serilog.Development.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <DependentUpon>appsettings.Serilog.json</DependentUpon>
+    </Content>
+    <None Include="appsettings.Serilog.Production.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <DependentUpon>appsettings.Serilog.json</DependentUpon>
+    </None>
+  </ItemGroup>
+  <ItemGroup Condition="'$(Configuration)' == 'Release'">
+    <None Include="appsettings.Infrastructure.Development.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <DependentUpon>appsettings.Infrastructure.json</DependentUpon>
+    </None>
+    <None Include="appsettings.Infrastructure.Production.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <DependentUpon>appsettings.Infrastructure.json</DependentUpon>
+    </None>
+    <None Include="appsettings.CarburantesConnectionStrings.Development.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <DependentUpon>appsettings.CarburantesConnectionStrings.json</DependentUpon>
+    </None>
+    <Content Include="appsettings.CarburantesConnectionStrings.Production.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <DependentUpon>appsettings.CarburantesConnectionStrings.json</DependentUpon>
+    </Content>
+    <None Include="appsettings.Serilog.Development.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <DependentUpon>appsettings.Serilog.json</DependentUpon>
+    </None>
+    <Content Include="appsettings.Serilog.Production.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <DependentUpon>appsettings.Serilog.json</DependentUpon>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.10" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.10">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="7.0.10" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="7.0.10" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite.Core" Version="7.0.10" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="7.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="7.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Core\Seedysoft.Carburantes.Core.csproj" />
+  </ItemGroup>
+
+</Project>

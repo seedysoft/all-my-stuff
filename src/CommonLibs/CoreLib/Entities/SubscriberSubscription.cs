@@ -1,0 +1,11 @@
+﻿namespace Seedysoft.CoreLib.Entities;
+
+[System.Diagnostics.DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
+public class SubscriberSubscription
+{
+    public long SubscriberId { get; set; }
+
+    public long SubscriptionId { get; set; }
+
+    private string GetDebuggerDisplay() => $"{SubscriberId} subscrito a {SubscriptionId}";
+}
