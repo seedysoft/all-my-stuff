@@ -4,7 +4,6 @@ using Microsoft.Extensions.DependencyInjection;
 
 #if DEBUG
 using Microsoft.Extensions.Logging;
-using Seedysoft.Carburantes.Infrastructure.Data;
 #endif
 
 namespace Seedysoft.Carburantes.Infrastructure;
@@ -14,10 +13,10 @@ public static class Dependencies
     public static void ConfigureServices(IConfiguration configuration, IServiceCollection services)
     {
         services
-            .AddDbContext<CarburantesDbContext>(dbContextOptionsBuilder =>
+            .AddDbContext<Data.CarburantesDbContext>(dbContextOptionsBuilder =>
             {
-                dbContextOptionsBuilder.UseSqlite(configuration.GetConnectionString($"{nameof(CarburantesDbContext)}")
-                    ?? throw new InvalidOperationException($"Connection string '{nameof(CarburantesDbContext)}' not found."));
+                dbContextOptionsBuilder.UseSqlite(configuration.GetConnectionString($"{nameof(Data.CarburantesDbContext)}")
+                    ?? throw new InvalidOperationException($"Connection string '{nameof(Data.CarburantesDbContext)}' not found."));
 #if DEBUG
                 dbContextOptionsBuilder
                     .EnableDetailedErrors()
@@ -27,10 +26,10 @@ public static class Dependencies
             }
             , ServiceLifetime.Transient
             , ServiceLifetime.Transient)
-            .AddDbContext<CarburantesHistDbContext>(dbContextOptionsBuilder =>
+            .AddDbContext<Data.CarburantesHistDbContext>(dbContextOptionsBuilder =>
             {
-                dbContextOptionsBuilder.UseSqlite(configuration.GetConnectionString($"{nameof(CarburantesHistDbContext)}")
-                    ?? throw new InvalidOperationException($"Connection string '{nameof(CarburantesHistDbContext)}' not found."));
+                dbContextOptionsBuilder.UseSqlite(configuration.GetConnectionString($"{nameof(Data.CarburantesHistDbContext)}")
+                    ?? throw new InvalidOperationException($"Connection string '{nameof(Data.CarburantesHistDbContext)}' not found."));
 #if DEBUG
                 dbContextOptionsBuilder
                     .EnableDetailedErrors()
