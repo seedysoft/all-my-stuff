@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 namespace DbContexts;
 
@@ -38,11 +39,21 @@ public sealed partial class DbCxt : DbContext
 /// </summary>
 public class DbCxtFactory : Microsoft.EntityFrameworkCore.Design.IDesignTimeDbContextFactory<DbCxt>
 {
+    public DbCxtFactory(IConfiguration configuration) => Configuration = configuration;
+
+    public IConfiguration Configuration { get; }
+
     public DbCxt CreateDbContext(string[] args)
     {
         var builder = new DbContextOptionsBuilder<DbCxt>();
 
-        _ = builder.UseSqlite("Data Source=../../../../../../../../databases/db.sqlite3");
+        const string ConnectionStringName = nameof(DbCxt);
+        string ConnectionString = Configuration.GetConnectionString($"{ConnectionStringName}") ?? throw new KeyNotFoundException($"Connection string '{ConnectionStringName}' not found.");
+        string FullFilePath = Path.GetFullPath(ConnectionString["Data Source=".Length..]);
+        if (!File.Exists(FullFilePath))
+            throw new FileNotFoundException("Database file not found: '{FullPath}'", FullFilePath);
+
+        _ = builder.UseSqlite(ConnectionString);
 
         return new DbCxt(builder.Options);
     }

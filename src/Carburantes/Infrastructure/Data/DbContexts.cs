@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 namespace Seedysoft.Carburantes.Infrastructure.Data;
 
@@ -48,11 +49,21 @@ public sealed class CarburantesHistDbContext : CarburantesDbContextBase
 /// </summary>
 public class CarburantesDbContextFactory : Microsoft.EntityFrameworkCore.Design.IDesignTimeDbContextFactory<CarburantesDbContext>
 {
+    public CarburantesDbContextFactory(IConfiguration configuration) => Configuration = configuration;
+
+    public IConfiguration Configuration { get; }
+
     public CarburantesDbContext CreateDbContext(string[] args)
     {
         DbContextOptionsBuilder<CarburantesDbContext> builder = new();
 
-        _ = builder.UseSqlite("Data Source=../../../../../../../../databases/Carburantes.sqlite3");
+        const string ConnectionStringName = nameof(CarburantesDbContext);
+        string ConnectionString = Configuration.GetConnectionString($"{ConnectionStringName}")?? throw new KeyNotFoundException($"Connection string '{ConnectionStringName}' not found.");
+        string FullFilePath = Path.GetFullPath(ConnectionString["Data Source=".Length..]);
+        if (!File.Exists(FullFilePath))
+            throw new FileNotFoundException("Database file not found: '{FullPath}'", FullFilePath);
+
+        _ = builder.UseSqlite(ConnectionString);
 
         return new CarburantesDbContext(builder.Options);
     }
@@ -63,11 +74,21 @@ public class CarburantesDbContextFactory : Microsoft.EntityFrameworkCore.Design.
 /// </summary>
 public class CarburantesHistDbContextFactory : Microsoft.EntityFrameworkCore.Design.IDesignTimeDbContextFactory<CarburantesHistDbContext>
 {
+    public CarburantesHistDbContextFactory(IConfiguration configuration) => Configuration = configuration;
+
+    public IConfiguration Configuration { get; }
+
     public CarburantesHistDbContext CreateDbContext(string[] args)
     {
         DbContextOptionsBuilder<CarburantesHistDbContext> builder = new();
 
-        _ = builder.UseSqlite("Data Source=../../../../../../../../databases/CarburantesHist.sqlite3");
+        const string ConnectionStringName = nameof(CarburantesHistDbContext);
+        string ConnectionString = Configuration.GetConnectionString($"{ConnectionStringName}")?? throw new KeyNotFoundException($"Connection string '{ConnectionStringName}' not found.");
+        string FullFilePath = Path.GetFullPath(ConnectionString["Data Source=".Length..]);
+        if (!File.Exists(FullFilePath))
+            throw new FileNotFoundException("Database file not found: '{FullPath}'", FullFilePath);
+
+        _ = builder.UseSqlite(ConnectionString);
 
         return new CarburantesHistDbContext(builder.Options);
     }

@@ -3,7 +3,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Seedysoft.UtilsLib.Extensions;
 using Serilog;
 
 namespace Seedysoft.WebComparerConsoleApp;
@@ -42,7 +41,14 @@ public class Program
             {
                 _ = iServiceCollection.AddDbContext<DbContexts.DbCxt>(dbContextOptionsBuilder =>
                 {
-                    dbContextOptionsBuilder.UseSqlite(hostBuilderContext.Configuration.GetDbCtx(UtilsLib.Enums.ConnectionMode.ReadWrite));
+                    const string ConnectionStringName = nameof(DbContexts.DbCxt);
+                    string ConnectionString = hostBuilderContext.Configuration.GetConnectionString($"{ConnectionStringName}")?? throw new KeyNotFoundException($"Connection string '{ConnectionStringName}' not found.");
+                    string FullFilePath = Path.GetFullPath(ConnectionString["Data Source=".Length..]);
+                    if (!File.Exists(FullFilePath))
+                        throw new FileNotFoundException("Database file not found: '{FullPath}'", FullFilePath);
+
+                    _ = dbContextOptionsBuilder.UseSqlite(ConnectionString);
+
                     dbContextOptionsBuilder.EnableDetailedErrors();
                     dbContextOptionsBuilder.EnableSensitiveDataLogging();
 #if DEBUG

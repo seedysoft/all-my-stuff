@@ -4,7 +4,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Seedysoft.UtilsLib.Extensions;
 using Serilog;
 
 namespace Seedysoft.ObtainPvpcConsoleApp;
@@ -30,7 +29,6 @@ public class Program
                     .AddJsonFile($"appsettings.ObtainPvpcSettings.json", false, true)
 
                     .AddJsonFile($"appsettings.Serilog.{CurrentEnvironmentName}.json", false, true)
-                    .AddJsonFile($"appsettings.Shared.{CurrentEnvironmentName}.json", false, true)
 
                     .AddJsonFile($"appsettings.dbConnectionString.{CurrentEnvironmentName}.json", false, true);
             })
@@ -43,13 +41,20 @@ public class Program
                     .ReadFrom.Configuration(hostBuilderContext.Configuration)
                     .CreateLogger());
             })
-            .ConfigureServices((hostBuilderContext, serviceCollection) =>
+            .ConfigureServices((hostBuilderContext, iServiceCollection) =>
             {
-                serviceCollection.TryAddSingleton(hostBuilderContext.Configuration.GetSection(nameof(ObtainPvpcLib.Settings.ObtainPvpcSettings)).Get<ObtainPvpcLib.Settings.ObtainPvpcSettings>()!);
+                iServiceCollection.TryAddSingleton(hostBuilderContext.Configuration.GetSection(nameof(ObtainPvpcLib.Settings.ObtainPvpcSettings)).Get<ObtainPvpcLib.Settings.ObtainPvpcSettings>()!);
 
-                _ = serviceCollection.AddDbContext<DbContexts.DbCxt>(dbContextOptionsBuilder =>
+                _ = iServiceCollection.AddDbContext<DbContexts.DbCxt>(dbContextOptionsBuilder =>
                 {
-                    dbContextOptionsBuilder.UseSqlite(hostBuilderContext.Configuration.GetDbCtx(UtilsLib.Enums.ConnectionMode.ReadWrite));
+                    const string ConnectionStringName = nameof(DbContexts.DbCxt);
+                    string ConnectionString = hostBuilderContext.Configuration.GetConnectionString($"{ConnectionStringName}") ?? throw new KeyNotFoundException($"Connection string '{ConnectionStringName}' not found.");
+                    string FullFilePath = Path.GetFullPath(ConnectionString["Data Source=".Length..]);
+                    if (!File.Exists(FullFilePath))
+                        throw new FileNotFoundException("Database file not found: '{FullPath}'", FullFilePath);
+
+                    dbContextOptionsBuilder.UseSqlite(ConnectionString);
+
                     dbContextOptionsBuilder.EnableDetailedErrors();
                     dbContextOptionsBuilder.EnableSensitiveDataLogging();
 #if DEBUG

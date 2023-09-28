@@ -4,7 +4,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Seedysoft.UtilsLib.Extensions;
 using Serilog;
 
 namespace Seedysoft.OutboxConsoleApp;
@@ -44,11 +43,18 @@ public class Program
                     .ReadFrom.Configuration(hostBuilderContext.Configuration)
                     .CreateLogger());
             })
-            .ConfigureServices((hostBuilderContext, serviceCollection) =>
+            .ConfigureServices((hostBuilderContext, iServiceCollection) =>
             {
-                _ = serviceCollection.AddDbContext<DbContexts.DbCxt>(dbContextOptionsBuilder =>
+                _ = iServiceCollection.AddDbContext<DbContexts.DbCxt>(dbContextOptionsBuilder =>
                 {
-                    dbContextOptionsBuilder.UseSqlite(hostBuilderContext.Configuration.GetDbCtx(UtilsLib. Enums.ConnectionMode.ReadWrite));
+                    const string ConnectionStringName = nameof(DbContexts.DbCxt);
+                    string ConnectionString = hostBuilderContext.Configuration.GetConnectionString($"{ConnectionStringName}") ?? throw new KeyNotFoundException($"Connection string '{ConnectionStringName}' not found.");
+                    string FullFilePath = Path.GetFullPath(ConnectionString["Data Source=".Length..]);
+                    if (!File.Exists(FullFilePath))
+                        throw new FileNotFoundException("Database file not found: '{FullPath}'", FullFilePath);
+
+                    _ = dbContextOptionsBuilder.UseSqlite(ConnectionString);
+
                     dbContextOptionsBuilder.EnableDetailedErrors();
                     dbContextOptionsBuilder.EnableSensitiveDataLogging();
 #if DEBUG
@@ -56,12 +62,12 @@ public class Program
 #endif
                 });
 
-                serviceCollection.TryAddScoped<SmtpServiceLib.Services.SmtpService>();
+                iServiceCollection.TryAddScoped<SmtpServiceLib.Services.SmtpService>();
 
-                serviceCollection.TryAddSingleton(hostBuilderContext.Configuration.GetSection(nameof(SmtpServiceLib.Settings.SmtpServiceSettings)).Get<SmtpServiceLib.Settings.SmtpServiceSettings>()!);
-                serviceCollection.TryAddSingleton(hostBuilderContext.Configuration.GetSection(nameof(TelegramLib.Settings.TelegramSettings)).Get<TelegramLib.Settings.TelegramSettings>()!);
+                iServiceCollection.TryAddSingleton(hostBuilderContext.Configuration.GetSection(nameof(SmtpServiceLib.Settings.SmtpServiceSettings)).Get<SmtpServiceLib.Settings.SmtpServiceSettings>()!);
+                iServiceCollection.TryAddSingleton(hostBuilderContext.Configuration.GetSection(nameof(TelegramLib.Settings.TelegramSettings)).Get<TelegramLib.Settings.TelegramSettings>()!);
 
-                serviceCollection.TryAddSingleton<TelegramLib.Services.TelegramService>();
+                iServiceCollection.TryAddSingleton<TelegramLib.Services.TelegramService>();
             })
             .Build();
 

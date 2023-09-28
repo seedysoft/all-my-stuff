@@ -15,8 +15,13 @@ public static class Dependencies
         services
             .AddDbContext<Data.CarburantesDbContext>(dbContextOptionsBuilder =>
             {
-                dbContextOptionsBuilder.UseSqlite(configuration.GetConnectionString($"{nameof(Data.CarburantesDbContext)}")
-                    ?? throw new InvalidOperationException($"Connection string '{nameof(Data.CarburantesDbContext)}' not found."));
+                const string ConnectionStringName = nameof(Data.CarburantesDbContext);
+                string ConnectionString = configuration.GetConnectionString($"{ConnectionStringName}") ?? throw new KeyNotFoundException($"Connection string '{ConnectionStringName}' not found.");
+                string FullFilePath = Path.GetFullPath(ConnectionString["Data Source=".Length..]);
+                if (!File.Exists(FullFilePath))
+                    throw new FileNotFoundException("Database file not found: '{FullPath}'", FullFilePath);
+
+                dbContextOptionsBuilder.UseSqlite(ConnectionString);
 #if DEBUG
                 dbContextOptionsBuilder
                     .EnableDetailedErrors()
@@ -28,8 +33,13 @@ public static class Dependencies
             , ServiceLifetime.Transient)
             .AddDbContext<Data.CarburantesHistDbContext>(dbContextOptionsBuilder =>
             {
-                dbContextOptionsBuilder.UseSqlite(configuration.GetConnectionString($"{nameof(Data.CarburantesHistDbContext)}")
-                    ?? throw new InvalidOperationException($"Connection string '{nameof(Data.CarburantesHistDbContext)}' not found."));
+                const string ConnectionStringName = nameof(Data.CarburantesHistDbContext);
+                string ConnectionString = configuration.GetConnectionString($"{ConnectionStringName}") ?? throw new KeyNotFoundException($"Connection string '{ConnectionStringName}' not found.");
+                string FullFilePath = Path.GetFullPath(ConnectionString["Data Source=".Length..]);
+                if (!File.Exists(FullFilePath))
+                    throw new FileNotFoundException("Database file not found: '{FullPath}'", FullFilePath);
+
+                dbContextOptionsBuilder.UseSqlite(ConnectionString);
 #if DEBUG
                 dbContextOptionsBuilder
                     .EnableDetailedErrors()

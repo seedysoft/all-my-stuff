@@ -20,9 +20,6 @@
     <None Remove="appsettings.Serilog.Development.json" />
     <None Remove="appsettings.Serilog.json" />
     <None Remove="appsettings.Serilog.Production.json" />
-    <None Remove="appsettings.Shared.Development.json" />
-    <None Remove="appsettings.Shared.json" />
-    <None Remove="appsettings.Shared.Production.json" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)' == 'Debug'">
@@ -76,19 +73,6 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <DependentUpon>appsettings.Serilog.json</DependentUpon>
     </Content>
-  </ItemGroup>
-  <ItemGroup Condition="'$(Configuration)' == 'Debug'">
-    <Content Include="appsettings.Shared.Development.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <DependentUpon>appsettings.Shared.json</DependentUpon>
-    </Content>
-    <Content Include="appsettings.Shared.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <None Include="appsettings.Shared.Production.json">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-      <DependentUpon>appsettings.Shared.json</DependentUpon>
-    </None>
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)' == 'Release'">
     <None Include="appsettings.Shared.Development.json">

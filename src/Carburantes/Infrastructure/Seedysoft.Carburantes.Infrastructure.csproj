@@ -18,26 +18,21 @@
     <Content Include="appsettings.CarburantesConnectionStrings.json">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Content>
-    <None Remove="appsettings.Infrastructure.Development.json" />
-    <None Remove="appsettings.Infrastructure.Production.json" />
-    <Content Include="appsettings.Infrastructure.json">
+    <None Remove="appsettings.Carburantes.Infrastructure.Development.json" />
+    <None Remove="appsettings.Carburantes.Infrastructure.Production.json" />
+    <Content Include="appsettings.Carburantes.Infrastructure.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <None Remove="appsettings.Serilog.Development.json" />
-    <None Remove="appsettings.Serilog.Production.json" />
-    <Content Include="appsettings.Serilog.json">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)' == 'Debug'">
-    <None Include="appsettings.Infrastructure.Development.json">
+    <None Include="appsettings.Carburantes.Infrastructure.Development.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <DependentUpon>appsettings.Infrastructure.json</DependentUpon>
+      <DependentUpon>appsettings.Carburantes.Infrastructure.json</DependentUpon>
     </None>
-    <None Include="appsettings.Infrastructure.Production.json">
+    <None Include="appsettings.Carburantes.Infrastructure.Production.json">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-      <DependentUpon>appsettings.Infrastructure.json</DependentUpon>
+      <DependentUpon>appsettings.Carburantes.Infrastructure.json</DependentUpon>
     </None>
     <Content Include="appsettings.CarburantesConnectionStrings.Development.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -47,23 +42,15 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <DependentUpon>appsettings.CarburantesConnectionStrings.json</DependentUpon>
     </None>
-    <Content Include="appsettings.Serilog.Development.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <DependentUpon>appsettings.Serilog.json</DependentUpon>
-    </Content>
-    <None Include="appsettings.Serilog.Production.json">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-      <DependentUpon>appsettings.Serilog.json</DependentUpon>
-    </None>
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)' == 'Release'">
-    <None Include="appsettings.Infrastructure.Development.json">
+    <None Include="appsettings.Carburantes.Infrastructure.Development.json">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-      <DependentUpon>appsettings.Infrastructure.json</DependentUpon>
+      <DependentUpon>appsettings.Carburantes.Infrastructure.json</DependentUpon>
     </None>
-    <None Include="appsettings.Infrastructure.Production.json">
+    <None Include="appsettings.Carburantes.Infrastructure.Production.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <DependentUpon>appsettings.Infrastructure.json</DependentUpon>
+      <DependentUpon>appsettings.Carburantes.Infrastructure.json</DependentUpon>
     </None>
     <None Include="appsettings.CarburantesConnectionStrings.Development.json">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
@@ -72,14 +59,6 @@
     <Content Include="appsettings.CarburantesConnectionStrings.Production.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <DependentUpon>appsettings.CarburantesConnectionStrings.json</DependentUpon>
-    </Content>
-    <None Include="appsettings.Serilog.Development.json">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-      <DependentUpon>appsettings.Serilog.json</DependentUpon>
-    </None>
-    <Content Include="appsettings.Serilog.Production.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <DependentUpon>appsettings.Serilog.json</DependentUpon>
     </Content>
   </ItemGroup>
 
