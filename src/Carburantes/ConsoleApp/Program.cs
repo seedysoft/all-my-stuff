@@ -4,23 +4,21 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Seedysoft.UtilsLib.Extensions;
-using Serilog;
 
 namespace Seedysoft.Carburantes.ConsoleApp;
 
 public class Program
 {
-    private const string ApplicationName = $"{nameof(Carburantes)}{nameof(ConsoleApp)}";
+    private static string ApplicationName = string.Empty;
 
     public static async Task Main(string[] args)
     {
-        IHost host = new HostBuilder()
-            .ConfigureHostConfiguration(iConfigurationBuilder =>
-            {
-                _ = iConfigurationBuilder
-                    .AddCommandLine(args)
-                    .AddEnvironmentVariables();
-            })
+        IHostBuilder builder = new  HostBuilder();
+        _ = builder.ConfigureServices((hostBuilderContext, iServiceCollection) =>   ApplicationName= hostBuilderContext.HostingEnvironment.ApplicationName);
+
+        InfrastructureLib.Dependencies.ConfigureDefaultDependencies(builder, args);
+
+        _ = builder
             .ConfigureAppConfiguration((hostBuilderContext, iConfigurationBuilder) =>
             {
                 string CurrentEnvironmentName = hostBuilderContext.HostingEnvironment.EnvironmentName;
@@ -29,31 +27,22 @@ public class Program
                     .AddJsonFile("appsettings.Carburantes.Infrastructure.json", false, true)
                     .AddJsonFile($"appsettings.Carburantes.Infrastructure.{CurrentEnvironmentName}.json", false, true)
 
-                    .AddJsonFile($"appsettings.CarburantesConnectionStrings.{CurrentEnvironmentName}.json", false, true)
-
-                    .AddJsonFile($"appsettings.Serilog.{CurrentEnvironmentName}.json", false, true);
+                    .AddJsonFile($"appsettings.CarburantesConnectionStrings.{CurrentEnvironmentName}.json", false, true);
             })
-            .ConfigureLogging((hostBuilderContext, iLoggingBuilder) =>
-            {
-                IConfigurationSection configurationSection = hostBuilderContext.Configuration.GetRequiredSection("Serilog:WriteTo:1:Args:path")!;
-                configurationSection.Value = configurationSection.Value!.Replace("{ApplicationName}", ApplicationName);
 
-                _ = iLoggingBuilder.AddSerilog(new LoggerConfiguration()
-                    .ReadFrom.Configuration(hostBuilderContext.Configuration)
-                    .CreateLogger());
-            })
             .ConfigureServices((hostBuilderContext, serviceCollection) =>
             {
-                Infrastructure.Dependencies.ConfigureServices(hostBuilderContext.Configuration, serviceCollection);
+                InfrastructureLib.Dependencies.AddDbContext<Infrastructure.Data.CarburantesDbContext>(hostBuilderContext.Configuration, serviceCollection);
+                InfrastructureLib.Dependencies.AddDbContext<Infrastructure.Data.CarburantesHistDbContext>(hostBuilderContext.Configuration, serviceCollection);
 
                 _ = serviceCollection.AddHttpClient(nameof(Core.Settings.Minetur));
-            }).Build();
+            });
+
+        IHost host =builder.Build();
 
         ILogger<Program> Logger = host.Services.GetRequiredService<ILogger<Program>>();
 
-        SQLitePCL.Batteries.Init();
-
-        Logger.LogInformation($"Called {ApplicationName}.");
+        Logger.LogInformation("Called {ApplicationName}", ApplicationName);
 
         try
         {
@@ -79,7 +68,7 @@ public class Program
         catch (Exception e) when (Logger.Handle(e, "Unhandled exception.")) { }
         finally { await Task.CompletedTask; }
 
-        Logger.LogInformation($"End {ApplicationName}.");
+        Logger.LogInformation("End {ApplicationName}", ApplicationName);
 
         Environment.Exit(0);
     }

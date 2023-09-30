@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
@@ -6,7 +6,7 @@
     <Nullable>enable</Nullable>
     <IsPublishable>False</IsPublishable>
   </PropertyGroup>
-  
+
   <PropertyGroup Condition="'$(Configuration)' == 'Release'">
     <AssemblyVersion>$([System.DateTime]::UtcNow.ToString(yy.MM.dd.HHmm))</AssemblyVersion>
     <FileVersion>$(AssemblyVersion)</FileVersion>
@@ -34,21 +34,6 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <DependentUpon>appsettings.dbConnectionString.json</DependentUpon>
     </None>
-  </ItemGroup>
-  <ItemGroup Condition="'$(Configuration)' == 'Release'">
-    <None Include="appsettings.dbConnectionString.Development.json">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-      <DependentUpon>appsettings.dbConnectionString.json</DependentUpon>
-    </None>
-    <Content Include="appsettings.dbConnectionString.json">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Content>
-    <Content Include="appsettings.dbConnectionString.Production.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <DependentUpon>appsettings.dbConnectionString.json</DependentUpon>
-    </Content>
-  </ItemGroup>
-  <ItemGroup Condition="'$(Configuration)' == 'Debug'">
     <Content Include="appsettings.Serilog.Development.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <DependentUpon>appsettings.Serilog.json</DependentUpon>
@@ -62,6 +47,17 @@
     </None>
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)' == 'Release'">
+    <None Include="appsettings.dbConnectionString.Development.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <DependentUpon>appsettings.dbConnectionString.json</DependentUpon>
+    </None>
+    <Content Include="appsettings.dbConnectionString.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
+    <Content Include="appsettings.dbConnectionString.Production.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <DependentUpon>appsettings.dbConnectionString.json</DependentUpon>
+    </Content>
     <None Include="appsettings.Serilog.Development.json">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <DependentUpon>appsettings.Serilog.json</DependentUpon>
@@ -74,19 +70,7 @@
       <DependentUpon>appsettings.Serilog.json</DependentUpon>
     </Content>
   </ItemGroup>
-  <ItemGroup Condition="'$(Configuration)' == 'Release'">
-    <None Include="appsettings.Shared.Development.json">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-      <DependentUpon>appsettings.Shared.json</DependentUpon>
-    </None>
-    <Content Include="appsettings.Shared.json">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Content>
-    <Content Include="appsettings.Shared.Production.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <DependentUpon>appsettings.Shared.json</DependentUpon>
-    </Content>
-  </ItemGroup>
+
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.11" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.11">

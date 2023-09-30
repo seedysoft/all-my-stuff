@@ -76,6 +76,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\CommonLibs\Seedysoft.InfrastructureLib\Seedysoft.InfrastructureLib.csproj" />
     <ProjectReference Include="..\Core\Seedysoft.Carburantes.Core.csproj" />
   </ItemGroup>
 

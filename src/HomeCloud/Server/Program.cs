@@ -1,6 +1,4 @@
-﻿using Serilog;
-
-namespace Seedysoft.HomeCloud.Server;
+﻿namespace Seedysoft.HomeCloud.Server;
 
 internal class Program
 {
@@ -9,6 +7,7 @@ internal class Program
     private static void Main(string[] args)
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+        builder.Environment.ApplicationName = ApplicationName;
 
         Microsoft.AspNetCore.Hosting.StaticWebAssets.StaticWebAssetsLoader.UseStaticWebAssets(builder.Environment, builder.Configuration);
 
@@ -31,17 +30,19 @@ internal class Program
         builder.Configuration
             .AddJsonFile($"appsettings.HomeCloudServer.json", false, true)
             .AddJsonFile($"appsettings.HomeCloudServer.{CurrentEnvironmentName}.json", false, true)
-            .AddJsonFile($"appsettings.Serilog.{CurrentEnvironmentName}.json", false, true);
 
-        InfrastructureLib.Dependencies.ConfigureServices(builder.Configuration, builder.Services);
-        Carburantes.Infrastructure.Dependencies.ConfigureServices(builder.Configuration, builder.Services);
+            .AddJsonFile($"appsettings.dbConnectionString.{CurrentEnvironmentName}.json", false, true)
 
-        IConfigurationSection configurationSection = builder.Configuration.GetRequiredSection("Serilog:WriteTo:1:Args:path");
-        configurationSection.Value = Path.GetFullPath(configurationSection.Value!.Replace("{ApplicationName}", ApplicationName));
+            .AddJsonFile("appsettings.Carburantes.Infrastructure.json", false, true)
+            .AddJsonFile($"appsettings.Carburantes.Infrastructure.{CurrentEnvironmentName}.json", false, true)
 
-        builder.Logging.AddSerilog(new LoggerConfiguration()
-            .ReadFrom.Configuration(builder.Configuration)
-            .CreateLogger());
+            .AddJsonFile($"appsettings.CarburantesConnectionStrings.{CurrentEnvironmentName}.json", false, true);
+
+        InfrastructureLib.Dependencies.ConfigureDefaultDependencies(builder.Configuration, builder.Services, builder.Environment);
+
+        InfrastructureLib.Dependencies.AddDbContext<DbContexts.DbCxt>(builder.Configuration, builder.Services);
+        InfrastructureLib.Dependencies.AddDbContext<Carburantes.Infrastructure.Data.CarburantesDbContext>(builder.Configuration, builder.Services);
+        InfrastructureLib.Dependencies.AddDbContext<Carburantes.Infrastructure.Data.CarburantesHistDbContext>(builder.Configuration, builder.Services);
 
         builder.Services.AddControllersWithViews();
         builder.Services.AddRazorPages();
