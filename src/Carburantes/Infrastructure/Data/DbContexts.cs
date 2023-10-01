@@ -17,7 +17,7 @@ public abstract class CarburantesDbContextBase : DbContext
 
 public sealed class CarburantesDbContext : CarburantesDbContextBase
 {
-    public CarburantesDbContext(DbContextOptions<CarburantesDbContext> options) : base(options) { }
+    public CarburantesDbContext(DbContextOptions<CarburantesDbContext> options) : base(options) => ChangeTracker.LazyLoadingEnabled = false;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder) => base.OnModelCreating(modelBuilder);
 
@@ -31,7 +31,7 @@ public sealed class CarburantesDbContext : CarburantesDbContextBase
 
 public sealed class CarburantesHistDbContext : CarburantesDbContextBase
 {
-    public CarburantesHistDbContext(DbContextOptions<CarburantesHistDbContext> options) : base(options) { }
+    public CarburantesHistDbContext(DbContextOptions<CarburantesHistDbContext> options) : base(options) => ChangeTracker.LazyLoadingEnabled = false;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder) => base.OnModelCreating(modelBuilder);
 

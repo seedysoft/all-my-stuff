@@ -6,7 +6,7 @@ namespace DbContexts;
 // TODO                     Use same fieldId across database tables
 public sealed partial class DbCxt : DbContext
 {
-    public DbCxt(DbContextOptions<DbCxt> options) : base(options) { }
+    public DbCxt(DbContextOptions<DbCxt> options) : base(options) => ChangeTracker.LazyLoadingEnabled = false;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
