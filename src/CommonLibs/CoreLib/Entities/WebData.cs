@@ -1,15 +1,7 @@
 ﻿namespace Entities;
 
-[System.Diagnostics.DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
-public partial class WebData
+public abstract class WebDataBase
 {
-    protected WebData() { }
-    public WebData(string webUrl, string description)
-    {
-        WebUrl = webUrl;
-        Description = description;
-    }
-
     public long SubscriptionId { get; set; }
 
     public string WebUrl { get; set; } = default!;
@@ -27,6 +19,17 @@ public partial class WebData
     public string CssSelector { get; set; } = default!;
 
     public long TakeAboveBelowLines { get; set; }
+}
+
+[System.Diagnostics.DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
+public partial class WebData : WebDataBase
+{
+    protected WebData() { }
+    public WebData(string webUrl, string description)
+    {
+        WebUrl = webUrl;
+        Description = description;
+    }
 
     protected string GetDebuggerDisplay() => $"{WebUrl}";
 }
@@ -38,8 +41,7 @@ public partial class WebData
     public string? DataToSend { get; set; }
 }
 
-[System.Diagnostics.DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
-public class WebDataView : WebData
+public class WebDataView : WebDataBase
 {
     public long? SeenAtDateTimeUnix { get; set; }
     public long? UpdatedAtDateTimeUnix { get; set; }

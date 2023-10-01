@@ -2,7 +2,7 @@
 
 namespace Seedysoft.InfrastructureLib.EntityTypeConfigurations;
 
-internal abstract class WebDataEntityTypeConfigurationT<T> : IEntityTypeConfiguration<T> where T : Entities.WebData
+internal abstract class WebDataEntityTypeConfigurationT<T> : IEntityTypeConfiguration<T> where T : Entities.WebDataBase
 {
     public void Configure(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder<T> builder)
     {
@@ -69,6 +69,7 @@ internal class WebDataViewEntityTypeConfiguration : WebDataEntityTypeConfigurati
             .Property(x => x.UpdatedAtDateTimeUnix);
 
         _ = builder
-            .ToView(nameof(Entities.WebDataView));
+            .ToView(nameof(Entities.WebDataView))
+            .HasNoKey();
     }
 }

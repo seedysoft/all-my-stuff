@@ -34,6 +34,7 @@ public sealed partial class DbCxt : DbContext
     public DbSet<Entities.WebDataView> WebDatasView { get; set; } = default!;
 }
 
+#if DEBUG
 /// <summary>
 /// Con esta clase podemos generar las migraciones
 /// </summary>
@@ -58,3 +59,4 @@ public class DbCxtFactory : Microsoft.EntityFrameworkCore.Design.IDesignTimeDbCo
         return new DbCxt(builder.Options);
     }
 }
+#endif

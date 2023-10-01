@@ -20,7 +20,7 @@ public class Program
             .ConfigureAppConfiguration((hostBuilderContext, iConfigurationBuilder) =>
                 _ = iConfigurationBuilder.AddJsonFile($"appsettings.dbConnectionString.{hostBuilderContext.HostingEnvironment.EnvironmentName}.json", false, true))
 
-            .ConfigureServices((hostBuilderContext, iServiceCollection) => 
+            .ConfigureServices((hostBuilderContext, iServiceCollection) =>
                 InfrastructureLib.Dependencies.AddDbContext<DbContexts.DbCxt>(hostBuilderContext.Configuration, iServiceCollection));
 
         IHost host =builder.Build();

@@ -2,7 +2,7 @@
 
 namespace Seedysoft.InfrastructureLib.EntityTypeConfigurations;
 
-internal class PvpcEntityTypeConfigurationT<T> : IEntityTypeConfiguration<T> where T : CoreLib.Entities.Pvpc
+internal class PvpcEntityTypeConfigurationT<T> : IEntityTypeConfiguration<T> where T : CoreLib.Entities.PvpcBase
 {
     public void Configure(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder<T> builder)
     {
@@ -37,6 +37,7 @@ internal class PvpcViewEntityTypeConfiguration : PvpcEntityTypeConfigurationT<Co
             .Property(x => x.AtDateTimeUnix);
 
         _ = builder
-            .ToView(nameof(CoreLib.Entities.PvpcView));
+            .ToView(nameof(CoreLib.Entities.PvpcView))
+            .HasNoKey();
     }
 }

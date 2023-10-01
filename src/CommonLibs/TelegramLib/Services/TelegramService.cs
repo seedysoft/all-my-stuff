@@ -109,7 +109,7 @@ public partial class TelegramService
         await MessageSendTextAsync(to, text, null, cancellationToken);
 
     internal static string MessageGetMarkdownV2TextForPrices(
-        IEnumerable<CoreLib.Entities.Pvpc> prices)
+        IEnumerable<CoreLib.Entities.PvpcBase> prices)
     {
         if (prices == null || !prices.Any())
             return "No hay datos";
@@ -422,7 +422,7 @@ public partial class TelegramService
             dateTimeToObtain,
             cancellationToken);
 
-        CoreLib.Entities.Pvpc[]? Prices = await dbCtx.GetPvpcBetweenDatesAsync(
+        CoreLib.Entities.PvpcView[]? Prices = await dbCtx.GetPvpcBetweenDatesAsync(
             dateTimeToObtain.Date,
             dateTimeToObtain.Date.AddDays(1),
             cancellationToken);

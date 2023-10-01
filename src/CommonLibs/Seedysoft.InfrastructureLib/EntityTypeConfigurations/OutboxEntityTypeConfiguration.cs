@@ -2,7 +2,7 @@
 
 namespace Seedysoft.InfrastructureLib.EntityTypeConfigurations;
 
-internal class OutboxTableEntityTypeConfigurationT<T> : IEntityTypeConfiguration<T> where T : CoreLib.Entities.Outbox
+internal class OutboxTableEntityTypeConfigurationT<T> : IEntityTypeConfiguration<T> where T : CoreLib.Entities.OutboxBase
 {
     public void Configure(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder<T> builder)
     {
@@ -51,6 +51,7 @@ internal class OutboxViewEntityTypeConfiguration : OutboxTableEntityTypeConfigur
             .Property(x => x.SentAtDateTimeUnix);
 
         _ = builder
-            .ToView(nameof(CoreLib.Entities.OutboxView));
+            .ToView(nameof(CoreLib.Entities.OutboxView))
+            .HasNoKey();
     }
 }

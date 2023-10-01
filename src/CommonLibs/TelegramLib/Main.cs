@@ -48,7 +48,7 @@ public static class Main
                             {
                                 CoreLib.Enums.SubscriptionName.electricidad => await TelegramService.MessageSendTextAsync(
                                     subscriber.TelegramUserId.Value,
-                                    Services.TelegramService.MessageGetMarkdownV2TextForPrices(System.Text.Json.JsonSerializer.Deserialize<IEnumerable<CoreLib.Entities.Pvpc>>(PendingMessage.Payload)!),
+                                    Services.TelegramService.MessageGetMarkdownV2TextForPrices(System.Text.Json.JsonSerializer.Deserialize<IEnumerable<CoreLib.Entities.PvpcBase>>(PendingMessage.Payload)!),
                                     Telegram.Bot.Types.Enums.ParseMode.MarkdownV2,
                                     stoppingToken),
 
@@ -71,7 +71,7 @@ public static class Main
                         {
                             string Message = PendingMessage.SubscriptionName switch
                             {
-                                CoreLib.Enums.SubscriptionName.electricidad => GetHtmlBodyMail(System.Text.Json.JsonSerializer.Deserialize<IEnumerable<CoreLib.Entities.Pvpc>>(PendingMessage.Payload)!),
+                                CoreLib.Enums.SubscriptionName.electricidad => GetHtmlBodyMail(System.Text.Json.JsonSerializer.Deserialize<IEnumerable<CoreLib.Entities.PvpcBase>>(PendingMessage.Payload)!),
 
                                 CoreLib.Enums.SubscriptionName.webComparer => PendingMessage.Payload,
 
@@ -107,7 +107,7 @@ public static class Main
         finally { await Task.CompletedTask; }
     }
 
-    private static string GetHtmlBodyMail(IEnumerable<CoreLib.Entities.Pvpc> entities)
+    private static string GetHtmlBodyMail(IEnumerable<CoreLib.Entities.PvpcBase> entities)
     {
         if (!entities.Any())
             return string.Empty;

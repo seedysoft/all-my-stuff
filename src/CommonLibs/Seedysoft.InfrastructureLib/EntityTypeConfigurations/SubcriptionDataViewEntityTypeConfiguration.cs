@@ -32,6 +32,7 @@ internal class SubcriptionDataViewEntityTypeConfiguration : IEntityTypeConfigura
 
         _ = builder
             .HasNoKey()
-            .ToView(nameof(CoreLib.Entities.SubcriptionDataView));
+            .ToView(nameof(CoreLib.Entities.SubcriptionDataView))
+            .HasNoKey();
     }
 }

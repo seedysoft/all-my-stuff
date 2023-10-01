@@ -38,7 +38,7 @@ public static class Main
                 return null;
             }
 
-            var Prices = new List<CoreLib.Entities.Pvpc>(24);
+            var Prices = new List<CoreLib.Entities.PvpcBase>(24);
 
             IEnumerable<long> DateTimes = NewEntities.Select(x => x.AtDateTimeOffset.ToUnixTimeSeconds());
             long MinDateTime = DateTimes.Min();
@@ -72,7 +72,7 @@ public static class Main
             {
                 var OutboxMessage = new CoreLib.Entities.Outbox(
                     CoreLib.Enums.SubscriptionName.electricidad,
-                    System.Text.Json.JsonSerializer.Serialize<IEnumerable<CoreLib.Entities.Pvpc>>(Prices));
+                    System.Text.Json.JsonSerializer.Serialize<IEnumerable<CoreLib.Entities.PvpcBase>>(Prices));
                 _ = await dbCxt.Outbox.AddAsync(OutboxMessage, stoppingToken);
 
                 _ = await dbCxt.SaveChangesAsync(stoppingToken);
