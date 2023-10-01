@@ -1,18 +1,14 @@
 ﻿namespace Seedysoft.HomeCloud.Server;
 
-internal class Program
+public class Program
 {
-    private const string ApplicationName = $"{nameof(Seedysoft)}.{nameof(HomeCloud)}.{nameof(Server)}.{nameof(Program)}";
-
     private static void Main(string[] args)
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
-        builder.Environment.ApplicationName = ApplicationName;
 
         Microsoft.AspNetCore.Hosting.StaticWebAssets.StaticWebAssetsLoader.UseStaticWebAssets(builder.Environment, builder.Configuration);
 
         // Add services to the container.
-
 #if DEBUG
         builder.Configuration.SetBasePath(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location)!);
 
@@ -20,6 +16,9 @@ internal class Program
 #endif
 
         builder.Logging.AddSystemdConsole();
+
+        builder.Services.AddControllersWithViews();
+        builder.Services.AddRazorPages();
 
         _ = builder.Host.ConfigureDefaults(args);
         // Systemd Service must be configured as type=notify
@@ -44,10 +43,6 @@ internal class Program
         InfrastructureLib.Dependencies.AddDbContext<Carburantes.Infrastructure.Data.CarburantesDbContext>(builder.Configuration, builder.Services);
         InfrastructureLib.Dependencies.AddDbContext<Carburantes.Infrastructure.Data.CarburantesHistDbContext>(builder.Configuration, builder.Services);
 
-        builder.Services.AddControllersWithViews();
-        builder.Services.AddRazorPages();
-        builder.Services.AddSystemd();
-
         WebApplication app = builder.Build();
 
         // Configure the HTTP request pipeline.
@@ -62,7 +57,7 @@ internal class Program
             _ = app.UseHsts();
         }
 
-        app.UseHttpsRedirection();
+        //app.UseHttpsRedirection();
 
         app.UseBlazorFrameworkFiles();
         app.UseStaticFiles();
