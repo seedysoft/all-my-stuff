@@ -59,6 +59,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Seedysoft.InfrastructureLib
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Seedysoft.CoreLib", "CommonLibs\CoreLib\Seedysoft.CoreLib.csproj", "{275D92FF-7B05-4A53-863B-7A09C35CFD3F}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Seedysoft.OutboxLib", "Outbox\OutboxLib\Seedysoft.OutboxLib.csproj", "{B9DB9188-86E8-4C27-AA48-6FA3095542EA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -137,6 +139,10 @@ Global
 		{275D92FF-7B05-4A53-863B-7A09C35CFD3F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{275D92FF-7B05-4A53-863B-7A09C35CFD3F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{275D92FF-7B05-4A53-863B-7A09C35CFD3F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B9DB9188-86E8-4C27-AA48-6FA3095542EA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B9DB9188-86E8-4C27-AA48-6FA3095542EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B9DB9188-86E8-4C27-AA48-6FA3095542EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B9DB9188-86E8-4C27-AA48-6FA3095542EA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -160,6 +166,7 @@ Global
 		{4BC74EB4-A94B-44D1-8A89-E4EA9DDDBF4B} = {1B84AE05-2D2A-49BD-A067-883B8FA01D75}
 		{733108C1-F3A2-4AE7-AB43-BADCB4161169} = {1B84AE05-2D2A-49BD-A067-883B8FA01D75}
 		{275D92FF-7B05-4A53-863B-7A09C35CFD3F} = {1B84AE05-2D2A-49BD-A067-883B8FA01D75}
+		{B9DB9188-86E8-4C27-AA48-6FA3095542EA} = {DEA953B6-AC4C-4AFF-98A2-1D900A2C8DB6}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {76CD9B0B-E4FA-4E83-9623-2163AE82F180}

@@ -1,4 +1,7 @@
-﻿namespace Seedysoft.HomeCloud.Server;
+﻿using Microsoft.EntityFrameworkCore;
+using Seedysoft.UtilsLib.Extensions;
+
+namespace Seedysoft.HomeCloud.Server;
 
 public class Program
 {
@@ -43,7 +46,25 @@ public class Program
         InfrastructureLib.Dependencies.AddDbContext<Carburantes.Infrastructure.Data.CarburantesDbContext>(builder.Configuration, builder.Services);
         InfrastructureLib.Dependencies.AddDbContext<Carburantes.Infrastructure.Data.CarburantesHistDbContext>(builder.Configuration, builder.Services);
 
+        builder.Services.AddHostedService<Carburantes.Services.ObtainDataCronBackgroundService>();
+        builder.Services.AddHostedService<ObtainPvpcLib.Services.ObtainPvpCronBackgroundService>();
+        builder.Services.AddHostedService<OutboxLib.Services.OutboxCronBackgroundService>();
+        builder.Services.AddHostedService<WebComparerLib.Services.WebComparerCronBackgroundService>();
+
         WebApplication app = builder.Build();
+
+        ILogger<Program> logger = app.Services.GetRequiredService<ILogger<Program>>();
+
+        // Migrate and seed the database during startup. Must be synchronous.
+        try
+        {
+            using IServiceScope Scope = app.Services.CreateScope();
+
+            Scope.ServiceProvider.GetRequiredService<DbContexts.DbCxt>().Database.Migrate();
+            Scope.ServiceProvider.GetRequiredService<Carburantes.Infrastructure.Data.CarburantesDbContext>().Database.Migrate();
+            Scope.ServiceProvider.GetRequiredService<Carburantes.Infrastructure.Data.CarburantesHistDbContext>().Database.Migrate();
+        }
+        catch (Exception e) when (logger.Handle(e, "Unhandled exception.")) { }
 
         // Configure the HTTP request pipeline.
         if (app.Environment.IsDevelopment())
