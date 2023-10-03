@@ -14,7 +14,7 @@ public class Program
     public static async Task Main(string[] args)
     {
         IHostBuilder builder = new  HostBuilder();
-        _ = builder.ConfigureServices((hostBuilderContext, iServiceCollection) =>   ApplicationName= hostBuilderContext.HostingEnvironment.ApplicationName);
+        _ = builder.ConfigureServices((hostBuilderContext, iServiceCollection) => ApplicationName = hostBuilderContext.HostingEnvironment.ApplicationName);
 
         InfrastructureLib.Dependencies.ConfigureDefaultDependencies(builder, args);
 

@@ -9,6 +9,7 @@ namespace Seedysoft.TelegramLib;
 
 public static class Main
 {
+    // TODO                         RENAME TO SendPendingMessagesAsync
     public static async Task SendMessagesAsync(IServiceProvider serviceProvider, ILogger logger, CancellationToken stoppingToken)
     {
         try
