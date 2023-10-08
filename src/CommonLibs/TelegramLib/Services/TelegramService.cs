@@ -1,5 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Seedysoft.UtilsLib.Extensions;
 using System.Collections.Immutable;
@@ -9,6 +12,40 @@ namespace Seedysoft.TelegramLib.Services;
 
 public partial class TelegramService
 {
+    private static bool isConfigured;
+
+    public static void Configure(IHostBuilder hostBuilder)
+    {
+        if (!isConfigured)
+        {
+            _ = hostBuilder
+                .ConfigureAppConfiguration((hostBuilderContext, configurationBuilder) => ConfigJsonFile(configurationBuilder, hostBuilderContext.HostingEnvironment))
+
+                .ConfigureServices((hostBuilderContext, services) => ConfigServices(services, hostBuilderContext.Configuration));
+
+            isConfigured = true;
+        }
+    }
+    public static void Configure(IConfigurationBuilder configurationBuilder, IServiceCollection services, IConfiguration configuration, IHostEnvironment hostEnvironment)
+    {
+        if (!isConfigured)
+        {
+            ConfigJsonFile(configurationBuilder, hostEnvironment);
+
+            ConfigServices(services, configuration);
+
+            isConfigured = true;
+        }
+    }
+    private static void ConfigJsonFile(IConfigurationBuilder configurationBuilder, IHostEnvironment hostEnvironment) =>
+        _ = configurationBuilder.AddJsonFile($"appsettings.TelegramSettings.{hostEnvironment.EnvironmentName}.json", false, true);
+    private static void ConfigServices(IServiceCollection services, IConfiguration configuration)
+    {
+        services.TryAddSingleton(configuration.GetSection(nameof(Settings.TelegramSettings)).Get<Settings.TelegramSettings>()!);
+
+        services.TryAddSingleton<TelegramService>();
+    }
+
     private readonly ILogger<TelegramService> Logger;
     private readonly IServiceProvider ServiceProvider;
     private readonly TelegramBotClient TelegramBotClient;

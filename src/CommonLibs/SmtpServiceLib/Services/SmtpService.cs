@@ -1,7 +1,46 @@
-﻿namespace Seedysoft.SmtpServiceLib.Services;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Hosting;
+
+namespace Seedysoft.SmtpServiceLib.Services;
 
 public class SmtpService
 {
+    private static bool isConfigured;
+
+    public static void Configure(IHostBuilder hostBuilder)
+    {
+        if (!isConfigured)
+        {
+            _ = hostBuilder
+                .ConfigureAppConfiguration((hostBuilderContext, configurationBuilder) => ConfigJsonFile(configurationBuilder, hostBuilderContext.HostingEnvironment))
+
+                .ConfigureServices((hostBuilderContext, services) => ConfigServices(services, hostBuilderContext.Configuration));
+
+            isConfigured = true;
+        }
+    }
+    public static void Configure(IConfigurationBuilder configurationBuilder, IServiceCollection services, IConfiguration configuration, IHostEnvironment hostEnvironment)
+    {
+        if (!isConfigured)
+        {
+            ConfigJsonFile(configurationBuilder, hostEnvironment);
+
+            ConfigServices(services, configuration);
+
+            isConfigured = true;
+        }
+    }
+    private static void ConfigJsonFile(IConfigurationBuilder configurationBuilder, IHostEnvironment hostEnvironment) =>
+        _ = configurationBuilder.AddJsonFile("appsettings.SmtpServiceSettings.json", false, true);
+    private static void ConfigServices(IServiceCollection services, IConfiguration configuration)
+    {
+        services.TryAddSingleton(configuration.GetSection(nameof(Settings.SmtpServiceSettings)).Get<Settings.SmtpServiceSettings>()!);
+
+        services.TryAddScoped<SmtpService>();
+    }
+
     private readonly Settings.SmtpServiceSettings SmtpServiceSettings;
 
     public SmtpService(Settings.SmtpServiceSettings smtpServiceSettings) =>

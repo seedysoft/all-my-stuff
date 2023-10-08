@@ -25,7 +25,7 @@ public static class Dependencies
             AddSerilogJsonFile(iConfigurationBuilder, hostBuilderContext.HostingEnvironment));
 
         _ = builder.ConfigureServices((hostBuilderContext, iServiceCollection) =>
-             AddSerilogLogging(hostBuilderContext.Configuration, iServiceCollection, hostBuilderContext.HostingEnvironment));
+            AddSerilogLogging(hostBuilderContext.Configuration, iServiceCollection, hostBuilderContext.HostingEnvironment));
     }
 
     public static void ConfigureDefaultDependencies(IConfigurationBuilder iConfigurationBuilder, IServiceCollection services, IHostEnvironment environment)
@@ -42,7 +42,7 @@ public static class Dependencies
             string ConnectionString = configuration.GetConnectionString($"{ConnectionStringName}") ?? throw new KeyNotFoundException($"Connection string '{ConnectionStringName}' not found.");
             string FullFilePath = Path.GetFullPath(ConnectionString["Data Source=".Length..]);
             if (!File.Exists(FullFilePath))
-                throw new FileNotFoundException("Database file '{FullFilePath}' not found.", FullFilePath);
+                throw new FileNotFoundException($"Database file '{FullFilePath}' not found.");
 
             dbContextOptionsBuilder.UseSqlite(ConnectionString);
 #if DEBUG
@@ -58,7 +58,8 @@ public static class Dependencies
         SQLitePCL.Batteries.Init();
     }
 
-    private static void AddSerilogJsonFile(IConfigurationBuilder configuration, IHostEnvironment environment) => _ = configuration.AddJsonFile($"appsettings.Serilog.{environment.EnvironmentName}.json", false, true);
+    private static void AddSerilogJsonFile(IConfigurationBuilder configuration, IHostEnvironment environment) => 
+        _ = configuration.AddJsonFile($"appsettings.Serilog.{environment.EnvironmentName}.json", false, true);
 
     private static void AddSerilogLogging(IConfiguration configuration, IServiceCollection services, IHostEnvironment hostEnvironment)
     {

@@ -35,7 +35,7 @@ public class Program
 
             .AddJsonFile($"appsettings.dbConnectionString.{CurrentEnvironmentName}.json", false, true)
 
-            .AddJsonFile("appsettings.Carburantes.Infrastructure.json", false, true)
+            .AddJsonFile($"appsettings.Carburantes.Infrastructure.json", false, true)
             .AddJsonFile($"appsettings.Carburantes.Infrastructure.{CurrentEnvironmentName}.json", false, true)
 
             .AddJsonFile($"appsettings.CarburantesConnectionStrings.{CurrentEnvironmentName}.json", false, true);
@@ -46,10 +46,10 @@ public class Program
         InfrastructureLib.Dependencies.AddDbContext<Carburantes.Infrastructure.Data.CarburantesDbContext>(builder.Configuration, builder.Services);
         InfrastructureLib.Dependencies.AddDbContext<Carburantes.Infrastructure.Data.CarburantesHistDbContext>(builder.Configuration, builder.Services);
 
-        builder.Services.AddHostedService<Carburantes.Services.ObtainDataCronBackgroundService>();
-        builder.Services.AddHostedService<ObtainPvpcLib.Services.ObtainPvpCronBackgroundService>();
-        builder.Services.AddHostedService<OutboxLib.Services.OutboxCronBackgroundService>();
-        builder.Services.AddHostedService<WebComparerLib.Services.WebComparerCronBackgroundService>();
+        Carburantes.Services.ObtainDataCronBackgroundService.Configure(builder.Configuration, builder.Services, builder.Configuration, builder.Environment);
+        ObtainPvpcLib.Services.ObtainPvpCronBackgroundService.Configure(builder.Configuration, builder.Services, builder.Configuration, builder.Environment);
+        OutboxLib.Services.OutboxCronBackgroundService.Configure(builder.Configuration, builder.Services, builder.Configuration, builder.Environment);
+        WebComparerLib.Services.WebComparerCronBackgroundService.Configure(builder.Configuration, builder.Services, builder.Configuration, builder.Environment);
 
         WebApplication app = builder.Build();
 

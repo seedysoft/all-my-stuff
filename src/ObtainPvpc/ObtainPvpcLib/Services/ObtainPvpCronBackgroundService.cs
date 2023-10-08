@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
@@ -6,7 +8,39 @@ namespace Seedysoft.ObtainPvpcLib.Services;
 
 public class ObtainPvpCronBackgroundService : CronBackgroundServiceLib.CronBackgroundService
 {
-    private readonly string ApplicationName ;
+    private static bool isConfigured;
+
+    public static void Configure(IHostBuilder hostBuilder)
+    {
+        if (!isConfigured)
+        {
+            _ = hostBuilder
+                .ConfigureAppConfiguration((hostBuilderContext, configurationBuilder) => ConfigJsonFile(configurationBuilder, hostBuilderContext.HostingEnvironment))
+
+                .ConfigureServices((hostBuilderContext, services) => ConfigServices(services, hostBuilderContext.Configuration));
+
+            isConfigured = true;
+        }
+    }
+    public static void Configure(IConfigurationBuilder configurationBuilder, IServiceCollection services, IConfiguration configuration, IHostEnvironment hostEnvironment)
+    {
+        if (!isConfigured)
+        {
+            ConfigJsonFile(configurationBuilder, hostEnvironment);
+
+            ConfigServices(services, configuration);
+
+            isConfigured = true;
+        }
+    }
+    private static void ConfigJsonFile(IConfigurationBuilder configurationBuilder, IHostEnvironment hostEnvironment) =>
+        _ = configurationBuilder.AddJsonFile($"appsettings.ObtainPvpcSettings.json", false, true);
+    private static void ConfigServices(IServiceCollection services, IConfiguration configuration)
+    {
+        services.TryAddSingleton(configuration.GetSection(nameof(Settings.ObtainPvpcSettings)).Get<Settings.ObtainPvpcSettings>()!);
+
+        _ = services.AddHostedService<ObtainPvpCronBackgroundService>();
+    }
 
     private readonly IServiceProvider ServiceProvider;
     private readonly ILogger<ObtainPvpCronBackgroundService> Logger;
@@ -18,13 +52,11 @@ public class ObtainPvpCronBackgroundService : CronBackgroundServiceLib.CronBackg
     {
         ServiceProvider = serviceProvider;
         Logger = logger;
-
-        ApplicationName = serviceProvider.GetRequiredService<IHostEnvironment>().ApplicationName;
     }
 
     protected override async Task DoWorkAsync(CancellationToken cancellationToken)
     {
-        Logger.LogInformation("Called {ApplicationName} version {Version}", ApplicationName, System.Reflection.Assembly.GetExecutingAssembly().GetName().Version);
+        Logger.LogInformation("Called {ApplicationName} version {Version}", ServiceProvider.GetRequiredService<IHostEnvironment>().ApplicationName, System.Reflection.Assembly.GetExecutingAssembly().GetName().Version);
 
         DateTime ForDate = DateTimeOffset.UtcNow.AddDays(1).Date;
         Logger.LogInformation("Requesting PVPCs for {ForDate}", ForDate.ToString(UtilsLib.Constants.Formats.YearMonthDayFormat));
@@ -32,13 +64,13 @@ public class ObtainPvpCronBackgroundService : CronBackgroundServiceLib.CronBackg
         DbContexts.DbCxt dbCtx = ServiceProvider.GetRequiredService<DbContexts.DbCxt>();
 
         int? HowManyPricesObtained = await Main.ObtainPricesAsync(
-        dbCtx,
-        (Settings.ObtainPvpcSettings)Config,
-        Logger,
-        ForDate,
-        cancellationToken);
+            dbCtx,
+            (Settings.ObtainPvpcSettings)Config,
+            Logger,
+            ForDate,
+            cancellationToken);
         Logger.LogInformation("Obtained {HowManyPricesObtained} PVPCs", HowManyPricesObtained);
 
-        Logger.LogInformation("End {ApplicationName}", ApplicationName);
+        Logger.LogInformation("End {ApplicationName}", ServiceProvider.GetRequiredService<IHostEnvironment>().ApplicationName);
     }
 }

@@ -7,18 +7,15 @@ namespace Seedysoft.WebComparerConsoleApp;
 
 public class Program
 {
-    private static string ApplicationName = string.Empty;
-
     public static async Task Main(string[] args)
     {
         IHostBuilder builder = new  HostBuilder();
-        _ = builder.ConfigureServices((hostBuilderContext, iServiceCollection) => ApplicationName = hostBuilderContext.HostingEnvironment.ApplicationName);
 
         InfrastructureLib.Dependencies.ConfigureDefaultDependencies(builder, args);
 
         builder
-            .ConfigureAppConfiguration((hostBuilderContext, iConfigurationBuilder) =>
-                _ = iConfigurationBuilder.AddJsonFile($"appsettings.dbConnectionString.{hostBuilderContext.HostingEnvironment.EnvironmentName}.json", false, true))
+            .ConfigureAppConfiguration((hostBuilderContext, configurationBuilder) =>
+                _ = configurationBuilder.AddJsonFile($"appsettings.dbConnectionString.{hostBuilderContext.HostingEnvironment.EnvironmentName}.json", false, true))
 
             .ConfigureServices((hostBuilderContext, iServiceCollection) =>
                 InfrastructureLib.Dependencies.AddDbContext<DbContexts.DbCxt>(hostBuilderContext.Configuration, iServiceCollection));
@@ -27,7 +24,7 @@ public class Program
 
         ILogger<Program> Logger = host.Services.GetRequiredService<ILogger<Program>>();
 
-        Logger.LogInformation("Called {ApplicationName} version {Version}", ApplicationName, System.Reflection.Assembly.GetExecutingAssembly().GetName().Version);
+        Logger.LogInformation("Called {ApplicationName} version {Version}", host.Services.GetRequiredService<IHostEnvironment>().ApplicationName, System.Reflection.Assembly.GetExecutingAssembly().GetName().Version);
 
         try
         {
@@ -46,7 +43,7 @@ public class Program
 
             await WebComparerLib.Main.FindDifferencesAsync(dbCtx, Logger);
 
-            Logger.LogInformation("End {ApplicationName}", ApplicationName);
+            Logger.LogInformation("End {ApplicationName}", host.Services.GetRequiredService<IHostEnvironment>().ApplicationName);
         }
         catch (TaskCanceledException) { /* ignored */ }
         catch (Exception e) { Logger.LogError(e, "Unexpected Error"); }

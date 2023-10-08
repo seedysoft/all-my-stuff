@@ -9,12 +9,9 @@ namespace Seedysoft.Carburantes.ConsoleApp;
 
 public class Program
 {
-    private static string ApplicationName = string.Empty;
-
     public static async Task Main(string[] args)
     {
         IHostBuilder builder = new  HostBuilder();
-        _ = builder.ConfigureServices((hostBuilderContext, iServiceCollection) => ApplicationName = hostBuilderContext.HostingEnvironment.ApplicationName);
 
         InfrastructureLib.Dependencies.ConfigureDefaultDependencies(builder, args);
 
@@ -42,11 +39,11 @@ public class Program
 
         ILogger<Program> Logger = host.Services.GetRequiredService<ILogger<Program>>();
 
-        Logger.LogInformation("Called {ApplicationName}", ApplicationName);
+        Logger.LogInformation("Called {ApplicationName}", host.Services.GetRequiredService<IHostEnvironment>().ApplicationName);
 
         try
         {
-            Logger.Information($"{ApplicationName} starts");
+            Logger.Information($"{host.Services.GetRequiredService<IHostEnvironment>().ApplicationName} starts");
 
             using CancellationTokenSource CancelTokenSource = new();
 
@@ -68,7 +65,7 @@ public class Program
         catch (Exception e) when (Logger.Handle(e, "Unhandled exception.")) { }
         finally { await Task.CompletedTask; }
 
-        Logger.LogInformation("End {ApplicationName}", ApplicationName);
+        Logger.LogInformation("End {ApplicationName}", host.Services.GetRequiredService<IHostEnvironment>().ApplicationName);
 
         Environment.Exit(0);
     }

@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
@@ -8,12 +7,9 @@ namespace Seedysoft.ObtainPvpcConsoleApp;
 
 public class Program
 {
-    private static string ApplicationName = string.Empty;
-
     public static async Task Main(string[] args)
     {
         IHostBuilder builder = new  HostBuilder();
-        _ = builder.ConfigureServices((hostBuilderContext, iServiceCollection) => ApplicationName = hostBuilderContext.HostingEnvironment.ApplicationName);
 
         InfrastructureLib.Dependencies.ConfigureDefaultDependencies(builder, args);
 
@@ -23,23 +19,19 @@ public class Program
                 string CurrentEnvironmentName = hostBuilderContext.HostingEnvironment.EnvironmentName;
 
                 _ = iConfigurationBuilder
-                    .AddJsonFile($"appsettings.ObtainPvpcSettings.json", false, true)
-
                     .AddJsonFile($"appsettings.dbConnectionString.{CurrentEnvironmentName}.json", false, true);
             })
 
-            .ConfigureServices((hostBuilderContext, iServiceCollection) =>
-            {
-                InfrastructureLib.Dependencies.AddDbContext<DbContexts.DbCxt>(hostBuilderContext.Configuration, iServiceCollection);
+            .ConfigureServices((hostBuilderContext, iServiceCollection) => 
+                InfrastructureLib.Dependencies.AddDbContext<DbContexts.DbCxt>(hostBuilderContext.Configuration, iServiceCollection));
 
-                iServiceCollection.TryAddSingleton(hostBuilderContext.Configuration.GetSection(nameof(ObtainPvpcLib.Settings.ObtainPvpcSettings)).Get<ObtainPvpcLib.Settings.ObtainPvpcSettings>()!);
-            });
+        ObtainPvpcLib.Services.ObtainPvpCronBackgroundService.Configure(builder);
 
         IHost host =builder.Build();
 
         ILogger<Program> Logger = host.Services.GetRequiredService<ILogger<Program>>();
 
-        Logger.LogInformation("Called {ApplicationName} version {Version}", ApplicationName, System.Reflection.Assembly.GetExecutingAssembly().GetName().Version);
+        Logger.LogInformation("Called {ApplicationName} version {Version}", host.Services.GetRequiredService<IHostEnvironment>().ApplicationName, System.Reflection.Assembly.GetExecutingAssembly().GetName().Version);
 
         try
         {
@@ -78,7 +70,7 @@ public class Program
                 ForDate,
                 CancellationToken.None);
 
-            Logger.LogInformation("End {ApplicationName}", ApplicationName);
+            Logger.LogInformation("End {ApplicationName}", host.Services.GetRequiredService<IHostEnvironment>().ApplicationName);
         }
         catch (TaskCanceledException) { /* ignored */ }
         catch (Exception e) { Logger.LogError(e, "Unexpected Error"); }
