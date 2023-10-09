@@ -58,7 +58,7 @@ public static class Dependencies
         SQLitePCL.Batteries.Init();
     }
 
-    private static void AddSerilogJsonFile(IConfigurationBuilder configuration, IHostEnvironment environment) => 
+    private static void AddSerilogJsonFile(IConfigurationBuilder configuration, IHostEnvironment environment) =>
         _ = configuration.AddJsonFile($"appsettings.Serilog.{environment.EnvironmentName}.json", false, true);
 
     private static void AddSerilogLogging(IConfiguration configuration, IServiceCollection services, IHostEnvironment hostEnvironment)

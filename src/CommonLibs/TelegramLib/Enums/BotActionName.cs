@@ -18,7 +18,7 @@ public enum BotActionName
     [Description("[email] Se establece el valor proporcionado como email del usuario. Si no se proporciona, se elimina.")]
     email_edit = 120,
 
-    [Description($"[{UtilsLib. Constants.Formats.YearMonthDayFormat}] Obtiene los PVPC.")]
+    [Description($"[{UtilsLib.Constants.Formats.YearMonthDayFormat}] Obtiene los PVPC.")]
     pvpc_fill = 200,
 
     [Description("Iniciar una conversación de búsqueda de productos.")]

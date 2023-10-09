@@ -11,7 +11,7 @@ public class Program
 {
     public static async Task Main(string[] args)
     {
-        IHostBuilder builder = new  HostBuilder();
+        IHostBuilder builder = new HostBuilder();
 
         InfrastructureLib.Dependencies.ConfigureDefaultDependencies(builder, args);
 
@@ -35,7 +35,7 @@ public class Program
                 _ = serviceCollection.AddHttpClient(nameof(Core.Settings.Minetur));
             });
 
-        IHost host =builder.Build();
+        IHost host = builder.Build();
 
         ILogger<Program> Logger = host.Services.GetRequiredService<ILogger<Program>>();
 

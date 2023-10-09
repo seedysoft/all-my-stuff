@@ -182,7 +182,7 @@ public class ObtainDataCronBackgroundService : CronBackgroundServiceLib.CronBack
                 return;
 
             Infrastructure.Data.CarburantesDbContext DbCtx = serviceProvider.GetRequiredService<Infrastructure.Data.CarburantesDbContext>();
-            Infrastructure.Data.CarburantesHistDbContext HistDbCtx = serviceProvider.GetRequiredService < Infrastructure.Data.CarburantesHistDbContext >();
+            Infrastructure.Data.CarburantesHistDbContext HistDbCtx = serviceProvider.GetRequiredService<Infrastructure.Data.CarburantesHistDbContext>();
 
             List<Core.Entities.ComunidadAutonoma> NewObjects = new(Resultado.Length);
             List<Core.Entities.ComunidadAutonomaHist> HistObjects = new(Resultado.Length);
@@ -225,7 +225,7 @@ public class ObtainDataCronBackgroundService : CronBackgroundServiceLib.CronBack
                 return;
 
             Infrastructure.Data.CarburantesDbContext DbCtx = serviceProvider.GetRequiredService<Infrastructure.Data.CarburantesDbContext>();
-            Infrastructure.Data.CarburantesHistDbContext HistDbCtx = serviceProvider.GetRequiredService < Infrastructure.Data.CarburantesHistDbContext >();
+            Infrastructure.Data.CarburantesHistDbContext HistDbCtx = serviceProvider.GetRequiredService<Infrastructure.Data.CarburantesHistDbContext>();
 
             List<Core.Entities.Provincia> NewObjects = new(Resultado.Length);
             List<Core.Entities.ProvinciaHist> HistObjects = new(Resultado.Length);
@@ -273,7 +273,7 @@ public class ObtainDataCronBackgroundService : CronBackgroundServiceLib.CronBack
                 return;
 
             Infrastructure.Data.CarburantesDbContext DbCtx = serviceProvider.GetRequiredService<Infrastructure.Data.CarburantesDbContext>();
-            Infrastructure.Data.CarburantesHistDbContext HistDbCtx = serviceProvider.GetRequiredService < Infrastructure.Data.CarburantesHistDbContext >();
+            Infrastructure.Data.CarburantesHistDbContext HistDbCtx = serviceProvider.GetRequiredService<Infrastructure.Data.CarburantesHistDbContext>();
 
             List<Core.Entities.Municipio> NewObjects = new(Resultado.Length);
             List<Core.Entities.MunicipioHist> HistObjects = new(Resultado.Length);
@@ -321,7 +321,7 @@ public class ObtainDataCronBackgroundService : CronBackgroundServiceLib.CronBack
                 return;
 
             Infrastructure.Data.CarburantesDbContext DbCtx = serviceProvider.GetRequiredService<Infrastructure.Data.CarburantesDbContext>();
-            Infrastructure.Data.CarburantesHistDbContext HistDbCtx = serviceProvider.GetRequiredService < Infrastructure.Data.CarburantesHistDbContext >();
+            Infrastructure.Data.CarburantesHistDbContext HistDbCtx = serviceProvider.GetRequiredService<Infrastructure.Data.CarburantesHistDbContext>();
 
             List<Core.Entities.EstacionServicio> NewObjects = new(Resultado.Estaciones.Length);
             List<Core.Entities.EstacionServicioHist> HistObjects = new(Resultado.Estaciones.Length);
@@ -377,7 +377,7 @@ public class ObtainDataCronBackgroundService : CronBackgroundServiceLib.CronBack
         try
         {
             Infrastructure.Data.CarburantesDbContext DbCtx = serviceProvider.GetRequiredService<Infrastructure.Data.CarburantesDbContext>();
-            Infrastructure.Data.CarburantesHistDbContext HistDbCtx = serviceProvider.GetRequiredService < Infrastructure.Data.CarburantesHistDbContext >();
+            Infrastructure.Data.CarburantesHistDbContext HistDbCtx = serviceProvider.GetRequiredService<Infrastructure.Data.CarburantesHistDbContext>();
 
             int[] ProductoPetroliferoIds = await DbCtx.ProductosPetroliferos
                 .Select(x => x.IdProducto)

@@ -177,7 +177,7 @@ public partial class TelegramService
         return sb.ToString();
     }
 
-    internal async Task<Telegram.Bot.Types.Message> MessageSendQueryAsync(
+    private async Task<Telegram.Bot.Types.Message> MessageSendQueryAsync(
         long to
         , string text
         , Telegram.Bot.Types.ReplyMarkups.IReplyMarkup replyMarkup
@@ -479,7 +479,7 @@ public partial class TelegramService
         string[]? data = message.Text!.Split(' ');
         if (data.Length < 2 || string.IsNullOrWhiteSpace(data[1]))
         {
-            CallbackData RemoveEmailCallbackData = new (Enums.BotActionName.email_edit);
+            CallbackData RemoveEmailCallbackData = new(Enums.BotActionName.email_edit);
             Telegram.Bot.Types.ReplyMarkups.InlineKeyboardMarkup ReplyKeyboard = new(
                 Telegram.Bot.Types.ReplyMarkups.InlineKeyboardButton.WithCallbackData("Sí", RemoveEmailCallbackData.ToString()));
             ResponseText = "¿Realmente quieres quitar tu correo electrónico asociado?";

@@ -9,7 +9,7 @@ public class Program
 {
     public static async Task Main(string[] args)
     {
-        IHostBuilder builder = new  HostBuilder();
+        IHostBuilder builder = new HostBuilder();
 
         InfrastructureLib.Dependencies.ConfigureDefaultDependencies(builder, args);
 

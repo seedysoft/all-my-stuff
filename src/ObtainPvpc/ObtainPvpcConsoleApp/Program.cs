@@ -9,7 +9,7 @@ public class Program
 {
     public static async Task Main(string[] args)
     {
-        IHostBuilder builder = new  HostBuilder();
+        IHostBuilder builder = new HostBuilder();
 
         InfrastructureLib.Dependencies.ConfigureDefaultDependencies(builder, args);
 
@@ -22,12 +22,12 @@ public class Program
                     .AddJsonFile($"appsettings.dbConnectionString.{CurrentEnvironmentName}.json", false, true);
             })
 
-            .ConfigureServices((hostBuilderContext, iServiceCollection) => 
+            .ConfigureServices((hostBuilderContext, iServiceCollection) =>
                 InfrastructureLib.Dependencies.AddDbContext<DbContexts.DbCxt>(hostBuilderContext.Configuration, iServiceCollection));
 
         ObtainPvpcLib.Services.ObtainPvpCronBackgroundService.Configure(builder);
 
-        IHost host =builder.Build();
+        IHost host = builder.Build();
 
         ILogger<Program> Logger = host.Services.GetRequiredService<ILogger<Program>>();
 
