@@ -20,7 +20,9 @@ public class Program
             .ConfigureServices((hostBuilderContext, iServiceCollection) =>
                 InfrastructureLib.Dependencies.AddDbContext<DbContexts.DbCxt>(hostBuilderContext.Configuration, iServiceCollection));
 
-        IHost host =builder.Build();
+        WebComparerLib.Services.WebComparerCronBackgroundService.Configure(builder);
+
+        IHost host = builder.Build();
 
         ILogger<Program> Logger = host.Services.GetRequiredService<ILogger<Program>>();
 

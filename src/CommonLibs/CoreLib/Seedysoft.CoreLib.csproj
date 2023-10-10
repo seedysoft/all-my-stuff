@@ -18,7 +18,9 @@
     <None Remove="appsettings.dbConnectionString.json" />
     <None Remove="appsettings.dbConnectionString.Production.json" />
     <None Remove="appsettings.Serilog.Development.json" />
-    <None Remove="appsettings.Serilog.json" />
+    <Content Include="appsettings.Serilog.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <None Remove="appsettings.Serilog.Production.json" />
   </ItemGroup>
 
@@ -37,9 +39,6 @@
     <Content Include="appsettings.Serilog.Development.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <DependentUpon>appsettings.Serilog.json</DependentUpon>
-    </Content>
-    <Content Include="appsettings.Serilog.json">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Content>
     <None Include="appsettings.Serilog.Production.json">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
@@ -62,9 +61,6 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <DependentUpon>appsettings.Serilog.json</DependentUpon>
     </None>
-    <Content Include="appsettings.Serilog.json">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Content>
     <Content Include="appsettings.Serilog.Production.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <DependentUpon>appsettings.Serilog.json</DependentUpon>

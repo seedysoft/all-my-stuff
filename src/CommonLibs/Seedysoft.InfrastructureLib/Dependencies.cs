@@ -58,15 +58,21 @@ public static class Dependencies
         SQLitePCL.Batteries.Init();
     }
 
-    private static void AddSerilogJsonFile(IConfigurationBuilder configuration, IHostEnvironment environment) =>
+    private static void AddSerilogJsonFile(IConfigurationBuilder configuration, IHostEnvironment environment)
+    {
+        _ = configuration.AddJsonFile($"appsettings.Serilog.json", false, true);
         _ = configuration.AddJsonFile($"appsettings.Serilog.{environment.EnvironmentName}.json", false, true);
+    }
 
     private static void AddSerilogLogging(IConfiguration configuration, IServiceCollection services, IHostEnvironment hostEnvironment)
     {
         _ = services.AddLogging(iLoggingBuilder =>
         {
             IConfigurationSection configurationSection = configuration.GetRequiredSection("Serilog:WriteTo:1:Args:path");
+            Console.WriteLine("Obtained '{0}' from Serilog:WriteTo:1:Args:path", configurationSection.Value);
+            
             configurationSection.Value = Path.GetFullPath(configurationSection.Value!.Replace("{ApplicationName}", hostEnvironment.ApplicationName));
+            Console.WriteLine("Final value of Serilog:WriteTo:1:Args:path: '{0}'", configurationSection.Value);
 
             _ = iLoggingBuilder.AddSerilog(new LoggerConfiguration()
                 .ReadFrom.Configuration(configuration)
