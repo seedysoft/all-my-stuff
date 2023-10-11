@@ -26,7 +26,9 @@ public class Program
 
         ILogger<Program> Logger = host.Services.GetRequiredService<ILogger<Program>>();
 
-        Logger.LogInformation("Called {ApplicationName} version {Version}", host.Services.GetRequiredService<IHostEnvironment>().ApplicationName, System.Reflection.Assembly.GetExecutingAssembly().GetName().Version);
+        string AppName = host.Services.GetRequiredService<IHostEnvironment>().ApplicationName;
+
+        Logger.LogInformation("Called {ApplicationName} version {Version}", AppName, System.Reflection.Assembly.GetExecutingAssembly().GetName().Version);
 
         try
         {
@@ -41,11 +43,15 @@ public class Program
             await Task.Delay(UtilsLib.Constants.Time.TenSecondsTimeSpan);
 #endif
 
-            using DbContexts.DbCxt dbCtx = host.Services.GetRequiredService<DbContexts.DbCxt>();
+            //using DbContexts.DbCxt dbCtx = host.Services.GetRequiredService<DbContexts.DbCxt>();
 
-            await WebComparerLib.Main.FindDifferencesAsync(dbCtx, Logger);
+            //await WebComparerLib.Main.FindDifferencesAsync(dbCtx, Logger);
 
-            Logger.LogInformation("End {ApplicationName}", host.Services.GetRequiredService<IHostEnvironment>().ApplicationName);
+            using CancellationTokenSource CancelTokenSource = new();
+
+            await host.RunAsync(CancelTokenSource.Token);
+
+            Logger.LogInformation("End {ApplicationName}", AppName);
         }
         catch (TaskCanceledException) { /* ignored */ }
         catch (Exception e) { Logger.LogError(e, "Unexpected Error"); }

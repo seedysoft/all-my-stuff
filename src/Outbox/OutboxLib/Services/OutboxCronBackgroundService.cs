@@ -18,6 +18,7 @@ public class OutboxCronBackgroundService : CronBackgroundServiceLib.CronBackgrou
 
                 .ConfigureServices((hostBuilderContext, services) => ConfigServices(services, hostBuilderContext.Configuration));
 
+            SmtpServiceLib.Services.SmtpService.Configure(hostBuilder);
             TelegramLib.Services.TelegramService.Configure(hostBuilder);
 
             isConfigured = true;
@@ -31,6 +32,7 @@ public class OutboxCronBackgroundService : CronBackgroundServiceLib.CronBackgrou
 
             ConfigServices(services, configuration);
 
+            SmtpServiceLib.Services.SmtpService.Configure(configurationBuilder, services, configuration, hostEnvironment);
             TelegramLib.Services.TelegramService.Configure(configurationBuilder, services, configuration, hostEnvironment);
 
             isConfigured = true;

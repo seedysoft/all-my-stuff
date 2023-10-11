@@ -39,12 +39,12 @@ public class Program
 
         ILogger<Program> Logger = host.Services.GetRequiredService<ILogger<Program>>();
 
-        Logger.LogInformation("Called {ApplicationName}", host.Services.GetRequiredService<IHostEnvironment>().ApplicationName);
+        string AppName = host.Services.GetRequiredService<IHostEnvironment>().ApplicationName;
+
+        Logger.LogInformation("Called {ApplicationName} version {Version}", AppName, System.Reflection.Assembly.GetExecutingAssembly().GetName().Version);
 
         try
         {
-            Logger.Information($"{host.Services.GetRequiredService<IHostEnvironment>().ApplicationName} starts");
-
             using CancellationTokenSource CancelTokenSource = new();
 
             // Migrate and seed the database during startup. Must be synchronous.
@@ -65,7 +65,7 @@ public class Program
         catch (Exception e) when (Logger.Handle(e, "Unhandled exception.")) { }
         finally { await Task.CompletedTask; }
 
-        Logger.LogInformation("End {ApplicationName}", host.Services.GetRequiredService<IHostEnvironment>().ApplicationName);
+        Logger.LogInformation("End {ApplicationName}", AppName);
 
         Environment.Exit(0);
     }

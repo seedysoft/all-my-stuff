@@ -33,7 +33,9 @@ public class Program
 
         ILogger<Program> Logger = host.Services.GetRequiredService<ILogger<Program>>();
 
-        Logger.LogInformation("Called {ApplicationName} version {Version}", host.Services.GetRequiredService<IHostEnvironment>().ApplicationName, System.Reflection.Assembly.GetExecutingAssembly().GetName().Version);
+        string AppName = host.Services.GetRequiredService<IHostEnvironment>().ApplicationName;
+
+        Logger.LogInformation("Called {ApplicationName} version {Version}", AppName, System.Reflection.Assembly.GetExecutingAssembly().GetName().Version);
 
         try
         {
@@ -50,7 +52,7 @@ public class Program
 
             await TelegramLib.Main.SendMessagesAsync(host.Services, Logger, CancellationToken.None);
 
-            Logger.LogInformation("End {ApplicationName}", host.Services.GetRequiredService<IHostEnvironment>().ApplicationName);
+            Logger.LogInformation("End {ApplicationName}", AppName);
         }
         catch (TaskCanceledException) { /* ignored */  }
         catch (Exception e) { Logger.LogError(e, "Unexpected Error"); }
