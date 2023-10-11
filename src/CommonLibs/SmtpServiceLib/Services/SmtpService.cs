@@ -99,6 +99,7 @@ public class SmtpService
             Port = smtpServiceSettings.Port,
             Credentials = new System.Net.NetworkCredential(smtpServiceSettings.Username, smtpServiceSettings.Password),
             EnableSsl = true,
+            UseDefaultCredentials = false,
         };
 
         await MailSender.SendMailAsync(message, cancellationToken);
