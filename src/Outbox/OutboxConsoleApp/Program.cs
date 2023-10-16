@@ -78,6 +78,12 @@ public class Program
         catch (Exception e) { Logger.LogError(e, "Unexpected Error"); }
         finally { await Task.CompletedTask; }
 
+        if (System.Diagnostics.Debugger.IsAttached)
+        {
+            Console.WriteLine("Press Intro to exit");
+            _ = Console.ReadLine();
+        }
+
         Environment.Exit(0);
     }
 }

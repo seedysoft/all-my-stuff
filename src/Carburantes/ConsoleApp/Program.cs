@@ -106,6 +106,12 @@ public class Program
 
         Logger.LogInformation("End {ApplicationName}", AppName);
 
+        if (System.Diagnostics.Debugger.IsAttached)
+        {
+            Console.WriteLine("Press Intro to exit");
+            _ = Console.ReadLine();
+        }
+
         Environment.Exit(0);
     }
 }
