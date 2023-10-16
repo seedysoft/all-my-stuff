@@ -1,7 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
+#if DEBUG
 using Microsoft.Extensions.Configuration;
+#endif
 
-namespace DbContexts;
+namespace Seedysoft.InfrastructureLib.DbContexts;
 
 // TODO                     Use same fieldId across database tables
 public sealed partial class DbCxt : DbContext
@@ -15,23 +17,18 @@ public sealed partial class DbCxt : DbContext
         _ = modelBuilder.ApplyConfigurationsFromAssembly(System.Reflection.Assembly.GetExecutingAssembly());
     }
 
-#if DEBUG
-    public override void Dispose() => base.Dispose();
-    public override ValueTask DisposeAsync() => base.DisposeAsync();
-#endif
+    public DbSet<CoreLib.Entities.Outbox> Outbox { get; set; } = default!;
+    public DbSet<CoreLib.Entities.OutboxView> OutboxView { get; set; } = default!;
 
-    public DbSet<Seedysoft.CoreLib.Entities.Outbox> Outbox { get; set; } = default!;
-    public DbSet<Seedysoft.CoreLib.Entities.OutboxView> OutboxView { get; set; } = default!;
+    public DbSet<CoreLib.Entities.Pvpc> Pvpcs { get; set; } = default!;
+    public DbSet<CoreLib.Entities.PvpcView> PvpcsView { get; set; } = default!;
 
-    public DbSet<Seedysoft.CoreLib.Entities.Pvpc> Pvpcs { get; set; } = default!;
-    public DbSet<Seedysoft.CoreLib.Entities.PvpcView> PvpcsView { get; set; } = default!;
+    public DbSet<CoreLib.Entities.Subscriber> Subscribers { get; set; } = default!;
+    public DbSet<CoreLib.Entities.Subscription> Subscriptions { get; set; } = default!;
+    public DbSet<CoreLib.Entities.SubcriptionDataView> SubcriptionsDataView { get; set; } = default!;
 
-    public DbSet<Seedysoft.CoreLib.Entities.Subscriber> Subscribers { get; set; } = default!;
-    public DbSet<Seedysoft.CoreLib.Entities.Subscription> Subscriptions { get; set; } = default!;
-    public DbSet<Seedysoft.CoreLib.Entities.SubcriptionDataView> SubcriptionsDataView { get; set; } = default!;
-
-    public DbSet<Entities.WebData> WebDatas { get; set; } = default!;
-    public DbSet<Entities.WebDataView> WebDatasView { get; set; } = default!;
+    public DbSet<CoreLib.Entities.WebData> WebDatas { get; set; } = default!;
+    public DbSet<CoreLib.Entities.WebDataView> WebDatasView { get; set; } = default!;
 }
 
 #if DEBUG
@@ -50,9 +47,9 @@ public class DbCxtFactory : Microsoft.EntityFrameworkCore.Design.IDesignTimeDbCo
 
         const string ConnectionStringName = nameof(DbCxt);
         string ConnectionString = Configuration.GetConnectionString($"{ConnectionStringName}") ?? throw new KeyNotFoundException($"Connection string '{ConnectionStringName}' not found.");
-        string FullFilePath = Path.GetFullPath(ConnectionString["Data Source=".Length..]);
+        string FullFilePath = Path.GetFullPath(ConnectionString[Seedysoft.CoreLib.Constants.DatabaseStrings.DataSource.Length..]);
         if (!File.Exists(FullFilePath))
-            throw new FileNotFoundException("Database file not found: '{FullPath}'", FullFilePath);
+            throw new FileNotFoundException("Database file not found: '{FullFilePath}'", FullFilePath);
 
         _ = builder.UseSqlite(ConnectionString);
 

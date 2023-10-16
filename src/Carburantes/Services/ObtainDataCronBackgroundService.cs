@@ -2,7 +2,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Seedysoft.UtilsLib.Extensions;
 using System.Net.Http.Json;
@@ -11,43 +10,6 @@ namespace Seedysoft.Carburantes.Services;
 
 public class ObtainDataCronBackgroundService : CronBackgroundServiceLib.CronBackgroundService
 {
-    private static bool isConfigured;
-
-    public static void Configure(IHostBuilder hostBuilder)
-    {
-        if (!isConfigured)
-        {
-            _ = hostBuilder
-                .ConfigureAppConfiguration((hostBuilderContext, configurationBuilder) => ConfigJsonFile(configurationBuilder, hostBuilderContext.HostingEnvironment))
-
-                .ConfigureServices((hostBuilderContext, services) => ConfigServices(services, hostBuilderContext.Configuration));
-
-            TelegramLib.Services.TelegramService.Configure(hostBuilder);
-
-            isConfigured = true;
-        }
-    }
-    public static void Configure(IConfigurationBuilder configurationBuilder, IServiceCollection services, IConfiguration configuration, IHostEnvironment hostEnvironment)
-    {
-        if (!isConfigured)
-        {
-            ConfigJsonFile(configurationBuilder, hostEnvironment);
-
-            ConfigServices(services, configuration);
-
-            TelegramLib.Services.TelegramService.Configure(configurationBuilder, services, configuration, hostEnvironment);
-
-            isConfigured = true;
-        }
-    }
-    private static void ConfigJsonFile(IConfigurationBuilder configurationBuilder, IHostEnvironment hostEnvironment) { }
-    private static void ConfigServices(IServiceCollection services, IConfiguration configuration)
-    {
-        _ = services.AddHttpClient(nameof(Core.Settings.Minetur));
-
-        _ = services.AddHostedService<ObtainDataCronBackgroundService>();
-    }
-
     private static readonly System.Text.Json.JsonSerializerOptions JsonOptions = new() { };
 
     private readonly IServiceProvider ServiceProvider;
@@ -67,9 +29,7 @@ public class ObtainDataCronBackgroundService : CronBackgroundServiceLib.CronBack
         Client.BaseAddress = new Uri(Settings.Minetur.Uris.Base);
     }
 
-    protected override async Task DoWorkAsync(CancellationToken cancellationToken) => await MainAsync(cancellationToken);
-
-    public async Task MainAsync(CancellationToken cancellationToken)
+    public override async Task DoWorkAsync(CancellationToken cancellationToken)
     {
         try
         {

@@ -2,7 +2,7 @@
 
 namespace Seedysoft.InfrastructureLib.EntityTypeConfigurations;
 
-internal abstract class WebDataEntityTypeConfigurationT<T> : IEntityTypeConfiguration<T> where T : Entities.WebDataBase
+internal abstract class WebDataEntityTypeConfigurationT<T> : IEntityTypeConfiguration<T> where T : CoreLib.Entities.WebDataBase
 {
     public void Configure(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder<T> builder)
     {
@@ -41,9 +41,9 @@ internal abstract class WebDataEntityTypeConfigurationT<T> : IEntityTypeConfigur
     }
 }
 
-internal class WebDataEntityTypeConfiguration : WebDataEntityTypeConfigurationT<Entities.WebData>, IEntityTypeConfiguration<Entities.WebData>
+internal class WebDataEntityTypeConfiguration : WebDataEntityTypeConfigurationT<CoreLib.Entities.WebData>, IEntityTypeConfiguration<CoreLib.Entities.WebData>
 {
-    public new void Configure(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder<Entities.WebData> builder)
+    public new void Configure(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder<CoreLib.Entities.WebData> builder)
     {
         base.Configure(builder);
 
@@ -51,14 +51,14 @@ internal class WebDataEntityTypeConfiguration : WebDataEntityTypeConfigurationT<
             .Ignore(x => x.DataToSend);
 
         _ = builder
-            .ToTable(nameof(Entities.WebData))
+            .ToTable(nameof(CoreLib.Entities.WebData))
             .HasKey(x => x.SubscriptionId);
     }
 }
 
-internal class WebDataViewEntityTypeConfiguration : WebDataEntityTypeConfigurationT<Entities.WebDataView>, IEntityTypeConfiguration<Entities.WebDataView>
+internal class WebDataViewEntityTypeConfiguration : WebDataEntityTypeConfigurationT<CoreLib.Entities.WebDataView>, IEntityTypeConfiguration<CoreLib.Entities.WebDataView>
 {
-    public new void Configure(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder<Entities.WebDataView> builder)
+    public new void Configure(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder<CoreLib.Entities.WebDataView> builder)
     {
         base.Configure(builder);
 
@@ -69,7 +69,7 @@ internal class WebDataViewEntityTypeConfiguration : WebDataEntityTypeConfigurati
             .Property(x => x.UpdatedAtDateTimeUnix);
 
         _ = builder
-            .ToView(nameof(Entities.WebDataView))
+            .ToView(nameof(CoreLib.Entities.WebDataView))
             .HasNoKey();
     }
 }

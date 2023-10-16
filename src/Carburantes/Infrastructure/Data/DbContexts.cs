@@ -1,5 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
+#if DEBUG
 using Microsoft.Extensions.Configuration;
+#endif
 
 namespace Seedysoft.Carburantes.Infrastructure.Data;
 
@@ -59,9 +61,9 @@ public class CarburantesDbContextFactory : Microsoft.EntityFrameworkCore.Design.
 
         const string ConnectionStringName = nameof(CarburantesDbContext);
         string ConnectionString = Configuration.GetConnectionString($"{ConnectionStringName}") ?? throw new KeyNotFoundException($"Connection string '{ConnectionStringName}' not found.");
-        string FullFilePath = Path.GetFullPath(ConnectionString["Data Source=".Length..]);
+        string FullFilePath = Path.GetFullPath(ConnectionString[CoreLib.Constants.DatabaseStrings.DataSource.Length..]);
         if (!File.Exists(FullFilePath))
-            throw new FileNotFoundException("Database file not found: '{FullPath}'", FullFilePath);
+            throw new FileNotFoundException("Database file not found: '{FullFilePath}'", FullFilePath);
 
         _ = builder.UseSqlite(ConnectionString);
 
@@ -84,9 +86,9 @@ public class CarburantesHistDbContextFactory : Microsoft.EntityFrameworkCore.Des
 
         const string ConnectionStringName = nameof(CarburantesHistDbContext);
         string ConnectionString = Configuration.GetConnectionString($"{ConnectionStringName}") ?? throw new KeyNotFoundException($"Connection string '{ConnectionStringName}' not found.");
-        string FullFilePath = Path.GetFullPath(ConnectionString["Data Source=".Length..]);
+        string FullFilePath = Path.GetFullPath(ConnectionString[CoreLib.Constants.DatabaseStrings.DataSource.Length..]);
         if (!File.Exists(FullFilePath))
-            throw new FileNotFoundException("Database file not found: '{FullPath}'", FullFilePath);
+            throw new FileNotFoundException("Database file not found: '{FullFilePath}'", FullFilePath);
 
         _ = builder.UseSqlite(ConnectionString);
 

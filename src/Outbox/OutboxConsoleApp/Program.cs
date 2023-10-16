@@ -1,8 +1,9 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Seedysoft.OutboxLib.Services;
 
 namespace Seedysoft.OutboxConsoleApp;
 
@@ -14,20 +15,30 @@ public class Program
 
         InfrastructureLib.Dependencies.ConfigureDefaultDependencies(builder, args);
 
-        builder
+        _ = builder
+
             .ConfigureAppConfiguration((hostBuilderContext, iConfigurationBuilder) =>
             {
                 string CurrentEnvironmentName = hostBuilderContext.HostingEnvironment.EnvironmentName;
 
                 _ = iConfigurationBuilder
-                    .AddJsonFile($"appsettings.dbConnectionString.{CurrentEnvironmentName}.json", false, true);
+                    .AddJsonFile($"appsettings.dbConnectionString.{CurrentEnvironmentName}.json", false, true)
+                    .AddJsonFile($"appsettings.SmtpServiceSettings.json", false, true)
+                    .AddJsonFile($"appsettings.TelegramSettings.{CurrentEnvironmentName}.json", false, true);
             })
 
-            // TODO:                Each dll project configures owned dependencies (ApplyConfigurationsFromAssembly)
             .ConfigureServices((hostBuilderContext, iServiceCollection) =>
-                InfrastructureLib.Dependencies.AddDbContext<DbContexts.DbCxt>(hostBuilderContext.Configuration, iServiceCollection));
+            {
+                InfrastructureLib.Dependencies.AddDbCxtContext(hostBuilderContext.Configuration, iServiceCollection);
 
-        OutboxCronBackgroundService.Configure(builder);
+                iServiceCollection.TryAddSingleton(hostBuilderContext.Configuration.GetSection(nameof(SmtpServiceLib.Settings.SmtpServiceSettings)).Get<SmtpServiceLib.Settings.SmtpServiceSettings>()!);
+                iServiceCollection.TryAddScoped<SmtpServiceLib.Services.SmtpService>();
+
+                iServiceCollection.TryAddSingleton(hostBuilderContext.Configuration.GetSection(nameof(TelegramLib.Settings.TelegramSettings)).Get<TelegramLib.Settings.TelegramSettings>()!);
+                iServiceCollection.TryAddSingleton<TelegramLib.Services.TelegramService>();
+
+                iServiceCollection.TryAddSingleton<OutboxLib.Services.OutboxCronBackgroundService>();
+            });
 
         IHost host = builder.Build();
 
@@ -46,11 +57,20 @@ public class Program
             //foreach (KeyValuePair<string, string?> item in Config)
             //    Logger.LogDebug($"{item.Key}: {item.Value ?? "<<NULL>>"}");
 
-#if DEBUG
-            await Task.Delay(UtilsLib.Constants.Time.TenSecondsTimeSpan);
-#endif
+            if (System.Diagnostics.Debugger.IsAttached)
+                await Task.Delay(UtilsLib.Constants.Time.TenSecondsTimeSpan);
 
-            await TelegramLib.Main.SendMessagesAsync(host.Services, Logger, CancellationToken.None);
+            // Migrate and seed the database during startup. Must be synchronous.
+            using IServiceScope Scope = host.Services.CreateScope();
+
+            Scope.ServiceProvider.GetRequiredService<InfrastructureLib.DbContexts.DbCxt>().Database.Migrate();
+
+            using CancellationTokenSource CancelTokenSource = new();
+
+            using (OutboxLib.Services.OutboxCronBackgroundService outboxCronBackgroundService = host.Services.GetRequiredService<OutboxLib.Services.OutboxCronBackgroundService>())
+            {
+                await outboxCronBackgroundService.DoWorkAsync(CancelTokenSource.Token);
+            }
 
             Logger.LogInformation("End {ApplicationName}", AppName);
         }

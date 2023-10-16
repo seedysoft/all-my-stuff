@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Seedysoft.UtilsLib.Extensions;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Serilog;
 
 namespace Seedysoft.HomeCloud.Server;
 
@@ -12,83 +13,179 @@ public class Program
         Microsoft.AspNetCore.Hosting.StaticWebAssets.StaticWebAssetsLoader.UseStaticWebAssets(builder.Environment, builder.Configuration);
 
         // Add services to the container.
-#if DEBUG
-        builder.Configuration.SetBasePath(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location)!);
+        if (System.Diagnostics.Debugger.IsAttached)
+        {
+            _ = builder.Configuration.SetBasePath(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location)!);
 
-        builder.Logging.AddConsole();
-#endif
+            _ = builder.Logging.AddConsole();
+        }
 
-        builder.Logging.AddSystemdConsole();
+        _ = builder.Logging.AddSystemdConsole();
 
-        builder.Services.AddControllersWithViews();
-        builder.Services.AddRazorPages();
+        _ = builder.Services.AddControllersWithViews();
+        _ = builder.Services.AddRazorPages();
 
         _ = builder.Host.ConfigureDefaults(args);
         // Systemd Service must be configured as type=notify
         _ = builder.Host.UseSystemd();
 
-        string CurrentEnvironmentName = builder.Environment.EnvironmentName;
+        if (System.Diagnostics.Debugger.IsAttached)
+            builder.Environment.EnvironmentName = Environments.Development/*.Production*/;
 
-        builder.Configuration
+        string CurrentEnvironmentName = builder.Environment.EnvironmentName;
+        _ = builder.Configuration
             .AddJsonFile($"appsettings.HomeCloudServer.json", false, true)
             .AddJsonFile($"appsettings.HomeCloudServer.{CurrentEnvironmentName}.json", false, true)
 
-            .AddJsonFile($"appsettings.dbConnectionString.{CurrentEnvironmentName}.json", false, true)
+            .AddJsonFile($"appsettings.CarburantesConnectionStrings.{CurrentEnvironmentName}.json", false, true)
 
             .AddJsonFile($"appsettings.Carburantes.Infrastructure.json", false, true)
             .AddJsonFile($"appsettings.Carburantes.Infrastructure.{CurrentEnvironmentName}.json", false, true)
 
-            .AddJsonFile($"appsettings.CarburantesConnectionStrings.{CurrentEnvironmentName}.json", false, true);
+            .AddJsonFile($"appsettings.dbConnectionString.{CurrentEnvironmentName}.json", false, true)
 
-        InfrastructureLib.Dependencies.ConfigureDefaultDependencies(builder.Configuration, builder.Services, builder.Environment);
+            .AddJsonFile($"appsettings.Serilog.json", false, true)
+            .AddJsonFile($"appsettings.Serilog.{CurrentEnvironmentName}.json", false, true)
 
-        InfrastructureLib.Dependencies.AddDbContext<DbContexts.DbCxt>(builder.Configuration, builder.Services);
-        InfrastructureLib.Dependencies.AddDbContext<Carburantes.Infrastructure.Data.CarburantesDbContext>(builder.Configuration, builder.Services);
-        InfrastructureLib.Dependencies.AddDbContext<Carburantes.Infrastructure.Data.CarburantesHistDbContext>(builder.Configuration, builder.Services);
+            .AddJsonFile($"appsettings.ObtainPvpcSettings.json", false, true)
+            .AddJsonFile($"appsettings.SmtpServiceSettings.json", false, true)
+            .AddJsonFile($"appsettings.TelegramSettings.{CurrentEnvironmentName}.json", false, true)
+            .AddJsonFile($"appsettings.WebComparerSettings.{CurrentEnvironmentName}.json", false, true);
 
-        Carburantes.Services.ObtainDataCronBackgroundService.Configure(builder.Configuration, builder.Services, builder.Configuration, builder.Environment);
-        ObtainPvpcLib.Services.ObtainPvpCronBackgroundService.Configure(builder.Configuration, builder.Services, builder.Configuration, builder.Environment);
-        OutboxLib.Services.OutboxCronBackgroundService.Configure(builder.Configuration, builder.Services, builder.Configuration, builder.Environment);
-        WebComparerLib.Services.WebComparerCronBackgroundService.Configure(builder.Configuration, builder.Services, builder.Configuration, builder.Environment);
-
-        WebApplication app = builder.Build();
-
-        ILogger<Program> logger = app.Services.GetRequiredService<ILogger<Program>>();
-
-        // Migrate and seed the database during startup. Must be synchronous.
-        try
+        _ = builder.Services.AddLogging(iLoggingBuilder =>
         {
-            using IServiceScope Scope = app.Services.CreateScope();
+            IConfigurationSection configurationSection = builder.Configuration.GetRequiredSection("Serilog:WriteTo:1:Args:path");
+            Console.WriteLine("Obtained '{0}' from Serilog:WriteTo:1:Args:path", configurationSection.Value);
 
-            Scope.ServiceProvider.GetRequiredService<DbContexts.DbCxt>().Database.Migrate();
-            Scope.ServiceProvider.GetRequiredService<Carburantes.Infrastructure.Data.CarburantesDbContext>().Database.Migrate();
-            Scope.ServiceProvider.GetRequiredService<Carburantes.Infrastructure.Data.CarburantesHistDbContext>().Database.Migrate();
-        }
-        catch (Exception e) when (logger.Handle(e, "Unhandled exception.")) { }
+            if (System.Diagnostics.Debugger.IsAttached)
+                configurationSection.Value = $"../../../{configurationSection.Value!}";
+
+            configurationSection.Value = Path.GetFullPath(configurationSection.Value!.Replace("{ApplicationName}", builder.Environment.ApplicationName));
+            Console.WriteLine("Final value of Serilog:WriteTo:1:Args:path: '{0}'", configurationSection.Value);
+
+            _ = iLoggingBuilder.AddSerilog(new LoggerConfiguration()
+                .ReadFrom.Configuration(builder.Configuration)
+                .CreateLogger());
+        });
+
+        _ = builder.Services
+            .AddDbContext<InfrastructureLib.DbContexts.DbCxt>((iServiceProvider, dbContextOptionsBuilder) =>
+            {
+                string ConnectionStringName = nameof(InfrastructureLib.DbContexts.DbCxt);
+                string ConnectionString = builder.Configuration.GetConnectionString($"{ConnectionStringName}") ?? throw new KeyNotFoundException($"Connection string '{ConnectionStringName}' not found.");
+                if (System.Diagnostics.Debugger.IsAttached)
+                    ConnectionString = ConnectionString.Replace($"{CoreLib.Constants.DatabaseStrings.DataSource}../../../", $"{CoreLib.Constants.DatabaseStrings.DataSource}");
+                string FullFilePath = Path.GetFullPath(ConnectionString[CoreLib.Constants.DatabaseStrings.DataSource.Length..]);
+                if (!File.Exists(FullFilePath))
+                    throw new FileNotFoundException("Database file not found: '{FullFilePath}'", FullFilePath);
+
+                _ = dbContextOptionsBuilder.UseSqlite(ConnectionString);
+                if (System.Diagnostics.Debugger.IsAttached)
+                {
+                    _ = dbContextOptionsBuilder
+                        .EnableDetailedErrors()
+                        .EnableSensitiveDataLogging()
+                        .LogTo(Console.WriteLine, LogLevel.Trace);
+                }
+            }
+            , ServiceLifetime.Transient
+            , ServiceLifetime.Transient)
+
+            .AddDbContext<Carburantes.Infrastructure.Data.CarburantesDbContext>((iServiceProvider, dbContextOptionsBuilder) =>
+            {
+                string ConnectionStringName = nameof(Carburantes.Infrastructure.Data.CarburantesDbContext);
+                string ConnectionString = builder.Configuration.GetConnectionString($"{ConnectionStringName}") ?? throw new KeyNotFoundException($"Connection string '{ConnectionStringName}' not found.");
+                if (System.Diagnostics.Debugger.IsAttached)
+                    ConnectionString = ConnectionString.Replace($"{CoreLib.Constants.DatabaseStrings.DataSource}../../../", $"{CoreLib.Constants.DatabaseStrings.DataSource}");
+                string FullFilePath = Path.GetFullPath(ConnectionString[CoreLib.Constants.DatabaseStrings.DataSource.Length..]);
+                if (!File.Exists(FullFilePath))
+                    throw new FileNotFoundException("Database file not found: '{FullFilePath}'", FullFilePath);
+
+                _ = dbContextOptionsBuilder.UseSqlite(ConnectionString);
+                if (System.Diagnostics.Debugger.IsAttached)
+                {
+                    _ = dbContextOptionsBuilder
+                        .EnableDetailedErrors()
+                        .EnableSensitiveDataLogging()
+                        .LogTo(Console.WriteLine, LogLevel.Trace);
+                }
+            }
+            , ServiceLifetime.Transient
+            , ServiceLifetime.Transient)
+
+            .AddDbContext<Carburantes.Infrastructure.Data.CarburantesHistDbContext>((iServiceProvider, dbContextOptionsBuilder) =>
+            {
+                string ConnectionStringName = nameof(Carburantes.Infrastructure.Data.CarburantesHistDbContext);
+                string ConnectionString = builder.Configuration.GetConnectionString($"{ConnectionStringName}") ?? throw new KeyNotFoundException($"Connection string '{ConnectionStringName}' not found.");
+                if (System.Diagnostics.Debugger.IsAttached)
+                    ConnectionString = ConnectionString.Replace($"{CoreLib.Constants.DatabaseStrings.DataSource}../../../", $"{CoreLib.Constants.DatabaseStrings.DataSource}");
+                string FullFilePath = Path.GetFullPath(ConnectionString[CoreLib.Constants.DatabaseStrings.DataSource.Length..]);
+                if (!File.Exists(FullFilePath))
+                    throw new FileNotFoundException("Database file not found: '{FullFilePath}'", FullFilePath);
+
+                _ = dbContextOptionsBuilder.UseSqlite(ConnectionString);
+                if (System.Diagnostics.Debugger.IsAttached)
+                {
+                    _ = dbContextOptionsBuilder
+                        .EnableDetailedErrors()
+                        .EnableSensitiveDataLogging()
+                        .LogTo(Console.WriteLine, LogLevel.Trace);
+                }
+            }
+            , ServiceLifetime.Transient
+            , ServiceLifetime.Transient);
+
+        builder.Services.TryAddSingleton(builder.Configuration.GetSection(nameof(SmtpServiceLib.Settings.SmtpServiceSettings)).Get<SmtpServiceLib.Settings.SmtpServiceSettings>()!);
+        builder.Services.TryAddScoped<SmtpServiceLib.Services.SmtpService>();
+
+        builder.Services.TryAddSingleton(builder.Configuration.GetSection(nameof(TelegramLib.Settings.TelegramSettings)).Get<TelegramLib.Settings.TelegramSettings>()!);
+        builder.Services.TryAddSingleton<TelegramLib.Services.TelegramService>();
+
+        _ = builder.Services.AddHttpClient(nameof(Carburantes.Core.Settings.Minetur));
+        _ = builder.Services.AddHostedService<Carburantes.Services.ObtainDataCronBackgroundService>();
+
+        builder.Services.TryAddSingleton(builder.Configuration.GetSection(nameof(ObtainPvpcLib.Settings.ObtainPvpcSettings)).Get<ObtainPvpcLib.Settings.ObtainPvpcSettings>()!);
+        _ = builder.Services.AddHostedService<ObtainPvpcLib.Services.ObtainPvpCronBackgroundService>();
+
+        _ = builder.Services.AddHostedService<OutboxLib.Services.OutboxCronBackgroundService>();
+
+        builder.Services.TryAddSingleton(builder.Configuration.GetSection(nameof(WebComparerLib.Settings.WebComparerSettings)).Get<WebComparerLib.Settings.WebComparerSettings>()!);
+        _ = builder.Services.AddHostedService<WebComparerLib.Services.WebComparerCronBackgroundService>();
+
+        WebApplication webApp = builder.Build();
+
+        ILogger<Program> logger = webApp.Services.GetRequiredService<ILogger<Program>>();
 
         // Configure the HTTP request pipeline.
-        if (app.Environment.IsDevelopment())
+        if (webApp.Environment.IsDevelopment())
         {
-            app.UseWebAssemblyDebugging();
+            webApp.UseWebAssemblyDebugging();
         }
         else
         {
-            _ = app.UseExceptionHandler("/Error");
+            _ = webApp.UseExceptionHandler("/Error");
             // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-            _ = app.UseHsts();
+            _ = webApp.UseHsts();
         }
 
         //app.UseHttpsRedirection();
 
-        app.UseBlazorFrameworkFiles();
-        app.UseStaticFiles();
+        _ = webApp.UseBlazorFrameworkFiles();
+        _ = webApp.UseStaticFiles();
 
-        app.UseRouting();
+        _ = webApp.UseRouting();
 
-        app.MapRazorPages();
-        app.MapControllers();
-        app.MapFallbackToFile("index.html");
+        _ = webApp.MapRazorPages();
+        _ = webApp.MapControllers();
+        _ = webApp.MapFallbackToFile("index.html");
 
-        app.Run();
+        SQLitePCL.Batteries.Init();
+
+        // Migrate and seed the database during startup. Must be synchronous.
+        webApp.Services.GetRequiredService<InfrastructureLib.DbContexts.DbCxt>().Database.Migrate();
+        webApp.Services.GetRequiredService<Carburantes.Infrastructure.Data.CarburantesDbContext>().Database.Migrate();
+        webApp.Services.GetRequiredService<Carburantes.Infrastructure.Data.CarburantesHistDbContext>().Database.Migrate();
+
+        webApp.Run();
     }
 }

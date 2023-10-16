@@ -1,5 +1,7 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
@@ -13,14 +15,24 @@ public class Program
 
         InfrastructureLib.Dependencies.ConfigureDefaultDependencies(builder, args);
 
-        builder
+        _ = builder
+
             .ConfigureAppConfiguration((hostBuilderContext, configurationBuilder) =>
-                _ = configurationBuilder.AddJsonFile($"appsettings.dbConnectionString.{hostBuilderContext.HostingEnvironment.EnvironmentName}.json", false, true))
+            {
+                string CurrentEnvironmentName = hostBuilderContext.HostingEnvironment.EnvironmentName;
+
+                _ = configurationBuilder
+                   .AddJsonFile($"appsettings.dbConnectionString.{CurrentEnvironmentName}.json", false, true)
+                   .AddJsonFile($"appsettings.WebComparerSettings.{CurrentEnvironmentName}.json", false, true);
+            })
 
             .ConfigureServices((hostBuilderContext, iServiceCollection) =>
-                InfrastructureLib.Dependencies.AddDbContext<DbContexts.DbCxt>(hostBuilderContext.Configuration, iServiceCollection));
+            {
+                InfrastructureLib.Dependencies.AddDbCxtContext(hostBuilderContext.Configuration, iServiceCollection);
 
-        WebComparerLib.Services.WebComparerCronBackgroundService.Configure(builder);
+                iServiceCollection.TryAddSingleton(hostBuilderContext.Configuration.GetSection(nameof(WebComparerLib.Settings.WebComparerSettings)).Get<WebComparerLib.Settings.WebComparerSettings>()!);
+                iServiceCollection.TryAddSingleton<WebComparerLib.Services.WebComparerCronBackgroundService>();
+            });
 
         IHost host = builder.Build();
 
@@ -39,17 +51,20 @@ public class Program
             //foreach (KeyValuePair<string, string?> item in Config)
             //    Logger.LogDebug($"{item.Key}: {item.Value ?? "<<NULL>>"}");
 
-#if DEBUG
-            await Task.Delay(UtilsLib.Constants.Time.TenSecondsTimeSpan);
-#endif
+            if (System.Diagnostics.Debugger.IsAttached)
+                await Task.Delay(UtilsLib.Constants.Time.TenSecondsTimeSpan);
 
-            //using DbContexts.DbCxt dbCtx = host.Services.GetRequiredService<DbContexts.DbCxt>();
+            // Migrate and seed the database during startup. Must be synchronous.
+            using IServiceScope Scope = host.Services.CreateScope();
 
-            //await WebComparerLib.Main.FindDifferencesAsync(dbCtx, Logger);
+            Scope.ServiceProvider.GetRequiredService<InfrastructureLib.DbContexts.DbCxt>().Database.Migrate();
 
             using CancellationTokenSource CancelTokenSource = new();
 
-            await host.RunAsync(CancelTokenSource.Token);
+            using (WebComparerLib.Services.WebComparerCronBackgroundService webComparerCronBackgroundService = host.Services.GetRequiredService<WebComparerLib.Services.WebComparerCronBackgroundService>())
+            {
+                await webComparerCronBackgroundService.DoWorkAsync(CancelTokenSource.Token);
+            }
 
             Logger.LogInformation("End {ApplicationName}", AppName);
         }

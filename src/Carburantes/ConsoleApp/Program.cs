@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Seedysoft.UtilsLib.Extensions;
@@ -29,11 +30,53 @@ public class Program
 
             .ConfigureServices((hostBuilderContext, serviceCollection) =>
             {
-                InfrastructureLib.Dependencies.AddDbContext<Infrastructure.Data.CarburantesDbContext>(hostBuilderContext.Configuration, serviceCollection);
-                InfrastructureLib.Dependencies.AddDbContext<Infrastructure.Data.CarburantesHistDbContext>(hostBuilderContext.Configuration, serviceCollection);
+                _ = serviceCollection
+                    .AddDbContext<Infrastructure.Data.CarburantesDbContext>((iServiceProvider, dbContextOptionsBuilder) =>
+                    {
+                        string ConnectionStringName = nameof(Infrastructure.Data.CarburantesDbContext);
+                        string ConnectionString = hostBuilderContext.Configuration.GetConnectionString($"{ConnectionStringName}") ?? throw new KeyNotFoundException($"Connection string '{ConnectionStringName}' not found.");
+                        string FullFilePath = Path.GetFullPath(ConnectionString[CoreLib.Constants.DatabaseStrings.DataSource.Length..]);
+                        if (!File.Exists(FullFilePath))
+                            throw new FileNotFoundException("Database file not found: '{FullFilePath}'", FullFilePath);
+
+                        _ = dbContextOptionsBuilder.UseSqlite(ConnectionString);
+                        if (System.Diagnostics.Debugger.IsAttached)
+                        {
+                            _ = dbContextOptionsBuilder
+                                .EnableDetailedErrors()
+                                .EnableSensitiveDataLogging()
+                                .LogTo(Console.WriteLine, LogLevel.Trace);
+                        }
+                    }
+                    , ServiceLifetime.Transient
+                    , ServiceLifetime.Transient)
+
+                    .AddDbContext<Infrastructure.Data.CarburantesHistDbContext>((iServiceProvider, dbContextOptionsBuilder) =>
+                    {
+                        string ConnectionStringName = nameof(Infrastructure.Data.CarburantesHistDbContext);
+                        string ConnectionString = hostBuilderContext.Configuration.GetConnectionString($"{ConnectionStringName}") ?? throw new KeyNotFoundException($"Connection string '{ConnectionStringName}' not found.");
+                        string FullFilePath = Path.GetFullPath(ConnectionString[CoreLib.Constants.DatabaseStrings.DataSource.Length..]);
+                        if (!File.Exists(FullFilePath))
+                            throw new FileNotFoundException("Database file not found: '{FullFilePath}'", FullFilePath);
+
+                        _ = dbContextOptionsBuilder.UseSqlite(ConnectionString);
+                        if (System.Diagnostics.Debugger.IsAttached)
+                        {
+                            _ = dbContextOptionsBuilder
+                                .EnableDetailedErrors()
+                                .EnableSensitiveDataLogging()
+                                .LogTo(Console.WriteLine, LogLevel.Trace);
+                        }
+                    }
+                    , ServiceLifetime.Transient
+                    , ServiceLifetime.Transient);
 
                 _ = serviceCollection.AddHttpClient(nameof(Core.Settings.Minetur));
+
+                serviceCollection.TryAddSingleton<Services.ObtainDataCronBackgroundService>();
             });
+
+        SQLitePCL.Batteries.Init();
 
         IHost host = builder.Build();
 
@@ -48,18 +91,14 @@ public class Program
             using CancellationTokenSource CancelTokenSource = new();
 
             // Migrate and seed the database during startup. Must be synchronous.
-            try
-            {
-                using IServiceScope Scope = host.Services.CreateScope();
+            using IServiceScope Scope = host.Services.CreateScope();
 
-                Scope.ServiceProvider.GetRequiredService<Infrastructure.Data.CarburantesDbContext>().Database.Migrate();
-                Scope.ServiceProvider.GetRequiredService<Infrastructure.Data.CarburantesHistDbContext>().Database.Migrate();
-            }
-            catch (Exception e) when (Logger.Handle(e, "Unhandled exception.")) { }
+            Scope.ServiceProvider.GetRequiredService<Infrastructure.Data.CarburantesDbContext>().Database.Migrate();
+            Scope.ServiceProvider.GetRequiredService<Infrastructure.Data.CarburantesHistDbContext>().Database.Migrate();
 
-            Services.ObtainDataCronBackgroundService ObtainDataSvc = new(host.Services);
+            Services.ObtainDataCronBackgroundService obtainDataCronBackgroundService = host.Services.GetRequiredService<Services.ObtainDataCronBackgroundService>();
 
-            await ObtainDataSvc.MainAsync(CancelTokenSource.Token);
+            await obtainDataCronBackgroundService.DoWorkAsync(CancelTokenSource.Token);
         }
         catch (TaskCanceledException e) when (Logger.Handle(e, "Task cancelled.")) { }
         catch (Exception e) when (Logger.Handle(e, "Unhandled exception.")) { }

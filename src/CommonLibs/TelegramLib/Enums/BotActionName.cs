@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿#pragma warning disable CA1707 // Identifiers should not contain underscores
+using System.ComponentModel;
 
 namespace Seedysoft.TelegramLib.Enums;
 
@@ -32,3 +33,4 @@ public enum BotActionName
     //[System.ComponentModel.Description("")]
     //baja = 500,
 }
+#pragma warning restore CA1707 // Identifiers should not contain underscores

@@ -1,5 +1,7 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
@@ -13,19 +15,23 @@ public class Program
 
         InfrastructureLib.Dependencies.ConfigureDefaultDependencies(builder, args);
 
-        builder
+        _ = builder
             .ConfigureAppConfiguration((hostBuilderContext, iConfigurationBuilder) =>
             {
                 string CurrentEnvironmentName = hostBuilderContext.HostingEnvironment.EnvironmentName;
 
                 _ = iConfigurationBuilder
-                    .AddJsonFile($"appsettings.dbConnectionString.{CurrentEnvironmentName}.json", false, true);
+                    .AddJsonFile($"appsettings.dbConnectionString.{CurrentEnvironmentName}.json", false, true)
+                    .AddJsonFile($"appsettings.ObtainPvpcSettings.json", false, true);
             })
 
             .ConfigureServices((hostBuilderContext, iServiceCollection) =>
-                InfrastructureLib.Dependencies.AddDbContext<DbContexts.DbCxt>(hostBuilderContext.Configuration, iServiceCollection));
+            {
+                InfrastructureLib.Dependencies.AddDbCxtContext(hostBuilderContext.Configuration, iServiceCollection);
 
-        ObtainPvpcLib.Services.ObtainPvpCronBackgroundService.Configure(builder);
+                iServiceCollection.TryAddSingleton(hostBuilderContext.Configuration.GetSection(nameof(ObtainPvpcLib.Settings.ObtainPvpcSettings)).Get<ObtainPvpcLib.Settings.ObtainPvpcSettings>()!);
+                iServiceCollection.TryAddSingleton<ObtainPvpcLib.Services.ObtainPvpCronBackgroundService>();
+            });
 
         IHost host = builder.Build();
 
@@ -44,9 +50,13 @@ public class Program
             //foreach (KeyValuePair<string, string?> item in Config)
             //    Logger.LogDebug($"{item.Key}: {item.Value ?? "<<NULL>>"}");
 
-#if DEBUG
-            await Task.Delay(UtilsLib.Constants.Time.TenSecondsTimeSpan);
-#endif
+            if (System.Diagnostics.Debugger.IsAttached)
+                await Task.Delay(UtilsLib.Constants.Time.TenSecondsTimeSpan);
+
+            // Migrate and seed the database during startup. Must be synchronous.
+            using IServiceScope Scope = host.Services.CreateScope();
+
+            Scope.ServiceProvider.GetRequiredService<InfrastructureLib.DbContexts.DbCxt>().Database.Migrate();
 
             DateTime ForDate = DateTime.MinValue;
 
@@ -61,16 +71,13 @@ public class Program
                 Logger.LogInformation($"You can provide the date in {UtilsLib.Constants.Formats.YearMonthDayFormat} format as an argument");
                 ForDate = DateTimeOffset.UtcNow.AddDays(1).Date;
             }
-            Logger.LogInformation("Requesting PVPCs for {ForDate}", ForDate.ToString(UtilsLib.Constants.Formats.YearMonthDayFormat));
 
-            DbContexts.DbCxt dbCtx = host.Services.GetRequiredService<DbContexts.DbCxt>();
+            using CancellationTokenSource CancelTokenSource = new();
 
-            int? HowManyPricesObtained = await ObtainPvpcLib.Main.ObtainPricesAsync(
-                dbCtx,
-                host.Services.GetRequiredService<ObtainPvpcLib.Settings.ObtainPvpcSettings>(),
-                Logger,
-                ForDate,
-                CancellationToken.None);
+            using (ObtainPvpcLib.Services.ObtainPvpCronBackgroundService obtainPvpCronBackgroundService = host.Services.GetRequiredService<ObtainPvpcLib.Services.ObtainPvpCronBackgroundService>())
+            {
+                await obtainPvpCronBackgroundService.ObtainPvpcForDateAsync(ForDate, CancelTokenSource.Token);
+            }
 
             Logger.LogInformation("End {ApplicationName}", AppName);
         }

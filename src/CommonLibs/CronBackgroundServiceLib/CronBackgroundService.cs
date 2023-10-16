@@ -36,5 +36,5 @@ public abstract class CronBackgroundService : BackgroundService
         await Task.CompletedTask;
     }
 
-    protected virtual async Task DoWorkAsync(CancellationToken cancellationToken) => await Task.CompletedTask;
+    public virtual async Task DoWorkAsync(CancellationToken cancellationToken) => await Task.CompletedTask;
 }

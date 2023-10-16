@@ -8,6 +8,7 @@
     <RuntimeIdentifiers>linux-arm64;win-x64</RuntimeIdentifiers>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     <DockerfileContext>..\..</DockerfileContext>
+    <BaseOutputPath>..\..\HomeCloud\Server\bin\</BaseOutputPath>
   </PropertyGroup>
   
   <PropertyGroup Condition="'$(Configuration)' == 'Release'">

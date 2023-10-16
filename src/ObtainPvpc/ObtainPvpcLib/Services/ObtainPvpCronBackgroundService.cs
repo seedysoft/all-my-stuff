@@ -1,49 +1,18 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Seedysoft.UtilsLib.Extensions;
+using System.Net.Http.Json;
 
 namespace Seedysoft.ObtainPvpcLib.Services;
 
 public class ObtainPvpCronBackgroundService : CronBackgroundServiceLib.CronBackgroundService
 {
-    private static bool isConfigured;
-
-    public static void Configure(IHostBuilder hostBuilder)
-    {
-        if (!isConfigured)
-        {
-            _ = hostBuilder
-                .ConfigureAppConfiguration((hostBuilderContext, configurationBuilder) => ConfigJsonFile(configurationBuilder, hostBuilderContext.HostingEnvironment))
-
-                .ConfigureServices((hostBuilderContext, services) => ConfigServices(services, hostBuilderContext.Configuration));
-
-            isConfigured = true;
-        }
-    }
-    public static void Configure(IConfigurationBuilder configurationBuilder, IServiceCollection services, IConfiguration configuration, IHostEnvironment hostEnvironment)
-    {
-        if (!isConfigured)
-        {
-            ConfigJsonFile(configurationBuilder, hostEnvironment);
-
-            ConfigServices(services, configuration);
-
-            isConfigured = true;
-        }
-    }
-    private static void ConfigJsonFile(IConfigurationBuilder configurationBuilder, IHostEnvironment hostEnvironment) =>
-        _ = configurationBuilder.AddJsonFile($"appsettings.ObtainPvpcSettings.json", false, true);
-    private static void ConfigServices(IServiceCollection services, IConfiguration configuration)
-    {
-        services.TryAddSingleton(configuration.GetSection(nameof(Settings.ObtainPvpcSettings)).Get<Settings.ObtainPvpcSettings>()!);
-
-        _ = services.AddHostedService<ObtainPvpCronBackgroundService>();
-    }
-
     private readonly IServiceProvider ServiceProvider;
     private readonly ILogger<ObtainPvpCronBackgroundService> Logger;
+
+    private Settings.ObtainPvpcSettings Options => (Settings.ObtainPvpcSettings)Config;
 
     public ObtainPvpCronBackgroundService(
         Settings.ObtainPvpcSettings config
@@ -54,23 +23,105 @@ public class ObtainPvpCronBackgroundService : CronBackgroundServiceLib.CronBackg
         Logger = logger;
     }
 
-    protected override async Task DoWorkAsync(CancellationToken cancellationToken)
+    public override async Task DoWorkAsync(CancellationToken stoppingToken)
     {
-        Logger.LogInformation("Called {ApplicationName} version {Version}", ServiceProvider.GetRequiredService<IHostEnvironment>().ApplicationName, System.Reflection.Assembly.GetExecutingAssembly().GetName().Version);
+        string AppName = ServiceProvider.GetRequiredService<IHostEnvironment>().ApplicationName;
+
+        Logger.LogInformation("Called {ApplicationName} version {Version}", AppName, System.Reflection.Assembly.GetExecutingAssembly().GetName().Version);
 
         DateTime ForDate = DateTimeOffset.UtcNow.AddDays(1).Date;
-        Logger.LogInformation("Requesting PVPCs for {ForDate}", ForDate.ToString(UtilsLib.Constants.Formats.YearMonthDayFormat));
 
-        DbContexts.DbCxt dbCtx = ServiceProvider.GetRequiredService<DbContexts.DbCxt>();
+        await ObtainPvpcForDateAsync(ForDate, stoppingToken);
 
-        int? HowManyPricesObtained = await Main.ObtainPricesAsync(
-            dbCtx,
-            (Settings.ObtainPvpcSettings)Config,
-            Logger,
-            ForDate,
-            cancellationToken);
-        Logger.LogInformation("Obtained {HowManyPricesObtained} PVPCs", HowManyPricesObtained);
+        Logger.LogInformation("End {ApplicationName}", AppName);
+    }
 
-        Logger.LogInformation("End {ApplicationName}", ServiceProvider.GetRequiredService<IHostEnvironment>().ApplicationName);
+    public async Task ObtainPvpcForDateAsync(DateTime forDate, CancellationToken stoppingToken)
+    {
+        Logger.LogInformation("Obtaining PVPC for the day {ForDate}", forDate.ToString(UtilsLib.Constants.Formats.YearMonthDayFormat));
+
+        // HttpClient is intended to be instantiated once per application, rather than per-use. See Remarks.
+        HttpClient Client = new();
+
+        string UrlString = string.Format(Options.DataUrlTemplate, forDate);
+        Logger.LogInformation("From {UrlString}", UrlString);
+
+        try
+        {
+            Rootobject? Response = await Client.GetFromJsonAsync<Rootobject>(UrlString, stoppingToken);
+
+            Included? PvpcIncluded = Response?.included?.FirstOrDefault(x => x.id == Options.PvpcId);
+
+            CoreLib.Entities.Pvpc[]? NewEntities = PvpcIncluded?.attributes?.values?
+                .Select(x => new CoreLib.Entities.Pvpc(x.datetime.GetValueOrDefault(), (decimal)x.value.GetValueOrDefault()))
+                .ToArray();
+
+            int? HowManyPricesObtained = await ProcessPricesAsync(NewEntities, stoppingToken);
+        }
+        catch (HttpRequestException e) when (System.Net.HttpStatusCode.BadGateway == e.StatusCode && Logger.LogAndHandle(e, "'{WebUrl}' not yet published", UrlString)) { }
+        catch (TaskCanceledException e) when (e.InnerException is TimeoutException && Logger.LogAndHandle(e, "Request to '{WebUrl}' timeout", UrlString)) { }
+        catch (TaskCanceledException e) when (Logger.LogAndHandle(e, "Task request to '{WebUrl}' cancelled", UrlString)) { }
+        catch (Exception e) when (Logger.LogAndHandle(e, "Request to '{WebUrl}' failed", UrlString)) { }
+    }
+
+    private async Task<int?> ProcessPricesAsync(CoreLib.Entities.Pvpc[]? NewEntities, CancellationToken stoppingToken)
+    {
+        if (!(NewEntities?.Any() ?? false))
+        {
+            Logger.LogInformation("No entities obtained");
+            return null;
+        }
+
+        var Prices = new List<CoreLib.Entities.PvpcBase>(24);
+
+        IEnumerable<long> DateTimes = NewEntities.Select(x => x.AtDateTimeOffset.ToUnixTimeSeconds());
+        long MinDateTime = DateTimes.Min();
+        long MaxDateTime = DateTimes.Max();
+
+        InfrastructureLib.DbContexts.DbCxt dbCxt = ServiceProvider.GetRequiredService<InfrastructureLib.DbContexts.DbCxt>();
+
+        CoreLib.Entities.PvpcView[] ExistingPvpcs =
+            await dbCxt.PvpcsView
+            .Where(p => p.AtDateTimeUnix >= MinDateTime && p.AtDateTimeUnix <= MaxDateTime)
+            .ToArrayAsync(stoppingToken);
+
+        foreach ((CoreLib.Entities.Pvpc NewEntity, CoreLib.Entities.PvpcView ExistingEntity) in
+            from CoreLib.Entities.Pvpc NewEntity in NewEntities
+            let ExistingEntity = ExistingPvpcs.FirstOrDefault(x => x.AtDateTimeOffset == NewEntity.AtDateTimeOffset)
+            select (NewEntity, ExistingEntity))
+        {
+            if (ExistingEntity == null)
+            {
+                Prices.Add(NewEntity);
+                _ = dbCxt.Pvpcs.Add(NewEntity);
+            }
+            else
+            {
+                Prices.Add(ExistingEntity);
+                ExistingEntity.MWhPriceInEuros = NewEntity.MWhPriceInEuros;
+                if (dbCxt.Entry(ExistingEntity).State == EntityState.Modified)
+                    _ = dbCxt.Update(ExistingEntity);
+            }
+        }
+
+        if (dbCxt.ChangeTracker.HasChanges())
+        {
+            var OutboxMessage = new CoreLib.Entities.Outbox(
+                CoreLib.Enums.SubscriptionName.electricidad,
+                System.Text.Json.JsonSerializer.Serialize<IEnumerable<CoreLib.Entities.PvpcBase>>(Prices));
+            _ = await dbCxt.Outbox.AddAsync(OutboxMessage, stoppingToken);
+
+            _ = await dbCxt.SaveChangesAsync(stoppingToken);
+
+            Logger.LogInformation("Obtained {NewEntities} entities", NewEntities.Length);
+
+            return Prices.Count;
+        }
+        else
+        {
+            Logger.LogInformation("No changes");
+
+            return 0;
+        }
     }
 }

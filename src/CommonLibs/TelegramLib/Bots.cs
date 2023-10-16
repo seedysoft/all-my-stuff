@@ -6,18 +6,10 @@ public record Bots
     public string Username { get; init; } = default!;
 
     public Telegram.Bot.Types.User? Me { get; private set; }
+    public static Bots Current => System.Diagnostics.Debugger.IsAttached ? Test : Prod;
 
-#pragma warning disable IDE0052 // Remove unread private members
     private static readonly Bots Test = new(5025594021L, "Raspberrypi4FokyTestbot");
     private static readonly Bots Prod = new(2099959399L, "Raspberrypi4Foky_bot");
-#pragma warning restore IDE0052 // Remove unread private members
-
-    public static Bots Current => Bots.
-#if DEBUG
-            Test;
-#else
-            Prod;
-#endif
 
     private Bots(long id, string username)
     {

@@ -1,11 +1,8 @@
-﻿#if DEBUG
-using Microsoft.Extensions.Logging;
-#endif
-
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Serilog;
 
 namespace Seedysoft.InfrastructureLib;
@@ -14,6 +11,9 @@ public static class Dependencies
 {
     public static void ConfigureDefaultDependencies(IHostBuilder builder, string[] args)
     {
+        if (System.Diagnostics.Debugger.IsAttached)
+            _ = builder.ConfigureLogging((hostBuilderContext, iLoggingBuilder) => iLoggingBuilder.AddConsole());
+
         _ = builder.ConfigureHostConfiguration(iConfigurationBuilder =>
         {
             _ = iConfigurationBuilder
@@ -22,61 +22,52 @@ public static class Dependencies
         });
 
         _ = builder.ConfigureAppConfiguration((hostBuilderContext, iConfigurationBuilder) =>
-            AddSerilogJsonFile(iConfigurationBuilder, hostBuilderContext.HostingEnvironment));
+        {
+            _ = iConfigurationBuilder
+                .AddJsonFile($"appsettings.Serilog.json", false, true)
+                .AddJsonFile($"appsettings.Serilog.{hostBuilderContext.HostingEnvironment.EnvironmentName}.json", false, true);
+        });
 
         _ = builder.ConfigureServices((hostBuilderContext, iServiceCollection) =>
-            AddSerilogLogging(hostBuilderContext.Configuration, iServiceCollection, hostBuilderContext.HostingEnvironment));
-    }
-
-    public static void ConfigureDefaultDependencies(IConfigurationBuilder iConfigurationBuilder, IServiceCollection services, IHostEnvironment environment)
-    {
-        AddSerilogJsonFile(iConfigurationBuilder, environment);
-        AddSerilogLogging((IConfiguration)iConfigurationBuilder, services, environment);
-    }
-
-    public static void AddDbContext<T>(IConfiguration configuration, IServiceCollection services) where T : DbContext
-    {
-        services.AddDbContext<T>(dbContextOptionsBuilder =>
         {
-            string ConnectionStringName = typeof(T).Name;
-            string ConnectionString = configuration.GetConnectionString($"{ConnectionStringName}") ?? throw new KeyNotFoundException($"Connection string '{ConnectionStringName}' not found.");
-            string FullFilePath = Path.GetFullPath(ConnectionString["Data Source=".Length..]);
-            if (!File.Exists(FullFilePath))
-                throw new FileNotFoundException($"Database file '{FullFilePath}' not found.");
+            _ = iServiceCollection.AddLogging(iLoggingBuilder =>
+            {
+                IConfigurationSection configurationSection = hostBuilderContext.Configuration.GetRequiredSection("Serilog:WriteTo:1:Args:path");
+                Console.WriteLine("Obtained '{0}' from Serilog:WriteTo:1:Args:path", configurationSection.Value);
 
-            dbContextOptionsBuilder.UseSqlite(ConnectionString);
-#if DEBUG
-            dbContextOptionsBuilder
-                .EnableDetailedErrors()
-                .EnableSensitiveDataLogging()
-                .LogTo(Console.WriteLine, LogLevel.Trace);
-#endif
+                configurationSection.Value = Path.GetFullPath(configurationSection.Value!.Replace("{ApplicationName}", hostBuilderContext.HostingEnvironment.ApplicationName));
+                Console.WriteLine("Final value of Serilog:WriteTo:1:Args:path: '{0}'", configurationSection.Value);
+
+                _ = iLoggingBuilder.AddSerilog(new LoggerConfiguration()
+                    .ReadFrom.Configuration(hostBuilderContext.Configuration)
+                    .CreateLogger());
+            });
+        });
+    }
+
+    public static void AddDbCxtContext(IConfiguration configuration, IServiceCollection services)
+    {
+        _ = services.AddDbContext<DbContexts.DbCxt>(dbContextOptionsBuilder =>
+        {
+            string ConnectionStringName = nameof(DbContexts.DbCxt);
+            string ConnectionString = configuration.GetConnectionString($"{ConnectionStringName}") ?? throw new KeyNotFoundException($"Connection string '{ConnectionStringName}' not found.");
+            string FullFilePath = Path.GetFullPath(ConnectionString[CoreLib.Constants.DatabaseStrings.DataSource.Length..]);
+            if (!File.Exists(FullFilePath))
+                throw new FileNotFoundException("Database file not found: '{FullFilePath}'", FullFilePath);
+
+            _ = dbContextOptionsBuilder.UseSqlite(ConnectionString);
+
+            if (System.Diagnostics.Debugger.IsAttached)
+            {
+                _ = dbContextOptionsBuilder
+                    .EnableDetailedErrors()
+                    .EnableSensitiveDataLogging()
+                    .LogTo(Console.WriteLine, LogLevel.Trace);
+            }
         }
         , ServiceLifetime.Transient
         , ServiceLifetime.Transient);
 
         SQLitePCL.Batteries.Init();
-    }
-
-    private static void AddSerilogJsonFile(IConfigurationBuilder configuration, IHostEnvironment environment)
-    {
-        _ = configuration.AddJsonFile($"appsettings.Serilog.json", false, true);
-        _ = configuration.AddJsonFile($"appsettings.Serilog.{environment.EnvironmentName}.json", false, true);
-    }
-
-    private static void AddSerilogLogging(IConfiguration configuration, IServiceCollection services, IHostEnvironment hostEnvironment)
-    {
-        _ = services.AddLogging(iLoggingBuilder =>
-        {
-            IConfigurationSection configurationSection = configuration.GetRequiredSection("Serilog:WriteTo:1:Args:path");
-            Console.WriteLine("Obtained '{0}' from Serilog:WriteTo:1:Args:path", configurationSection.Value);
-            
-            configurationSection.Value = Path.GetFullPath(configurationSection.Value!.Replace("{ApplicationName}", hostEnvironment.ApplicationName));
-            Console.WriteLine("Final value of Serilog:WriteTo:1:Args:path: '{0}'", configurationSection.Value);
-
-            _ = iLoggingBuilder.AddSerilog(new LoggerConfiguration()
-                .ReadFrom.Configuration(configuration)
-                .CreateLogger());
-        });
     }
 }

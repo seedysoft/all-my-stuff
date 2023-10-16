@@ -16,6 +16,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\CommonLibs\CronBackgroundServiceLib\Seedysoft.CronBackgroundServiceLib.csproj" />
     <ProjectReference Include="..\..\CommonLibs\TelegramLib\Seedysoft.TelegramLib.csproj" />
+    <ProjectReference Include="..\..\CommonLibs\UtilsLib\Seedysoft.UtilsLib.csproj" />
   </ItemGroup>
 
 </Project>

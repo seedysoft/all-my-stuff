@@ -7,6 +7,7 @@
     <Nullable>enable</Nullable>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     <DockerfileContext>..\..</DockerfileContext>
+    <BaseOutputPath>..\..\HomeCloud\Server\bin\</BaseOutputPath>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)' == 'Release'">
@@ -14,35 +15,6 @@
     <FileVersion>$(AssemblyVersion)</FileVersion>
     <Version>$(AssemblyVersion)</Version>
   </PropertyGroup>
-
-  <ItemGroup>
-    <None Remove="appsettings.Carburantes.Infrastructure.Development.json" />
-    <Content Include="..\Infrastructure\appsettings.Carburantes.Infrastructure.json" Link="appsettings.Carburantes.Infrastructure.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <None Remove="appsettings.Carburantes.Infrastructure.Production.json" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(Configuration)' == 'Debug'">
-    <Content Include="..\Infrastructure\appsettings.Carburantes.Infrastructure.Development.json" Link="appsettings.Carburantes.Infrastructure.Development.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <DependentUpon>appsettings.Carburantes.Infrastructure.json</DependentUpon>
-    </Content>
-    <None Include="..\Infrastructure\appsettings.Carburantes.Infrastructure.Production.json" Link="appsettings.Carburantes.Infrastructure.Production.json">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-      <DependentUpon>appsettings.Carburantes.Infrastructure.json</DependentUpon>
-    </None>
-  </ItemGroup>
-  <ItemGroup Condition="'$(Configuration)' == 'Release'">
-    <None Include="..\Infrastructure\appsettings.Carburantes.Infrastructure.Development.json" Link="appsettings.Carburantes.Infrastructure.Development.json">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-      <DependentUpon>appsettings.Carburantes.Infrastructure.json</DependentUpon>
-    </None>
-    <Content Include="..\Infrastructure\appsettings.Carburantes.Infrastructure.Production.json" Link="appsettings.Carburantes.Infrastructure.Production.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <DependentUpon>appsettings.Carburantes.Infrastructure.json</DependentUpon>
-    </Content>
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="EFCore.BulkExtensions.Sqlite" Version="7.1.6" />

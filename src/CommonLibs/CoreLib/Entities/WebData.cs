@@ -1,4 +1,4 @@
-﻿namespace Entities;
+﻿namespace Seedysoft.CoreLib.Entities;
 
 public abstract class WebDataBase
 {
