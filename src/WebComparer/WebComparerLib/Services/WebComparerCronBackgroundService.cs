@@ -47,21 +47,22 @@ public class WebComparerCronBackgroundService : CronBackgroundServiceLib.CronBac
             Logger.LogInformation("Obtained {WebDatas} URLs to check", WebDatas.Length);
 
             using OpenQA.Selenium.IWebDriver WebDriver = GetWebDriver();
-
-            for (int i = 0; i < WebDatas.Length; i++)
             {
-                CoreLib.Entities.WebData webData = WebDatas[i];
-
-                try
+                for (int i = 0; i < WebDatas.Length; i++)
                 {
-                    await GetDiffsAsync(dbCtx, WebDriver, webData, cancellationToken);
-                }
-                catch (TaskCanceledException e) when (e.InnerException is TimeoutException && Logger.LogAndHandle(e.InnerException, "Request to '{WebUrl}' timeout", webData.WebUrl)) { continue; }
-                catch (TaskCanceledException e) when (Logger.LogAndHandle(e, "Task request to '{WebUrl}' cancelled", webData.WebUrl)) { continue; }
-                catch (Exception e) when (Logger.LogAndHandle(e, "Request to '{WebUrl}' failed", webData.WebUrl)) { continue; }
-            }
+                    CoreLib.Entities.WebData webData = WebDatas[i];
 
-            WebDriver.Quit();
+                    try
+                    {
+                        await GetDiffsAsync(dbCtx, WebDriver, webData, cancellationToken);
+                    }
+                    catch (TaskCanceledException e) when (e.InnerException is TimeoutException && Logger.LogAndHandle(e.InnerException, "Request to '{WebUrl}' timeout", webData.WebUrl)) { continue; }
+                    catch (TaskCanceledException e) when (Logger.LogAndHandle(e, "Task request to '{WebUrl}' cancelled", webData.WebUrl)) { continue; }
+                    catch (Exception e) when (Logger.LogAndHandle(e, "Request to '{WebUrl}' failed", webData.WebUrl)) { continue; }
+                }
+
+                WebDriver?.Quit();
+            }
         }
         catch (Exception e) when (Logger.LogAndHandle(e, "Unexpected error")) { }
         finally { await Task.CompletedTask; }
@@ -71,7 +72,7 @@ public class WebComparerCronBackgroundService : CronBackgroundServiceLib.CronBac
     {
         WebDriver.Navigate().GoToUrl(webData.WebUrl);
 
-        string OnlyBodyStriped = GetContent(WebDriver, webData);
+        string OnlyBodyStriped = await GetContentAsync(WebDriver, webData);
 
         webData.DataToSend = FindDifferences(webData, OnlyBodyStriped);
 
@@ -119,15 +120,17 @@ public class WebComparerCronBackgroundService : CronBackgroundServiceLib.CronBac
         Logger.LogInformation("Options Binary location: '{BinaryLocation}'", Options.BinaryLocation);
 
         OpenQA.Selenium.IWebDriver WebDriver = new OpenQA.Selenium.Chrome.ChromeDriver(Options);
-        var OneMinuteTimeSpan = TimeSpan.FromMinutes(1);
-        WebDriver.Manage().Timeouts().AsynchronousJavaScript = OneMinuteTimeSpan;
-        WebDriver.Manage().Timeouts().ImplicitWait = OneMinuteTimeSpan;
-        WebDriver.Manage().Timeouts().PageLoad = OneMinuteTimeSpan;
+
+        // TODO Add TimeoutsTimeSpan setting (best for each website?)
+        var TimeoutsTimeSpan = TimeSpan.FromMinutes(2);
+        WebDriver.Manage().Timeouts().AsynchronousJavaScript = TimeoutsTimeSpan;
+        WebDriver.Manage().Timeouts().ImplicitWait = TimeoutsTimeSpan;
+        WebDriver.Manage().Timeouts().PageLoad = TimeoutsTimeSpan;
 
         return WebDriver;
     }
 
-    private string GetContent(OpenQA.Selenium.IWebDriver webDriver, CoreLib.Entities.WebData webData)
+    private async Task<string> GetContentAsync(OpenQA.Selenium.IWebDriver webDriver, CoreLib.Entities.WebData webData)
     {
         // TODO         Add retry logic when timeout
         // TODO Personalizar cada web con lo que podemos hacer antes de obtener datos
@@ -136,7 +139,6 @@ public class WebComparerCronBackgroundService : CronBackgroundServiceLib.CronBac
         {
             PollingInterval = TimeSpan.FromSeconds(5),
         };
-        WaitDriver.IgnoreExceptionTypes(typeof(OpenQA.Selenium.NoSuchElementException));
 
         // SubscriptionId: 20 Inscripción en Pruebas Selectivas
         if (webDriver.PageSource.Contains("view-more-link"))
@@ -147,16 +149,36 @@ public class WebComparerCronBackgroundService : CronBackgroundServiceLib.CronBac
         {
             OpenQA.Selenium.IWebElement RemitenteFiltroWebElement = WaitDriver.Until(drv => drv.FindElement(OpenQA.Selenium.By.Id("remitenteFiltro")));
 
-            new OpenQA.Selenium.Support.UI.SelectElement(RemitenteFiltroWebElement).SelectByText("Personal");
+            var FilterSelectElement = new OpenQA.Selenium.Support.UI.SelectElement(RemitenteFiltroWebElement);
+            FilterSelectElement.SelectByText("Personal");
 
-            webDriver.FindElement(OpenQA.Selenium.By.CssSelector(".botonera a.primary")).Click();
+            var FilterButtonBy = OpenQA.Selenium.By.CssSelector(".botonera a.primary");
+            OpenQA.Selenium.IWebElement FilterButtonWebElement = webDriver.FindElement(FilterButtonBy);
+            FilterButtonWebElement.Click();
 
-            _ = WaitDriver.Until(drv => drv.FindElements(OpenQA.Selenium.By.CssSelector("body.waiting")).Count == 0);
+            var BodyWaitingBy = OpenQA.Selenium.By.CssSelector("body.waiting");
+            try
+            {
+                OpenQA.Selenium.IWebElement? BodyWaitingWebElement = webDriver.FindElement(BodyWaitingBy);
+                while ((BodyWaitingWebElement?.Displayed ?? false) && (BodyWaitingWebElement?.Enabled ?? false))
+                {
+                    await Task.Delay(TimeSpan.FromSeconds(5));
+                    BodyWaitingWebElement = webDriver.FindElement(BodyWaitingBy);
+                }
+            }
+            catch (OpenQA.Selenium.NoSuchElementException noSuchElementException)
+            {
+                Logger.LogDebug("Exception {noSuchElementException} finding {BodyWaitingBy}", noSuchElementException, BodyWaitingBy);
+            }
+            catch (OpenQA.Selenium.WebDriverException webDriverException)
+            {
+                Logger.LogDebug("Exception {webDriverException} finding {BodyWaitingBy}", webDriverException, BodyWaitingBy);
+            }
         }
 
-        Logger.LogDebug("Antes de Until en '{WebUrl}'", webData.WebUrl);
+        //Logger.LogDebug("Antes de Until en '{WebUrl}'", webData.WebUrl);
         OpenQA.Selenium.IWebElement Element = WaitDriver.Until(x => x.FindElement(OpenQA.Selenium.By.CssSelector(webData.CssSelector)));
-        Logger.LogDebug("Después de Until");
+        //Logger.LogDebug("Después de Until");
 
         try
         {
