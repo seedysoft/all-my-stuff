@@ -68,7 +68,7 @@ public class OutboxCronBackgroundService : CronBackgroundServiceLib.CronBackgrou
                         {
                             string Message = PendingMessage.SubscriptionName switch
                             {
-                                CoreLib.Enums.SubscriptionName.electricidad => GetHtmlBodyMail(System.Text.Json.JsonSerializer.Deserialize<IEnumerable<CoreLib.Entities.PvpcBase>>(PendingMessage.Payload)!),
+                                CoreLib.Enums.SubscriptionName.electricidad => GetHtmlBodyMail(PendingMessage.Payload),
 
                                 CoreLib.Enums.SubscriptionName.webComparer => PendingMessage.Payload,
 
@@ -106,8 +106,9 @@ public class OutboxCronBackgroundService : CronBackgroundServiceLib.CronBackgrou
         Logger.LogInformation("End {ApplicationName}", AppName);
     }
 
-    private static string GetHtmlBodyMail(IEnumerable<CoreLib.Entities.PvpcBase> entities)
+    private static string GetHtmlBodyMail(string payload)
     {
+        IEnumerable<CoreLib.Entities.PvpcBase> entities = System.Text.Json.JsonSerializer.Deserialize<IEnumerable<CoreLib.Entities.PvpcBase>>(payload)!;
         if (!entities.Any())
             return string.Empty;
 

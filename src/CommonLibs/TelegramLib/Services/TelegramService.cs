@@ -108,8 +108,7 @@ public partial class TelegramService
         , CancellationToken cancellationToken) =>
         await MessageSendTextAsync(to, text, null, cancellationToken);
 
-    internal static string MessageGetMarkdownV2TextForPrices(
-        IEnumerable<CoreLib.Entities.PvpcBase> prices)
+    internal static string MessageGetMarkdownV2TextForPrices(IEnumerable<CoreLib.Entities.PvpcBase> prices)
     {
         if (prices == null || !prices.Any())
             return "No hay datos";
@@ -139,6 +138,8 @@ public partial class TelegramService
 
         return sb.ToString();
     }
+    internal static string MessageGetMarkdownV2TextForPrices(string payload)
+        => MessageGetMarkdownV2TextForPrices(System.Text.Json.JsonSerializer.Deserialize<IEnumerable<CoreLib.Entities.PvpcBase>>(payload)!);
 
     private async Task<Telegram.Bot.Types.Message> MessageSendQueryAsync(
         long to
@@ -679,13 +680,16 @@ public partial class TelegramService
         return await MessageSendTextAsync(message.Chat.Id, ResponseText, null, cancellationToken);
     }
 
-    public async Task SendMessageToSubscriberAsync(CoreLib.Entities.Outbox pendingMessage, long telegramUserId, CancellationToken stoppingToken)
+    public async Task SendMessageToSubscriberAsync(
+        CoreLib.Entities.Outbox pendingMessage
+        , long telegramUserId
+        , CancellationToken stoppingToken)
     {
         _ = pendingMessage.SubscriptionName switch
         {
             CoreLib.Enums.SubscriptionName.electricidad => await MessageSendTextAsync(
                 telegramUserId,
-                MessageGetMarkdownV2TextForPrices(System.Text.Json.JsonSerializer.Deserialize<IEnumerable<CoreLib.Entities.PvpcBase>>(pendingMessage.Payload)!),
+                MessageGetMarkdownV2TextForPrices(pendingMessage.Payload),
                 Telegram.Bot.Types.Enums.ParseMode.MarkdownV2,
                 stoppingToken),
 
