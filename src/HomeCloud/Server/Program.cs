@@ -42,7 +42,7 @@ public class Program
             _ = webApp.UseHsts();
         }
 
-        //app.UseHttpsRedirection();
+        //webApp.UseHttpsRedirection();
 
         _ = webApp.UseBlazorFrameworkFiles();
         _ = webApp.UseStaticFiles();
