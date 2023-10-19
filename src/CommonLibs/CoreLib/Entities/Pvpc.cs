@@ -14,7 +14,6 @@ public abstract class PvpcBase
 /// <summary>
 /// Precio Voluntario para el Pequeño Consumidor
 /// </summary>
-[System.Text.Json.Serialization.JsonDerivedType(typeof(PvpcBase))]
 [System.Diagnostics.DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
 public class Pvpc : PvpcBase
 {
@@ -28,7 +27,6 @@ public class Pvpc : PvpcBase
     protected string GetDebuggerDisplay() => $"{FullDate:yy.MM.dd HHzz} @ {KWhPriceInEuros:N5} €/kWh";
 }
 
-[System.Text.Json.Serialization.JsonDerivedType(typeof(PvpcBase))]
 public class PvpcView : PvpcBase
 {
     public long AtDateTimeUnix { get; private set; }

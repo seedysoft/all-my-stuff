@@ -108,7 +108,7 @@ public class OutboxCronBackgroundService : CronBackgroundServiceLib.CronBackgrou
 
     private static string GetHtmlBodyMail(string payload)
     {
-        IEnumerable<CoreLib.Entities.PvpcBase> entities = System.Text.Json.JsonSerializer.Deserialize<IEnumerable<CoreLib.Entities.PvpcBase>>(payload)!;
+        IEnumerable<CoreLib.Entities.Pvpc> entities = System.Text.Json.JsonSerializer.Deserialize<IEnumerable<CoreLib.Entities.Pvpc>>(payload)!;
         if (!entities.Any())
             return string.Empty;
 

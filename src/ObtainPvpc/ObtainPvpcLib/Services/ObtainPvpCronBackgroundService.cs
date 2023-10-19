@@ -25,6 +25,7 @@ public class ObtainPvpCronBackgroundService : CronBackgroundServiceLib.CronBackg
 
     public override async Task DoWorkAsync(CancellationToken stoppingToken)
     {
+        // TODO             Issue #7
         string AppName = ServiceProvider.GetRequiredService<IHostEnvironment>().ApplicationName;
 
         Logger.LogInformation("Called {ApplicationName} version {Version}", AppName, System.Reflection.Assembly.GetExecutingAssembly().GetName().Version);
@@ -108,7 +109,7 @@ public class ObtainPvpCronBackgroundService : CronBackgroundServiceLib.CronBackg
         {
             var OutboxMessage = new CoreLib.Entities.Outbox(
                 CoreLib.Enums.SubscriptionName.electricidad,
-                System.Text.Json.JsonSerializer.Serialize<IEnumerable<CoreLib.Entities.PvpcBase>>(Prices));
+                System.Text.Json.JsonSerializer.Serialize<IEnumerable<CoreLib.Entities.Pvpc>>(Prices.Cast<CoreLib.Entities.Pvpc>()));
             _ = await dbCxt.Outbox.AddAsync(OutboxMessage, stoppingToken);
 
             _ = await dbCxt.SaveChangesAsync(stoppingToken);
