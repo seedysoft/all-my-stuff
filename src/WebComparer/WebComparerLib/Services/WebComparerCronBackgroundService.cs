@@ -108,10 +108,10 @@ public class WebComparerCronBackgroundService : CronBackgroundServiceLib.CronBac
         //Options.AddArgument("--no-sandbox");
         Options.AddArgument("--headless");
 
-        //logger.LogInformation("Current OSDescription: '{OSDescription}'", System.Runtime.InteropServices.RuntimeInformation.OSDescription);
-        //logger.LogInformation("Current RuntimeIdentifier: '{RuntimeIdentifier}'", System.Runtime.InteropServices.RuntimeInformation.RuntimeIdentifier);
-        //logger.LogInformation("Current ProcessArchitecture: '{ProcessArchitecture}'", System.Runtime.InteropServices.RuntimeInformation.ProcessArchitecture);
-        //logger.LogInformation("Current Platform: '{Platform}'", Environment.OSVersion.Platform);
+        //Logger.LogInformation("Current OSDescription: '{OSDescription}'", System.Runtime.InteropServices.RuntimeInformation.OSDescription);
+        //Logger.LogInformation("Current RuntimeIdentifier: '{RuntimeIdentifier}'", System.Runtime.InteropServices.RuntimeInformation.RuntimeIdentifier);
+        //Logger.LogInformation("Current ProcessArchitecture: '{ProcessArchitecture}'", System.Runtime.InteropServices.RuntimeInformation.ProcessArchitecture);
+        //Logger.LogInformation("Current Platform: '{Platform}'", Environment.OSVersion.Platform);
 
         if (System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(System.Runtime.InteropServices.OSPlatform.Linux))
             Options.BinaryLocation = "/usr/bin/chromium-browser";
@@ -160,11 +160,8 @@ public class WebComparerCronBackgroundService : CronBackgroundServiceLib.CronBac
             try
             {
                 OpenQA.Selenium.IWebElement? BodyWaitingWebElement = webDriver.FindElement(BodyWaitingBy);
-                while ((BodyWaitingWebElement?.Displayed ?? false) && (BodyWaitingWebElement?.Enabled ?? false))
-                {
-                    await Task.Delay(TimeSpan.FromSeconds(5));
-                    BodyWaitingWebElement = webDriver.FindElement(BodyWaitingBy);
-                }
+
+                await Task.Delay(TimeSpan.FromSeconds(5));
             }
             catch (OpenQA.Selenium.NoSuchElementException noSuchElementException)
             {
