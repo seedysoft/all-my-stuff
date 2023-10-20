@@ -22,7 +22,7 @@ public class Program
                 string CurrentEnvironmentName = hostBuilderContext.HostingEnvironment.EnvironmentName;
 
                 _ = iConfigurationBuilder
-                    .AddJsonFile("appsettings.Carburantes.Infrastructure.json", false, true)
+                    .AddJsonFile($"appsettings.Carburantes.Infrastructure.json", false, true)
                     .AddJsonFile($"appsettings.Carburantes.Infrastructure.{CurrentEnvironmentName}.json", false, true)
 
                     .AddJsonFile($"appsettings.CarburantesConnectionStrings.{CurrentEnvironmentName}.json", false, true);

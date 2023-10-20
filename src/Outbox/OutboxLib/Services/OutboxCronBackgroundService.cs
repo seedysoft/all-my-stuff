@@ -1,7 +1,6 @@
 ﻿using EFCore.BulkExtensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System.Collections.Immutable;
 using Seedysoft.UtilsLib.Extensions;
@@ -24,7 +23,7 @@ public class OutboxCronBackgroundService : CronBackgroundServiceLib.CronBackgrou
 
     public override async Task DoWorkAsync(CancellationToken stoppingToken)
     {
-        string AppName = ServiceProvider.GetRequiredService<IHostEnvironment>().ApplicationName;
+        string? AppName = GetType().FullName;
 
         Logger.LogInformation("Called {ApplicationName} version {Version}", AppName, System.Reflection.Assembly.GetExecutingAssembly().GetName().Version);
 

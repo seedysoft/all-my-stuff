@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Seedysoft.UtilsLib.Extensions;
 using System.Collections.Immutable;
@@ -23,7 +22,7 @@ public class WebComparerCronBackgroundService : CronBackgroundServiceLib.CronBac
 
     public override async Task DoWorkAsync(CancellationToken cancellationToken)
     {
-        string AppName = ServiceProvider.GetRequiredService<IHostEnvironment>().ApplicationName;
+        string? AppName = GetType().FullName;
 
         Logger.LogInformation("Called {ApplicationName} version {Version}", AppName, System.Reflection.Assembly.GetExecutingAssembly().GetName().Version);
 
@@ -173,9 +172,7 @@ public class WebComparerCronBackgroundService : CronBackgroundServiceLib.CronBac
             }
         }
 
-        //Logger.LogDebug("Antes de Until en '{WebUrl}'", webData.WebUrl);
         OpenQA.Selenium.IWebElement Element = WaitDriver.Until(x => x.FindElement(OpenQA.Selenium.By.CssSelector(webData.CssSelector)));
-        //Logger.LogDebug("Después de Until");
 
         try
         {

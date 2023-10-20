@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Seedysoft.UtilsLib.Extensions;
 using System.Net.Http.Json;
@@ -25,20 +24,17 @@ public class ObtainPvpCronBackgroundService : CronBackgroundServiceLib.CronBackg
 
     public override async Task DoWorkAsync(CancellationToken stoppingToken)
     {
-        // TODO             Issue #7
-        string AppName = ServiceProvider.GetRequiredService<IHostEnvironment>().ApplicationName;
-
-        Logger.LogInformation("Called {ApplicationName} version {Version}", AppName, System.Reflection.Assembly.GetExecutingAssembly().GetName().Version);
-
         DateTime ForDate = DateTimeOffset.UtcNow.AddDays(1).Date;
 
         await ObtainPvpcForDateAsync(ForDate, stoppingToken);
-
-        Logger.LogInformation("End {ApplicationName}", AppName);
     }
 
     public async Task ObtainPvpcForDateAsync(DateTime forDate, CancellationToken stoppingToken)
     {
+        string? AppName = GetType().FullName;
+
+        Logger.LogInformation("Called {ApplicationName} version {Version}", AppName, System.Reflection.Assembly.GetExecutingAssembly().GetName().Version);
+
         Logger.LogInformation("Obtaining PVPC for the day {ForDate}", forDate.ToString(UtilsLib.Constants.Formats.YearMonthDayFormat));
 
         // HttpClient is intended to be instantiated once per application, rather than per-use. See Remarks.
@@ -63,6 +59,8 @@ public class ObtainPvpCronBackgroundService : CronBackgroundServiceLib.CronBackg
         catch (TaskCanceledException e) when (e.InnerException is TimeoutException && Logger.LogAndHandle(e, "Request to '{WebUrl}' timeout", UrlString)) { }
         catch (TaskCanceledException e) when (Logger.LogAndHandle(e, "Task request to '{WebUrl}' cancelled", UrlString)) { }
         catch (Exception e) when (Logger.LogAndHandle(e, "Request to '{WebUrl}' failed", UrlString)) { }
+
+        Logger.LogInformation("End {ApplicationName}", AppName);
     }
 
     private async Task<int?> ProcessPricesAsync(CoreLib.Entities.Pvpc[]? NewEntities, CancellationToken stoppingToken)
