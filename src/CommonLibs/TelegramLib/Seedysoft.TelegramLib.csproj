@@ -15,7 +15,9 @@
 
   <ItemGroup>
     <None Remove="appsettings.TelegramSettings.Development.json" />
-    <None Remove="appsettings.TelegramSettings.json" />
+    <Content Include="appsettings.TelegramSettings.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
     <None Remove="appsettings.TelegramSettings.Production.json" />
   </ItemGroup>
 
@@ -23,9 +25,6 @@
     <Content Include="appsettings.TelegramSettings.Development.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <DependentUpon>appsettings.TelegramSettings.json</DependentUpon>
-    </Content>
-    <Content Include="appsettings.TelegramSettings.json">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Content>
     <None Include="appsettings.TelegramSettings.Production.json">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
@@ -37,9 +36,6 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <DependentUpon>appsettings.TelegramSettings.json</DependentUpon>
     </None>
-    <Content Include="appsettings.TelegramSettings.json">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Content>
     <Content Include="appsettings.TelegramSettings.Production.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <DependentUpon>appsettings.TelegramSettings.json</DependentUpon>
@@ -52,7 +48,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\ObtainPvpc\ObtainPvpcLib\Seedysoft.ObtainPvpcLib.csproj" />
+    <ProjectReference Include="..\..\PvpcObtainer\PvpcObtainerLib\Seedysoft.PvpcObtainerLib.csproj" />
     <ProjectReference Include="..\CoreLib\Seedysoft.CoreLib.csproj" />
     <ProjectReference Include="..\CronBackgroundServiceLib\Seedysoft.CronBackgroundServiceLib.csproj" />
     <ProjectReference Include="..\Seedysoft.InfrastructureLib\Seedysoft.InfrastructureLib.csproj" />

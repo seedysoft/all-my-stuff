@@ -5,7 +5,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace Seedysoft.ObtainPvpcConsoleApp;
+namespace Seedysoft.PvpcObtainerConsoleApp;
 
 public class Program
 {
@@ -22,15 +22,15 @@ public class Program
 
                 _ = iConfigurationBuilder
                     .AddJsonFile($"appsettings.dbConnectionString.{CurrentEnvironmentName}.json", false, true)
-                    .AddJsonFile($"appsettings.ObtainPvpcSettings.json", false, true);
+                    .AddJsonFile($"appsettings.PvpcObtainerSettings.json", false, true);
             })
 
             .ConfigureServices((hostBuilderContext, iServiceCollection) =>
             {
                 InfrastructureLib.Dependencies.AddDbCxtContext(hostBuilderContext.Configuration, iServiceCollection);
 
-                iServiceCollection.TryAddSingleton(hostBuilderContext.Configuration.GetSection(nameof(ObtainPvpcLib.Settings.ObtainPvpcSettings)).Get<ObtainPvpcLib.Settings.ObtainPvpcSettings>()!);
-                iServiceCollection.TryAddSingleton<ObtainPvpcLib.Services.ObtainPvpCronBackgroundService>();
+                iServiceCollection.TryAddSingleton(hostBuilderContext.Configuration.GetSection(nameof(PvpcObtainerLib.Settings.PvpcObtainerSettings)).Get<PvpcObtainerLib.Settings.PvpcObtainerSettings>()!);
+                iServiceCollection.TryAddSingleton<PvpcObtainerLib.Services.PvpcObtainerCronBackgroundService>();
             });
 
         IHost host = builder.Build();
@@ -74,9 +74,9 @@ public class Program
 
             using CancellationTokenSource CancelTokenSource = new();
 
-            using (ObtainPvpcLib.Services.ObtainPvpCronBackgroundService obtainPvpCronBackgroundService = host.Services.GetRequiredService<ObtainPvpcLib.Services.ObtainPvpCronBackgroundService>())
+            using (PvpcObtainerLib.Services.PvpcObtainerCronBackgroundService pvpcObtainerCronBackgroundService = host.Services.GetRequiredService<PvpcObtainerLib.Services.PvpcObtainerCronBackgroundService>())
             {
-                await obtainPvpCronBackgroundService.ObtainPvpcForDateAsync(ForDate, CancelTokenSource.Token);
+                await pvpcObtainerCronBackgroundService.PvpcObtainerForDateAsync(ForDate, CancelTokenSource.Token);
             }
 
             Logger.LogInformation("End {ApplicationName}", AppName);

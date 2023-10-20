@@ -26,11 +26,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Seedysoft.WebComparerLib", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Seedysoft.WebComparerConsoleApp", "WebComparer\WebComparerConsoleApp\Seedysoft.WebComparerConsoleApp.csproj", "{9990F202-40C8-4D36-81B9-672EE1B0D56A}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ObtainPvpc", "ObtainPvpc", "{CFA00260-5136-42B3-BF3F-4A589CDFF071}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PvpcObtainer", "PvpcObtainer", "{CFA00260-5136-42B3-BF3F-4A589CDFF071}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Seedysoft.ObtainPvpcLib", "ObtainPvpc\ObtainPvpcLib\Seedysoft.ObtainPvpcLib.csproj", "{5E63EAAC-3D6D-4CAF-B24C-74B0FC9E0D35}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Seedysoft.PvpcObtainerLib", "PvpcObtainer\PvpcObtainerLib\Seedysoft.PvpcObtainerLib.csproj", "{5E63EAAC-3D6D-4CAF-B24C-74B0FC9E0D35}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Seedysoft.ObtainPvpcConsoleApp", "ObtainPvpc\ObtainPvpcConsoleApp\Seedysoft.ObtainPvpcConsoleApp.csproj", "{338BEE60-3397-4CF6-8D14-0A604FD186CF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Seedysoft.PvpcObtainerConsoleApp", "PvpcObtainer\PvpcObtainerConsoleApp\Seedysoft.PvpcObtainerConsoleApp.csproj", "{338BEE60-3397-4CF6-8D14-0A604FD186CF}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Outbox", "Outbox", "{DEA953B6-AC4C-4AFF-98A2-1D900A2C8DB6}"
 EndProject

@@ -44,7 +44,7 @@ public static class ProgramStartup
             .AddJsonFile($"appsettings.Serilog.json", false, true)
             .AddJsonFile($"appsettings.Serilog.{CurrentEnvironmentName}.json", false, true)
 
-            .AddJsonFile($"appsettings.ObtainPvpcSettings.json", false, true)
+            .AddJsonFile($"appsettings.PvpcObtainerSettings.json", false, true)
             .AddJsonFile($"appsettings.SmtpServiceSettings.json", false, true)
             .AddJsonFile($"appsettings.TelegramSettings.{CurrentEnvironmentName}.json", false, true)
             .AddJsonFile($"appsettings.WebComparerSettings.{CurrentEnvironmentName}.json", false, true);
@@ -138,8 +138,8 @@ public static class ProgramStartup
         _ = builder.Services.AddHttpClient(nameof(Carburantes.Core.Settings.Minetur));
         _ = builder.Services.AddHostedService<Carburantes.Services.ObtainDataCronBackgroundService>();
 
-        builder.Services.TryAddSingleton(builder.Configuration.GetSection(nameof(ObtainPvpcLib.Settings.ObtainPvpcSettings)).Get<ObtainPvpcLib.Settings.ObtainPvpcSettings>()!);
-        _ = builder.Services.AddHostedService<ObtainPvpcLib.Services.ObtainPvpCronBackgroundService>();
+        builder.Services.TryAddSingleton(builder.Configuration.GetSection(nameof(PvpcObtainerLib.Settings.PvpcObtainerSettings)).Get<PvpcObtainerLib.Settings.PvpcObtainerSettings>()!);
+        _ = builder.Services.AddHostedService<PvpcObtainerLib.Services.PvpcObtainerCronBackgroundService>();
 
         _ = builder.Services.AddHostedService<OutboxLib.Services.OutboxCronBackgroundService>();
 

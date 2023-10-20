@@ -4,19 +4,19 @@ using Microsoft.Extensions.Logging;
 using Seedysoft.UtilsLib.Extensions;
 using System.Net.Http.Json;
 
-namespace Seedysoft.ObtainPvpcLib.Services;
+namespace Seedysoft.PvpcObtainerLib.Services;
 
-public class ObtainPvpCronBackgroundService : CronBackgroundServiceLib.CronBackgroundService
+public class PvpcObtainerCronBackgroundService : CronBackgroundServiceLib.CronBackgroundService
 {
     private readonly IServiceProvider ServiceProvider;
-    private readonly ILogger<ObtainPvpCronBackgroundService> Logger;
+    private readonly ILogger<PvpcObtainerCronBackgroundService> Logger;
 
-    private Settings.ObtainPvpcSettings Options => (Settings.ObtainPvpcSettings)Config;
+    private Settings.PvpcObtainerSettings Options => (Settings.PvpcObtainerSettings)Config;
 
-    public ObtainPvpCronBackgroundService(
-        Settings.ObtainPvpcSettings config
+    public PvpcObtainerCronBackgroundService(
+        Settings.PvpcObtainerSettings config
         , IServiceProvider serviceProvider
-        , ILogger<ObtainPvpCronBackgroundService> logger) : base(config)
+        , ILogger<PvpcObtainerCronBackgroundService> logger) : base(config)
     {
         ServiceProvider = serviceProvider;
         Logger = logger;
@@ -26,10 +26,10 @@ public class ObtainPvpCronBackgroundService : CronBackgroundServiceLib.CronBackg
     {
         DateTime ForDate = DateTimeOffset.UtcNow.AddDays(1).Date;
 
-        await ObtainPvpcForDateAsync(ForDate, stoppingToken);
+        await PvpcObtainerForDateAsync(ForDate, stoppingToken);
     }
 
-    public async Task ObtainPvpcForDateAsync(DateTime forDate, CancellationToken stoppingToken)
+    public async Task PvpcObtainerForDateAsync(DateTime forDate, CancellationToken stoppingToken)
     {
         string? AppName = GetType().FullName;
 

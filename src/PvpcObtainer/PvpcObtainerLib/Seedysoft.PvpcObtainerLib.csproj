@@ -14,11 +14,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="appsettings.ObtainPvpcSettings.json" />
+    <None Remove="appsettings.PvpcObtainerSettings.json" />
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="appsettings.ObtainPvpcSettings.json">
+    <Content Include="appsettings.PvpcObtainerSettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

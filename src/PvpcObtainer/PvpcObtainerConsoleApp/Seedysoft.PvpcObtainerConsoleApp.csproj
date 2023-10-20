@@ -28,7 +28,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\CommonLibs\UtilsLib\Seedysoft.UtilsLib.csproj" />
-    <ProjectReference Include="..\ObtainPvpcLib\Seedysoft.ObtainPvpcLib.csproj" />
+    <ProjectReference Include="..\PvpcObtainerLib\Seedysoft.PvpcObtainerLib.csproj" />
   </ItemGroup>
 
 </Project>

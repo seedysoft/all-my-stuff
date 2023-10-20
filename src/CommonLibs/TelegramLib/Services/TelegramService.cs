@@ -423,7 +423,7 @@ public partial class TelegramService
             dateTimeToObtain = DateTime.Now.TimeOfDay > new TimeSpan(20, 30, 00) ? DateTime.Today.AddDays(1) : DateTime.Today;
         }
 
-        await ServiceProvider.GetRequiredService<ObtainPvpcLib.Services.ObtainPvpCronBackgroundService>().ObtainPvpcForDateAsync(dateTimeToObtain, cancellationToken);
+        await ServiceProvider.GetRequiredService<PvpcObtainerLib.Services.PvpcObtainerCronBackgroundService>().PvpcObtainerForDateAsync(dateTimeToObtain, cancellationToken);
 
         CoreLib.Entities.PvpcView[]? Prices = await dbCtx.GetPvpcBetweenDatesAsync(
             dateTimeToObtain.Date,

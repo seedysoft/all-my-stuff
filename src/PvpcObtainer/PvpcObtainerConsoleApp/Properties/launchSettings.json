@@ -1,6 +1,6 @@
 {
   "profiles": {
-    "ObtainPvpcConsoleApp": {
+    "PvpcObtainerConsoleApp": {
       "commandName": "Project",
       "environmentVariables": {
         "environment": "Development",
