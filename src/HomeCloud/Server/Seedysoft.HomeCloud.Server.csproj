@@ -25,10 +25,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="..\..\..\create-daemon.sh" Link="create-daemon.sh">
+    <None Include="..\..\..\bashScripts\create-daemon.sh" Link="create-daemon.sh">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="..\..\..\create-HomeCloudServer-daemon.sh" Link="create-HomeCloudServer-daemon.sh">
+    <None Include="..\..\..\bashScripts\create-HomeCloudServer-daemon.sh" Link="create-HomeCloudServer-daemon.sh">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
