@@ -71,7 +71,7 @@ public class PvpcObtainerCronBackgroundService : CronBackgroundServiceLib.CronBa
             return null;
         }
 
-        var Prices = new List<CoreLib.Entities.PvpcBase>(24);
+        List<CoreLib.Entities.PvpcBase> Prices = new(24);
 
         IEnumerable<long> DateTimes = NewEntities.Select(x => x.AtDateTimeOffset.ToUnixTimeSeconds());
         long MinDateTime = DateTimes.Min();
@@ -105,7 +105,7 @@ public class PvpcObtainerCronBackgroundService : CronBackgroundServiceLib.CronBa
 
         if (dbCxt.ChangeTracker.HasChanges())
         {
-            var OutboxMessage = new CoreLib.Entities.Outbox(
+            CoreLib.Entities.Outbox OutboxMessage = new(
                 CoreLib.Enums.SubscriptionName.electricidad,
                 System.Text.Json.JsonSerializer.Serialize<IEnumerable<CoreLib.Entities.Pvpc>>(Prices.Cast<CoreLib.Entities.Pvpc>()));
             _ = await dbCxt.Outbox.AddAsync(OutboxMessage, stoppingToken);

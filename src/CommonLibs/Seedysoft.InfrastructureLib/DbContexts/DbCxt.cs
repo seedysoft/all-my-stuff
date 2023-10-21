@@ -43,7 +43,7 @@ public class DbCxtFactory : Microsoft.EntityFrameworkCore.Design.IDesignTimeDbCo
 
     public DbCxt CreateDbContext(string[] args)
     {
-        var builder = new DbContextOptionsBuilder<DbCxt>();
+        DbContextOptionsBuilder<DbCxt> builder = new();
 
         const string ConnectionStringName = nameof(DbCxt);
         string ConnectionString = Configuration.GetConnectionString($"{ConnectionStringName}") ?? throw new KeyNotFoundException($"Connection string '{ConnectionStringName}' not found.");

@@ -80,7 +80,7 @@ public class WebComparerCronBackgroundService : CronBackgroundServiceLib.CronBac
         {
             webData.UpdatedAtDateTimeOffset = webData.SeenAtDateTimeOffset;
 
-            var Message = new CoreLib.Entities.Outbox(
+            CoreLib.Entities.Outbox Message = new(
                 CoreLib.Enums.SubscriptionName.webComparer,
                 $"Ha cambiado '{webData.Hyperlink}'.{Environment.NewLine}{webData.DataToSend}")
             {
@@ -148,7 +148,7 @@ public class WebComparerCronBackgroundService : CronBackgroundServiceLib.CronBac
         {
             OpenQA.Selenium.IWebElement RemitenteFiltroWebElement = WaitDriver.Until(drv => drv.FindElement(OpenQA.Selenium.By.Id("remitenteFiltro")));
 
-            var FilterSelectElement = new OpenQA.Selenium.Support.UI.SelectElement(RemitenteFiltroWebElement);
+            OpenQA.Selenium.Support.UI.SelectElement FilterSelectElement = new(RemitenteFiltroWebElement);
             FilterSelectElement.SelectByText("Personal");
 
             var FilterButtonBy = OpenQA.Selenium.By.CssSelector(".botonera a.primary");
