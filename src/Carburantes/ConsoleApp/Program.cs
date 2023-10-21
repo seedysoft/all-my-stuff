@@ -37,7 +37,7 @@ public class Program
                         string ConnectionString = hostBuilderContext.Configuration.GetConnectionString($"{ConnectionStringName}") ?? throw new KeyNotFoundException($"Connection string '{ConnectionStringName}' not found.");
                         string FullFilePath = Path.GetFullPath(ConnectionString[CoreLib.Constants.DatabaseStrings.DataSource.Length..]);
                         if (!File.Exists(FullFilePath))
-                            throw new FileNotFoundException("Database file not found: '{FullFilePath}'", FullFilePath);
+                            throw new FileNotFoundException("Database file not found.", FullFilePath);
 
                         _ = dbContextOptionsBuilder.UseSqlite(ConnectionString);
                         if (System.Diagnostics.Debugger.IsAttached)
@@ -57,7 +57,7 @@ public class Program
                         string ConnectionString = hostBuilderContext.Configuration.GetConnectionString($"{ConnectionStringName}") ?? throw new KeyNotFoundException($"Connection string '{ConnectionStringName}' not found.");
                         string FullFilePath = Path.GetFullPath(ConnectionString[CoreLib.Constants.DatabaseStrings.DataSource.Length..]);
                         if (!File.Exists(FullFilePath))
-                            throw new FileNotFoundException("Database file not found: '{FullFilePath}'", FullFilePath);
+                            throw new FileNotFoundException("Database file not found.", FullFilePath);
 
                         _ = dbContextOptionsBuilder.UseSqlite(ConnectionString);
                         if (System.Diagnostics.Debugger.IsAttached)

@@ -47,9 +47,9 @@ public class DbCxtFactory : Microsoft.EntityFrameworkCore.Design.IDesignTimeDbCo
 
         const string ConnectionStringName = nameof(DbCxt);
         string ConnectionString = Configuration.GetConnectionString($"{ConnectionStringName}") ?? throw new KeyNotFoundException($"Connection string '{ConnectionStringName}' not found.");
-        string FullFilePath = Path.GetFullPath(ConnectionString[Seedysoft.CoreLib.Constants.DatabaseStrings.DataSource.Length..]);
+        string FullFilePath = Path.GetFullPath(ConnectionString[CoreLib.Constants.DatabaseStrings.DataSource.Length..]);
         if (!File.Exists(FullFilePath))
-            throw new FileNotFoundException("Database file not found: '{FullFilePath}'", FullFilePath);
+            throw new FileNotFoundException("Database file not found.", FullFilePath);
 
         _ = builder.UseSqlite(ConnectionString);
 
