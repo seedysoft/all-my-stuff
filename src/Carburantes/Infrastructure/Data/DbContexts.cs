@@ -48,6 +48,8 @@ public sealed class CarburantesDbContext : CarburantesDbContextBase
     public DbSet<Core.Entities.Municipio> Municipios { get; set; } = default!;
     public DbSet<Core.Entities.ProductoPetrolifero> ProductosPetroliferos { get; set; } = default!;
     public DbSet<Core.Entities.Provincia> Provincias { get; set; } = default!;
+
+    public DbSet<Core.Entities.ProductPrice> ProductPriceView { get; set; } = default!;
 }
 
 public sealed class CarburantesHistDbContext : CarburantesDbContextBase
@@ -81,4 +83,6 @@ public sealed class CarburantesHistDbContext : CarburantesDbContextBase
     public DbSet<Core.Entities.MunicipioHist> MunicipiosHist { get; set; } = default!;
     public DbSet<Core.Entities.ProductoPetroliferoHist> ProductosPetroliferosHist { get; set; } = default!;
     public DbSet<Core.Entities.ProvinciaHist> ProvinciasHist { get; set; } = default!;
+
+    public DbSet<Core.Entities.ProductPriceHist> ProductPriceHistView { get; set; } = default!;
 }
