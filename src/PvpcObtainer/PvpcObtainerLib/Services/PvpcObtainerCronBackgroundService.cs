@@ -107,7 +107,7 @@ public class PvpcObtainerCronBackgroundService : CronBackgroundServiceLib.CronBa
         {
             CoreLib.Entities.Outbox OutboxMessage = new(
                 CoreLib.Enums.SubscriptionName.electricidad,
-                System.Text.Json.JsonSerializer.Serialize<IEnumerable<CoreLib.Entities.Pvpc>>(Prices.Cast<CoreLib.Entities.Pvpc>()));
+                System.Text.Json.JsonSerializer.Serialize(Prices.Cast<CoreLib.Entities.Pvpc>()));
             _ = await dbCxt.Outbox.AddAsync(OutboxMessage, stoppingToken);
 
             _ = await dbCxt.SaveChangesAsync(stoppingToken);

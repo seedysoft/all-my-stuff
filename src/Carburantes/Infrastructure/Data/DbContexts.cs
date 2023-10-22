@@ -1,12 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
-#if DEBUG
-using Microsoft.Extensions.Configuration;
-#endif
 
 namespace Seedysoft.Carburantes.Infrastructure.Data;
 
 public abstract class CarburantesDbContextBase : DbContext
 {
+#if DEBUG
+    public CarburantesDbContextBase() : base() { }
+#endif
     public CarburantesDbContextBase(DbContextOptions options) : base(options) => ChangeTracker.LazyLoadingEnabled = false;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -19,7 +19,26 @@ public abstract class CarburantesDbContextBase : DbContext
 
 public sealed class CarburantesDbContext : CarburantesDbContextBase
 {
-    public CarburantesDbContext(DbContextOptions<CarburantesDbContext> options) : base(options) => ChangeTracker.LazyLoadingEnabled = false;
+#if DEBUG
+    public CarburantesDbContext() : base() { }
+#endif
+    public CarburantesDbContext(DbContextOptions<CarburantesDbContext> options) : base(options) { }
+
+#if DEBUG
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        if (!optionsBuilder.IsConfigured)
+        {
+            string ConnectionString = $"{CoreLib.Constants.DatabaseStrings.DataSource}../../../../databases/Carburantes.sqlite3";
+            Console.WriteLine(ConnectionString);
+            string FullFilePath = Path.GetFullPath(ConnectionString[CoreLib.Constants.DatabaseStrings.DataSource.Length..]);
+            if (!File.Exists(FullFilePath))
+                throw new FileNotFoundException("Database file not found.", FullFilePath);
+
+            _ = optionsBuilder.UseSqlite(ConnectionString);
+        }
+    }
+#endif
 
     protected override void OnModelCreating(ModelBuilder modelBuilder) => base.OnModelCreating(modelBuilder);
 
@@ -33,7 +52,26 @@ public sealed class CarburantesDbContext : CarburantesDbContextBase
 
 public sealed class CarburantesHistDbContext : CarburantesDbContextBase
 {
-    public CarburantesHistDbContext(DbContextOptions<CarburantesHistDbContext> options) : base(options) => ChangeTracker.LazyLoadingEnabled = false;
+#if DEBUG
+    public CarburantesHistDbContext() : base() { }
+#endif
+    public CarburantesHistDbContext(DbContextOptions<CarburantesHistDbContext> options) : base(options) { }
+
+#if DEBUG
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        if (!optionsBuilder.IsConfigured)
+        {
+            string ConnectionString = $"{CoreLib.Constants.DatabaseStrings.DataSource}../../../../databases/CarburantesHist.sqlite3";
+            Console.WriteLine(ConnectionString);
+            string FullFilePath = Path.GetFullPath(ConnectionString[CoreLib.Constants.DatabaseStrings.DataSource.Length..]);
+            if (!File.Exists(FullFilePath))
+                throw new FileNotFoundException("Database file not found.", FullFilePath);
+
+            _ = optionsBuilder.UseSqlite(ConnectionString);
+        }
+    }
+#endif
 
     protected override void OnModelCreating(ModelBuilder modelBuilder) => base.OnModelCreating(modelBuilder);
 
@@ -44,55 +82,3 @@ public sealed class CarburantesHistDbContext : CarburantesDbContextBase
     public DbSet<Core.Entities.ProductoPetroliferoHist> ProductosPetroliferosHist { get; set; } = default!;
     public DbSet<Core.Entities.ProvinciaHist> ProvinciasHist { get; set; } = default!;
 }
-
-#if DEBUG
-/// <summary>
-/// Con esta clase podemos generar las migraciones
-/// </summary>
-public class CarburantesDbContextFactory : Microsoft.EntityFrameworkCore.Design.IDesignTimeDbContextFactory<CarburantesDbContext>
-{
-    public CarburantesDbContextFactory(IConfiguration configuration) => Configuration = configuration;
-
-    public IConfiguration Configuration { get; }
-
-    public CarburantesDbContext CreateDbContext(string[] args)
-    {
-        DbContextOptionsBuilder<CarburantesDbContext> builder = new();
-
-        const string ConnectionStringName = nameof(CarburantesDbContext);
-        string ConnectionString = Configuration.GetConnectionString($"{ConnectionStringName}") ?? throw new KeyNotFoundException($"Connection string '{ConnectionStringName}' not found.");
-        string FullFilePath = Path.GetFullPath(ConnectionString[CoreLib.Constants.DatabaseStrings.DataSource.Length..]);
-        if (!File.Exists(FullFilePath))
-            throw new FileNotFoundException("Database file not found.", FullFilePath);
-
-        _ = builder.UseSqlite(ConnectionString);
-
-        return new CarburantesDbContext(builder.Options);
-    }
-}
-
-/// <summary>
-/// Con esta clase podemos generar las migraciones
-/// </summary>
-public class CarburantesHistDbContextFactory : Microsoft.EntityFrameworkCore.Design.IDesignTimeDbContextFactory<CarburantesHistDbContext>
-{
-    public CarburantesHistDbContextFactory(IConfiguration configuration) => Configuration = configuration;
-
-    public IConfiguration Configuration { get; }
-
-    public CarburantesHistDbContext CreateDbContext(string[] args)
-    {
-        DbContextOptionsBuilder<CarburantesHistDbContext> builder = new();
-
-        const string ConnectionStringName = nameof(CarburantesHistDbContext);
-        string ConnectionString = Configuration.GetConnectionString($"{ConnectionStringName}") ?? throw new KeyNotFoundException($"Connection string '{ConnectionStringName}' not found.");
-        string FullFilePath = Path.GetFullPath(ConnectionString[CoreLib.Constants.DatabaseStrings.DataSource.Length..]);
-        if (!File.Exists(FullFilePath))
-            throw new FileNotFoundException("Database file not found.", FullFilePath);
-
-        _ = builder.UseSqlite(ConnectionString);
-
-        return new CarburantesHistDbContext(builder.Options);
-    }
-}
-#endif

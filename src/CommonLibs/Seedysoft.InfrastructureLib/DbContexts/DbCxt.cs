@@ -1,14 +1,31 @@
 ﻿using Microsoft.EntityFrameworkCore;
-#if DEBUG
 using Microsoft.Extensions.Configuration;
-#endif
 
 namespace Seedysoft.InfrastructureLib.DbContexts;
 
 // TODO                     Use same fieldId across database tables
 public sealed partial class DbCxt : DbContext
 {
+#if DEBUG
+    public DbCxt() : base() { }
+#endif
     public DbCxt(DbContextOptions<DbCxt> options) : base(options) => ChangeTracker.LazyLoadingEnabled = false;
+
+#if DEBUG
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        if (!optionsBuilder.IsConfigured)
+        {
+            string ConnectionString = $"{CoreLib.Constants.DatabaseStrings.DataSource}../../../../databases/db.sqlite3";
+            Console.WriteLine(ConnectionString);
+            string FullFilePath = Path.GetFullPath(ConnectionString[CoreLib.Constants.DatabaseStrings.DataSource.Length..]);
+            if (!File.Exists(FullFilePath))
+                throw new FileNotFoundException("Database file not found.", FullFilePath);
+
+            _ = optionsBuilder.UseSqlite(ConnectionString);
+        }
+    }
+#endif
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -30,30 +47,3 @@ public sealed partial class DbCxt : DbContext
     public DbSet<CoreLib.Entities.WebData> WebDatas { get; set; } = default!;
     public DbSet<CoreLib.Entities.WebDataView> WebDatasView { get; set; } = default!;
 }
-
-#if DEBUG
-/// <summary>
-/// Con esta clase podemos generar las migraciones
-/// </summary>
-public class DbCxtFactory : Microsoft.EntityFrameworkCore.Design.IDesignTimeDbContextFactory<DbCxt>
-{
-    public DbCxtFactory(IConfiguration configuration) => Configuration = configuration;
-
-    public IConfiguration Configuration { get; }
-
-    public DbCxt CreateDbContext(string[] args)
-    {
-        DbContextOptionsBuilder<DbCxt> builder = new();
-
-        const string ConnectionStringName = nameof(DbCxt);
-        string ConnectionString = Configuration.GetConnectionString($"{ConnectionStringName}") ?? throw new KeyNotFoundException($"Connection string '{ConnectionStringName}' not found.");
-        string FullFilePath = Path.GetFullPath(ConnectionString[CoreLib.Constants.DatabaseStrings.DataSource.Length..]);
-        if (!File.Exists(FullFilePath))
-            throw new FileNotFoundException("Database file not found.", FullFilePath);
-
-        _ = builder.UseSqlite(ConnectionString);
-
-        return new DbCxt(builder.Options);
-    }
-}
-#endif
