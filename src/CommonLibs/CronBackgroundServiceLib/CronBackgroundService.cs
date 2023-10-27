@@ -1,8 +1,6 @@
-﻿using Microsoft.Extensions.Hosting;
+﻿namespace Seedysoft.CronBackgroundServiceLib;
 
-namespace Seedysoft.CronBackgroundServiceLib;
-
-public abstract class CronBackgroundService : BackgroundService
+public abstract class CronBackgroundService : Microsoft.Extensions.Hosting.BackgroundService
 {
     protected ScheduleConfig Config { get; init; }
     protected Cronos.CronExpression Expression { get; init; }
@@ -15,25 +13,28 @@ public abstract class CronBackgroundService : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
-        while (!cancellationToken.IsCancellationRequested)
+        try
         {
-            DateTimeOffset? NextExecutionAt = Expression.GetNextOccurrence(DateTimeOffset.Now, Config.TimeZoneInfo);
-            if (NextExecutionAt.HasValue)
+            while (!cancellationToken.IsCancellationRequested)
             {
-                TimeSpan DelayUntilNext = NextExecutionAt.Value.Subtract(DateTimeOffset.Now);
-                if (DelayUntilNext.TotalMilliseconds > 0)   // prevent non-positive values from being passed into Timer
+                DateTimeOffset? NextExecutionAt = Expression.GetNextOccurrence(DateTimeOffset.Now, Config.TimeZoneInfo);
+                if (NextExecutionAt.HasValue)
                 {
-                    await Task.Delay(DelayUntilNext, cancellationToken);
+                    TimeSpan DelayUntilNext = NextExecutionAt.Value.Subtract(DateTimeOffset.Now);
+                    if (DelayUntilNext.TotalMilliseconds > 0)   // prevent non-positive values from being passed into Timer
+                    {
+                        await Task.Delay(DelayUntilNext, cancellationToken);
 
-                    if (!cancellationToken.IsCancellationRequested)
-                        await DoWorkAsync(cancellationToken);
+                        if (!cancellationToken.IsCancellationRequested)
+                            await DoWorkAsync(cancellationToken);
+                    }
                 }
+
+                await Task.Delay(Config.DelayBetweenExecutionsTimeSpan, cancellationToken);
             }
-
-            await Task.Delay(Config.DelayBetweenExecutionsTimeSpan, cancellationToken);
         }
-
-        await Task.CompletedTask;
+        catch (TaskCanceledException) { }
+        finally { await Task.CompletedTask; }
     }
 
     public virtual async Task DoWorkAsync(CancellationToken cancellationToken) => await Task.CompletedTask;

@@ -7,7 +7,7 @@ using Telegram.Bot;
 
 namespace Seedysoft.TelegramLib.Services;
 
-public partial class TelegramService
+public partial class TelegramService : Microsoft.Extensions.Hosting.IHostedService
 {
     private readonly ILogger<TelegramService> Logger;
     private readonly IServiceProvider ServiceProvider;
@@ -19,16 +19,37 @@ public partial class TelegramService
         Logger = ServiceProvider.GetRequiredService<ILogger<TelegramService>>();
 
         TelegramBotClientOptions telegramBotClientOptions = new(
-            token: $"{Bots.Current.Id}:{ServiceProvider.GetRequiredService<Settings.TelegramSettings>().Tokens[Bots.Current.Id.ToString()]}");
+            token: $"{TelegramUserBase.Current.Id}:{ServiceProvider.GetRequiredService<Settings.TelegramSettings>().Tokens[TelegramUserBase.Current.Id.ToString()]}");
 
         TelegramBotClient = new TelegramBotClient(telegramBotClientOptions);
     }
 
-    public async Task StartReceivingAsync(
+    public async Task StartAsync(CancellationToken cancellationToken)
+    {
+        Logger.LogInformation("Called {ApplicationName} version {Version}", GetType().FullName, System.Reflection.Assembly.GetExecutingAssembly().GetName().Version);
+
+        IEnumerable<Telegram.Bot.Types.BotCommand>? Commands = GetMyCommands();
+        await StartReceivingAsync(Commands, cancellationToken);
+    }
+
+    public async Task StopAsync(CancellationToken cancellationToken)
+    {
+        Logger.LogInformation("End {ApplicationName}", GetType().FullName);
+
+        await Task.CompletedTask;
+    }
+
+    private static IEnumerable<Telegram.Bot.Types.BotCommand>? GetMyCommands()
+    {
+        // TODO     Obtain BotActionName elements and parse
+        return null;
+    }
+
+    private async Task StartReceivingAsync(
         IEnumerable<Telegram.Bot.Types.BotCommand>? myCommands
         , CancellationToken stoppingToken)
     {
-        Bots.Current.SetMe(await TelegramBotClient.GetMeAsync(stoppingToken));
+        TelegramUserBase.Current.SetMe(await TelegramBotClient.GetMeAsync(stoppingToken));
 
         if (myCommands != null)
             //_TelegramBotClient.DeleteMyCommandsAsync
@@ -102,13 +123,13 @@ public partial class TelegramService
         catch (Exception e) when (Logger.LogAndHandle(e, "Unexpected Error")) { }
     }
 
-    internal async Task<Telegram.Bot.Types.Message> MessageSendSimpleTextAsync(
+    private async Task<Telegram.Bot.Types.Message> MessageSendSimpleTextAsync(
         long to
         , string text
         , CancellationToken cancellationToken) =>
         await MessageSendTextAsync(to, text, null, cancellationToken);
 
-    internal static string MessageGetMarkdownV2TextForPrices(IEnumerable<CoreLib.Entities.Pvpc> prices)
+    private static string MessageGetMarkdownV2TextForPrices(IEnumerable<CoreLib.Entities.Pvpc> prices)
     {
         if (prices == null || !prices.Any())
             return "No hay datos";
@@ -138,7 +159,7 @@ public partial class TelegramService
 
         return sb.ToString();
     }
-    internal static string MessageGetMarkdownV2TextForPrices(string payload)
+    private static string MessageGetMarkdownV2TextForPrices(string payload)
         => MessageGetMarkdownV2TextForPrices(System.Text.Json.JsonSerializer.Deserialize<IEnumerable<CoreLib.Entities.Pvpc>>(payload)!);
 
     private async Task<Telegram.Bot.Types.Message> MessageSendQueryAsync(
@@ -148,7 +169,7 @@ public partial class TelegramService
         , CancellationToken cancellationToken)
     {
         if (System.Diagnostics.Debugger.IsAttached)
-            to = Bots.Current.Id;
+            to = TelegramUserBase.TestTelegramUser.Id;
 
         text = text[..Math.Min(text.Length, UtilsLib.Constants.Telegram.MessageLengthLimit)];
         Telegram.Bot.Types.ChatId ToChatId = new(to);
@@ -176,14 +197,14 @@ public partial class TelegramService
         }
     }
 
-    internal async Task<Telegram.Bot.Types.Message> MessageSendTextAsync(
+    private async Task<Telegram.Bot.Types.Message> MessageSendTextAsync(
         long to
         , string text
         , Telegram.Bot.Types.Enums.ParseMode? parseMode
         , CancellationToken cancellationToken)
     {
         if (System.Diagnostics.Debugger.IsAttached)
-            to = Bots.Current.Id;
+            to = TelegramUserBase.TestTelegramUser.Id;
 
         text = text[..Math.Min(text.Length, UtilsLib.Constants.Telegram.MessageLengthLimit)];
         Telegram.Bot.Types.ChatId ToChatId = new(to);

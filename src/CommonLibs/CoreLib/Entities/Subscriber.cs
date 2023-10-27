@@ -1,6 +1,5 @@
 ﻿namespace Seedysoft.CoreLib.Entities;
 
-//12849423	Yo
 //286475043	Rake
 
 [System.Diagnostics.DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
