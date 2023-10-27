@@ -14,9 +14,9 @@ namespace Seedysoft.Carburantes.Infrastructure.Migrations.CarburantesHist
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "7.0.10");
+            modelBuilder.HasAnnotation("ProductVersion", "7.0.12");
 
-            modelBuilder.Entity("Carburantes.Core.Entities.ComunidadAutonoma", b =>
+            modelBuilder.Entity("Seedysoft.Carburantes.Core.Entities.ComunidadAutonoma", b =>
                 {
                     b.Property<int>("IdComunidadAutonoma")
                         .HasColumnType("INTEGER");
@@ -33,7 +33,7 @@ namespace Seedysoft.Carburantes.Infrastructure.Migrations.CarburantesHist
                     b.ToTable("ComunidadAutonoma", (string)null);
                 });
 
-            modelBuilder.Entity("Carburantes.Core.Entities.ComunidadAutonomaHist", b =>
+            modelBuilder.Entity("Seedysoft.Carburantes.Core.Entities.ComunidadAutonomaHist", b =>
                 {
                     b.Property<int>("IdComunidadAutonoma")
                         .HasColumnType("INTEGER");
@@ -50,7 +50,7 @@ namespace Seedysoft.Carburantes.Infrastructure.Migrations.CarburantesHist
                     b.ToTable("ComunidadAutonomaHist", (string)null);
                 });
 
-            modelBuilder.Entity("Carburantes.Core.Entities.EstacionProductoPrecio", b =>
+            modelBuilder.Entity("Seedysoft.Carburantes.Core.Entities.EstacionProductoPrecio", b =>
                 {
                     b.Property<int>("IdEstacion")
                         .HasColumnType("INTEGER");
@@ -69,7 +69,7 @@ namespace Seedysoft.Carburantes.Infrastructure.Migrations.CarburantesHist
                     b.ToTable("EstacionProductoPrecio", (string)null);
                 });
 
-            modelBuilder.Entity("Carburantes.Core.Entities.EstacionProductoPrecioHist", b =>
+            modelBuilder.Entity("Seedysoft.Carburantes.Core.Entities.EstacionProductoPrecioHist", b =>
                 {
                     b.Property<int>("IdEstacion")
                         .HasColumnType("INTEGER");
@@ -88,7 +88,7 @@ namespace Seedysoft.Carburantes.Infrastructure.Migrations.CarburantesHist
                     b.ToTable("EstacionProductoPrecioHist", (string)null);
                 });
 
-            modelBuilder.Entity("Carburantes.Core.Entities.EstacionServicio", b =>
+            modelBuilder.Entity("Seedysoft.Carburantes.Core.Entities.EstacionServicio", b =>
                 {
                     b.Property<int>("IdEstacion")
                         .HasColumnType("INTEGER");
@@ -136,7 +136,7 @@ namespace Seedysoft.Carburantes.Infrastructure.Migrations.CarburantesHist
                     b.ToTable("EstacionServicio", (string)null);
                 });
 
-            modelBuilder.Entity("Carburantes.Core.Entities.EstacionServicioHist", b =>
+            modelBuilder.Entity("Seedysoft.Carburantes.Core.Entities.EstacionServicioHist", b =>
                 {
                     b.Property<int>("IdEstacion")
                         .HasColumnType("INTEGER");
@@ -184,7 +184,7 @@ namespace Seedysoft.Carburantes.Infrastructure.Migrations.CarburantesHist
                     b.ToTable("EstacionServicioHist", (string)null);
                 });
 
-            modelBuilder.Entity("Carburantes.Core.Entities.Municipio", b =>
+            modelBuilder.Entity("Seedysoft.Carburantes.Core.Entities.Municipio", b =>
                 {
                     b.Property<int>("IdMunicipio")
                         .HasColumnType("INTEGER");
@@ -204,7 +204,7 @@ namespace Seedysoft.Carburantes.Infrastructure.Migrations.CarburantesHist
                     b.ToTable("Municipio", (string)null);
                 });
 
-            modelBuilder.Entity("Carburantes.Core.Entities.MunicipioHist", b =>
+            modelBuilder.Entity("Seedysoft.Carburantes.Core.Entities.MunicipioHist", b =>
                 {
                     b.Property<int>("IdMunicipio")
                         .HasColumnType("INTEGER");
@@ -224,7 +224,7 @@ namespace Seedysoft.Carburantes.Infrastructure.Migrations.CarburantesHist
                     b.ToTable("MunicipioHist", (string)null);
                 });
 
-            modelBuilder.Entity("Carburantes.Core.Entities.ProductoPetrolifero", b =>
+            modelBuilder.Entity("Seedysoft.Carburantes.Core.Entities.ProductoPetrolifero", b =>
                 {
                     b.Property<int>("IdProducto")
                         .HasColumnType("INTEGER");
@@ -245,7 +245,7 @@ namespace Seedysoft.Carburantes.Infrastructure.Migrations.CarburantesHist
                     b.ToTable("ProductoPetrolifero", (string)null);
                 });
 
-            modelBuilder.Entity("Carburantes.Core.Entities.ProductoPetroliferoHist", b =>
+            modelBuilder.Entity("Seedysoft.Carburantes.Core.Entities.ProductoPetroliferoHist", b =>
                 {
                     b.Property<int>("IdProducto")
                         .HasColumnType("INTEGER");
@@ -266,7 +266,7 @@ namespace Seedysoft.Carburantes.Infrastructure.Migrations.CarburantesHist
                     b.ToTable("ProductoPetroliferoHist", (string)null);
                 });
 
-            modelBuilder.Entity("Carburantes.Core.Entities.Provincia", b =>
+            modelBuilder.Entity("Seedysoft.Carburantes.Core.Entities.Provincia", b =>
                 {
                     b.Property<int>("IdProvincia")
                         .HasColumnType("INTEGER");
@@ -286,7 +286,7 @@ namespace Seedysoft.Carburantes.Infrastructure.Migrations.CarburantesHist
                     b.ToTable("Provincia", (string)null);
                 });
 
-            modelBuilder.Entity("Carburantes.Core.Entities.ProvinciaHist", b =>
+            modelBuilder.Entity("Seedysoft.Carburantes.Core.Entities.ProvinciaHist", b =>
                 {
                     b.Property<int>("IdProvincia")
                         .HasColumnType("INTEGER");

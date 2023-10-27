@@ -31,7 +31,6 @@ internal class SubcriptionDataViewEntityTypeConfiguration : IEntityTypeConfigura
             .Property(x => x.WebUrl);
 
         _ = builder
-            .HasNoKey()
             .ToView(nameof(CoreLib.Entities.SubcriptionDataView))
             .HasNoKey();
     }

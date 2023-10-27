@@ -84,7 +84,7 @@ public static class ProgramStartup
                     ConnectionString = ConnectionString.Replace($"{CoreLib.Constants.DatabaseStrings.DataSource}../../../", $"{CoreLib.Constants.DatabaseStrings.DataSource}");
                 string FullFilePath = Path.GetFullPath(ConnectionString[CoreLib.Constants.DatabaseStrings.DataSource.Length..]);
                 if (!File.Exists(FullFilePath))
-                    throw new FileNotFoundException("Database file not found: '{FullFilePath}'", FullFilePath);
+                    throw new FileNotFoundException("Database file not found.", FullFilePath);
 
                 _ = dbContextOptionsBuilder.UseSqlite(ConnectionString);
                 dbContextOptionsBuilder.ConfigureDebugOptions();
@@ -100,7 +100,7 @@ public static class ProgramStartup
                     ConnectionString = ConnectionString.Replace($"{CoreLib.Constants.DatabaseStrings.DataSource}../../../", $"{CoreLib.Constants.DatabaseStrings.DataSource}");
                 string FullFilePath = Path.GetFullPath(ConnectionString[CoreLib.Constants.DatabaseStrings.DataSource.Length..]);
                 if (!File.Exists(FullFilePath))
-                    throw new FileNotFoundException("Database file not found: '{FullFilePath}'", FullFilePath);
+                    throw new FileNotFoundException("Database file not found.", FullFilePath);
 
                 _ = dbContextOptionsBuilder.UseSqlite(ConnectionString);
                 dbContextOptionsBuilder.ConfigureDebugOptions();
@@ -116,7 +116,7 @@ public static class ProgramStartup
                     ConnectionString = ConnectionString.Replace($"{CoreLib.Constants.DatabaseStrings.DataSource}../../../", $"{CoreLib.Constants.DatabaseStrings.DataSource}");
                 string FullFilePath = Path.GetFullPath(ConnectionString[CoreLib.Constants.DatabaseStrings.DataSource.Length..]);
                 if (!File.Exists(FullFilePath))
-                    throw new FileNotFoundException("Database file not found: '{FullFilePath}'", FullFilePath);
+                    throw new FileNotFoundException("Database file not found.", FullFilePath);
 
                 _ = dbContextOptionsBuilder.UseSqlite(ConnectionString);
                 dbContextOptionsBuilder.ConfigureDebugOptions();

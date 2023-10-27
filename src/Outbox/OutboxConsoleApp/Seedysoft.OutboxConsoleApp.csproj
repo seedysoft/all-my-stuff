@@ -16,9 +16,15 @@
     <Version>$(AssemblyVersion)</Version>
   </PropertyGroup>
 
-  <ItemGroup>
-    <None Include="Properties\PublishProfiles\LinuxArmLocalFolderProfile.pubxml.user" />
-    <None Include="Properties\PublishProfiles\LinuxArmRemoteFolderProfile.pubxml.user" />
+  <ItemGroup Condition="'$(Configuration)' == 'Debug'">
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.12">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="7.0.12">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
   </ItemGroup>
 
   <ItemGroup>
