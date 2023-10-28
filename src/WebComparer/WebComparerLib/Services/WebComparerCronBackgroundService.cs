@@ -28,7 +28,8 @@ public class WebComparerCronBackgroundService : CronBackgroundServiceLib.CronBac
 
         InfrastructureLib.DbContexts.DbCxt dbCtx = ServiceProvider.GetRequiredService<InfrastructureLib.DbContexts.DbCxt>();
 
-        await FindDifferencesAsync(dbCtx, cancellationToken);
+        if (!System.Diagnostics.Debugger.IsAttached)
+            await FindDifferencesAsync(dbCtx, cancellationToken);
 
         Logger.LogInformation("End {ApplicationName}", AppName);
     }

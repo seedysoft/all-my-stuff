@@ -130,11 +130,12 @@ public static class ProgramStartup
     private static WebApplicationBuilder AddMyServices(this WebApplicationBuilder builder)
     {
         builder.Services.TryAddSingleton(builder.Configuration.GetSection(nameof(SmtpServiceLib.Settings.SmtpServiceSettings)).Get<SmtpServiceLib.Settings.SmtpServiceSettings>()!);
-        builder.Services.TryAddScoped<SmtpServiceLib.Services.SmtpService>();
+        builder.Services.TryAddTransient<SmtpServiceLib.Services.SmtpService>();
 
         builder.Services.TryAddSingleton(builder.Configuration.GetSection(nameof(TelegramLib.Settings.TelegramSettings)).Get<TelegramLib.Settings.TelegramSettings>()!);
+        builder.Services.TryAddSingleton<TelegramLib.Services.TelegramService>();
         _ = builder.Services.AddHostedService<TelegramLib.Services.TelegramService>();
-        
+
         _ = builder.Services.AddHttpClient(nameof(Carburantes.Core.Settings.Minetur));
         _ = builder.Services.AddHostedService<Carburantes.Services.ObtainDataCronBackgroundService>();
 

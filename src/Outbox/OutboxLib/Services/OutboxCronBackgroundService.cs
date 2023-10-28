@@ -2,8 +2,8 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using System.Collections.Immutable;
 using Seedysoft.UtilsLib.Extensions;
+using System.Collections.Immutable;
 
 namespace Seedysoft.OutboxLib.Services;
 

@@ -32,7 +32,7 @@ public class Program
                 InfrastructureLib.Dependencies.AddDbCxtContext(hostBuilderContext.Configuration, iServiceCollection);
 
                 iServiceCollection.TryAddSingleton(hostBuilderContext.Configuration.GetSection(nameof(SmtpServiceLib.Settings.SmtpServiceSettings)).Get<SmtpServiceLib.Settings.SmtpServiceSettings>()!);
-                iServiceCollection.TryAddScoped<SmtpServiceLib.Services.SmtpService>();
+                iServiceCollection.TryAddTransient<SmtpServiceLib.Services.SmtpService>();
 
                 iServiceCollection.TryAddSingleton(hostBuilderContext.Configuration.GetSection(nameof(TelegramLib.Settings.TelegramSettings)).Get<TelegramLib.Settings.TelegramSettings>()!);
                 iServiceCollection.TryAddSingleton<TelegramLib.Services.TelegramService>();
