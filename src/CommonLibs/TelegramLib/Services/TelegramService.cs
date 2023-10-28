@@ -327,7 +327,7 @@ public partial class TelegramService : Microsoft.Extensions.Hosting.IHostedServi
 
         _ = await botClient.SendTextMessageAsync(
             chatId: chosenInlineResult.From.Id,
-            text: $"Received {chosenInlineResult.ResultId}",
+            text: $"Recibido {chosenInlineResult.ResultId}",
             cancellationToken: cancellationToken);
     }
 
@@ -469,7 +469,7 @@ public partial class TelegramService : Microsoft.Extensions.Hosting.IHostedServi
             CallbackData RemoveEmailCallbackData = new(Enums.BotActionName.email_edit);
             Telegram.Bot.Types.ReplyMarkups.InlineKeyboardMarkup ReplyKeyboard = new(
                 Telegram.Bot.Types.ReplyMarkups.InlineKeyboardButton.WithCallbackData("Sí", RemoveEmailCallbackData.ToString()));
-            ResponseText = "¿Realmente quieres quitar tu correo electrónico asociado?";
+            ResponseText = "¿Realmente quiere quitar su correo electrónico asociado?";
 
             return await MessageSendQueryAsync(message.Chat.Id, ResponseText, ReplyKeyboard, cancellationToken);
         }
@@ -492,7 +492,7 @@ public partial class TelegramService : Microsoft.Extensions.Hosting.IHostedServi
 
             //    _ = await dbCtx.SaveChangesAsync(cancellationToken);
 
-            ResponseText = $"Te has dado de baja correctamente";
+            ResponseText = $"Usted se ha dado de baja correctamente";
             //}
         }
 
@@ -511,7 +511,7 @@ public partial class TelegramService : Microsoft.Extensions.Hosting.IHostedServi
         if (Subscriber == null)
             return await MessageSendUsageAsync(message.Chat.Id, cancellationToken);
 
-        string TextToSend = string.IsNullOrEmpty(Subscriber.MailAddress) ? "No tienes correo electrónico asociado" : Subscriber.MailAddress;
+        string TextToSend = string.IsNullOrEmpty(Subscriber.MailAddress) ? "No tiene usted correo electrónico asociado" : Subscriber.MailAddress;
 
         return await MessageSendTextAsync(TelegramUserId, TextToSend, null, cancellationToken);
     }
@@ -565,17 +565,16 @@ public partial class TelegramService : Microsoft.Extensions.Hosting.IHostedServi
         CoreLib.Entities.WebData? webData = await dbCtx.WebDatas.FirstOrDefaultAsync(x => x.WebUrl == FirstWordReceived, cancellationToken);
         if (webData == null)
         {
-            webData = new CoreLib.Entities.WebData(FirstWordReceived, $"Received by Telegram on {message.Date}");
+            webData = new CoreLib.Entities.WebData(FirstWordReceived, $"Recibido a través de Telegram el {message.Date}");
             _ = await dbCtx.WebDatas.AddAsync(webData, cancellationToken);
 
-            _ = await MessageSendSimpleTextAsync(SenderChatId, "Added new WebData", cancellationToken);
+            _ = await MessageSendSimpleTextAsync(SenderChatId, "Añadida URL para seguimiento", cancellationToken);
         }
-
         _ = await dbCtx.SaveChangesAsync(cancellationToken);
 
         CoreLib.Entities.Subscriber TheSubscriber = await SubscriberWithSubscriptionsGetOrCreateAsync(dbCtx, message.From!, cancellationToken);
         if (dbCtx.ChangeTracker.Entries().FirstOrDefault(x => x.Entity == TheSubscriber)?.State == EntityState.Added)
-            _ = await MessageSendSimpleTextAsync(SenderChatId, "Added new Subscriber", cancellationToken);
+            _ = await MessageSendSimpleTextAsync(SenderChatId, "Gracias por usar este bot", cancellationToken);
 
         CoreLib.Entities.Subscription? TheSubscription =
             await dbCtx.Subscriptions
@@ -584,15 +583,17 @@ public partial class TelegramService : Microsoft.Extensions.Hosting.IHostedServi
         {
             TheSubscription = new CoreLib.Entities.Subscription(CoreLib.Enums.SubscriptionName.webComparer) { SubscriptionId = webData.SubscriptionId };
             _ = await dbCtx.Subscriptions.AddAsync(TheSubscription, cancellationToken);
-
-            _ = await MessageSendSimpleTextAsync(SenderChatId, "Added new Subscription", cancellationToken);
         }
 
         if (!TheSubscriber!.Subscriptions.Any(x => x.SubscriptionId == webData.SubscriptionId))
         {
             TheSubscriber!.Subscriptions.Add(TheSubscription);
 
-            _ = await MessageSendSimpleTextAsync(SenderChatId, "Added Subscription to Subscriber", cancellationToken);
+            _ = await MessageSendSimpleTextAsync(SenderChatId, "Recibirá actualizaciones cuando se produzcan", cancellationToken);
+        }
+        else
+        {
+            _ = await MessageSendSimpleTextAsync(SenderChatId, "Usted ya está recibiendo actualizaciones", cancellationToken);
         }
 
         _ = await dbCtx.SaveChangesAsync(cancellationToken);
@@ -644,8 +645,8 @@ public partial class TelegramService : Microsoft.Extensions.Hosting.IHostedServi
             return await MessageSendUsageAsync(TelegramUserId, cancellationToken);
 
         string TextToSend = Subscriptions.Any()
-            ? "Estás suscrito a: \n" + string.Join("\n", Subscriptions.Select(x => $"{x}"))
-            : "No tienes suscripciones";
+            ? "Estás suscrit@ a:\n" + string.Join("\n", Subscriptions.Select(x => $"{x}"))
+            : "Usted no tiene suscripciones";
 
         return await MessageSendTextAsync(TelegramUserId, TextToSend, null, cancellationToken);
     }
@@ -674,7 +675,7 @@ public partial class TelegramService : Microsoft.Extensions.Hosting.IHostedServi
         string[]? data = message.Text!.Split(' ');
         if (data.Length < 2 || !int.TryParse(data[1], out int subscriptionId))
         {
-            ResponseText = $"No sé de qué suscripción te quieres dar de baja {Constants.Emojis.PersonShrugging}";
+            ResponseText = $"No sé de qué suscripción quiere darse de baja {Constants.Emojis.PersonShrugging}";
         }
         else
         {
@@ -686,7 +687,7 @@ public partial class TelegramService : Microsoft.Extensions.Hosting.IHostedServi
             CoreLib.Entities.Subscription? Subscription = SubscriberWithSubscriptions.Subscriptions.FirstOrDefault(x => x.SubscriptionId == subscriptionId);
             if (Subscription == null)
             {
-                ResponseText = $"{Constants.Emojis.FaceWithRaisedEyebrow} No estás suscrito a {subscriptionId}";
+                ResponseText = $"{Constants.Emojis.FaceWithRaisedEyebrow} No estás suscrit@ a {subscriptionId}";
             }
             else
             {
@@ -694,7 +695,7 @@ public partial class TelegramService : Microsoft.Extensions.Hosting.IHostedServi
 
                 _ = await dbCtx.SaveChangesAsync(cancellationToken);
 
-                ResponseText = $"Te has dado de baja correctamente";
+                ResponseText = $"Usted se ha dado de baja correctamente";
             }
         }
 
