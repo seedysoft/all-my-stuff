@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using OpenQA.Selenium.Support.Extensions;
 using Seedysoft.UtilsLib.Extensions;
 using System.Collections.Immutable;
 
@@ -43,7 +44,10 @@ public class WebComparerCronBackgroundService : CronBackgroundServiceLib.CronBac
                 join s in dbCtx.Subscriptions on w.SubscriptionId equals s.SubscriptionId
                 where s.Subscribers.Any()
                 select w;
-            CoreLib.Entities.WebData[] WebDatas = await WebDatasWithSubscribers.Distinct().ToArrayAsync(cancellationToken);
+            CoreLib.Entities.WebData[] WebDatas = await WebDatasWithSubscribers
+                .Distinct()
+                //.OrderByDescending(x => x.SubscriptionId)
+                .ToArrayAsync(cancellationToken);
             Logger.LogInformation("Obtained {WebDatas} URLs to check", WebDatas.Length);
 
             using OpenQA.Selenium.IWebDriver WebDriver = GetWebDriver();
@@ -54,7 +58,7 @@ public class WebComparerCronBackgroundService : CronBackgroundServiceLib.CronBac
 
                     try
                     {
-                        await GetDiffsAsync(dbCtx, WebDriver, webData, cancellationToken);
+                        await FindDataToSendAsync(dbCtx, WebDriver, webData, cancellationToken);
                     }
                     catch (TaskCanceledException e) when (e.InnerException is TimeoutException && Logger.LogAndHandle(e.InnerException, "Request to '{WebUrl}' timeout", webData.WebUrl)) { continue; }
                     catch (TaskCanceledException e) when (Logger.LogAndHandle(e, "Task request to '{WebUrl}' cancelled", webData.WebUrl)) { continue; }
@@ -68,13 +72,13 @@ public class WebComparerCronBackgroundService : CronBackgroundServiceLib.CronBac
         finally { await Task.CompletedTask; }
     }
 
-    private async Task GetDiffsAsync(InfrastructureLib.DbContexts.DbCxt dbCtx, OpenQA.Selenium.IWebDriver WebDriver, CoreLib.Entities.WebData webData, CancellationToken cancellationToken)
+    private async Task FindDataToSendAsync(InfrastructureLib.DbContexts.DbCxt dbCtx, OpenQA.Selenium.IWebDriver WebDriver, CoreLib.Entities.WebData webData, CancellationToken cancellationToken)
     {
         WebDriver.Navigate().GoToUrl(webData.WebUrl);
 
-        string OnlyBodyStriped = await GetContentAsync(WebDriver, webData);
+        string ContentStriped = await GetContentAsync(WebDriver, webData);
 
-        webData.DataToSend = FindDifferences(webData, OnlyBodyStriped);
+        webData.DataToSend = GetDifferences(webData, ContentStriped);
 
         // Establecemos la misma hora, para saber cuándo se ha visto el último cambio.
         if (!string.IsNullOrWhiteSpace(webData.DataToSend))
@@ -94,7 +98,7 @@ public class WebComparerCronBackgroundService : CronBackgroundServiceLib.CronBac
         _ = await dbCtx.SaveChangesAsync(cancellationToken);
     }
 
-    private OpenQA.Selenium.IWebDriver GetWebDriver()
+    private static OpenQA.Selenium.IWebDriver GetWebDriver()
     {
         OpenQA.Selenium.Chrome.ChromeOptions Options = new()
         {
@@ -108,16 +112,8 @@ public class WebComparerCronBackgroundService : CronBackgroundServiceLib.CronBac
         //Options.AddArgument("--no-sandbox");
         Options.AddArgument("--headless");
 
-        //Logger.LogInformation("Current OSDescription: '{OSDescription}'", System.Runtime.InteropServices.RuntimeInformation.OSDescription);
-        //Logger.LogInformation("Current RuntimeIdentifier: '{RuntimeIdentifier}'", System.Runtime.InteropServices.RuntimeInformation.RuntimeIdentifier);
-        //Logger.LogInformation("Current ProcessArchitecture: '{ProcessArchitecture}'", System.Runtime.InteropServices.RuntimeInformation.ProcessArchitecture);
-        //Logger.LogInformation("Current Platform: '{Platform}'", Environment.OSVersion.Platform);
-
         if (System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(System.Runtime.InteropServices.OSPlatform.Linux))
             Options.BinaryLocation = "/usr/bin/chromium-browser";
-        //else if (System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(System.Runtime.InteropServices.OSPlatform.Windows))
-        //    Options.BinaryLocation = Environment.CurrentDirectory;
-        Logger.LogInformation("Options Binary location: '{BinaryLocation}'", Options.BinaryLocation);
 
         OpenQA.Selenium.IWebDriver WebDriver = new OpenQA.Selenium.Chrome.ChromeDriver(Options);
 
@@ -139,6 +135,10 @@ public class WebComparerCronBackgroundService : CronBackgroundServiceLib.CronBac
         {
             PollingInterval = TimeSpan.FromSeconds(5),
         };
+
+        // SubscriptionId: 3 JCyL Convocatorias
+        if (webDriver.PageSource.Contains("elemento-invisible"))
+            webDriver.ExecuteJavaScript("jQuery('.elemento-invisible').removeClass('elemento-invisible');");
 
         // SubscriptionId: 20 Inscripción en Pruebas Selectivas
         if (webDriver.PageSource.Contains("view-more-link"))
@@ -173,10 +173,10 @@ public class WebComparerCronBackgroundService : CronBackgroundServiceLib.CronBac
             }
         }
 
-        OpenQA.Selenium.IWebElement Element = WaitDriver.Until(x => x.FindElement(OpenQA.Selenium.By.CssSelector(webData.CssSelector)));
-
         try
         {
+            OpenQA.Selenium.IWebElement Element = WaitDriver.Until(x => x.FindElement(OpenQA.Selenium.By.CssSelector(webData.CssSelector)));
+
             return Element.Text;
         }
         catch (Exception e)
@@ -187,7 +187,7 @@ public class WebComparerCronBackgroundService : CronBackgroundServiceLib.CronBac
         }
     }
 
-    private static string FindDifferences(CoreLib.Entities.WebData webData, string obtainedString)
+    private static string GetDifferences(CoreLib.Entities.WebData webData, string obtainedString)
     {
         IEnumerable<string> ObtainedLinesNormalized =
             from l in DiffPlex.Chunkers.LineChunker.Instance.Chunk(obtainedString)
