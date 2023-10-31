@@ -22,16 +22,14 @@ public class Program
                 string CurrentEnvironmentName = hostBuilderContext.HostingEnvironment.EnvironmentName;
 
                 _ = configurationBuilder
-                   .AddJsonFile($"appsettings.dbConnectionString.{CurrentEnvironmentName}.json", false, true)
-                   .AddJsonFile($"appsettings.WebComparerSettings.{CurrentEnvironmentName}.json", false, true);
+                   .AddJsonFile($"appsettings.dbConnectionString.{CurrentEnvironmentName}.json", false, true);
             })
 
             .ConfigureServices((hostBuilderContext, iServiceCollection) =>
             {
                 InfrastructureLib.Dependencies.AddDbCxtContext(hostBuilderContext.Configuration, iServiceCollection);
 
-                iServiceCollection.TryAddSingleton(hostBuilderContext.Configuration.GetSection(nameof(WebComparerLib.Settings.WebComparerSettings)).Get<WebComparerLib.Settings.WebComparerSettings>()!);
-                iServiceCollection.TryAddSingleton<WebComparerLib.Services.WebComparerCronBackgroundService>();
+                iServiceCollection.TryAddSingleton<WebComparerLib.Services.WebComparerHostedService>();
             });
 
         IHost host = builder.Build();
@@ -61,9 +59,9 @@ public class Program
 
                 using CancellationTokenSource CancelTokenSource = new();
                 {
-                    using WebComparerLib.Services.WebComparerCronBackgroundService webComparerCronBackgroundService = host.Services.GetRequiredService<WebComparerLib.Services.WebComparerCronBackgroundService>();
+                    WebComparerLib.Services.WebComparerHostedService webComparerHostedService = host.Services.GetRequiredService<WebComparerLib.Services.WebComparerHostedService>();
 
-                    await webComparerCronBackgroundService.DoWorkAsync(CancelTokenSource.Token);
+                    await webComparerHostedService.StartAsync(CancelTokenSource.Token);
                 }
             }
 

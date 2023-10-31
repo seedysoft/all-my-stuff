@@ -7,16 +7,16 @@ using Telegram.Bot;
 
 namespace Seedysoft.TelegramLib.Services;
 
-public partial class TelegramService : Microsoft.Extensions.Hosting.IHostedService
+public partial class TelegramHostedService : Microsoft.Extensions.Hosting.IHostedService
 {
-    private readonly ILogger<TelegramService> Logger;
+    private readonly ILogger<TelegramHostedService> Logger;
     private readonly IServiceProvider ServiceProvider;
     private readonly TelegramBotClient TelegramBotClient;
 
-    public TelegramService(IServiceProvider serviceProvider)
+    public TelegramHostedService(IServiceProvider serviceProvider)
     {
         ServiceProvider = serviceProvider;
-        Logger = ServiceProvider.GetRequiredService<ILogger<TelegramService>>();
+        Logger = ServiceProvider.GetRequiredService<ILogger<TelegramHostedService>>();
 
         TelegramBotClientOptions telegramBotClientOptions = new(
             token: $"{TelegramUserBase.Current.Id}:{ServiceProvider.GetRequiredService<Settings.TelegramSettings>().Tokens[TelegramUserBase.Current.Id.ToString()]}");
