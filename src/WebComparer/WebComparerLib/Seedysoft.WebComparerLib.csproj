@@ -18,35 +18,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="appsettings.WebComparerSettings.Development.json" />
-    <Content Include="appsettings.WebComparerSettings.json">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Content>
-    <None Remove="appsettings.WebComparerSettings.Production.json" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(Configuration)' == 'Debug'">
-    <Content Include="appsettings.WebComparerSettings.Development.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <DependentUpon>appsettings.WebComparerSettings.json</DependentUpon>
-    </Content>
-    <None Include="appsettings.WebComparerSettings.Production.json">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-      <DependentUpon>appsettings.WebComparerSettings.json</DependentUpon>
-    </None>
-  </ItemGroup>
-  <ItemGroup Condition="'$(Configuration)' == 'Release'">
-    <None Include="appsettings.WebComparerSettings.Development.json">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-      <DependentUpon>appsettings.WebComparerSettings.json</DependentUpon>
-    </None>
-    <Content Include="appsettings.WebComparerSettings.Production.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <DependentUpon>appsettings.WebComparerSettings.json</DependentUpon>
-    </Content>
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="DiffPlex" Version="1.7.1" />
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)' == 'Debug'">

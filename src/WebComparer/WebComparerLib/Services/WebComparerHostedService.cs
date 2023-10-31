@@ -7,76 +7,82 @@ using System.Collections.Immutable;
 
 namespace Seedysoft.WebComparerLib.Services;
 
-public class WebComparerCronBackgroundService : CronBackgroundServiceLib.CronBackgroundService
+public class WebComparerHostedService : Microsoft.Extensions.Hosting.IHostedService
 {
-    private readonly IServiceProvider ServiceProvider;
-    private readonly ILogger<WebComparerCronBackgroundService> Logger;
+    private static readonly TimeSpan OneSecondTimeSpan = TimeSpan.FromSeconds(1);
+    private static readonly TimeSpan FiveSecondsTimeSpan = TimeSpan.FromSeconds(5);
 
-    public WebComparerCronBackgroundService(
-        Settings.WebComparerSettings config
-        , IServiceProvider serviceProvider
-        , ILogger<WebComparerCronBackgroundService> logger) : base(config)
+    private readonly IServiceProvider ServiceProvider;
+    private readonly ILogger<WebComparerHostedService> Logger;
+
+    public WebComparerHostedService(IServiceProvider serviceProvider, ILogger<WebComparerHostedService> logger)
     {
         ServiceProvider = serviceProvider;
         Logger = logger;
     }
 
-    public override async Task DoWorkAsync(CancellationToken cancellationToken)
+    public async Task StartAsync(CancellationToken cancellationToken)
     {
-        string? AppName = GetType().FullName;
+        Logger.LogInformation("Called {ApplicationName} version {Version}", GetType().FullName, System.Reflection.Assembly.GetExecutingAssembly().GetName().Version);
 
-        Logger.LogInformation("Called {ApplicationName} version {Version}", AppName, System.Reflection.Assembly.GetExecutingAssembly().GetName().Version);
-
-        InfrastructureLib.DbContexts.DbCxt dbCtx = ServiceProvider.GetRequiredService<InfrastructureLib.DbContexts.DbCxt>();
-
-        if (!System.Diagnostics.Debugger.IsAttached)
-            await FindDifferencesAsync(dbCtx, cancellationToken);
-
-        Logger.LogInformation("End {ApplicationName}", AppName);
+        _ = await Task.Factory.StartNew(() => FindDifferencesAsync(cancellationToken));
     }
 
-    private async Task FindDifferencesAsync(InfrastructureLib.DbContexts.DbCxt dbCtx, CancellationToken cancellationToken)
+    public async Task StopAsync(CancellationToken cancellationToken)
     {
-        try
-        {
-            IQueryable<CoreLib.Entities.WebData> WebDatasWithSubscribers =
-                from w in dbCtx.WebDatas
-                join s in dbCtx.Subscriptions on w.SubscriptionId equals s.SubscriptionId
-                where s.Subscribers.Any()
-                select w;
-            CoreLib.Entities.WebData[] WebDatas = await WebDatasWithSubscribers
-                .Distinct()
-                //.OrderByDescending(x => x.SubscriptionId)
-                .ToArrayAsync(cancellationToken);
-            Logger.LogInformation("Obtained {WebDatas} URLs to check", WebDatas.Length);
+        Logger.LogInformation("End {ApplicationName}", GetType().FullName);
 
-            using OpenQA.Selenium.IWebDriver WebDriver = GetWebDriver();
+        await Task.CompletedTask;
+    }
+
+    private async Task FindDifferencesAsync(CancellationToken cancellationToken)
+    {
+        while (!cancellationToken.IsCancellationRequested)
+        {
+            InfrastructureLib.DbContexts.DbCxt dbCtx = ServiceProvider.GetRequiredService<InfrastructureLib.DbContexts.DbCxt>();
+
+            try
             {
+                IQueryable<CoreLib.Entities.WebData> WebDatasWithSubscribers =
+                    from w in dbCtx.WebDatas
+                    join s in dbCtx.Subscriptions on w.SubscriptionId equals s.SubscriptionId
+                    where s.Subscribers.Any()
+                    select w;
+                CoreLib.Entities.WebData[] WebDatas = await WebDatasWithSubscribers
+                    .Distinct()
+                    .ToArrayAsync(cancellationToken);
+                Logger.LogInformation("Obtained {WebDatas} URLs to check", WebDatas.Length);
+
                 for (int i = 0; i < WebDatas.Length; i++)
                 {
                     CoreLib.Entities.WebData webData = WebDatas[i];
 
-                    try
+                    using OpenQA.Selenium.IWebDriver WebDriver = GetWebDriver();
                     {
-                        await FindDataToSendAsync(dbCtx, WebDriver, webData, cancellationToken);
-                    }
-                    catch (TaskCanceledException e) when (e.InnerException is TimeoutException && Logger.LogAndHandle(e.InnerException, "Request to '{WebUrl}' timeout", webData.WebUrl)) { continue; }
-                    catch (TaskCanceledException e) when (Logger.LogAndHandle(e, "Task request to '{WebUrl}' cancelled", webData.WebUrl)) { continue; }
-                    catch (Exception e) when (Logger.LogAndHandle(e, "Request to '{WebUrl}' failed", webData.WebUrl)) { continue; }
-                }
+                        try
+                        {
+                            await FindDataToSendAsync(dbCtx, WebDriver, webData, cancellationToken);
 
-                WebDriver?.Quit();
+                            await Task.Delay(FiveSecondsTimeSpan, cancellationToken);
+                        }
+                        catch (TaskCanceledException e) when (e.InnerException is TimeoutException && Logger.LogAndHandle(e.InnerException, "Request to '{WebUrl}' timeout", webData.WebUrl)) { continue; }
+                        catch (TaskCanceledException e) when (Logger.LogAndHandle(e, "Task request to '{WebUrl}' cancelled", webData.WebUrl)) { continue; }
+                        catch (Exception e) when (Logger.LogAndHandle(e, "Request to '{WebUrl}' failed", webData.WebUrl)) { continue; }
+                    }
+
+                    WebDriver?.Quit();
+                }
             }
+            catch (Exception e) when (Logger.LogAndHandle(e, "Unexpected error")) { }
+            finally { await Task.CompletedTask; }
         }
-        catch (Exception e) when (Logger.LogAndHandle(e, "Unexpected error")) { }
-        finally { await Task.CompletedTask; }
     }
 
     private async Task FindDataToSendAsync(InfrastructureLib.DbContexts.DbCxt dbCtx, OpenQA.Selenium.IWebDriver WebDriver, CoreLib.Entities.WebData webData, CancellationToken cancellationToken)
     {
         WebDriver.Navigate().GoToUrl(webData.WebUrl);
 
-        string ContentStriped = await GetContentAsync(WebDriver, webData);
+        string ContentStriped = await GetContentAsync(WebDriver, webData, cancellationToken);
 
         webData.DataToSend = GetDifferences(webData, ContentStriped);
 
@@ -126,15 +132,10 @@ public class WebComparerCronBackgroundService : CronBackgroundServiceLib.CronBac
         return WebDriver;
     }
 
-    private async Task<string> GetContentAsync(OpenQA.Selenium.IWebDriver webDriver, CoreLib.Entities.WebData webData)
+    private async Task<string> GetContentAsync(OpenQA.Selenium.IWebDriver webDriver, CoreLib.Entities.WebData webData, CancellationToken cancellationToken)
     {
         // TODO         Add retry logic when timeout
         // TODO Personalizar cada web con lo que podemos hacer antes de obtener datos
-
-        OpenQA.Selenium.Support.UI.WebDriverWait WaitDriver = new(webDriver, timeout: TimeSpan.FromSeconds(30))
-        {
-            PollingInterval = TimeSpan.FromSeconds(5),
-        };
 
         // SubscriptionId: 3 JCyL Convocatorias
         if (webDriver.PageSource.Contains("elemento-invisible"))
@@ -147,43 +148,34 @@ public class WebComparerCronBackgroundService : CronBackgroundServiceLib.CronBac
         // SubscriptionId: 29 Ayto Burgos Tablón de anuncios
         if (webDriver.PageSource.Contains("remitenteFiltro"))
         {
-            OpenQA.Selenium.IWebElement RemitenteFiltroWebElement = WaitDriver.Until(drv => drv.FindElement(OpenQA.Selenium.By.Id("remitenteFiltro")));
-
+            OpenQA.Selenium.IWebElement RemitenteFiltroWebElement = webDriver.FindElement(OpenQA.Selenium.By.Id("remitenteFiltro"));
             OpenQA.Selenium.Support.UI.SelectElement FilterSelectElement = new(RemitenteFiltroWebElement);
             FilterSelectElement.SelectByText("Personal");
+            await Task.Delay(OneSecondTimeSpan, cancellationToken);
 
             var FilterButtonBy = OpenQA.Selenium.By.CssSelector(".botonera a.primary");
             OpenQA.Selenium.IWebElement FilterButtonWebElement = webDriver.FindElement(FilterButtonBy);
             FilterButtonWebElement.Click();
-
-            var BodyWaitingBy = OpenQA.Selenium.By.CssSelector("body.waiting");
-            try
-            {
-                OpenQA.Selenium.IWebElement? BodyWaitingWebElement = webDriver.FindElement(BodyWaitingBy);
-
-                await Task.Delay(TimeSpan.FromSeconds(5));
-            }
-            catch (OpenQA.Selenium.NoSuchElementException noSuchElementException)
-            {
-                Logger.LogDebug("Exception {noSuchElementException} finding {BodyWaitingBy}", noSuchElementException, BodyWaitingBy);
-            }
-            catch (OpenQA.Selenium.WebDriverException webDriverException)
-            {
-                Logger.LogDebug("Exception {webDriverException} finding {BodyWaitingBy}", webDriverException, BodyWaitingBy);
-            }
+            await Task.Delay(FiveSecondsTimeSpan, cancellationToken);
         }
 
         try
         {
-            OpenQA.Selenium.IWebElement Element = WaitDriver.Until(x => x.FindElement(OpenQA.Selenium.By.CssSelector(webData.CssSelector)));
+            OpenQA.Selenium.IWebElement Element = webDriver.FindElement(OpenQA.Selenium.By.CssSelector(webData.CssSelector));
 
             return Element.Text;
+        }
+        catch (OpenQA.Selenium.NoSuchElementException noSuchElementException)
+        {
+            Logger.LogDebug("Exception {noSuchElementException} finding {BodyWaitingBy}", noSuchElementException, webData.CssSelector);
+
+            return string.Empty;
         }
         catch (Exception e)
         {
             Logger.LogError(e, "Cannot load {cssSelector} on first try", webData.CssSelector);
 
-            return webDriver.FindElement(OpenQA.Selenium.By.CssSelector(webData.CssSelector)).Text;
+            return webDriver.FindElement(OpenQA.Selenium.By.TagName("body")).Text;
         }
     }
 

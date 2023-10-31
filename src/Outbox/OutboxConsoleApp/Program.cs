@@ -35,7 +35,7 @@ public class Program
                 iServiceCollection.TryAddTransient<SmtpServiceLib.Services.SmtpService>();
 
                 iServiceCollection.TryAddSingleton(hostBuilderContext.Configuration.GetSection(nameof(TelegramLib.Settings.TelegramSettings)).Get<TelegramLib.Settings.TelegramSettings>()!);
-                iServiceCollection.TryAddSingleton<TelegramLib.Services.TelegramService>();
+                iServiceCollection.TryAddSingleton<TelegramLib.Services.TelegramHostedService>();
 
                 iServiceCollection.TryAddSingleton<OutboxLib.Services.OutboxCronBackgroundService>();
             });

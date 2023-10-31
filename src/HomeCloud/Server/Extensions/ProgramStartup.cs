@@ -46,8 +46,7 @@ public static class ProgramStartup
 
             .AddJsonFile($"appsettings.PvpcObtainerSettings.json", false, true)
             .AddJsonFile($"appsettings.SmtpServiceSettings.json", false, true)
-            .AddJsonFile($"appsettings.TelegramSettings.{CurrentEnvironmentName}.json", false, true)
-            .AddJsonFile($"appsettings.WebComparerSettings.{CurrentEnvironmentName}.json", false, true);
+            .AddJsonFile($"appsettings.TelegramSettings.{CurrentEnvironmentName}.json", false, true);
 
         return builder;
     }
@@ -133,8 +132,8 @@ public static class ProgramStartup
         builder.Services.TryAddTransient<SmtpServiceLib.Services.SmtpService>();
 
         builder.Services.TryAddSingleton(builder.Configuration.GetSection(nameof(TelegramLib.Settings.TelegramSettings)).Get<TelegramLib.Settings.TelegramSettings>()!);
-        builder.Services.TryAddSingleton<TelegramLib.Services.TelegramService>();
-        _ = builder.Services.AddHostedService<TelegramLib.Services.TelegramService>();
+        builder.Services.TryAddSingleton<TelegramLib.Services.TelegramHostedService>();
+        _ = builder.Services.AddHostedService<TelegramLib.Services.TelegramHostedService>();
 
         _ = builder.Services.AddHttpClient(nameof(Carburantes.Core.Settings.Minetur));
         _ = builder.Services.AddHostedService<Carburantes.Services.ObtainDataCronBackgroundService>();
@@ -145,8 +144,8 @@ public static class ProgramStartup
 
         _ = builder.Services.AddHostedService<OutboxLib.Services.OutboxCronBackgroundService>();
 
-        builder.Services.TryAddSingleton(builder.Configuration.GetSection(nameof(WebComparerLib.Settings.WebComparerSettings)).Get<WebComparerLib.Settings.WebComparerSettings>()!);
-        _ = builder.Services.AddHostedService<WebComparerLib.Services.WebComparerCronBackgroundService>();
+        builder.Services.TryAddSingleton<WebComparerLib.Services.WebComparerHostedService>();
+        _ = builder.Services.AddHostedService<WebComparerLib.Services.WebComparerHostedService>();
 
         return builder;
     }

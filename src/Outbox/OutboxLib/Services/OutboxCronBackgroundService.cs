@@ -43,7 +43,7 @@ public class OutboxCronBackgroundService : CronBackgroundServiceLib.CronBackgrou
                     .ToArrayAsync(stoppingToken);
                 Logger.LogInformation("Obtained {AllSubscribers} subscribers", AllSubscribers.Length);
 
-                TelegramLib.Services.TelegramService telegramService = ServiceProvider.GetRequiredService<TelegramLib.Services.TelegramService>();
+                TelegramLib.Services.TelegramHostedService telegramHostedService = ServiceProvider.GetRequiredService<TelegramLib.Services.TelegramHostedService>();
 
                 for (int i = 0; i < PendingMessages.Length; i++)
                 {
@@ -60,7 +60,7 @@ public class OutboxCronBackgroundService : CronBackgroundServiceLib.CronBackgrou
 
                         if (subscriber.TelegramUserId.HasValue)
                         {
-                            await telegramService.SendMessageToSubscriberAsync(PendingMessage, subscriber.TelegramUserId.Value, stoppingToken);
+                            await telegramHostedService.SendMessageToSubscriberAsync(PendingMessage, subscriber.TelegramUserId.Value, stoppingToken);
                         }
 
                         if (!string.IsNullOrEmpty(subscriber.MailAddress))
