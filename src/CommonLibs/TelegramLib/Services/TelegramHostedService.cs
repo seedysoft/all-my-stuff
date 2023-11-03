@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿#if !SKIP_DEBUG_TELEGRAM
+using Microsoft.EntityFrameworkCore;
+#endif
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Seedysoft.UtilsLib.Extensions;
@@ -11,7 +13,7 @@ public partial class TelegramHostedService : Microsoft.Extensions.Hosting.IHoste
 {
     private readonly ILogger<TelegramHostedService> Logger;
     private readonly IServiceProvider ServiceProvider;
-    private readonly TelegramBotClient TelegramBotClient;
+    private readonly TelegramBotClient LocalTelegramBotClient;
 
     public TelegramHostedService(IServiceProvider serviceProvider)
     {
@@ -21,7 +23,7 @@ public partial class TelegramHostedService : Microsoft.Extensions.Hosting.IHoste
         TelegramBotClientOptions telegramBotClientOptions = new(
             token: $"{TelegramUserBase.Current.Id}:{ServiceProvider.GetRequiredService<Settings.TelegramSettings>().Tokens[TelegramUserBase.Current.Id.ToString()]}");
 
-        TelegramBotClient = new TelegramBotClient(telegramBotClientOptions);
+        LocalTelegramBotClient = new TelegramBotClient(telegramBotClientOptions);
     }
 
     public async Task StartAsync(CancellationToken cancellationToken)
@@ -49,11 +51,52 @@ public partial class TelegramHostedService : Microsoft.Extensions.Hosting.IHoste
         IEnumerable<Telegram.Bot.Types.BotCommand>? myCommands
         , CancellationToken stoppingToken)
     {
-        TelegramUserBase.Current.SetMe(await TelegramBotClient.GetMeAsync(stoppingToken));
+#if SKIP_DEBUG_TELEGRAM
+        Logger.ToString();
+
+        await Task.CompletedTask;
+    }
+
+    private async Task<Telegram.Bot.Types.Message> MessageSendTextAsync(
+        long to
+        , string text
+        , Telegram.Bot.Types.Enums.ParseMode? parseMode
+        , CancellationToken cancellationToken)
+    {
+        if (System.Diagnostics.Debugger.IsAttached)
+            to = TelegramUserBase.TestTelegramUser.Id;
+
+        text = text[..Math.Min(text.Length, UtilsLib.Constants.Telegram.MessageLengthLimit)];
+        Telegram.Bot.Types.ChatId ToChatId = new(to);
+
+        try
+        {
+            return await LocalTelegramBotClient.SendTextMessageAsync(
+                chatId: ToChatId,
+                text: text,
+                parseMode: parseMode ?? (text.ContainsHtml() ? Telegram.Bot.Types.Enums.ParseMode.Html : null),
+                cancellationToken: cancellationToken);
+        }
+        catch (Telegram.Bot.Exceptions.ApiRequestException e) when (e.Message?.StartsWith("Bad Request: can't parse entities:", StringComparison.InvariantCultureIgnoreCase) ?? false)
+        {
+            // Sample:
+            //  "Telegram.Bot.Exceptions.ApiRequestException: Bad Request: can't parse entities: Unexpected end tag at byte offset 4120"
+            //  +  Descargar Modelo 790
+            //  =  Ver más
+            //  =  </form>
+            // Retry without HTML
+            return await LocalTelegramBotClient.SendTextMessageAsync(
+                chatId: ToChatId,
+                text: text,
+                cancellationToken: cancellationToken);
+        }
+    }
+#else
+        TelegramUserBase.Current.SetMe(await LocalTelegramBotClient.GetMeAsync(stoppingToken));
 
         if (myCommands != null)
-            //_TelegramBotClient.DeleteMyCommandsAsync
-            await TelegramBotClient.SetMyCommandsAsync(commands: myCommands, cancellationToken: stoppingToken);
+            //TelegramBotClient.DeleteMyCommandsAsync
+            await LocalTelegramBotClient.SetMyCommandsAsync(commands: myCommands, cancellationToken: stoppingToken);
 
         // StartReceiving does not block the caller thread. Receiving is done on the ThreadPool.
         Telegram.Bot.Polling.ReceiverOptions OptionsReceiver = new()
@@ -66,7 +109,7 @@ public partial class TelegramHostedService : Microsoft.Extensions.Hosting.IHoste
         //Telegram.Bot.Types.Enums.UpdateType[] UpdatesAllowed = { Telegram.Bot.Types.Enums.UpdateType.Message | Telegram.Bot.Types.Enums.UpdateType.Unknown };
         //receiverOptions.AllowedUpdates = UpdatesAllowed;
 
-        TelegramBotClient.StartReceiving(HandleUpdateAsync, HandleErrorAsync, OptionsReceiver, stoppingToken);
+        LocalTelegramBotClient.StartReceiving(HandleUpdateAsync, HandleErrorAsync, OptionsReceiver, stoppingToken);
     }
 
     private async Task HandleErrorAsync(
@@ -129,39 +172,6 @@ public partial class TelegramHostedService : Microsoft.Extensions.Hosting.IHoste
         , CancellationToken cancellationToken) =>
         await MessageSendTextAsync(to, text, null, cancellationToken);
 
-    private static string MessageGetMarkdownV2TextForPrices(IEnumerable<CoreLib.Entities.Pvpc> prices)
-    {
-        if (prices == null || !prices.Any())
-            return "No hay datos";
-
-        var HorasRestantes = prices.ToImmutableArray();
-
-        DateTime ObtainedDate = prices.First().AtDateTimeOffset.Date;
-
-        int HowMany = Math.Min(6, HorasRestantes.Length - 1);
-        decimal Min = HorasRestantes.OrderBy(x => x.KWhPriceInEuros).Take(HowMany).Max(x => x.KWhPriceInEuros);
-        decimal Max = HorasRestantes.OrderByDescending(x => x.KWhPriceInEuros).Take(HowMany).Min(x => x.KWhPriceInEuros);
-        decimal Avg = prices.Average(x => x.KWhPriceInEuros);
-
-        System.Text.StringBuilder sb = new(500);
-        sb = sb.AppendLine($"Media del *{ObtainedDate.ToString(UtilsLib.Constants.Formats.LongDateFormat, UtilsLib.Constants.Formats.ESCultureInfo)}*");
-        sb = sb.AppendLine($"*{Avg.ToString("N5", UtilsLib.Constants.Formats.ESCultureInfo)} € / kWh*");
-
-        for (int i = 0; i < HorasRestantes.Length; i++)
-        {
-            string emoji =
-                HorasRestantes[i].KWhPriceInEuros >= Max ? Constants.Emojis.RedCircle :
-                HorasRestantes[i].KWhPriceInEuros <= Min ? Constants.Emojis.GreenCircle :
-                HorasRestantes[i].KWhPriceInEuros <= Avg ? Constants.Emojis.YellowCircle : Constants.Emojis.OrangeCircle;
-
-            sb = sb.AppendLine($"{HorasRestantes[i].AtDateTimeOffset.Hour:00}  {emoji}  {HorasRestantes[i].KWhPriceInEuros.ToString("N5", UtilsLib.Constants.Formats.ESCultureInfo)}");
-        }
-
-        return sb.ToString();
-    }
-    private static string MessageGetMarkdownV2TextForPrices(string payload)
-        => MessageGetMarkdownV2TextForPrices(System.Text.Json.JsonSerializer.Deserialize<IEnumerable<CoreLib.Entities.Pvpc>>(payload)!);
-
     private async Task<Telegram.Bot.Types.Message> MessageSendQueryAsync(
         long to
         , string text
@@ -176,7 +186,7 @@ public partial class TelegramHostedService : Microsoft.Extensions.Hosting.IHoste
 
         try
         {
-            return await TelegramBotClient.SendTextMessageAsync(
+            return await LocalTelegramBotClient.SendTextMessageAsync(
                 chatId: ToChatId,
                 text: text,
                 replyMarkup: replyMarkup,
@@ -190,7 +200,7 @@ public partial class TelegramHostedService : Microsoft.Extensions.Hosting.IHoste
             //  =  Ver más
             //  =  </form>
             // Retry without HTML
-            return await TelegramBotClient.SendTextMessageAsync(
+            return await LocalTelegramBotClient.SendTextMessageAsync(
                 chatId: ToChatId,
                 text: text,
                 cancellationToken: cancellationToken);
@@ -211,7 +221,7 @@ public partial class TelegramHostedService : Microsoft.Extensions.Hosting.IHoste
 
         try
         {
-            return await TelegramBotClient.SendTextMessageAsync(
+            return await LocalTelegramBotClient.SendTextMessageAsync(
                 chatId: ToChatId,
                 text: text,
                 parseMode: parseMode ?? (text.ContainsHtml() ? Telegram.Bot.Types.Enums.ParseMode.Html : null),
@@ -225,7 +235,7 @@ public partial class TelegramHostedService : Microsoft.Extensions.Hosting.IHoste
             //  =  Ver más
             //  =  </form>
             // Retry without HTML
-            return await TelegramBotClient.SendTextMessageAsync(
+            return await LocalTelegramBotClient.SendTextMessageAsync(
                 chatId: ToChatId,
                 text: text,
                 cancellationToken: cancellationToken);
@@ -612,7 +622,7 @@ public partial class TelegramHostedService : Microsoft.Extensions.Hosting.IHoste
         Telegram.Bot.Types.Message message
         , Telegram.Bot.Types.Enums.ChatAction chatAction
         , CancellationToken cancellationToken) =>
-        await TelegramBotClient.SendChatActionAsync(
+        await LocalTelegramBotClient.SendChatActionAsync(
             chatId: message.Chat.Id,
             chatAction: chatAction,
             cancellationToken: cancellationToken);
@@ -655,7 +665,7 @@ public partial class TelegramHostedService : Microsoft.Extensions.Hosting.IHoste
         long to
         , CancellationToken cancellationToken)
     {
-        Telegram.Bot.Types.BotCommand[] MyCommands = await TelegramBotClient.GetMyCommandsAsync(cancellationToken: cancellationToken);
+        Telegram.Bot.Types.BotCommand[] MyCommands = await LocalTelegramBotClient.GetMyCommandsAsync(cancellationToken: cancellationToken);
 
         // TODO                 Cambiar el mensaje de ayuda, incluyendo que pueden enviar direcciones http[s].
         return await MessageSendTextAsync(
@@ -702,34 +712,6 @@ public partial class TelegramHostedService : Microsoft.Extensions.Hosting.IHoste
         return await MessageSendTextAsync(message.Chat.Id, ResponseText, null, cancellationToken);
     }
 
-    public async Task SendMessageToSubscriberAsync(
-        CoreLib.Entities.Outbox pendingMessage
-        , long telegramUserId
-        , CancellationToken stoppingToken)
-    {
-        _ = pendingMessage.SubscriptionName switch
-        {
-            CoreLib.Enums.SubscriptionName.electricidad => await MessageSendTextAsync(
-                telegramUserId,
-                MessageGetMarkdownV2TextForPrices(pendingMessage.Payload),
-                Telegram.Bot.Types.Enums.ParseMode.MarkdownV2,
-                stoppingToken),
-
-            CoreLib.Enums.SubscriptionName.webComparer => await MessageSendTextAsync(
-                telegramUserId,
-                pendingMessage.Payload[new Range(0, Math.Min(UtilsLib.Constants.Telegram.MessageLengthLimit, pendingMessage.Payload.Length))],
-                null,
-                stoppingToken),
-
-            //Enums.SubscriptionName.amazon => await TelegramService.MessageSendTextAsync(
-            //    subscriber.TelegramUserId.Value,
-            //    null,
-            //    stoppingToken),
-
-            _ => throw new ApplicationException($"Unexpected SubscriptionName: '{pendingMessage.SubscriptionName}?"),
-        };
-    }
-
     //private async Task ProcesarDocumentoConsumosAsync(
     //  Message message
     //  , CancellationToken cancellationToken)
@@ -774,4 +756,67 @@ public partial class TelegramHostedService : Microsoft.Extensions.Hosting.IHoste
 
     //    _ = await electricidadDbContext.SaveChangesAsync(cancellationToken);
     //}
+#endif
+
+    public async Task SendMessageToSubscriberAsync(
+        CoreLib.Entities.Outbox pendingMessage
+        , long telegramUserId
+        , CancellationToken stoppingToken)
+    {
+        _ = pendingMessage.SubscriptionName switch
+        {
+            CoreLib.Enums.SubscriptionName.electricidad => await MessageSendTextAsync(
+                telegramUserId,
+                MessageGetMarkdownV2TextForPrices(System.Text.Json.JsonSerializer.Deserialize<IEnumerable<CoreLib.Entities.Pvpc>>(pendingMessage.Payload)!),
+                Telegram.Bot.Types.Enums.ParseMode.MarkdownV2,
+                stoppingToken),
+
+            CoreLib.Enums.SubscriptionName.webComparer => await MessageSendTextAsync(
+                telegramUserId,
+                pendingMessage.Payload[new Range(0, Math.Min(UtilsLib.Constants.Telegram.MessageLengthLimit, pendingMessage.Payload.Length))],
+                null,
+                stoppingToken),
+
+            //Enums.SubscriptionName.amazon => await TelegramService.MessageSendTextAsync(
+            //    subscriber.TelegramUserId.Value,
+            //    null,
+            //    stoppingToken),
+
+            _ => throw new ApplicationException($"Unexpected SubscriptionName: '{pendingMessage.SubscriptionName}?"),
+        };
+    }
+
+    private static string MessageGetMarkdownV2TextForPrices(IEnumerable<CoreLib.Entities.Pvpc> prices)
+    {
+        if (prices == null || !prices.Any())
+            return "No hay datos";
+
+        var HorasRestantes = prices.ToImmutableArray();
+
+        DateTime ObtainedDate = prices.First().AtDateTimeOffset.Date;
+
+        int HowMany = Math.Min(6, HorasRestantes.Length - 1);
+        decimal Min = HorasRestantes.OrderBy(x => x.KWhPriceInEuros).Take(HowMany).Max(x => x.KWhPriceInEuros);
+        decimal Max = HorasRestantes.OrderByDescending(x => x.KWhPriceInEuros).Take(HowMany).Min(x => x.KWhPriceInEuros);
+        decimal Avg = prices.Average(x => x.KWhPriceInEuros);
+
+        System.Text.StringBuilder sb = new(500);
+        sb = sb.AppendLine($"Media del *{ObtainedDate.ToString(UtilsLib.Constants.Formats.LongDateFormat, UtilsLib.Constants.Formats.ESCultureInfo)}*");
+        sb = sb.AppendLine($"*{Avg.ToString("N5", UtilsLib.Constants.Formats.ESCultureInfo)} € / kWh*");
+
+        for (int i = 0; i < HorasRestantes.Length; i++)
+        {
+            string emoji =
+                HorasRestantes[i].KWhPriceInEuros >= Max ? Constants.Emojis.RedCircle :
+                HorasRestantes[i].KWhPriceInEuros <= Min ? Constants.Emojis.GreenCircle :
+                HorasRestantes[i].KWhPriceInEuros <= Avg ? Constants.Emojis.YellowCircle : Constants.Emojis.OrangeCircle;
+
+            sb = sb.AppendLine($"{HorasRestantes[i].AtDateTimeOffset.Hour:00}  {emoji}  {HorasRestantes[i].KWhPriceInEuros.ToString("N5", UtilsLib.Constants.Formats.ESCultureInfo)}");
+        }
+
+        return sb.ToString();
+    }
+
+    //private static string MessageGetMarkdownV2TextForPrices(string payload)
+    //   => MessageGetMarkdownV2TextForPrices(System.Text.Json.JsonSerializer.Deserialize<IEnumerable<CoreLib.Entities.Pvpc>>(payload)!);
 }

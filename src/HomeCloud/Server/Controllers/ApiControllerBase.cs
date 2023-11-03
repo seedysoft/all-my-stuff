@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using System.Text.Json;
 
 namespace Seedysoft.HomeCloud.Server.Controllers;
 
@@ -6,6 +7,8 @@ namespace Seedysoft.HomeCloud.Server.Controllers;
 public abstract class ApiControllerBase : ControllerBase
 {
     protected virtual ILogger Logger { get; init; }
+
+    protected internal JsonSerializerOptions JsonOptions { get; } = new() { };
 
     protected ApiControllerBase(ILogger logger) => Logger = logger;
 }
