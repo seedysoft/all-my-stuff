@@ -63,7 +63,8 @@ public class WebComparerHostedService : Microsoft.Extensions.Hosting.IHostedServ
                         {
                             await FindDataToSendAsync(dbCtx, WebDriver, webData, cancellationToken);
 
-                            await Task.Delay(FiveSecondsTimeSpan, cancellationToken);
+                            if (!System.Diagnostics.Debugger.IsAttached)
+                                await Task.Delay(FiveSecondsTimeSpan, cancellationToken);
                         }
                         catch (TaskCanceledException e) when (e.InnerException is TimeoutException && Logger.LogAndHandle(e.InnerException, "Request to '{WebUrl}' timeout", webData.WebUrl)) { continue; }
                         catch (TaskCanceledException e) when (Logger.LogAndHandle(e, "Task request to '{WebUrl}' cancelled", webData.WebUrl)) { continue; }
@@ -84,7 +85,7 @@ public class WebComparerHostedService : Microsoft.Extensions.Hosting.IHostedServ
 
         string ContentStriped = await GetContentAsync(WebDriver, webData, cancellationToken);
 
-        webData.DataToSend = GetDifferences(webData, ContentStriped);
+        webData.DataToSend = GetDifferencesOrNull(webData, ContentStriped);
 
         // Establecemos la misma hora, para saber cuándo se ha visto el último cambio.
         if (!string.IsNullOrWhiteSpace(webData.DataToSend))
@@ -117,6 +118,7 @@ public class WebComparerHostedService : Microsoft.Extensions.Hosting.IHostedServ
         //Options.AddArgument("--disable-dev-shm-usage");
         //Options.AddArgument("--no-sandbox");
         Options.AddArgument("--headless");
+        Options.BrowserVersion = "stable";
 
         if (System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(System.Runtime.InteropServices.OSPlatform.Linux))
             Options.BinaryLocation = "/usr/bin/chromium-browser";
@@ -179,7 +181,7 @@ public class WebComparerHostedService : Microsoft.Extensions.Hosting.IHostedServ
         }
     }
 
-    private static string GetDifferences(CoreLib.Entities.WebData webData, string obtainedString)
+    private static string? GetDifferencesOrNull(CoreLib.Entities.WebData webData, string obtainedString)
     {
         IEnumerable<string> ObtainedLinesNormalized =
             from l in DiffPlex.Chunkers.LineChunker.Instance.Chunk(obtainedString)
@@ -209,7 +211,7 @@ public class WebComparerHostedService : Microsoft.Extensions.Hosting.IHostedServ
         if (!string.IsNullOrWhiteSpace(webData.IgnoreChangeWhen) &&
             webData.IgnoreChangeWhen.Split(';').Any(ObtainedTextNormalized.Contains))
         {
-            return string.Empty;
+            return null;
         }
 
         webData.CurrentWebContent = ObtainedTextNormalized;
