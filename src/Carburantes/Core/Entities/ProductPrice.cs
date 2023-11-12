@@ -37,13 +37,13 @@ public abstract class ProductPriceBase : Core.EntityBase
 }
 
 [System.Diagnostics.DebuggerDisplay("{" + nameof(GetDebuggerDisplay) + "(),nq}")]
-public class ProductPrice : ProductPriceBase
+public sealed class ProductPrice : ProductPriceBase
 {
     private string GetDebuggerDisplay() => $"{NombreProducto})";
 }
 
 [System.Diagnostics.DebuggerDisplay("{" + nameof(GetDebuggerDisplay) + "(),nq}")]
-public class ProductPriceHist : ProductPriceBase
+public sealed class ProductPriceHist : ProductPriceBase
 {
     private string GetDebuggerDisplay() => $"{NombreProducto} @ {AtDate}";
 }

@@ -24,7 +24,7 @@ internal abstract class MunicipioEntityTypeConfigurationBase<T> : EntityTypeConf
     }
 }
 
-internal class MunicipioEntityTypeConfiguration : MunicipioEntityTypeConfigurationBase<Core.Entities.Municipio>, IEntityTypeConfiguration<Core.Entities.Municipio>
+internal sealed class MunicipioEntityTypeConfiguration : MunicipioEntityTypeConfigurationBase<Core.Entities.Municipio>, IEntityTypeConfiguration<Core.Entities.Municipio>
 {
     public override void Configure(EntityTypeBuilder<Core.Entities.Municipio> builder)
     {
@@ -36,7 +36,7 @@ internal class MunicipioEntityTypeConfiguration : MunicipioEntityTypeConfigurati
     }
 }
 
-internal class MunicipioHistEntityTypeConfiguration : MunicipioEntityTypeConfigurationBase<Core.Entities.MunicipioHist>, IEntityTypeConfiguration<Core.Entities.MunicipioHist>
+internal sealed class MunicipioHistEntityTypeConfiguration : MunicipioEntityTypeConfigurationBase<Core.Entities.MunicipioHist>, IEntityTypeConfiguration<Core.Entities.MunicipioHist>
 {
     public override void Configure(EntityTypeBuilder<Core.Entities.MunicipioHist> builder)
     {

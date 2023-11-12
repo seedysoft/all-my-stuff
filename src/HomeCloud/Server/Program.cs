@@ -2,7 +2,7 @@
 
 namespace Seedysoft.HomeCloud.Server;
 
-public class Program
+public sealed class Program
 {
     private static void Main(string[] args)
     {

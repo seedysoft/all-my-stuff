@@ -7,7 +7,7 @@ using System.Collections.Immutable;
 namespace Seedysoft.HomeCloud.Server.Controllers;
 
 [Route(ControllerUris.PetroleumProductsControllerUri)]
-public class PetroleumProductsController : ApiControllerBase
+public sealed class PetroleumProductsController : ApiControllerBase
 {
     public PetroleumProductsController(ILogger<PetroleumProductsController> logger) : base(logger) => Logger = logger;
 

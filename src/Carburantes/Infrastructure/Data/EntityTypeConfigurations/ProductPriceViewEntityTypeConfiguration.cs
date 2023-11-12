@@ -66,7 +66,7 @@ internal abstract class ProductPriceBaseEntityTypeConfiguration<T> : EntityTypeC
     }
 }
 
-internal class ProductPriceEntityTypeConfiguration : ProductPriceBaseEntityTypeConfiguration<Core.Entities.ProductPrice>, IEntityTypeConfiguration<Core.Entities.ProductPrice>
+internal sealed class ProductPriceEntityTypeConfiguration : ProductPriceBaseEntityTypeConfiguration<Core.Entities.ProductPrice>, IEntityTypeConfiguration<Core.Entities.ProductPrice>
 {
     public override void Configure(EntityTypeBuilder<Core.Entities.ProductPrice> builder)
     {
@@ -78,7 +78,7 @@ internal class ProductPriceEntityTypeConfiguration : ProductPriceBaseEntityTypeC
     }
 }
 
-internal class ProductPriceHistViewEntityTypeConfiguration : ProductPriceBaseEntityTypeConfiguration<Core.Entities.ProductPriceHist>, IEntityTypeConfiguration<Core.Entities.ProductPriceHist>
+internal sealed class ProductPriceHistViewEntityTypeConfiguration : ProductPriceBaseEntityTypeConfiguration<Core.Entities.ProductPriceHist>, IEntityTypeConfiguration<Core.Entities.ProductPriceHist>
 {
     public override void Configure(EntityTypeBuilder<Core.Entities.ProductPriceHist> builder)
     {

@@ -2,7 +2,7 @@
 
 namespace Seedysoft.InfrastructureLib.EntityTypeConfigurations;
 
-internal class PvpcEntityTypeConfigurationT<T> : IEntityTypeConfiguration<T> where T : CoreLib.Entities.PvpcBase
+internal abstract class PvpcEntityTypeConfigurationT<T> : IEntityTypeConfiguration<T> where T : CoreLib.Entities.PvpcBase
 {
     public void Configure(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder<T> builder)
     {
@@ -15,7 +15,7 @@ internal class PvpcEntityTypeConfigurationT<T> : IEntityTypeConfiguration<T> whe
     }
 }
 
-internal class PvpcEntityTypeConfiguration : PvpcEntityTypeConfigurationT<CoreLib.Entities.Pvpc>, IEntityTypeConfiguration<CoreLib.Entities.Pvpc>
+internal sealed class PvpcEntityTypeConfiguration : PvpcEntityTypeConfigurationT<CoreLib.Entities.Pvpc>, IEntityTypeConfiguration<CoreLib.Entities.Pvpc>
 {
     public new void Configure(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder<CoreLib.Entities.Pvpc> builder)
     {
@@ -27,7 +27,7 @@ internal class PvpcEntityTypeConfiguration : PvpcEntityTypeConfigurationT<CoreLi
     }
 }
 
-internal class PvpcViewEntityTypeConfiguration : PvpcEntityTypeConfigurationT<CoreLib.Entities.PvpcView>, IEntityTypeConfiguration<CoreLib.Entities.PvpcView>
+internal sealed class PvpcViewEntityTypeConfiguration : PvpcEntityTypeConfigurationT<CoreLib.Entities.PvpcView>, IEntityTypeConfiguration<CoreLib.Entities.PvpcView>
 {
     public new void Configure(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder<CoreLib.Entities.PvpcView> builder)
     {

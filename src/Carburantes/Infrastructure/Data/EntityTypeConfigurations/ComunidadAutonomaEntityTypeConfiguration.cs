@@ -20,7 +20,7 @@ internal abstract class ComunidadAutonomaEntityTypeConfigurationBase<T> : Entity
     }
 }
 
-internal class ComunidadAutonomaEntityTypeConfiguration : ComunidadAutonomaEntityTypeConfigurationBase<Core.Entities.ComunidadAutonoma>, IEntityTypeConfiguration<Core.Entities.ComunidadAutonoma>
+internal sealed class ComunidadAutonomaEntityTypeConfiguration : ComunidadAutonomaEntityTypeConfigurationBase<Core.Entities.ComunidadAutonoma>, IEntityTypeConfiguration<Core.Entities.ComunidadAutonoma>
 {
     public override void Configure(EntityTypeBuilder<Core.Entities.ComunidadAutonoma> builder)
     {
@@ -32,7 +32,7 @@ internal class ComunidadAutonomaEntityTypeConfiguration : ComunidadAutonomaEntit
     }
 }
 
-internal class ComunidadAutonomaHistEntityTypeConfiguration : ComunidadAutonomaEntityTypeConfigurationBase<Core.Entities.ComunidadAutonomaHist>, IEntityTypeConfiguration<Core.Entities.ComunidadAutonomaHist>
+internal sealed class ComunidadAutonomaHistEntityTypeConfiguration : ComunidadAutonomaEntityTypeConfigurationBase<Core.Entities.ComunidadAutonomaHist>, IEntityTypeConfiguration<Core.Entities.ComunidadAutonomaHist>
 {
     public override void Configure(EntityTypeBuilder<Core.Entities.ComunidadAutonomaHist> builder)
     {

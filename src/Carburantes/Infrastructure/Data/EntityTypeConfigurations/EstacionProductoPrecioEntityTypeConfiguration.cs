@@ -25,7 +25,7 @@ internal abstract class EstacionProductoPrecioEntityTypeConfigurationBase<T> : E
     }
 }
 
-internal class EstacionProductoPrecioEntityTypeConfiguration : EstacionProductoPrecioEntityTypeConfigurationBase<Core.Entities.EstacionProductoPrecio>, IEntityTypeConfiguration<Core.Entities.EstacionProductoPrecio>
+internal sealed class EstacionProductoPrecioEntityTypeConfiguration : EstacionProductoPrecioEntityTypeConfigurationBase<Core.Entities.EstacionProductoPrecio>, IEntityTypeConfiguration<Core.Entities.EstacionProductoPrecio>
 {
     public override void Configure(EntityTypeBuilder<Core.Entities.EstacionProductoPrecio> builder)
     {
@@ -37,7 +37,7 @@ internal class EstacionProductoPrecioEntityTypeConfiguration : EstacionProductoP
     }
 }
 
-internal class EstacionProductoPrecioHistEntityTypeConfiguration : EstacionProductoPrecioEntityTypeConfigurationBase<Core.Entities.EstacionProductoPrecioHist>, IEntityTypeConfiguration<Core.Entities.EstacionProductoPrecioHist>
+internal sealed class EstacionProductoPrecioHistEntityTypeConfiguration : EstacionProductoPrecioEntityTypeConfigurationBase<Core.Entities.EstacionProductoPrecioHist>, IEntityTypeConfiguration<Core.Entities.EstacionProductoPrecioHist>
 {
     public override void Configure(EntityTypeBuilder<Core.Entities.EstacionProductoPrecioHist> builder)
     {

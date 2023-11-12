@@ -29,13 +29,13 @@ public abstract class EstacionServicioBase : Core.EntityBase
 }
 
 [DebuggerDisplay("{" + nameof(GetDebuggerDisplay) + "(),nq}")]
-public class EstacionServicio : EstacionServicioBase
+public sealed class EstacionServicio : EstacionServicioBase
 {
     private string GetDebuggerDisplay() => $"{Rotulo}";
 }
 
 [DebuggerDisplay("{" + nameof(GetDebuggerDisplay) + "(),nq}")]
-public class EstacionServicioHist : EstacionServicioBase
+public sealed class EstacionServicioHist : EstacionServicioBase
 {
     private string GetDebuggerDisplay() => $"{Rotulo} @ {AtDate}";
 }

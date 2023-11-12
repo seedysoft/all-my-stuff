@@ -1,11 +1,11 @@
 ﻿namespace Seedysoft.Carburantes.Core.Settings;
 
-public class Minetur
+public sealed class Minetur
 {
     public Uris Uris { get; set; } = default!;
 }
 
-public class Uris
+public sealed class Uris
 {
     public string Base { get; set; } = default!;
 

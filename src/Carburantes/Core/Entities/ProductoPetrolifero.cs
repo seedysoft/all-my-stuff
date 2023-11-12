@@ -15,13 +15,13 @@ public abstract class ProductoPetroliferoBase : Core.EntityBase
 }
 
 [DebuggerDisplay("{" + nameof(GetDebuggerDisplay) + "(),nq}")]
-public class ProductoPetrolifero : ProductoPetroliferoBase
+public sealed class ProductoPetrolifero : ProductoPetroliferoBase
 {
     private string GetDebuggerDisplay() => $"{NombreProducto} ({IdProducto})";
 }
 
 [DebuggerDisplay("{" + nameof(GetDebuggerDisplay) + "(),nq}")]
-public class ProductoPetroliferoHist : ProductoPetroliferoBase
+public sealed class ProductoPetroliferoHist : ProductoPetroliferoBase
 {
     private string GetDebuggerDisplay() => $"{NombreProducto} ({IdProducto}) @ {AtDate}";
 }

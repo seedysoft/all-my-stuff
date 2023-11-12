@@ -4,7 +4,7 @@ namespace Seedysoft.HomeCloud.Server.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class WeatherForecastController : ApiControllerBase
+public sealed class WeatherForecastController : ApiControllerBase
 {
     private static readonly string[] Summaries = new[]
     {

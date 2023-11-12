@@ -22,26 +22,25 @@ public abstract class WebDataBase
 }
 
 [System.Diagnostics.DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
-public partial class WebData : WebDataBase
+public sealed partial class WebData : WebDataBase
 {
-    protected WebData() { }
     public WebData(string webUrl, string description)
     {
         WebUrl = webUrl;
         Description = description;
     }
 
-    protected string GetDebuggerDisplay() => $"{WebUrl}";
+    private string GetDebuggerDisplay() => $"{WebUrl}";
 }
 
-public partial class WebData
+public sealed partial class WebData
 {
     public string Hyperlink => $"<a href=\"{WebUrl}\">{(string.IsNullOrWhiteSpace(Description) ? WebUrl : Description)}</a>";
 
     public string? DataToSend { get; set; }
 }
 
-public class WebDataView : WebDataBase
+public sealed class WebDataView : WebDataBase
 {
     public long? SeenAtDateTimeUnix { get; set; }
     public long? UpdatedAtDateTimeUnix { get; set; }

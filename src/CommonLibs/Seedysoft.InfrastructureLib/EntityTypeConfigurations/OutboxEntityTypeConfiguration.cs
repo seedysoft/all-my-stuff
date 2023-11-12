@@ -2,7 +2,7 @@
 
 namespace Seedysoft.InfrastructureLib.EntityTypeConfigurations;
 
-internal class OutboxTableEntityTypeConfigurationT<T> : IEntityTypeConfiguration<T> where T : CoreLib.Entities.OutboxBase
+internal abstract class OutboxTableEntityTypeConfigurationT<T> : IEntityTypeConfiguration<T> where T : CoreLib.Entities.OutboxBase
 {
     public void Configure(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder<T> builder)
     {
@@ -29,7 +29,7 @@ internal class OutboxTableEntityTypeConfigurationT<T> : IEntityTypeConfiguration
     }
 }
 
-internal class OutboxEntityTypeConfiguration : OutboxTableEntityTypeConfigurationT<CoreLib.Entities.Outbox>, IEntityTypeConfiguration<CoreLib.Entities.Outbox>
+internal sealed class OutboxEntityTypeConfiguration : OutboxTableEntityTypeConfigurationT<CoreLib.Entities.Outbox>, IEntityTypeConfiguration<CoreLib.Entities.Outbox>
 {
     public new void Configure(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder<CoreLib.Entities.Outbox> builder)
     {
@@ -41,7 +41,7 @@ internal class OutboxEntityTypeConfiguration : OutboxTableEntityTypeConfiguratio
     }
 }
 
-internal class OutboxViewEntityTypeConfiguration : OutboxTableEntityTypeConfigurationT<CoreLib.Entities.OutboxView>, IEntityTypeConfiguration<CoreLib.Entities.OutboxView>
+internal sealed class OutboxViewEntityTypeConfiguration : OutboxTableEntityTypeConfigurationT<CoreLib.Entities.OutboxView>, IEntityTypeConfiguration<CoreLib.Entities.OutboxView>
 {
     public new void Configure(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder<CoreLib.Entities.OutboxView> builder)
     {

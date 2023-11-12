@@ -1,6 +1,6 @@
 ﻿namespace Seedysoft.TelegramLib;
 
-internal class CallbackData
+internal sealed class CallbackData
 {
     private const string Separator = "~";
 

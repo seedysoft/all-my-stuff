@@ -2,7 +2,7 @@
 
 namespace Seedysoft.InfrastructureLib.EntityTypeConfigurations;
 
-internal class SubcriptionDataViewEntityTypeConfiguration : IEntityTypeConfiguration<CoreLib.Entities.SubcriptionDataView>
+internal sealed class SubcriptionDataViewEntityTypeConfiguration : IEntityTypeConfiguration<CoreLib.Entities.SubcriptionDataView>
 {
     public void Configure(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder<CoreLib.Entities.SubcriptionDataView> builder)
     {

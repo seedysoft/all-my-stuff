@@ -2,7 +2,7 @@
 
 namespace Seedysoft.InfrastructureLib.EntityTypeConfigurations;
 
-internal class SubscriberEntityTypeConfiguration : IEntityTypeConfiguration<CoreLib.Entities.Subscriber>
+internal sealed class SubscriberEntityTypeConfiguration : IEntityTypeConfiguration<CoreLib.Entities.Subscriber>
 {
     public void Configure(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder<CoreLib.Entities.Subscriber> builder)
     {

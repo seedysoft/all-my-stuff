@@ -7,7 +7,7 @@ using System.Collections.Immutable;
 
 namespace Seedysoft.OutboxLib.Services;
 
-public class OutboxCronBackgroundService : CronBackgroundServiceLib.CronBackgroundService
+public sealed class OutboxCronBackgroundService : CronBackgroundServiceLib.CronBackgroundService
 {
     private readonly IServiceProvider ServiceProvider;
     private readonly ILogger<OutboxCronBackgroundService> Logger;

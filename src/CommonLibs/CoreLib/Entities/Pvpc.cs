@@ -15,19 +15,18 @@ public abstract class PvpcBase
 /// Precio Voluntario para el Pequeño Consumidor
 /// </summary>
 [System.Diagnostics.DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
-public class Pvpc : PvpcBase
+public sealed class Pvpc : PvpcBase
 {
-    protected Pvpc() { }
     public Pvpc(DateTimeOffset atDateTimeOffset, decimal mWhPriceInEuros)
     {
         AtDateTimeOffset = atDateTimeOffset;
         MWhPriceInEuros = mWhPriceInEuros;
     }
 
-    protected string GetDebuggerDisplay() => $"{FullDate:yy.MM.dd HHzz} @ {KWhPriceInEuros:N5} €/kWh";
+    private string GetDebuggerDisplay() => $"{FullDate:yy.MM.dd HHzz} @ {KWhPriceInEuros:N5} €/kWh";
 }
 
-public class PvpcView : PvpcBase
+public sealed class PvpcView : PvpcBase
 {
     public long AtDateTimeUnix { get; private set; }
 }

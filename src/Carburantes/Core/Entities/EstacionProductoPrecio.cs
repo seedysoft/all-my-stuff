@@ -14,13 +14,13 @@ public abstract class EstacionProductoPrecioBase : Core.EntityBase
 }
 
 [DebuggerDisplay("{" + nameof(GetDebuggerDisplay) + "(),nq}")]
-public class EstacionProductoPrecio : EstacionProductoPrecioBase
+public sealed class EstacionProductoPrecio : EstacionProductoPrecioBase
 {
     private string GetDebuggerDisplay() => $"Estación {IdEstacion}, Producto {IdProducto} y precio {Euros:0.000} @ {AtDate}";
 }
 
 [DebuggerDisplay("{" + nameof(GetDebuggerDisplay) + "(),nq}")]
-public class EstacionProductoPrecioHist : EstacionProductoPrecioBase
+public sealed class EstacionProductoPrecioHist : EstacionProductoPrecioBase
 {
     private string GetDebuggerDisplay() => $"Estación {IdEstacion}, Producto {IdProducto} y precio {Euros:0.000} @ {AtDate}";
 }

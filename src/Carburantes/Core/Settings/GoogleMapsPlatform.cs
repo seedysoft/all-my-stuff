@@ -1,10 +1,10 @@
 ﻿namespace Seedysoft.Carburantes.Core.Settings;
 
-public class GoogleMapsPlatform
+public sealed class GoogleMapsPlatform
 {
-    protected internal const string ModeDriving = "driving";
+    public const string ModeDriving = "driving";
 
-    protected internal const string OutputFormatJson = "json";
+    public const string OutputFormatJson = "json";
 
     public string ApiKey { get; set; } = default!;
 
@@ -15,7 +15,7 @@ public class GoogleMapsPlatform
     public Places Places { get; set; } = default!;
 }
 
-public class Directions
+public sealed class Directions
 {
     private const string AvoidTolls = "tolls";
     private const string LanguageEs = "es";
@@ -46,7 +46,7 @@ public class Directions
     }
 }
 
-public class Maps
+public sealed class Maps
 {
     /// <summary>
     /// <![CDATA[https://www.google.com/maps/dir/?api=1&origin={OriginValue}&destination={DestinationValue}&travelmode={ModeDriving}]]>
@@ -64,7 +64,7 @@ public class Maps
     }
 }
 
-public class Places
+public sealed class Places
 {
     /// <summary>
     /// <![CDATA[https://maps.googleapis.com/maps/api/place/nearbysearch/{OutputFormatJson}?location={OutputFormatJson}&key={GoogleApi}]]>

@@ -8,7 +8,7 @@ using Seedysoft.UtilsLib.Extensions;
 
 namespace Seedysoft.Carburantes.ConsoleApp;
 
-public class Program
+public sealed class Program
 {
     public static async Task Main(string[] args)
     {

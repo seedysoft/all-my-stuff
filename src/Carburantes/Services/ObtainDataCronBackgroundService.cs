@@ -8,7 +8,7 @@ using System.Net.Http.Json;
 
 namespace Seedysoft.Carburantes.Services;
 
-public class ObtainDataCronBackgroundService : CronBackgroundServiceLib.CronBackgroundService
+public sealed class ObtainDataCronBackgroundService : CronBackgroundServiceLib.CronBackgroundService
 {
     private static readonly System.Text.Json.JsonSerializerOptions JsonOptions = new() { };
 

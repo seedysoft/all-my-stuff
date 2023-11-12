@@ -82,7 +82,7 @@ public static class NetTopologySuiteExtensions
         return GeometryCopy;
     }
 
-    private class MathTransformFilter : ICoordinateSequenceFilter
+    private sealed class MathTransformFilter : ICoordinateSequenceFilter
     {
         private readonly MathTransform _transform;
 

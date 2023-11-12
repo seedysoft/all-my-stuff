@@ -1,12 +1,12 @@
 ﻿#pragma warning disable CA1050 // Declare types in namespaces
 #pragma warning disable IDE1006 // Naming Styles
-public class Rootobject
+public sealed class Rootobject
 {
     public Data? data { get; set; }
     public Included[]? included { get; set; }
 }
 
-public class Data
+public sealed class Data
 {
     public string? type { get; set; }
     public string? id { get; set; }
@@ -14,25 +14,25 @@ public class Data
     public Meta? meta { get; set; }
 }
 
-public class Attributes
+public sealed class Attributes
 {
     public string? title { get; set; }
     public DateTime lastupdate { get; set; }
     public object? description { get; set; }
 }
 
-public class Meta
+public sealed class Meta
 {
     public CacheControl? cachecontrol { get; set; }
 }
 
-public class CacheControl
+public sealed class CacheControl
 {
     public string? cache { get; set; }
     public DateTime? expireAt { get; set; }
 }
 
-public class Included
+public sealed class Included
 {
     public string? type { get; set; }
     public string? id { get; set; }
@@ -40,7 +40,7 @@ public class Included
     public Attributes1? attributes { get; set; }
 }
 
-public class Attributes1
+public sealed class Attributes1
 {
     public string? title { get; set; }
     public object? description { get; set; }
@@ -52,7 +52,7 @@ public class Attributes1
     public Value[]? values { get; set; }
 }
 
-public class Value
+public sealed class Value
 {
     public float? value { get; set; }
     public float? percentage { get; set; }

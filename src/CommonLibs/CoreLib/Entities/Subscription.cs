@@ -1,7 +1,7 @@
 ﻿namespace Seedysoft.CoreLib.Entities;
 
 [System.Diagnostics.DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
-public class Subscription
+public sealed class Subscription
 {
     private Subscription() { }
     public Subscription(Enums.SubscriptionName subscriptionName) => SubscriptionName = subscriptionName;

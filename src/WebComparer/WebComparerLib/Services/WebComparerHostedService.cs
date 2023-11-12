@@ -7,7 +7,7 @@ using System.Collections.Immutable;
 
 namespace Seedysoft.WebComparerLib.Services;
 
-public class WebComparerHostedService : Microsoft.Extensions.Hosting.IHostedService
+public sealed class WebComparerHostedService : Microsoft.Extensions.Hosting.IHostedService, IDisposable
 {
     private static readonly TimeSpan OneSecondTimeSpan = TimeSpan.FromSeconds(1);
     private static readonly TimeSpan FiveSecondsTimeSpan = TimeSpan.FromSeconds(5);

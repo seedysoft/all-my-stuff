@@ -14,19 +14,18 @@ public abstract class OutboxBase
 }
 
 [System.Diagnostics.DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
-public class Outbox : OutboxBase
+public sealed class Outbox : OutboxBase
 {
-    protected Outbox() { }
     public Outbox(Enums.SubscriptionName subscriptionName, string payload)
     {
         SubscriptionName = subscriptionName;
         Payload = payload;
     }
 
-    protected string GetDebuggerDisplay() => $"{SubscriptionName} {SubscriptionId} {(SentAtDateTimeOffset.HasValue ? "sent on " + SentAtDateTimeOffset.ToString() : "pending")}";
+    private string GetDebuggerDisplay() => $"{SubscriptionName} {SubscriptionId} {(SentAtDateTimeOffset.HasValue ? "sent on " + SentAtDateTimeOffset.ToString() : "pending")}";
 }
 
-public class OutboxView : OutboxBase
+public sealed class OutboxView : OutboxBase
 {
     public long? SentAtDateTimeUnix { get; set; }
 }

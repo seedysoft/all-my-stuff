@@ -24,7 +24,7 @@ internal abstract class ProductoPetroliferoEntityTypeConfigurationBase<T> : Enti
     }
 }
 
-internal class ProductoPetroliferoEntityTypeConfiguration : ProductoPetroliferoEntityTypeConfigurationBase<Core.Entities.ProductoPetrolifero>, IEntityTypeConfiguration<Core.Entities.ProductoPetrolifero>
+internal sealed class ProductoPetroliferoEntityTypeConfiguration : ProductoPetroliferoEntityTypeConfigurationBase<Core.Entities.ProductoPetrolifero>, IEntityTypeConfiguration<Core.Entities.ProductoPetrolifero>
 {
     public override void Configure(EntityTypeBuilder<Core.Entities.ProductoPetrolifero> builder)
     {
@@ -36,7 +36,7 @@ internal class ProductoPetroliferoEntityTypeConfiguration : ProductoPetroliferoE
     }
 }
 
-internal class ProductoPetroliferoHistEntityTypeConfiguration : ProductoPetroliferoEntityTypeConfigurationBase<Core.Entities.ProductoPetroliferoHist>, IEntityTypeConfiguration<Core.Entities.ProductoPetroliferoHist>
+internal sealed class ProductoPetroliferoHistEntityTypeConfiguration : ProductoPetroliferoEntityTypeConfigurationBase<Core.Entities.ProductoPetroliferoHist>, IEntityTypeConfiguration<Core.Entities.ProductoPetroliferoHist>
 {
     public override void Configure(EntityTypeBuilder<Core.Entities.ProductoPetroliferoHist> builder)
     {

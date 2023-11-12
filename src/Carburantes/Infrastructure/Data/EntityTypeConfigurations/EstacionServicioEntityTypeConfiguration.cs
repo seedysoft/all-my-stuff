@@ -52,7 +52,7 @@ internal abstract class EstacionServicioEntityTypeConfigurationBase<T> : EntityT
     }
 }
 
-internal class EstacionServicioEntityTypeConfiguration : EstacionServicioEntityTypeConfigurationBase<Core.Entities.EstacionServicio>, IEntityTypeConfiguration<Core.Entities.EstacionServicio>
+internal sealed class EstacionServicioEntityTypeConfiguration : EstacionServicioEntityTypeConfigurationBase<Core.Entities.EstacionServicio>, IEntityTypeConfiguration<Core.Entities.EstacionServicio>
 {
     public override void Configure(EntityTypeBuilder<Core.Entities.EstacionServicio> builder)
     {
@@ -64,7 +64,7 @@ internal class EstacionServicioEntityTypeConfiguration : EstacionServicioEntityT
     }
 }
 
-internal class EstacionServicioHistEntityTypeConfiguration : EstacionServicioEntityTypeConfigurationBase<Core.Entities.EstacionServicioHist>, IEntityTypeConfiguration<Core.Entities.EstacionServicioHist>
+internal sealed class EstacionServicioHistEntityTypeConfiguration : EstacionServicioEntityTypeConfigurationBase<Core.Entities.EstacionServicioHist>, IEntityTypeConfiguration<Core.Entities.EstacionServicioHist>
 {
     public override void Configure(EntityTypeBuilder<Core.Entities.EstacionServicioHist> builder)
     {

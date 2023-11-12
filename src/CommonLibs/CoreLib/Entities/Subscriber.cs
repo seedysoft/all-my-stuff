@@ -3,7 +3,7 @@
 //286475043	Rake
 
 [System.Diagnostics.DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
-public class Subscriber
+public sealed class Subscriber
 {
     private Subscriber() { }
     public Subscriber(string firstname) => Firstname = firstname;

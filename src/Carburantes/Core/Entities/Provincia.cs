@@ -12,13 +12,13 @@ public abstract class ProvinciaBase : Core.EntityBase
 }
 
 [DebuggerDisplay("{" + nameof(GetDebuggerDisplay) + "(),nq}")]
-public class Provincia : ProvinciaBase
+public sealed class Provincia : ProvinciaBase
 {
     private string GetDebuggerDisplay() => $"{NombreProvincia} ({IdProvincia}({IdComunidadAutonoma}))";
 }
 
 [DebuggerDisplay("{" + nameof(GetDebuggerDisplay) + "(),nq}")]
-public class ProvinciaHist : ProvinciaBase
+public sealed class ProvinciaHist : ProvinciaBase
 {
     private string GetDebuggerDisplay() => $"{NombreProvincia} ({IdProvincia}({IdComunidadAutonoma})) @ {AtDate}";
 }

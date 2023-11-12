@@ -24,7 +24,7 @@ internal abstract class ProvinciaEntityTypeConfigurationBase<T> : EntityTypeConf
     }
 }
 
-internal class ProvinciaEntityTypeConfiguration : ProvinciaEntityTypeConfigurationBase<Core.Entities.Provincia>, IEntityTypeConfiguration<Core.Entities.Provincia>
+internal sealed class ProvinciaEntityTypeConfiguration : ProvinciaEntityTypeConfigurationBase<Core.Entities.Provincia>, IEntityTypeConfiguration<Core.Entities.Provincia>
 {
     public override void Configure(EntityTypeBuilder<Core.Entities.Provincia> builder)
     {
@@ -36,7 +36,7 @@ internal class ProvinciaEntityTypeConfiguration : ProvinciaEntityTypeConfigurati
     }
 }
 
-internal class ProvinciaHistEntityTypeConfiguration : ProvinciaEntityTypeConfigurationBase<Core.Entities.ProvinciaHist>, IEntityTypeConfiguration<Core.Entities.ProvinciaHist>
+internal sealed class ProvinciaHistEntityTypeConfiguration : ProvinciaEntityTypeConfigurationBase<Core.Entities.ProvinciaHist>, IEntityTypeConfiguration<Core.Entities.ProvinciaHist>
 {
     public override void Configure(EntityTypeBuilder<Core.Entities.ProvinciaHist> builder)
     {

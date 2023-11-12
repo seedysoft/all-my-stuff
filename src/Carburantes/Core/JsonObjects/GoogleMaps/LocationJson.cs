@@ -5,7 +5,7 @@ using System.Text.Json.Serialization;
 namespace Seedysoft.Carburantes.Core.JsonObjects.GoogleMaps;
 
 [DebuggerDisplay("{" + nameof(GetDebuggerDisplay) + "(),nq}")]
-public class LocationJson : IEquatable<LocationJson>
+public sealed class LocationJson : IEquatable<LocationJson>
 {
     public LocationJson() { }
     public LocationJson(double lat, double lng)

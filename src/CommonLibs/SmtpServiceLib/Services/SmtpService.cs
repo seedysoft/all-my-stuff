@@ -2,14 +2,14 @@
 
 namespace Seedysoft.SmtpServiceLib.Services;
 
-public class SmtpService
+public sealed class SmtpService
 {
     private readonly Settings.SmtpServiceSettings SmtpServiceSettings;
     private readonly ILogger<SmtpService> Logger;
 
     public SmtpService(
-        Settings.SmtpServiceSettings smtpServiceSettings
-        , ILogger<SmtpService> logger)
+        Settings.SmtpServiceSettings smtpServiceSettings,
+        ILogger<SmtpService> logger)
     {
         SmtpServiceSettings = smtpServiceSettings ?? throw new ArgumentNullException(nameof(smtpServiceSettings));
         Logger = logger;
@@ -53,9 +53,9 @@ public class SmtpService
     }
 
     private async Task SendAsync(
-        System.Net.Mail.MailMessage message
-        , Settings.SmtpServiceSettings smtpServiceSettings
-        , CancellationToken cancellationToken)
+        System.Net.Mail.MailMessage message,
+        Settings.SmtpServiceSettings smtpServiceSettings,
+        CancellationToken cancellationToken)
     {
         if (message is null)
             throw new ArgumentNullException(nameof(message));

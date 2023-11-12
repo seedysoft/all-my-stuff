@@ -1,6 +1,6 @@
 ﻿namespace Seedysoft.HomeCloud.Shared;
 
-public class WeatherForecast
+public sealed class WeatherForecast
 {
     public DateTime Date { get; set; }
 

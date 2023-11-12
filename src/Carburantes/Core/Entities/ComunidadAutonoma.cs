@@ -10,13 +10,13 @@ public abstract class ComunidadAutonomaBase : Core.EntityBase
 }
 
 [DebuggerDisplay("{" + nameof(GetDebuggerDisplay) + "(),nq}")]
-public class ComunidadAutonoma : ComunidadAutonomaBase
+public sealed class ComunidadAutonoma : ComunidadAutonomaBase
 {
     private string GetDebuggerDisplay() => $"{NombreComunidadAutonoma} ({IdComunidadAutonoma})";
 }
 
 [DebuggerDisplay("{" + nameof(GetDebuggerDisplay) + "(),nq}")]
-public class ComunidadAutonomaHist : ComunidadAutonomaBase
+public sealed class ComunidadAutonomaHist : ComunidadAutonomaBase
 {
     private string GetDebuggerDisplay() => $"{NombreComunidadAutonoma} ({IdComunidadAutonoma}) @ {AtDate}";
 }

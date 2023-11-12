@@ -6,7 +6,7 @@ using System.Net.Http.Json;
 
 namespace Seedysoft.PvpcObtainerLib.Services;
 
-public class PvpcObtainerCronBackgroundService : CronBackgroundServiceLib.CronBackgroundService
+public sealed class PvpcObtainerCronBackgroundService : CronBackgroundServiceLib.CronBackgroundService
 {
     private readonly IServiceProvider ServiceProvider;
     private readonly ILogger<PvpcObtainerCronBackgroundService> Logger;
