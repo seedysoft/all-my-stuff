@@ -19,6 +19,8 @@ public abstract class WebDataBase
     public string CssSelector { get; set; } = default!;
 
     public long TakeAboveBelowLines { get; set; }
+
+    public bool UseHttpClient { get; set; }
 }
 
 [System.Diagnostics.DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]

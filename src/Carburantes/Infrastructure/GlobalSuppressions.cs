@@ -5,5 +5,5 @@
 
 using System.Diagnostics.CodeAnalysis;
 
-[assembly: SuppressMessage("Style", "IDE0161:Convert to file-scoped namespace", Justification = "auto-generated", Scope = "namespace", Target = "~N:Seedysoft.Carburantes.Infrastructure.Migrations.Carburantes")]
-[assembly: SuppressMessage("Style", "IDE0161:Convert to file-scoped namespace", Justification = "auto-generated", Scope = "namespace", Target = "~N:Seedysoft.Carburantes.Infrastructure.Migrations.CarburantesHist")]
+[assembly: SuppressMessage("Style", "IDE0058:Expression value is never used", Justification = "auto-generated", Scope = "namespaceanddescendants", Target = "~N:Seedysoft.Carburantes.Infrastructure.Migrations")]
+[assembly: SuppressMessage("Style", "IDE0161:Convert to file-scoped namespace", Justification = "auto-generated", Scope = "namespaceanddescendants", Target = "~N:Seedysoft.Carburantes.Infrastructure.Migrations")]

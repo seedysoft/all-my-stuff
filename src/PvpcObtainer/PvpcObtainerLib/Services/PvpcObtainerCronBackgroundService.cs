@@ -11,12 +11,12 @@ public sealed class PvpcObtainerCronBackgroundService : CronBackgroundServiceLib
     private readonly IServiceProvider ServiceProvider;
     private readonly ILogger<PvpcObtainerCronBackgroundService> Logger;
 
+    // HttpClient is intended to be instantiated once per application, rather than per-use. See Remarks.
+    private static readonly HttpClient client = new();
+
     private Settings.PvpcObtainerSettings Options => (Settings.PvpcObtainerSettings)Config;
 
-    public PvpcObtainerCronBackgroundService(
-        Settings.PvpcObtainerSettings config
-        , IServiceProvider serviceProvider
-        , ILogger<PvpcObtainerCronBackgroundService> logger) : base(config)
+    public PvpcObtainerCronBackgroundService(Settings.PvpcObtainerSettings config, IServiceProvider serviceProvider, ILogger<PvpcObtainerCronBackgroundService> logger) : base(config)
     {
         ServiceProvider = serviceProvider;
         Logger = logger;
@@ -37,15 +37,12 @@ public sealed class PvpcObtainerCronBackgroundService : CronBackgroundServiceLib
 
         Logger.LogInformation("Obtaining PVPC for the day {ForDate}", forDate.ToString(UtilsLib.Constants.Formats.YearMonthDayFormat));
 
-        // HttpClient is intended to be instantiated once per application, rather than per-use. See Remarks.
-        HttpClient Client = new();
-
         string UrlString = string.Format(Options.DataUrlTemplate, forDate);
         Logger.LogInformation("From {UrlString}", UrlString);
 
         try
         {
-            Rootobject? Response = await Client.GetFromJsonAsync<Rootobject>(UrlString, stoppingToken);
+            Rootobject? Response = await client.GetFromJsonAsync<Rootobject>(UrlString, stoppingToken);
 
             Included? PvpcIncluded = Response?.included?.FirstOrDefault(x => x.id == Options.PvpcId);
 
@@ -122,5 +119,12 @@ public sealed class PvpcObtainerCronBackgroundService : CronBackgroundServiceLib
 
             return 0;
         }
+    }
+
+    public override void Dispose()
+    {
+        client.Dispose();
+
+        base.Dispose();
     }
 }

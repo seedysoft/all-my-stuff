@@ -15,10 +15,15 @@ public sealed class WebComparerHostedService : Microsoft.Extensions.Hosting.IHos
     private readonly IServiceProvider ServiceProvider;
     private readonly ILogger<WebComparerHostedService> Logger;
 
+    // HttpClient is intended to be instantiated once per application, rather than per-use. See Remarks.
+    private static readonly HttpClient client = new();
+
     public WebComparerHostedService(IServiceProvider serviceProvider, ILogger<WebComparerHostedService> logger)
     {
         ServiceProvider = serviceProvider;
         Logger = logger;
+
+        client.DefaultRequestHeaders.UserAgent.ParseAdd(@"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36");
     }
 
     public async Task StartAsync(CancellationToken cancellationToken)
@@ -57,21 +62,16 @@ public sealed class WebComparerHostedService : Microsoft.Extensions.Hosting.IHos
                 {
                     CoreLib.Entities.WebData webData = WebDatas[i];
 
-                    using OpenQA.Selenium.IWebDriver WebDriver = GetWebDriver();
+                    try
                     {
-                        try
-                        {
-                            await FindDataToSendAsync(dbCtx, WebDriver, webData, cancellationToken);
+                        await FindDataToSendAsync(dbCtx, webData, cancellationToken);
 
-                            if (!System.Diagnostics.Debugger.IsAttached)
-                                await Task.Delay(FiveSecondsTimeSpan, cancellationToken);
-                        }
-                        catch (TaskCanceledException e) when (e.InnerException is TimeoutException && Logger.LogAndHandle(e.InnerException, "Request to '{WebUrl}' timeout", webData.WebUrl)) { continue; }
-                        catch (TaskCanceledException e) when (Logger.LogAndHandle(e, "Task request to '{WebUrl}' cancelled", webData.WebUrl)) { continue; }
-                        catch (Exception e) when (Logger.LogAndHandle(e, "Request to '{WebUrl}' failed", webData.WebUrl)) { continue; }
+                        if (!System.Diagnostics.Debugger.IsAttached)
+                            await Task.Delay(FiveSecondsTimeSpan, cancellationToken);
                     }
-
-                    WebDriver?.Quit();
+                    catch (TaskCanceledException e) when (e.InnerException is TimeoutException && Logger.LogAndHandle(e.InnerException, "Request to '{WebUrl}' timeout", webData.WebUrl)) { continue; }
+                    catch (TaskCanceledException e) when (Logger.LogAndHandle(e, "Task request to '{WebUrl}' cancelled", webData.WebUrl)) { continue; }
+                    catch (Exception e) when (Logger.LogAndHandle(e, "Request to '{WebUrl}' failed", webData.WebUrl)) { continue; }
                 }
             }
             catch (Exception e) when (Logger.LogAndHandle(e, "Unexpected error")) { }
@@ -79,11 +79,32 @@ public sealed class WebComparerHostedService : Microsoft.Extensions.Hosting.IHos
         }
     }
 
-    private async Task FindDataToSendAsync(InfrastructureLib.DbContexts.DbCxt dbCtx, OpenQA.Selenium.IWebDriver WebDriver, CoreLib.Entities.WebData webData, CancellationToken cancellationToken)
+    private async Task FindDataToSendAsync(InfrastructureLib.DbContexts.DbCxt dbCtx, CoreLib.Entities.WebData webData, CancellationToken cancellationToken)
     {
-        WebDriver.Navigate().GoToUrl(webData.WebUrl);
+        string ContentStriped;
 
-        string ContentStriped = await GetContentAsync(WebDriver, webData, cancellationToken);
+        using OpenQA.Selenium.IWebDriver WebDriver = GetWebDriver();
+        {
+            if (webData.UseHttpClient)
+            {
+                string tempFileFullPath = $"{Path.GetTempPath()}{Guid.NewGuid()}.html";
+
+                using (var fs = new FileStream(tempFileFullPath, FileMode.Create))
+                    await (await client.GetStreamAsync(webData.WebUrl, cancellationToken)).CopyToAsync(fs, cancellationToken);
+
+                WebDriver.Navigate().GoToUrl($"{Uri.UriSchemeFile}{Uri.SchemeDelimiter}{tempFileFullPath}");
+            }
+            else
+            {
+                WebDriver.Navigate().GoToUrl(webData.WebUrl);
+
+                await FilterAsync(WebDriver, cancellationToken);
+            }
+
+            ContentStriped = GetContent(WebDriver, webData);
+
+            WebDriver.Quit();
+        }
 
         webData.DataToSend = GetDifferencesOrNull(webData, ContentStriped);
 
@@ -134,7 +155,7 @@ public sealed class WebComparerHostedService : Microsoft.Extensions.Hosting.IHos
         return WebDriver;
     }
 
-    private async Task<string> GetContentAsync(OpenQA.Selenium.IWebDriver webDriver, CoreLib.Entities.WebData webData, CancellationToken cancellationToken)
+    private static async Task FilterAsync(OpenQA.Selenium.IWebDriver webDriver, CancellationToken cancellationToken)
     {
         // TODO         Add retry logic when timeout
         // TODO Personalizar cada web con lo que podemos hacer antes de obtener datos
@@ -160,7 +181,10 @@ public sealed class WebComparerHostedService : Microsoft.Extensions.Hosting.IHos
             FilterButtonWebElement.Click();
             await Task.Delay(FiveSecondsTimeSpan, cancellationToken);
         }
+    }
 
+    private string GetContent(OpenQA.Selenium.IWebDriver webDriver, CoreLib.Entities.WebData webData)
+    {
         try
         {
             OpenQA.Selenium.IWebElement Element = webDriver.FindElement(OpenQA.Selenium.By.CssSelector(webData.CssSelector));
@@ -170,6 +194,12 @@ public sealed class WebComparerHostedService : Microsoft.Extensions.Hosting.IHos
         catch (OpenQA.Selenium.NoSuchElementException noSuchElementException)
         {
             Logger.LogDebug("Exception {noSuchElementException} finding {BodyWaitingBy}", noSuchElementException, webData.CssSelector);
+
+            return string.Empty;
+        }
+        catch (OpenQA.Selenium.WebDriverException webDriverException)
+        {
+            Logger.LogDebug("Exception {webDriverException} finding {BodyWaitingBy}", webDriverException, webData.CssSelector);
 
             return string.Empty;
         }
@@ -286,4 +316,6 @@ public sealed class WebComparerHostedService : Microsoft.Extensions.Hosting.IHos
             DiffPlex.DiffBuilder.Model.ChangeType.Imaginary or _ => string.Empty,
         };
     }
+
+    public void Dispose() => client.Dispose();
 }
