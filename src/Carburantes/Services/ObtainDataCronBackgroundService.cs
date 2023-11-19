@@ -47,16 +47,16 @@ public sealed class ObtainDataCronBackgroundService : CronBackgroundServiceLib.C
             Task EstacionesServicioTask = LoadEstacionesServicioAsync(ServiceScope.ServiceProvider, Today, cancellationToken);
             Task EstacionProductoPrecioTask = LoadEstacionProductoPrecioAsync(ServiceScope.ServiceProvider, Today, cancellationToken);
 
-            List<Task> AllTasks = new()
-            {
+            List<Task> AllTasks =
+            [
                 ComunidadesAutonomasTask,
                 ProvinciasTask,
                 MunicipiosTask,
                 EstacionesServicioTask,
                 EstacionProductoPrecioTask,
-            };
+            ];
 
-            while (AllTasks.Any())
+            while (AllTasks.Count > 0)
             {
                 Task FinishedTask = await Task.WhenAny(AllTasks);
 
@@ -93,7 +93,7 @@ public sealed class ObtainDataCronBackgroundService : CronBackgroundServiceLib.C
                 string.Format(Settings.Minetur.Uris.ListadosBase, OrigenRegistros),
                 cancellationToken);
 
-            if (!(Resultado?.Any() ?? false))
+            if (!(Resultado?.Length > 0))
                 return;
 
             Infrastructure.Data.CarburantesDbContext DbCtx = serviceProvider.GetRequiredService<Infrastructure.Data.CarburantesDbContext>();
@@ -138,7 +138,7 @@ public sealed class ObtainDataCronBackgroundService : CronBackgroundServiceLib.C
                 string.Format(Settings.Minetur.Uris.ListadosBase, OrigenRegistros),
                 cancellationToken);
 
-            if (!(Resultado?.Any() ?? false))
+            if (!(Resultado?.Length > 0))
                 return;
 
             Infrastructure.Data.CarburantesDbContext DbCtx = serviceProvider.GetRequiredService<Infrastructure.Data.CarburantesDbContext>();
@@ -181,7 +181,7 @@ public sealed class ObtainDataCronBackgroundService : CronBackgroundServiceLib.C
                 string.Format(Settings.Minetur.Uris.ListadosBase, OrigenRegistros),
                 cancellationToken);
 
-            if (!(Resultado?.Any() ?? false))
+            if (!(Resultado?.Length > 0))
                 return;
 
             Infrastructure.Data.CarburantesDbContext DbCtx = serviceProvider.GetRequiredService<Infrastructure.Data.CarburantesDbContext>();
@@ -229,7 +229,7 @@ public sealed class ObtainDataCronBackgroundService : CronBackgroundServiceLib.C
                 string.Format(Settings.Minetur.Uris.ListadosBase, OrigenRegistros),
                 cancellationToken);
 
-            if (!(Resultado?.Any() ?? false))
+            if (!(Resultado?.Length > 0))
                 return;
 
             Infrastructure.Data.CarburantesDbContext DbCtx = serviceProvider.GetRequiredService<Infrastructure.Data.CarburantesDbContext>();
@@ -277,7 +277,7 @@ public sealed class ObtainDataCronBackgroundService : CronBackgroundServiceLib.C
                 Settings.Minetur.Uris.EstacionesTerrestres,
                 cancellationToken);
 
-            if (!(Resultado?.Estaciones.Any() ?? false))
+            if (!(Resultado?.Estaciones.Length > 0))
                 return;
 
             Infrastructure.Data.CarburantesDbContext DbCtx = serviceProvider.GetRequiredService<Infrastructure.Data.CarburantesDbContext>();
@@ -354,7 +354,7 @@ public sealed class ObtainDataCronBackgroundService : CronBackgroundServiceLib.C
                     string.Concat(Settings.Minetur.Uris.EstacionesTerrestres, string.Format(Settings.Minetur.Uris.EstacionesTerrestresFiltroProducto, ProductoPetroliferoId)),
                     cancellationToken);
 
-                if (!(Resultado?.EstacionServicioProducto.Any() ?? false))
+                if (!(Resultado?.EstacionServicioProducto.Length > 0))
                     continue;
 
                 List<Core.Entities.EstacionProductoPrecio> NewObjects = new(Resultado.EstacionServicioProducto.Length);

@@ -12,7 +12,6 @@ public sealed class RoutesController : ApiControllerBase
     public RoutesController(ILogger<RoutesController> logger) : base(logger) => Logger = logger;
 
     [HttpPost]
-    [Route("[action]")]
     public async Task<IImmutableList<Shared.ViewModels.RouteObtainedModel>> ObtainRoutesAsync(
         [AsParameters] Shared.ViewModels.RouteQueryModel routeQueryModel,
         [FromServices] IHttpClientFactory httpClientFactory,
@@ -36,7 +35,7 @@ public sealed class RoutesController : ApiControllerBase
             return ImmutableArray<Shared.ViewModels.RouteObtainedModel>.Empty;
         }
 
-        if (!DistanceApiResult.Routes?.Any() ?? false)
+        if (!(DistanceApiResult.Routes?.Length > 0))
         {
             Logger.LogError("La petición de ruta a Google Maps no ha devuelto ningún resultado para '{Origin}' y '{Destination}'.", routeQueryModel.Origin, routeQueryModel.Destination);
 
@@ -65,7 +64,6 @@ public sealed class RoutesController : ApiControllerBase
     }
 
     [HttpPost]
-    [Route("[action]")]
     public async Task<IImmutableList<Shared.ViewModels.GasStationInfoModel>> ObtainGasStationsAsync(
         [FromBody] Shared.ViewModels.GasStationQueryModel filter
         , [FromServices] Carburantes.Infrastructure.Data.CarburantesDbContext carburantesDbContext
@@ -84,7 +82,7 @@ public sealed class RoutesController : ApiControllerBase
                         .CreatePoint(new Coordinate(x.LngNotNull, x.LatNotNull))
                         .ProjectTo(UtilsLib.Constants.CoordinateSystemCodes.Epsg3857))
             }).ToListAsync();
-        if (!AllStations.Any())
+        if (AllStations.Count == 0)
             return ImmutableArray<Shared.ViewModels.GasStationInfoModel>.Empty;
 
         var Locations = filter.Steps
@@ -130,7 +128,7 @@ public sealed class RoutesController : ApiControllerBase
 
             _ = AllStations.RemoveAll(x => NearStationIds.Contains(x.IdEstacion));
 
-            if (!AllStations.Any())
+            if (AllStations.Count == 0)
                 break;
         }
 

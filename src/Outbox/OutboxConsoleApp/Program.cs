@@ -11,7 +11,7 @@ public sealed class Program
 {
     public static async Task Main(string[] args)
     {
-        IHostBuilder builder = new HostBuilder();
+        HostBuilder builder = new();
 
         InfrastructureLib.Dependencies.ConfigureDefaultDependencies(builder, args);
 

@@ -10,7 +10,7 @@ public sealed partial class DbCxt
             .Where(x => x.AtDateTimeUnix >= new DateTimeOffset(sinceDate).ToUnixTimeSeconds())
             .Where(x => x.AtDateTimeUnix < new DateTimeOffset(untilDate).ToUnixTimeSeconds())
             .ToArrayAsync(cancellationToken)
-            ?? Array.Empty<CoreLib.Entities.PvpcView>();
+            ?? [];
     }
 
     public async Task<CoreLib.Entities.Subscriber?> GetSubscriberWithSubscriptionsAsync(long telegramUserId, CancellationToken cancellationToken)

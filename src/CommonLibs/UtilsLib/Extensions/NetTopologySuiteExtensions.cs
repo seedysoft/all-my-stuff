@@ -82,11 +82,9 @@ public static class NetTopologySuiteExtensions
         return GeometryCopy;
     }
 
-    private sealed class MathTransformFilter : ICoordinateSequenceFilter
+    private sealed class MathTransformFilter(MathTransform transform) : ICoordinateSequenceFilter
     {
-        private readonly MathTransform _transform;
-
-        public MathTransformFilter(MathTransform transform) => _transform = transform;
+        private readonly MathTransform _transform = transform;
 
         public bool Done => false;
         public bool GeometryChanged => true;

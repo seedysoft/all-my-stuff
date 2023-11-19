@@ -4,15 +4,13 @@ namespace Seedysoft.HomeCloud.Server.Pages;
 
 [IgnoreAntiforgeryToken]
 [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-public sealed class ErrorModel : Microsoft.AspNetCore.Mvc.RazorPages.PageModel
+public sealed class ErrorModel(ILogger<ErrorModel> logger) : Microsoft.AspNetCore.Mvc.RazorPages.PageModel
 {
     public string? RequestId { get; set; }
 
     public bool ShowRequestId => !string.IsNullOrEmpty(RequestId);
 
-    private readonly ILogger<ErrorModel> _logger;
-
-    public ErrorModel(ILogger<ErrorModel> logger) => _logger = logger;
+    private readonly ILogger<ErrorModel> _logger = logger;
 
     public void OnGet()
     {

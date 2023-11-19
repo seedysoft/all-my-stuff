@@ -4,14 +4,21 @@ namespace Seedysoft.HomeCloud.Server.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public sealed class WeatherForecastController : ApiControllerBase
+public sealed class WeatherForecastController(ILogger<WeatherForecastController> logger) : ApiControllerBase(logger)
 {
-    private static readonly string[] Summaries = new[]
-    {
-        "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-    };
-
-    public WeatherForecastController(ILogger<WeatherForecastController> logger) : base(logger) { }
+    private static readonly string[] Summaries =
+    [
+        "Freezing",
+        "Bracing",
+        "Chilly",
+        "Cool",
+        "Mild",
+        "Warm",
+        "Balmy",
+        "Hot",
+        "Sweltering",
+        "Scorching"
+    ];
 
     [HttpGet]
     public IEnumerable<Shared.WeatherForecast> Get()

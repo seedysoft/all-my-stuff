@@ -51,7 +51,7 @@ public sealed class WebComparerHostedService : Microsoft.Extensions.Hosting.IHos
                 IQueryable<CoreLib.Entities.WebData> WebDatasWithSubscribers =
                     from w in dbCtx.WebDatas
                     join s in dbCtx.Subscriptions on w.SubscriptionId equals s.SubscriptionId
-                    where s.Subscribers.Any()
+                    where s.Subscribers.Count != 0
                     select w;
                 CoreLib.Entities.WebData[] WebDatas = await WebDatasWithSubscribers
                     .Distinct()
@@ -76,6 +76,8 @@ public sealed class WebComparerHostedService : Microsoft.Extensions.Hosting.IHos
             }
             catch (Exception e) when (Logger.LogAndHandle(e, "Unexpected error")) { }
             finally { await Task.CompletedTask; }
+
+            await Task.Delay(TimeSpan.FromHours(1), cancellationToken);
         }
     }
 
@@ -83,7 +85,7 @@ public sealed class WebComparerHostedService : Microsoft.Extensions.Hosting.IHos
     {
         string ContentStriped;
 
-        using OpenQA.Selenium.IWebDriver WebDriver = GetWebDriver();
+        using OpenQA.Selenium.Chrome.ChromeDriver WebDriver = GetWebDriver();
         {
             if (webData.UseHttpClient)
             {
@@ -126,7 +128,7 @@ public sealed class WebComparerHostedService : Microsoft.Extensions.Hosting.IHos
         _ = await dbCtx.SaveChangesAsync(cancellationToken);
     }
 
-    private static OpenQA.Selenium.IWebDriver GetWebDriver()
+    private static OpenQA.Selenium.Chrome.ChromeDriver GetWebDriver()
     {
         OpenQA.Selenium.Chrome.ChromeOptions Options = new()
         {
@@ -144,7 +146,7 @@ public sealed class WebComparerHostedService : Microsoft.Extensions.Hosting.IHos
         if (System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(System.Runtime.InteropServices.OSPlatform.Linux))
             Options.BinaryLocation = "/usr/bin/chromium-browser";
 
-        OpenQA.Selenium.IWebDriver WebDriver = new OpenQA.Selenium.Chrome.ChromeDriver(Options);
+        OpenQA.Selenium.Chrome.ChromeDriver WebDriver = new(Options);
 
         // TODO Add TimeoutsTimeSpan setting (best for each website?)
         var TimeoutsTimeSpan = TimeSpan.FromMinutes(2);
@@ -155,7 +157,7 @@ public sealed class WebComparerHostedService : Microsoft.Extensions.Hosting.IHos
         return WebDriver;
     }
 
-    private static async Task FilterAsync(OpenQA.Selenium.IWebDriver webDriver, CancellationToken cancellationToken)
+    private static async Task FilterAsync(OpenQA.Selenium.Chrome.ChromeDriver webDriver, CancellationToken cancellationToken)
     {
         // TODO         Add retry logic when timeout
         // TODO Personalizar cada web con lo que podemos hacer antes de obtener datos
@@ -183,7 +185,7 @@ public sealed class WebComparerHostedService : Microsoft.Extensions.Hosting.IHos
         }
     }
 
-    private string GetContent(OpenQA.Selenium.IWebDriver webDriver, CoreLib.Entities.WebData webData)
+    private string GetContent(OpenQA.Selenium.Chrome.ChromeDriver webDriver, CoreLib.Entities.WebData webData)
     {
         try
         {
@@ -256,7 +258,7 @@ public sealed class WebComparerHostedService : Microsoft.Extensions.Hosting.IHos
         if (!DiffModel.HasDifferences || Math.Abs(TotalTextChanged) < 8)
             return string.Empty;
 
-        Dictionary<int, string> DataForMail = new();
+        Dictionary<int, string> DataForMail = [];
 
         for (int RealLineIndex = 0; RealLineIndex < RealChangedLines.Length; RealLineIndex++)
         {
@@ -268,16 +270,16 @@ public sealed class WebComparerHostedService : Microsoft.Extensions.Hosting.IHos
                 case DiffPlex.DiffBuilder.Model.ChangeType.Inserted:
                 case DiffPlex.DiffBuilder.Model.ChangeType.Modified:
                     // Add Current Line
-                    _ = DataForMail.TryAdd(RealLineIndex, $"{GetPreffix(CurrentLine.Type)}{CurrentLine.Text}");
+                    _ = DataForMail.TryAdd(RealLineIndex, $"{GetChangeTypePreffix(CurrentLine.Type)}{CurrentLine.Text}");
 
                     // Then add X previous and X next lines.
                     for (int j = 1; j <= webData.TakeAboveBelowLines; j++)
                     {
                         int IndexToAdd = Math.Max(RealLineIndex - j, 0);
-                        _ = DataForMail.TryAdd(IndexToAdd, $"{GetPreffix(RealChangedLines[IndexToAdd].Type)}{RealChangedLines[IndexToAdd].Text}");
+                        _ = DataForMail.TryAdd(IndexToAdd, $"{GetChangeTypePreffix(RealChangedLines[IndexToAdd].Type)}{RealChangedLines[IndexToAdd].Text}");
 
                         IndexToAdd = Math.Min(RealLineIndex + j, RealChangedLines.Length - 1);
-                        _ = DataForMail.TryAdd(IndexToAdd, $"{GetPreffix(RealChangedLines[IndexToAdd].Type)}{RealChangedLines[IndexToAdd].Text}");
+                        _ = DataForMail.TryAdd(IndexToAdd, $"{GetChangeTypePreffix(RealChangedLines[IndexToAdd].Type)}{RealChangedLines[IndexToAdd].Text}");
                     };
                     break;
 
@@ -305,7 +307,7 @@ public sealed class WebComparerHostedService : Microsoft.Extensions.Hosting.IHos
             .Trim();
     }
 
-    private static string GetPreffix(DiffPlex.DiffBuilder.Model.ChangeType lineChangeType)
+    private static string GetChangeTypePreffix(DiffPlex.DiffBuilder.Model.ChangeType lineChangeType)
     {
         return lineChangeType switch
         {

@@ -6,21 +6,18 @@ using System.Net.Http.Json;
 
 namespace Seedysoft.PvpcObtainerLib.Services;
 
-public sealed class PvpcObtainerCronBackgroundService : CronBackgroundServiceLib.CronBackgroundService
+public sealed class PvpcObtainerCronBackgroundService(
+    Settings.PvpcObtainerSettings config
+    , IServiceProvider serviceProvider
+    , ILogger<PvpcObtainerCronBackgroundService> logger) : CronBackgroundServiceLib.CronBackgroundService(config)
 {
-    private readonly IServiceProvider ServiceProvider;
-    private readonly ILogger<PvpcObtainerCronBackgroundService> Logger;
+    private readonly IServiceProvider ServiceProvider = serviceProvider;
+    private readonly ILogger<PvpcObtainerCronBackgroundService> Logger = logger;
 
     // HttpClient is intended to be instantiated once per application, rather than per-use. See Remarks.
     private static readonly HttpClient client = new();
 
     private Settings.PvpcObtainerSettings Options => (Settings.PvpcObtainerSettings)Config;
-
-    public PvpcObtainerCronBackgroundService(Settings.PvpcObtainerSettings config, IServiceProvider serviceProvider, ILogger<PvpcObtainerCronBackgroundService> logger) : base(config)
-    {
-        ServiceProvider = serviceProvider;
-        Logger = logger;
-    }
 
     public override async Task DoWorkAsync(CancellationToken stoppingToken)
     {
@@ -62,7 +59,7 @@ public sealed class PvpcObtainerCronBackgroundService : CronBackgroundServiceLib
 
     private async Task<int?> ProcessPricesAsync(CoreLib.Entities.Pvpc[]? NewEntities, CancellationToken stoppingToken)
     {
-        if (!(NewEntities?.Any() ?? false))
+        if (!(NewEntities?.Length > 0))
         {
             Logger.LogInformation("No entities obtained");
             return null;

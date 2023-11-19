@@ -1,12 +1,10 @@
 ﻿namespace Seedysoft.TelegramLib;
 
-internal sealed class CallbackData
+internal sealed class CallbackData(Enums.BotActionName botActionName)
 {
     private const string Separator = "~";
 
-    public CallbackData(Enums.BotActionName botActionName) => BotActionName = botActionName;
-
-    public Enums.BotActionName BotActionName { get; init; }
+    public Enums.BotActionName BotActionName { get; init; } = botActionName;
 
     public override string ToString() => string.Join(Separator, (int)BotActionName);
 

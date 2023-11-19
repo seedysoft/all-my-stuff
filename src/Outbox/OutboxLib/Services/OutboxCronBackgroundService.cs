@@ -7,19 +7,13 @@ using System.Collections.Immutable;
 
 namespace Seedysoft.OutboxLib.Services;
 
-public sealed class OutboxCronBackgroundService : CronBackgroundServiceLib.CronBackgroundService
-{
-    private readonly IServiceProvider ServiceProvider;
-    private readonly ILogger<OutboxCronBackgroundService> Logger;
-
-    public OutboxCronBackgroundService(
-        TelegramLib.Settings.TelegramSettings config
+public sealed class OutboxCronBackgroundService(
+    TelegramLib.Settings.TelegramSettings config
         , IServiceProvider serviceProvider
-        , ILogger<OutboxCronBackgroundService> logger) : base(config)
-    {
-        ServiceProvider = serviceProvider;
-        Logger = logger;
-    }
+        , ILogger<OutboxCronBackgroundService> logger) : CronBackgroundServiceLib.CronBackgroundService(config)
+{
+    private readonly IServiceProvider ServiceProvider = serviceProvider;
+    private readonly ILogger<OutboxCronBackgroundService> Logger = logger;
 
     public override async Task DoWorkAsync(CancellationToken stoppingToken)
     {
@@ -33,7 +27,7 @@ public sealed class OutboxCronBackgroundService : CronBackgroundServiceLib.CronB
 
             CoreLib.Entities.Outbox[] PendingMessages = await dbCtx.Outbox.Where(x => x.SentAtDateTimeOffset == null).ToArrayAsync(stoppingToken);
 
-            if (PendingMessages.Any())
+            if (PendingMessages.Length != 0)
             {
                 Logger.LogInformation("Obtained {PendingMessages} pending messages", PendingMessages.Length);
 
