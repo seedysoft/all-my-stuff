@@ -52,7 +52,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\PvpcObtainer\PvpcObtainerLib\Seedysoft.PvpcObtainerLib.csproj" />
+    <ProjectReference Include="..\..\Pvpc\PvpcLib\Seedysoft.PvpcLib.csproj" />
     <ProjectReference Include="..\CoreLib\Seedysoft.CoreLib.csproj" />
     <ProjectReference Include="..\CronBackgroundServiceLib\Seedysoft.CronBackgroundServiceLib.csproj" />
     <ProjectReference Include="..\Seedysoft.InfrastructureLib\Seedysoft.InfrastructureLib.csproj" />

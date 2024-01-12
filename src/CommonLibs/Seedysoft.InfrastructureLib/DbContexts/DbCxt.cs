@@ -43,6 +43,8 @@ public sealed partial class DbCxt : DbContext
     public DbSet<CoreLib.Entities.Subscription> Subscriptions { get; set; } = default!;
     public DbSet<CoreLib.Entities.SubcriptionDataView> SubcriptionsDataView { get; set; } = default!;
 
+    public DbSet<CoreLib.Entities.TuyaDevice> TuyaDevices { get; set; } = default!;
+
     public DbSet<CoreLib.Entities.WebData> WebDatas { get; set; } = default!;
     public DbSet<CoreLib.Entities.WebDataView> WebDatasView { get; set; } = default!;
 }

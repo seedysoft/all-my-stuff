@@ -59,8 +59,8 @@
     <ProjectReference Include="..\..\Carburantes\Services\Seedysoft.Carburantes.Services.csproj" />
     <ProjectReference Include="..\..\CommonLibs\CoreLib\Seedysoft.CoreLib.csproj" />
     <ProjectReference Include="..\..\CommonLibs\Seedysoft.InfrastructureLib\Seedysoft.InfrastructureLib.csproj" />
-    <ProjectReference Include="..\..\PvpcObtainer\PvpcObtainerLib\Seedysoft.PvpcObtainerLib.csproj" />
     <ProjectReference Include="..\..\Outbox\OutboxLib\Seedysoft.OutboxLib.csproj" />
+    <ProjectReference Include="..\..\Pvpc\PvpcLib\Seedysoft.PvpcLib.csproj" />
     <ProjectReference Include="..\..\WebComparer\WebComparerLib\Seedysoft.WebComparerLib.csproj" />
     <ProjectReference Include="..\Client\Seedysoft.HomeCloud.Client.csproj" />
     <ProjectReference Include="..\Shared\Seedysoft.HomeCloud.Shared.csproj" />

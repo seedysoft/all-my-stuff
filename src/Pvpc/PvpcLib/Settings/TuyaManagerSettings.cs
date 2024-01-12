@@ -1,6 +1,6 @@
-﻿namespace Seedysoft.PvpcObtainerLib.Settings;
+﻿namespace Seedysoft.PvpcLib.Settings;
 
-public record PvpcObtainerSettings : CronBackgroundServiceLib.ScheduleConfig
+public record TuyaManagerSettings : CronBackgroundServiceLib.ScheduleConfig
 {
     /// <summary>
     /// Uri desde la que se obtendrán los datos. Tiene un elemento de formato para establecer la fecha que buscaremos.

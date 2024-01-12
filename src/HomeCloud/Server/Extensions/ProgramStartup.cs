@@ -44,9 +44,10 @@ public static class ProgramStartup
             .AddJsonFile($"appsettings.Serilog.json", false, true)
             .AddJsonFile($"appsettings.Serilog.{CurrentEnvironmentName}.json", false, true)
 
-            .AddJsonFile($"appsettings.PvpcObtainerSettings.json", false, true)
+            .AddJsonFile($"appsettings.PvpcSettings.json", false, true)
             .AddJsonFile($"appsettings.SmtpServiceSettings.json", false, true)
-            .AddJsonFile($"appsettings.TelegramSettings.{CurrentEnvironmentName}.json", false, true);
+            .AddJsonFile($"appsettings.TelegramSettings.{CurrentEnvironmentName}.json", false, true)
+            .AddJsonFile($"appsettings.TuyaManagerSettings.json", false, true);
 
         return builder;
     }
@@ -138,9 +139,12 @@ public static class ProgramStartup
         _ = builder.Services.AddHttpClient(nameof(Carburantes.Core.Settings.Minetur));
         _ = builder.Services.AddHostedService<Carburantes.Services.ObtainDataCronBackgroundService>();
 
-        builder.Services.TryAddSingleton(builder.Configuration.GetSection(nameof(PvpcObtainerLib.Settings.PvpcObtainerSettings)).Get<PvpcObtainerLib.Settings.PvpcObtainerSettings>()!);
-        builder.Services.TryAddSingleton<PvpcObtainerLib.Services.PvpcObtainerCronBackgroundService>();
-        _ = builder.Services.AddHostedService<PvpcObtainerLib.Services.PvpcObtainerCronBackgroundService>();
+        builder.Services.TryAddSingleton(builder.Configuration.GetSection(nameof(PvpcLib.Settings.PvpcSettings)).Get<PvpcLib.Settings.PvpcSettings>()!);
+        builder.Services.TryAddSingleton(builder.Configuration.GetSection(nameof(PvpcLib.Settings.TuyaManagerSettings)).Get<PvpcLib.Settings.TuyaManagerSettings>()!);
+        builder.Services.TryAddSingleton<PvpcLib.Services.PvpcCronBackgroundService>();
+        _ = builder.Services.AddHostedService<PvpcLib.Services.PvpcCronBackgroundService>();
+        builder.Services.TryAddSingleton<PvpcLib.Services.TuyaManagerCronBackgroundService>();
+        _ = builder.Services.AddHostedService<PvpcLib.Services.TuyaManagerCronBackgroundService>();
 
         _ = builder.Services.AddHostedService<OutboxLib.Services.OutboxCronBackgroundService>();
 
