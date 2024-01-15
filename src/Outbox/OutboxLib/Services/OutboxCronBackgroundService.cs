@@ -53,9 +53,7 @@ public sealed class OutboxCronBackgroundService(
                         CoreLib.Entities.Subscriber subscriber = Subscribers[j];
 
                         if (subscriber.TelegramUserId.HasValue)
-                        {
                             await telegramHostedService.SendMessageToSubscriberAsync(PendingMessage, subscriber.TelegramUserId.Value, stoppingToken);
-                        }
 
                         if (!string.IsNullOrEmpty(subscriber.MailAddress))
                         {

@@ -6,9 +6,6 @@
         "DOTNET_ENVIRONMENT": "Development",
         "environment": "Development"
       }
-    },
-    "Docker": {
-      "commandName": "Docker"
     }
   }
 }

@@ -4,7 +4,7 @@ using Serilog;
 
 namespace Seedysoft.HomeCloud.Server.Extensions;
 
-public static class ProgramStartup
+public static class ProgramStartupExtensions
 {
     public static WebApplicationBuilder AddMyDependencies(this WebApplicationBuilder builder)
     {

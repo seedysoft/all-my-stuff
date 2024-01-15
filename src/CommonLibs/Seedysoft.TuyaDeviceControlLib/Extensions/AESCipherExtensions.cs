@@ -1,6 +1,6 @@
 ﻿using System.Text;
 
-namespace Seedysoft.TuyaDeviceControlLib;
+namespace Seedysoft.TuyaDeviceControlLib.Extensions;
 
 internal static class AESCipherExtensions
 {

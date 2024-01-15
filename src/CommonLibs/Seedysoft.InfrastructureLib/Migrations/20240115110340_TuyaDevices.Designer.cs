@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Seedysoft.InfrastructureLib.DbContexts;
 
@@ -10,9 +11,11 @@ using Seedysoft.InfrastructureLib.DbContexts;
 namespace Seedysoft.InfrastructureLib.Migrations
 {
     [DbContext(typeof(DbCxt))]
-    partial class DbCxtModelSnapshot : ModelSnapshot
+    [Migration("20240115110340_TuyaDevices")]
+    partial class TuyaDevices
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.1");

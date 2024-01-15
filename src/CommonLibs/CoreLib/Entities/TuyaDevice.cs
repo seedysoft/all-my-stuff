@@ -12,7 +12,7 @@ public sealed class TuyaDevice
 
     public float Version { get; set; } // 3.4f
 
-    public byte[] LocalKey { get; set; } = [];
+    public string LocalKey { get; set; } = default!;
 
     private string GetDebuggerDisplay() => $"{IPAddress}";
 }

@@ -1,9 +1,10 @@
-﻿using Seedysoft.TuyaDeviceControlLib.Exceptions;
+﻿using Seedysoft.CoreLib.Entities;
+using Seedysoft.TuyaDeviceControlLib.Exceptions;
 using System.Diagnostics;
 
-namespace Seedysoft.TuyaDeviceControlLib;
+namespace Seedysoft.TuyaDeviceControlLib.Extensions;
 
-internal static class TuyaDeviceBaseExtensions
+public static class TuyaExtensions
 {
     /// <summary>
     /// Unpacks just the header part of a message into a TuyaHeader().

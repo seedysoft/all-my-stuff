@@ -1,4 +1,6 @@
-﻿using Seedysoft.TuyaDeviceControlLib.Exceptions;
+﻿using Seedysoft.CoreLib.Entities;
+using Seedysoft.TuyaDeviceControlLib.Exceptions;
+using Seedysoft.TuyaDeviceControlLib.Extensions;
 using System.Diagnostics;
 using System.Net.Sockets;
 using System.Security.Cryptography;
@@ -32,7 +34,7 @@ public class TuyaDeviceBase
     private bool IsRetryEnabled { get; set; }
     private bool IsDetectDisabled { get; set; }
     private int Port { get; set; }
-    private System.Net.Sockets.Socket? Socket { get; set; }
+    private Socket? Socket { get; set; }
 
     private bool IsSockPersistant;
     private bool IsSocketPersistent
@@ -344,6 +346,7 @@ public class TuyaDeviceBase
             Debug.WriteLine($"Session Initialization Vector={Convert.ToHexString([initVector])}");
             LocalKey = [.. cipher.Encrypt(LocalKey, useBase64: false, pad: false, initialVector: [initVector])[12..(12 + 28)]];
         }
+
         Debug.WriteLine($"Session key negotiate success! session key={Convert.ToHexString(LocalKey)}");
 
         return true;
@@ -415,6 +418,7 @@ public class TuyaDeviceBase
                 Debug.WriteLine($"incomplete payload={Convert.ToHexString(payload)} (len={payload.Length})");
                 return ErrorJson(ErrorCode.ERR_PAYLOAD);
             }
+
             Debug.WriteLine($"decrypted 3.x payload={Convert.ToHexString(payload)}");
         }
 
@@ -441,6 +445,7 @@ public class TuyaDeviceBase
                 payload = payload[VersionHeader.Length..];
                 Debug.WriteLine($"removing device22 3.x header={Convert.ToHexString(payload)}");
             }
+
             if (Version < 3.4f)
             {
                 try
@@ -453,6 +458,7 @@ public class TuyaDeviceBase
                     Debug.WriteLine($"incomplete payload={Convert.ToHexString(payload)} (len={payload.Length})");
                     return ErrorJson(ErrorCode.ERR_PAYLOAD);
                 }
+
                 Debug.WriteLine($"decrypted 3.x payload={Convert.ToHexString(payload)}");
             }
 
@@ -547,6 +553,7 @@ public class TuyaDeviceBase
 
                 return data;
             }
+
             payload = Cipher.Encrypt(payload, false);
         }
         else if (Version >= 3.2f)
@@ -570,6 +577,7 @@ public class TuyaDeviceBase
             // #payload = (PROTOCOL_VERSION_BYTES_31 + hexdigest[8:][:16].encode("latin1") + payload)
             payload = [.. ProtocolVersionsAndHeaders.PROTOCOL_VERSION_BYTES_31, .. Encoding.Latin1.GetBytes(hexDigest[8..]).Concat(payload)];
         }
+
         Cipher = null;
         mess = new TuyaMessage(
             SeqNo: SeqNo,
@@ -613,6 +621,7 @@ public class TuyaDeviceBase
             Debug.WriteLine($"error unpacking or decoding tuya JSON payload");
             result = ErrorJson(ErrorCode.ERR_PAYLOAD);
         }
+
         if (devType != null && devType != DevType)
         {
             Debug.WriteLine($"Device22 detected and updated ({devType} -> {DevType}) - Update payload and try again");
@@ -794,12 +803,13 @@ public class TuyaDeviceBase
                 int prefixOffset = prefixOffset_55AA < 0 ? prefixOffset_6699 : prefixOffset_55AA;
                 data = data[prefixOffset..];
             }
+
             data = [.. data, .. RecvAll(minLength - data.Length)];
             prefixOffset_55AA = data.SkipWhile(x => !data.SequenceEqual(ProtocolVersionsAndHeaders.PREFIX_55AA_BIN)).Count();
             prefixOffset_6699 = data.SkipWhile(x => !data.SequenceEqual(ProtocolVersionsAndHeaders.PREFIX_6699_BIN)).Count();
         }
 
-        TuyaHeader header = TuyaDeviceBaseExtensions.ParseHeader(data);
+        TuyaHeader header = TuyaExtensions.ParseHeader(data);
         int remaining = (int)(header.TotalLength - data.Length);
         if (remaining > 0)
             data = [.. data, .. RecvAll(remaining)];
@@ -894,6 +904,7 @@ public class TuyaDeviceBase
                         partialSuccess = true;
                         msg = rmsg;
                     }
+
                     if ((msg == null || msg.Payload.Length == 0) && recvRetries <= maxRecvRetries)
                     {
                         Debug.WriteLine($"received null payload ({msg}), fetch new one - retry {recvRetries} / {maxRecvRetries}");
@@ -928,6 +939,7 @@ public class TuyaDeviceBase
                     CheckSocketClose();
                     return null;
                 }
+
                 doSend = true;
                 retries += 1;
                 // toss old socket and get new one
@@ -1098,7 +1110,7 @@ public class TuyaDeviceBase
         bool? noRetcode = false)
     {
         if (header == null)
-            header = TuyaDeviceBaseExtensions.ParseHeader(data);
+            header = TuyaExtensions.ParseHeader(data);
 
         int headerLength;
         string endFormat;
@@ -1173,6 +1185,7 @@ public class TuyaDeviceBase
                     else
                         Debug.WriteLine($"HMAC checksum wrong! {Convert.ToHexString(haveCrc)} != {Convert.ToHexString(crc ?? [])}");
                 }
+
                 initVector = null;
                 break;
             }
@@ -1215,6 +1228,7 @@ public class TuyaDeviceBase
                     retcode = Convert.ToUInt32(Convert.ToHexString(StructConverter.Unpack(ProtocolVersionsAndHeaders.MESSAGE_RETCODE_FMT, payload[..retcodeLength])[0]), 16);
                     payload = payload[retcodeLength..];
                 }
+
                 break;
         }
 

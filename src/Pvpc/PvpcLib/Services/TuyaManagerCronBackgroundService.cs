@@ -1,120 +1,50 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using Seedysoft.CoreLib.Entities;
+using Seedysoft.PvpcLib.Extensions;
 using Seedysoft.PvpcLib.Settings;
+using Seedysoft.UtilsLib.Extensions;
 
 namespace Seedysoft.PvpcLib.Services;
 
 public sealed class TuyaManagerCronBackgroundService(
     TuyaManagerSettings config
-    , IServiceProvider serviceProvider
+    , InfrastructureLib.DbContexts.DbCxt dbCxt
     , ILogger<TuyaManagerCronBackgroundService> logger) : CronBackgroundServiceLib.CronBackgroundService(config)
 {
-    private readonly IServiceProvider ServiceProvider = serviceProvider;
-    private readonly ILogger<TuyaManagerCronBackgroundService> Logger = logger;
-
     private TuyaManagerSettings Options => (TuyaManagerSettings)Config;
 
     public override async Task DoWorkAsync(CancellationToken stoppingToken)
     {
-        DateTime ForDate = DateTimeOffset.UtcNow.AddDays(1).Date;
-
-        await PvpcForDateAsync(ForDate, stoppingToken);
-    }
-
-    public async Task PvpcForDateAsync(DateTime forDate, CancellationToken stoppingToken)
-    {
         string? AppName = GetType().FullName;
 
-        Logger.LogInformation("Called {ApplicationName} version {Version}", AppName, System.Reflection.Assembly.GetExecutingAssembly().GetName().Version);
-
-        
-        string UrlString = string.Format(Options.DataUrlTemplate, forDate);
-        Logger.LogInformation("From {UrlString}", UrlString);
+        logger.LogDebug("Called {ApplicationName} version {Version}", AppName, System.Reflection.Assembly.GetExecutingAssembly().GetName().Version);
 
         try
         {
-            Rootobject? Response = await client.GetFromJsonAsync<Rootobject>(UrlString, stoppingToken);
+            DateTimeOffset timeToCheckDateTimeOffset = DateTimeOffset.UtcNow;
+            timeToCheckDateTimeOffset = timeToCheckDateTimeOffset.AddMinutes(timeToCheckDateTimeOffset.TimeOfDay.Minutes);
+            DateTime timeToCheckNowDateTime = timeToCheckDateTimeOffset.Date;
+            double min = timeToCheckNowDateTime.Subtract(DateTimeOffset.UnixEpoch.Date).TotalSeconds;
+            double max = timeToCheckNowDateTime.AddDays(1).Subtract(DateTimeOffset.UnixEpoch.Date).TotalSeconds;
 
-            Included? PvpcIncluded = Response?.included?.FirstOrDefault(x => x.id == Options.PvpcId);
+            PvpcView[] todayPvpcViews = await dbCxt.PvpcsView
+                .Where(x => x.AtDateTimeUnix >= min && x.AtDateTimeUnix <= max)
+                .ToArrayAsync(cancellationToken: stoppingToken);
+            bool IsTimeToCharge = PvpcCronBackgroundService.IsTimeToCharge(todayPvpcViews, timeToCheckDateTimeOffset, allowWhenKWhPriceInEurosBelow: 0.07M);
 
-            CoreLib.Entities.Pvpc[]? NewEntities = PvpcIncluded?.attributes?.values?
-                .Select(x => new CoreLib.Entities.Pvpc(x.datetime.GetValueOrDefault(), (decimal)x.value.GetValueOrDefault()))
-                .ToArray();
+            TuyaDevice[] Devices = await dbCxt.TuyaDevices.ToArrayAsync(cancellationToken: stoppingToken);
 
-            int? HowManyPricesObtained = await ProcessPricesAsync(NewEntities, stoppingToken);
-        }
-        catch (HttpRequestException e) when (System.Net.HttpStatusCode.BadGateway == e.StatusCode && Logger.LogAndHandle(e, "'{WebUrl}' not yet published", UrlString)) { }
-        catch (TaskCanceledException e) when (e.InnerException is TimeoutException && Logger.LogAndHandle(e, "Request to '{WebUrl}' timeout", UrlString)) { }
-        catch (TaskCanceledException e) when (Logger.LogAndHandle(e, "Task request to '{WebUrl}' cancelled", UrlString)) { }
-        catch (Exception e) when (Logger.LogAndHandle(e, "Request to '{WebUrl}' failed", UrlString)) { }
-
-        Logger.LogInformation("End {ApplicationName}", AppName);
-    }
-
-    private async Task<int?> ProcessPricesAsync(CoreLib.Entities.Pvpc[]? NewEntities, CancellationToken stoppingToken)
-    {
-        if (!(NewEntities?.Length > 0))
-        {
-            Logger.LogInformation("No entities obtained");
-            return null;
-        }
-
-        List<CoreLib.Entities.PvpcBase> Prices = new(24);
-
-        IEnumerable<long> DateTimes = NewEntities.Select(x => x.AtDateTimeOffset.ToUnixTimeSeconds());
-        long MinDateTime = DateTimes.Min();
-        long MaxDateTime = DateTimes.Max();
-
-        InfrastructureLib.DbContexts.DbCxt dbCxt = ServiceProvider.GetRequiredService<InfrastructureLib.DbContexts.DbCxt>();
-
-        CoreLib.Entities.PvpcView[] ExistingPvpcs =
-            await dbCxt.PvpcsView
-            .Where(p => p.AtDateTimeUnix >= MinDateTime && p.AtDateTimeUnix <= MaxDateTime)
-            .ToArrayAsync(stoppingToken);
-
-        foreach ((CoreLib.Entities.Pvpc NewEntity, CoreLib.Entities.PvpcView ExistingEntity) in
-            from CoreLib.Entities.Pvpc NewEntity in NewEntities
-            let ExistingEntity = ExistingPvpcs.FirstOrDefault(x => x.AtDateTimeOffset == NewEntity.AtDateTimeOffset)
-            select (NewEntity, ExistingEntity))
-        {
-            if (ExistingEntity == null)
+            for (int i = 0; i < Devices.Length; i++)
             {
-                Prices.Add(NewEntity);
-                _ = dbCxt.Pvpcs.Add(NewEntity);
-            }
-            else
-            {
-                Prices.Add(ExistingEntity);
-                ExistingEntity.MWhPriceInEuros = NewEntity.MWhPriceInEuros;
-                if (dbCxt.Entry(ExistingEntity).State == EntityState.Modified)
-                    _ = dbCxt.Update(ExistingEntity);
+                TuyaDevice tuyaDevice = Devices[i];
+                var tuyaDeviceBase = tuyaDevice.ToTuyaDeviceBase();
+                _ = IsTimeToCharge ? tuyaDeviceBase.TurnOn() : tuyaDeviceBase.TurnOff();
             }
         }
+        catch (Exception e) when (logger.LogAndHandle(e, "Unexpected error")) { }
+        finally { await Task.CompletedTask; }
 
-        if (dbCxt.ChangeTracker.HasChanges())
-        {
-            CoreLib.Entities.Outbox OutboxMessage = new(
-                CoreLib.Enums.SubscriptionName.electricidad,
-                System.Text.Json.JsonSerializer.Serialize(Prices.Cast<CoreLib.Entities.Pvpc>()));
-            _ = await dbCxt.Outbox.AddAsync(OutboxMessage, stoppingToken);
-
-            _ = await dbCxt.SaveChangesAsync(stoppingToken);
-
-            Logger.LogInformation("Obtained {NewEntities} entities", NewEntities.Length);
-
-            return Prices.Count;
-        }
-        else
-        {
-            Logger.LogInformation("No changes");
-
-            return 0;
-        }
-    }
-
-    public override void Dispose()
-    {
-        client.Dispose();
-
-        base.Dispose();
+        logger.LogDebug("End {ApplicationName}", AppName);
     }
 }

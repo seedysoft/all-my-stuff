@@ -21,7 +21,7 @@ public abstract class CronBackgroundService : Microsoft.Extensions.Hosting.Backg
                 if (NextExecutionAt.HasValue)
                 {
                     TimeSpan DelayUntilNext = NextExecutionAt.Value.Subtract(DateTimeOffset.Now);
-                    if (DelayUntilNext.TotalMilliseconds > 0)   // prevent non-positive values from being passed into Timer
+                    if (DelayUntilNext.TotalMilliseconds > 0d)   // prevent non-positive values from being passed into Timer
                     {
                         await Task.Delay(DelayUntilNext, cancellationToken);
 

@@ -1,4 +1,5 @@
-﻿using System.Security.Cryptography;
+﻿using Seedysoft.TuyaDeviceControlLib.Extensions;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace Seedysoft.TuyaDeviceControlLib;

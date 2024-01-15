@@ -80,9 +80,7 @@ public sealed class Program
             using CancellationTokenSource CancelTokenSource = new();
 
             using (PvpcCronBackgroundService pvpcCronBackgroundService = host.Services.GetRequiredService<PvpcCronBackgroundService>())
-            {
                 await pvpcCronBackgroundService.PvpcForDateAsync(ForDate, CancelTokenSource.Token);
-            }
 
             Logger.LogInformation("End {ApplicationName}", AppName);
         }
