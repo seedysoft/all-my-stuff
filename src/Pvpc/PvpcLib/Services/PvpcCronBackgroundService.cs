@@ -14,6 +14,9 @@ public sealed class PvpcCronBackgroundService(
     // HttpClient is intended to be instantiated once per application, rather than per-use. See Remarks.
     private static readonly HttpClient client = new();
 
+    private readonly InfrastructureLib.DbContexts.DbCxt DbCxt = dbCxt;
+    private readonly ILogger<PvpcCronBackgroundService> Logger = logger;
+
     private PvpcSettings Options => (PvpcSettings)Config;
 
     public override async Task DoWorkAsync(CancellationToken stoppingToken)
@@ -27,12 +30,12 @@ public sealed class PvpcCronBackgroundService(
     {
         string? AppName = GetType().FullName;
 
-        logger.LogInformation("Called {ApplicationName} version {Version}", AppName, System.Reflection.Assembly.GetExecutingAssembly().GetName().Version);
+        Logger.LogInformation("Called {ApplicationName} version {Version}", AppName, System.Reflection.Assembly.GetExecutingAssembly().GetName().Version);
 
-        logger.LogInformation("Obtaining PVPC for the day {ForDate}", forDate.ToString(UtilsLib.Constants.Formats.YearMonthDayFormat));
+        Logger.LogInformation("Obtaining PVPC for the day {ForDate}", forDate.ToString(UtilsLib.Constants.Formats.YearMonthDayFormat));
 
         string UrlString = string.Format(Options.DataUrlTemplate, forDate);
-        logger.LogInformation("From {UrlString}", UrlString);
+        Logger.LogInformation("From {UrlString}", UrlString);
 
         try
         {
@@ -46,34 +49,30 @@ public sealed class PvpcCronBackgroundService(
 
             int? HowManyPricesObtained = await ProcessPricesAsync(NewEntities, stoppingToken);
         }
-        catch (HttpRequestException e) when (System.Net.HttpStatusCode.BadGateway == e.StatusCode && logger.LogAndHandle(e, "'{WebUrl}' not yet published", UrlString)) { }
-        catch (TaskCanceledException e) when (e.InnerException is TimeoutException && logger.LogAndHandle(e, "Request to '{WebUrl}' timeout", UrlString)) { }
-        catch (TaskCanceledException e) when (logger.LogAndHandle(e, "Task request to '{WebUrl}' cancelled", UrlString)) { }
-        catch (Exception e) when (logger.LogAndHandle(e, "Request to '{WebUrl}' failed", UrlString)) { }
+        catch (HttpRequestException e) when (System.Net.HttpStatusCode.BadGateway == e.StatusCode && Logger.LogAndHandle(e, "'{WebUrl}' not yet published", UrlString)) { }
+        catch (TaskCanceledException e) when (e.InnerException is TimeoutException && Logger.LogAndHandle(e, "Request to '{WebUrl}' timeout", UrlString)) { }
+        catch (TaskCanceledException e) when (Logger.LogAndHandle(e, "Task request to '{WebUrl}' cancelled", UrlString)) { }
+        catch (Exception e) when (Logger.LogAndHandle(e, "Request to '{WebUrl}' failed", UrlString)) { }
 
-        logger.LogInformation("End {ApplicationName}", AppName);
+        Logger.LogInformation("End {ApplicationName}", AppName);
     }
 
     private async Task<int?> ProcessPricesAsync(CoreLib.Entities.Pvpc[]? NewEntities, CancellationToken stoppingToken)
     {
         if (!(NewEntities?.Length > 0))
         {
-            logger.LogInformation("No entities obtained");
+            Logger.LogInformation("No entities obtained");
             return null;
         }
 
         List<CoreLib.Entities.PvpcBase> Prices = new(24);
 
-        IEnumerable<long> DateTimes = NewEntities.Select(x => x.AtDateTimeOffset.ToUnixTimeSeconds());
-        long MinDateTime = DateTimes.Min();
-        long MaxDateTime = DateTimes.Max();
-
-        CoreLib.Entities.PvpcView[] ExistingPvpcs =
-            await dbCxt.PvpcsView
-            .Where(p => p.AtDateTimeUnix >= MinDateTime && p.AtDateTimeUnix <= MaxDateTime)
+        CoreLib.Entities.Pvpc[] ExistingPvpcs =
+            await DbCxt.Pvpcs
+            .Where(p => p.AtDateTimeOffset >= NewEntities.Min(x => x.AtDateTimeOffset) && p.AtDateTimeOffset <= NewEntities.Max(x => x.AtDateTimeOffset))
             .ToArrayAsync(stoppingToken);
 
-        foreach ((CoreLib.Entities.Pvpc NewEntity, CoreLib.Entities.PvpcView ExistingEntity) in
+        foreach ((CoreLib.Entities.Pvpc NewEntity, CoreLib.Entities.Pvpc ExistingEntity) in
             from CoreLib.Entities.Pvpc NewEntity in NewEntities
             let ExistingEntity = ExistingPvpcs.FirstOrDefault(x => x.AtDateTimeOffset == NewEntity.AtDateTimeOffset)
             select (NewEntity, ExistingEntity))
@@ -81,53 +80,53 @@ public sealed class PvpcCronBackgroundService(
             if (ExistingEntity == null)
             {
                 Prices.Add(NewEntity);
-                _ = dbCxt.Pvpcs.Add(NewEntity);
+                _ = DbCxt.Pvpcs.Add(NewEntity);
             }
             else
             {
                 Prices.Add(ExistingEntity);
                 ExistingEntity.MWhPriceInEuros = NewEntity.MWhPriceInEuros;
-                if (dbCxt.Entry(ExistingEntity).State == EntityState.Modified)
-                    _ = dbCxt.Update(ExistingEntity);
+                if (DbCxt.Entry(ExistingEntity).State == EntityState.Modified)
+                    _ = DbCxt.Update(ExistingEntity);
             }
         }
 
-        if (dbCxt.ChangeTracker.HasChanges())
+        if (DbCxt.ChangeTracker.HasChanges())
         {
             CoreLib.Entities.Outbox OutboxMessage = new(
                 CoreLib.Enums.SubscriptionName.electricidad,
                 System.Text.Json.JsonSerializer.Serialize(Prices.Cast<CoreLib.Entities.Pvpc>().ToArray()));
-            _ = await dbCxt.Outbox.AddAsync(OutboxMessage, stoppingToken);
+            _ = await DbCxt.Outbox.AddAsync(OutboxMessage, stoppingToken);
 
-            _ = await dbCxt.SaveChangesAsync(stoppingToken);
+            _ = await DbCxt.SaveChangesAsync(stoppingToken);
 
-            logger.LogInformation("Obtained {NewEntities} entities", NewEntities.Length);
+            Logger.LogInformation("Obtained {NewEntities} entities", NewEntities.Length);
 
             return Prices.Count;
         }
         else
         {
-            logger.LogInformation("No changes");
+            Logger.LogInformation("No changes");
 
             return 0;
         }
     }
 
     internal static bool IsTimeToCharge(
-        CoreLib.Entities.PvpcView[] pvpcViews
+        CoreLib.Entities.Pvpc[] pvpcs
         , DateTimeOffset timeToCheckDateTimeOffset
         , decimal allowWhenKWhPriceInEurosBelow = decimal.Zero)
     {
-        if (pvpcViews.Length == 0)
+        if (pvpcs.Length == 0)
             return false;
 
-        CoreLib.Entities.PvpcView? CurrentHourPrice = pvpcViews.LastOrDefault(x => x.AtDateTimeOffset <= timeToCheckDateTimeOffset);
+        CoreLib.Entities.Pvpc? CurrentHourPrice = pvpcs.LastOrDefault(x => x.AtDateTimeOffset <= timeToCheckDateTimeOffset);
 
         const int ChargingHoursPerDay = 4;
 
         return CurrentHourPrice != null &&
             (CurrentHourPrice.KWhPriceInEuros < allowWhenKWhPriceInEurosBelow ||
-            CurrentHourPrice.KWhPriceInEuros < pvpcViews.OrderBy(x => x.KWhPriceInEuros).Take(ChargingHoursPerDay).Max(x => x.KWhPriceInEuros));
+            CurrentHourPrice.KWhPriceInEuros < pvpcs.OrderBy(x => x.KWhPriceInEuros).Take(ChargingHoursPerDay).Max(x => x.KWhPriceInEuros));
     }
 
     public override void Dispose()

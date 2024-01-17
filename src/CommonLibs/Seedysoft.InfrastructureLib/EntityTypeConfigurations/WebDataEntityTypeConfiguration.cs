@@ -59,21 +59,3 @@ internal sealed class WebDataEntityTypeConfiguration : WebDataEntityTypeConfigur
             .HasKey(x => x.SubscriptionId);
     }
 }
-
-internal sealed class WebDataViewEntityTypeConfiguration : WebDataEntityTypeConfigurationT<CoreLib.Entities.WebDataView>, IEntityTypeConfiguration<CoreLib.Entities.WebDataView>
-{
-    public new void Configure(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder<CoreLib.Entities.WebDataView> builder)
-    {
-        base.Configure(builder);
-
-        _ = builder
-            .Property(x => x.SeenAtDateTimeUnix);
-
-        _ = builder
-            .Property(x => x.UpdatedAtDateTimeUnix);
-
-        _ = builder
-            .ToView(nameof(CoreLib.Entities.WebDataView))
-            .HasNoKey();
-    }
-}

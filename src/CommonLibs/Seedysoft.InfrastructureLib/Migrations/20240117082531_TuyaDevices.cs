@@ -23,6 +23,10 @@ namespace Seedysoft.InfrastructureLib.Migrations
                 {
                     table.PrimaryKey("PK_TuyaDevice", x => x.Id);
                 });
+
+            migrationBuilder.Sql("DROP VIEW IF EXISTS main.OutboxView");
+            migrationBuilder.Sql("DROP VIEW IF EXISTS main.PvpcView");
+            migrationBuilder.Sql("DROP VIEW IF EXISTS main.WebDataView");
         }
 
         /// <inheritdoc />

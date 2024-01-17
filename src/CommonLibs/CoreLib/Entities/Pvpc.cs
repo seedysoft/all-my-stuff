@@ -25,12 +25,3 @@ public sealed class Pvpc : PvpcBase
         MWhPriceInEuros = mWhPriceInEuros;
     }
 }
-
-/// <summary>
-/// Precio Voluntario para el Pequeño Consumidor
-/// </summary>
-[System.Diagnostics.DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
-public sealed class PvpcView : PvpcBase
-{
-    public long AtDateTimeUnix { get; init; }
-}

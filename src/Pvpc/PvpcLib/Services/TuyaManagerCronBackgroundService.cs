@@ -12,28 +12,28 @@ public sealed class TuyaManagerCronBackgroundService(
     , InfrastructureLib.DbContexts.DbCxt dbCxt
     , ILogger<TuyaManagerCronBackgroundService> logger) : CronBackgroundServiceLib.CronBackgroundService(config)
 {
+    private readonly InfrastructureLib.DbContexts.DbCxt DbCxt = dbCxt;
+    private readonly ILogger<TuyaManagerCronBackgroundService> Logger = logger;
+
     private TuyaManagerSettings Options => (TuyaManagerSettings)Config;
 
     public override async Task DoWorkAsync(CancellationToken stoppingToken)
     {
         string? AppName = GetType().FullName;
 
-        logger.LogDebug("Called {ApplicationName} version {Version}", AppName, System.Reflection.Assembly.GetExecutingAssembly().GetName().Version);
+        Logger.LogDebug("Called {ApplicationName} version {Version}", AppName, System.Reflection.Assembly.GetExecutingAssembly().GetName().Version);
 
         try
         {
-            DateTimeOffset timeToCheckDateTimeOffset = DateTimeOffset.UtcNow;
-            timeToCheckDateTimeOffset = timeToCheckDateTimeOffset.AddMinutes(timeToCheckDateTimeOffset.TimeOfDay.Minutes);
-            DateTime timeToCheckNowDateTime = timeToCheckDateTimeOffset.Date;
-            double min = timeToCheckNowDateTime.Subtract(DateTimeOffset.UnixEpoch.Date).TotalSeconds;
-            double max = timeToCheckNowDateTime.AddDays(1).Subtract(DateTimeOffset.UnixEpoch.Date).TotalSeconds;
+            TuyaDevice[] Devices = await DbCxt.TuyaDevices.AsNoTracking().ToArrayAsync(cancellationToken: stoppingToken);
 
-            PvpcView[] todayPvpcViews = await dbCxt.PvpcsView
-                .Where(x => x.AtDateTimeUnix >= min && x.AtDateTimeUnix <= max)
+            DateTimeOffset timeToCheckDateTimeOffset = DateTimeOffset.Now;
+            DateTimeOffset dateToQueryDateTimeOffset = timeToCheckDateTimeOffset.Subtract(timeToCheckDateTimeOffset.TimeOfDay);
+
+            Pvpc[] PricesForDayPvpcs = await DbCxt.Pvpcs.AsNoTracking()
+                .Where(x => x.AtDateTimeOffset >= dateToQueryDateTimeOffset && x.AtDateTimeOffset < dateToQueryDateTimeOffset.AddDays(1))
                 .ToArrayAsync(cancellationToken: stoppingToken);
-            bool IsTimeToCharge = PvpcCronBackgroundService.IsTimeToCharge(todayPvpcViews, timeToCheckDateTimeOffset, allowWhenKWhPriceInEurosBelow: 0.07M);
-
-            TuyaDevice[] Devices = await dbCxt.TuyaDevices.ToArrayAsync(cancellationToken: stoppingToken);
+            bool IsTimeToCharge = PvpcCronBackgroundService.IsTimeToCharge(PricesForDayPvpcs, timeToCheckDateTimeOffset, allowWhenKWhPriceInEurosBelow: 0.07M);
 
             for (int i = 0; i < Devices.Length; i++)
             {
@@ -42,9 +42,9 @@ public sealed class TuyaManagerCronBackgroundService(
                 _ = IsTimeToCharge ? tuyaDeviceBase.TurnOn() : tuyaDeviceBase.TurnOff();
             }
         }
-        catch (Exception e) when (logger.LogAndHandle(e, "Unexpected error")) { }
+        catch (Exception e) when (Logger.LogAndHandle(e, "Unexpected error")) { }
         finally { await Task.CompletedTask; }
 
-        logger.LogDebug("End {ApplicationName}", AppName);
+        Logger.LogDebug("End {ApplicationName}", AppName);
     }
 }

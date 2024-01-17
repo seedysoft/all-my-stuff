@@ -83,23 +83,6 @@ namespace Seedysoft.InfrastructureLib.Migrations
                     b.ToTable("Pvpc", (string)null);
                 });
 
-            modelBuilder.Entity("Seedysoft.CoreLib.Entities.PvpcView", b =>
-                {
-                    b.Property<string>("AtDateTimeOffset")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<long>("AtDateTimeUnix")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<decimal>("MWhPriceInEuros")
-                        .HasColumnType("TEXT");
-
-                    b.ToTable((string)null);
-
-                    b.ToView("PvpcView", (string)null);
-                });
-
             modelBuilder.Entity("Seedysoft.CoreLib.Entities.SubcriptionDataView", b =>
                 {
                     b.Property<string>("Description")

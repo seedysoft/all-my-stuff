@@ -11,7 +11,7 @@ using Seedysoft.InfrastructureLib.DbContexts;
 namespace Seedysoft.InfrastructureLib.Migrations
 {
     [DbContext(typeof(DbCxt))]
-    [Migration("20240115110340_TuyaDevices")]
+    [Migration("20240117082531_TuyaDevices")]
     partial class TuyaDevices
     {
         /// <inheritdoc />
@@ -84,23 +84,6 @@ namespace Seedysoft.InfrastructureLib.Migrations
                     b.HasKey("AtDateTimeOffset");
 
                     b.ToTable("Pvpc", (string)null);
-                });
-
-            modelBuilder.Entity("Seedysoft.CoreLib.Entities.PvpcView", b =>
-                {
-                    b.Property<string>("AtDateTimeOffset")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<long>("AtDateTimeUnix")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<decimal>("MWhPriceInEuros")
-                        .HasColumnType("TEXT");
-
-                    b.ToTable((string)null);
-
-                    b.ToView("PvpcView", (string)null);
                 });
 
             modelBuilder.Entity("Seedysoft.CoreLib.Entities.SubcriptionDataView", b =>

@@ -57,17 +57,14 @@ public sealed class PvpcCronBackgroundServiceFixture : IDisposable
         MinPriceAllowed = 0.05M;
         Prices =
             Enumerable.Range(0, 24)
-            .Select(i => new CoreLib.Entities.PvpcView()
-            {
-                AtDateTimeOffset = TimeToQuery.UtcDateTime.AddHours(i),
-                AtDateTimeUnix = new DateTimeOffset(TimeToQuery.UtcDateTime.AddHours(i)).ToUnixTimeSeconds(),
-                MWhPriceInEuros = decimal.Divide(Random.Shared.Next(40_000, 220_000), 1_000M)
-            })
+            .Select(i => new CoreLib.Entities.Pvpc(
+                TimeToQuery.UtcDateTime.AddHours(i),
+                decimal.Divide(Random.Shared.Next(40_000, 220_000), 1_000M)))
             .ToArray();
     }
 
     public PvpcCronBackgroundService PvpcService { get; init; }
-    public CoreLib.Entities.PvpcView[] Prices { get; init; }
+    public CoreLib.Entities.Pvpc[] Prices { get; init; }
     public DateTimeOffset TimeToQuery { get; init; }
     public decimal MinPriceAllowed { get; init; }
 
