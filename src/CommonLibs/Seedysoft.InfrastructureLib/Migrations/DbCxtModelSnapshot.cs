@@ -15,7 +15,7 @@ namespace Seedysoft.InfrastructureLib.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "7.0.13");
+            modelBuilder.HasAnnotation("ProductVersion", "8.0.1");
 
             modelBuilder.Entity("Seedysoft.CoreLib.Entities.Outbox", b =>
                 {
@@ -81,23 +81,6 @@ namespace Seedysoft.InfrastructureLib.Migrations
                     b.HasKey("AtDateTimeOffset");
 
                     b.ToTable("Pvpc", (string)null);
-                });
-
-            modelBuilder.Entity("Seedysoft.CoreLib.Entities.PvpcView", b =>
-                {
-                    b.Property<string>("AtDateTimeOffset")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<long>("AtDateTimeUnix")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<decimal>("MWhPriceInEuros")
-                        .HasColumnType("TEXT");
-
-                    b.ToTable((string)null);
-
-                    b.ToView("PvpcView", (string)null);
                 });
 
             modelBuilder.Entity("Seedysoft.CoreLib.Entities.SubcriptionDataView", b =>
@@ -180,6 +163,27 @@ namespace Seedysoft.InfrastructureLib.Migrations
                     b.HasKey("SubscriptionId");
 
                     b.ToTable("Subscription", (string)null);
+                });
+
+            modelBuilder.Entity("Seedysoft.CoreLib.Entities.TuyaDevice", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("LocalKey")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<float>("Version")
+                        .HasColumnType("REAL");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("TuyaDevice", (string)null);
                 });
 
             modelBuilder.Entity("Seedysoft.CoreLib.Entities.WebData", b =>

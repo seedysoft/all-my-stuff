@@ -17,8 +17,8 @@ namespace Seedysoft.InfrastructureLib.Migrations
                 nullable: false,
                 defaultValue: false);
 
-            _ = migrationBuilder.Sql($"{Views.WebDataView.GetDropSql()}");
-            _ = migrationBuilder.Sql($"{Views.WebDataView.GetCreateSql(Views.WebDataView.VersionNumbers.Version20231112)}");
+            //_ = migrationBuilder.Sql($"{Views.WebDataView.GetDropSql()}");
+            //_ = migrationBuilder.Sql($"{Views.WebDataView.GetCreateSql(Views.WebDataView.VersionNumbers.Version20231112)}");
         }
 
         /// <inheritdoc />
@@ -28,8 +28,8 @@ namespace Seedysoft.InfrastructureLib.Migrations
                 name: "UseHttpClient",
                 table: "WebData");
 
-            _ = migrationBuilder.Sql($"{Views.WebDataView.GetDropSql()}");
-            _ = migrationBuilder.Sql($"{Views.WebDataView.GetCreateSqlPrevious(Views.WebDataView.VersionNumbers.Version20231112)}");
+            //_ = migrationBuilder.Sql($"{Views.WebDataView.GetDropSql()}");
+            //_ = migrationBuilder.Sql($"{Views.WebDataView.GetCreateSqlPrevious(Views.WebDataView.VersionNumbers.Version20231112)}");
         }
     }
 }

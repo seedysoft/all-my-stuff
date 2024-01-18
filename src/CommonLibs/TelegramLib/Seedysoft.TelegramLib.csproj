@@ -4,6 +4,7 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+	<IsPackable>false</IsPackable>
     <IsPublishable>False</IsPublishable>
   </PropertyGroup>
   
@@ -52,7 +53,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\PvpcObtainer\PvpcObtainerLib\Seedysoft.PvpcObtainerLib.csproj" />
+    <ProjectReference Include="..\..\Pvpc\PvpcLib\Seedysoft.PvpcLib.csproj" />
     <ProjectReference Include="..\CoreLib\Seedysoft.CoreLib.csproj" />
     <ProjectReference Include="..\CronBackgroundServiceLib\Seedysoft.CronBackgroundServiceLib.csproj" />
     <ProjectReference Include="..\Seedysoft.InfrastructureLib\Seedysoft.InfrastructureLib.csproj" />

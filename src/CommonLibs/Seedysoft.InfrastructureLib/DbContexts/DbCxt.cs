@@ -2,11 +2,10 @@
 
 namespace Seedysoft.InfrastructureLib.DbContexts;
 
-// TODO                     Use same fieldId across database tables
 public sealed partial class DbCxt : DbContext
 {
 #if DEBUG
-    public DbCxt() : base() { }
+    public DbCxt() : base() => ChangeTracker.LazyLoadingEnabled = false;
 #endif
     public DbCxt(DbContextOptions<DbCxt> options) : base(options) => ChangeTracker.LazyLoadingEnabled = false;
 
@@ -15,11 +14,13 @@ public sealed partial class DbCxt : DbContext
     {
         if (!optionsBuilder.IsConfigured)
         {
-            string ConnectionString = $"{CoreLib.Constants.DatabaseStrings.DataSource}../../../../databases/db.sqlite3";
-            Console.WriteLine(ConnectionString);
-            string FullFilePath = Path.GetFullPath(ConnectionString[CoreLib.Constants.DatabaseStrings.DataSource.Length..]);
+            string DatabasePath = "../../../../../../../databases/db.sqlite3";
+            string FullFilePath = Path.GetFullPath(DatabasePath);
             if (!File.Exists(FullFilePath))
                 throw new FileNotFoundException("Database file not found.", FullFilePath);
+
+            string ConnectionString = $"{CoreLib.Constants.DatabaseStrings.DataSource}{DatabasePath}";
+            Console.WriteLine(ConnectionString);
 
             _ = optionsBuilder.UseSqlite(ConnectionString);
         }
@@ -34,15 +35,14 @@ public sealed partial class DbCxt : DbContext
     }
 
     public DbSet<CoreLib.Entities.Outbox> Outbox { get; set; } = default!;
-    public DbSet<CoreLib.Entities.OutboxView> OutboxView { get; set; } = default!;
 
     public DbSet<CoreLib.Entities.Pvpc> Pvpcs { get; set; } = default!;
-    public DbSet<CoreLib.Entities.PvpcView> PvpcsView { get; set; } = default!;
 
     public DbSet<CoreLib.Entities.Subscriber> Subscribers { get; set; } = default!;
     public DbSet<CoreLib.Entities.Subscription> Subscriptions { get; set; } = default!;
     public DbSet<CoreLib.Entities.SubcriptionDataView> SubcriptionsDataView { get; set; } = default!;
 
+    public DbSet<CoreLib.Entities.TuyaDevice> TuyaDevices { get; set; } = default!;
+
     public DbSet<CoreLib.Entities.WebData> WebDatas { get; set; } = default!;
-    public DbSet<CoreLib.Entities.WebDataView> WebDatasView { get; set; } = default!;
 }

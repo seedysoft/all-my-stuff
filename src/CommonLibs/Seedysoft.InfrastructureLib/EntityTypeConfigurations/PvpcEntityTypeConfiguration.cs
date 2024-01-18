@@ -26,18 +26,3 @@ internal sealed class PvpcEntityTypeConfiguration : PvpcEntityTypeConfigurationT
             .HasKey(x => x.AtDateTimeOffset);
     }
 }
-
-internal sealed class PvpcViewEntityTypeConfiguration : PvpcEntityTypeConfigurationT<CoreLib.Entities.PvpcView>, IEntityTypeConfiguration<CoreLib.Entities.PvpcView>
-{
-    public new void Configure(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder<CoreLib.Entities.PvpcView> builder)
-    {
-        base.Configure(builder);
-
-        _ = builder
-            .Property(x => x.AtDateTimeUnix);
-
-        _ = builder
-            .ToView(nameof(CoreLib.Entities.PvpcView))
-            .HasNoKey();
-    }
-}

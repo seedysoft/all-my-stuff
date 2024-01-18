@@ -1,0 +1,47 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+    <IsPublishable>False</IsPublishable>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <AssemblyVersion>$([System.DateTime]::UtcNow.ToString(yy.MM.dd.HHmm))</AssemblyVersion>
+    <FileVersion>$(AssemblyVersion)</FileVersion>
+    <Version>$(AssemblyVersion)</Version>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="appsettings.PvpcSettings.json" />
+    <None Remove="appsettings.TuyaManagerSettings.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="appsettings.PvpcSettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="appsettings.TuyaManagerSettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Seedysoft.PvpcLib.Test" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\CommonLibs\CoreLib\Seedysoft.CoreLib.csproj" />
+    <ProjectReference Include="..\..\CommonLibs\CronBackgroundServiceLib\Seedysoft.CronBackgroundServiceLib.csproj" />
+    <ProjectReference Include="..\..\CommonLibs\Seedysoft.InfrastructureLib\Seedysoft.InfrastructureLib.csproj" />
+    <ProjectReference Include="..\..\CommonLibs\Seedysoft.TuyaDeviceControlLib\Seedysoft.TuyaDeviceControlLib.csproj" />
+    <ProjectReference Include="..\..\CommonLibs\UtilsLib\Seedysoft.UtilsLib.csproj" />
+  </ItemGroup>
+
+</Project>

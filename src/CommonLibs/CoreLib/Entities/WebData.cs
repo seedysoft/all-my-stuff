@@ -35,15 +35,12 @@ public sealed partial class WebData : WebDataBase
     private string GetDebuggerDisplay() => $"{WebUrl}";
 }
 
+/// <summary>
+/// Custom properties
+/// </summary>
 public sealed partial class WebData
 {
     public string Hyperlink => $"<a href=\"{WebUrl}\">{(string.IsNullOrWhiteSpace(Description) ? WebUrl : Description)}</a>";
 
     public string? DataToSend { get; set; }
-}
-
-public sealed class WebDataView : WebDataBase
-{
-    public long? SeenAtDateTimeUnix { get; set; }
-    public long? UpdatedAtDateTimeUnix { get; set; }
 }

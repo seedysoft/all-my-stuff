@@ -5,7 +5,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>42ae509d-a4e8-459f-b914-4227fe8370f7</UserSecretsId>
-    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+	<IsPackable>false</IsPackable>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)' == 'Release'">
@@ -59,8 +59,8 @@
     <ProjectReference Include="..\..\Carburantes\Services\Seedysoft.Carburantes.Services.csproj" />
     <ProjectReference Include="..\..\CommonLibs\CoreLib\Seedysoft.CoreLib.csproj" />
     <ProjectReference Include="..\..\CommonLibs\Seedysoft.InfrastructureLib\Seedysoft.InfrastructureLib.csproj" />
-    <ProjectReference Include="..\..\PvpcObtainer\PvpcObtainerLib\Seedysoft.PvpcObtainerLib.csproj" />
     <ProjectReference Include="..\..\Outbox\OutboxLib\Seedysoft.OutboxLib.csproj" />
+    <ProjectReference Include="..\..\Pvpc\PvpcLib\Seedysoft.PvpcLib.csproj" />
     <ProjectReference Include="..\..\WebComparer\WebComparerLib\Seedysoft.WebComparerLib.csproj" />
     <ProjectReference Include="..\Client\Seedysoft.HomeCloud.Client.csproj" />
     <ProjectReference Include="..\Shared\Seedysoft.HomeCloud.Shared.csproj" />

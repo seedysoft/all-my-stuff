@@ -9,8 +9,8 @@ namespace Seedysoft.OutboxLib.Services;
 
 public sealed class OutboxCronBackgroundService(
     TelegramLib.Settings.TelegramSettings config
-        , IServiceProvider serviceProvider
-        , ILogger<OutboxCronBackgroundService> logger) : CronBackgroundServiceLib.CronBackgroundService(config)
+    , IServiceProvider serviceProvider
+    , ILogger<OutboxCronBackgroundService> logger) : CronBackgroundServiceLib.CronBackgroundService(config)
 {
     private readonly IServiceProvider ServiceProvider = serviceProvider;
     private readonly ILogger<OutboxCronBackgroundService> Logger = logger;
@@ -53,9 +53,7 @@ public sealed class OutboxCronBackgroundService(
                         CoreLib.Entities.Subscriber subscriber = Subscribers[j];
 
                         if (subscriber.TelegramUserId.HasValue)
-                        {
                             await telegramHostedService.SendMessageToSubscriberAsync(PendingMessage, subscriber.TelegramUserId.Value, stoppingToken);
-                        }
 
                         if (!string.IsNullOrEmpty(subscriber.MailAddress))
                         {
@@ -89,8 +87,8 @@ public sealed class OutboxCronBackgroundService(
                 Logger.LogInformation("NO pending messages");
             }
 
-            long MonthAgoUnixTimeSeconds = DateTimeOffset.Now.AddDays(-20).ToUnixTimeSeconds();
-            await dbCtx.BulkDeleteAsync(dbCtx.OutboxView.Where(x => x.SentAtDateTimeUnix < MonthAgoUnixTimeSeconds), cancellationToken: stoppingToken);
+            const int KeepDays = 20;
+            await dbCtx.BulkDeleteAsync(dbCtx.Outbox.Where(x => x.SentAtDateTimeOffset < DateTimeOffset.Now.AddDays(-KeepDays)), cancellationToken: stoppingToken);
             Logger.LogDebug("Removed {Entities} old entities", await dbCtx.SaveChangesAsync(stoppingToken));
         }
         catch (Exception e) when (Logger.LogAndHandle(e, "Unexpected error")) { }

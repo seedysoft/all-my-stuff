@@ -349,11 +349,12 @@ public partial class TelegramHostedService : Microsoft.Extensions.Hosting.IHoste
         Logger.LogDebug("Received inline query from: {Id}", inlineQuery.From.Id);
 
         // displayed result
-        Telegram.Bot.Types.InlineQueryResults.InlineQueryResult[] results = {
+        Telegram.Bot.Types.InlineQueryResults.InlineQueryResult[] results = [
             new Telegram.Bot.Types.InlineQueryResults.InlineQueryResultArticle(
                 id: "3",
                 title: "TgBots",
-                inputMessageContent: new Telegram.Bot.Types.InlineQueryResults.InputTextMessageContent("hello")) };
+                inputMessageContent: new Telegram.Bot.Types.InlineQueryResults.InputTextMessageContent("hello"))
+            ];
 
         await botClient.AnswerInlineQueryAsync(
             inlineQueryId: inlineQuery.Id,
@@ -454,14 +455,15 @@ public partial class TelegramHostedService : Microsoft.Extensions.Hosting.IHoste
             dateTimeToObtain = DateTime.Now.TimeOfDay > new TimeSpan(20, 30, 00) ? DateTime.Today.AddDays(1) : DateTime.Today;
         }
 
-        await ServiceProvider.GetRequiredService<PvpcObtainerLib.Services.PvpcObtainerCronBackgroundService>().PvpcObtainerForDateAsync(dateTimeToObtain, cancellationToken);
+        await ServiceProvider.GetRequiredService<PvpcLib.Services.PvpcCronBackgroundService>()
+            .GetPvpcFromReeForDateAsync(dateTimeToObtain, cancellationToken);
 
-        CoreLib.Entities.PvpcView[]? Prices = await dbCtx.GetPvpcBetweenDatesAsync(
-            dateTimeToObtain.Date,
-            dateTimeToObtain.Date.AddDays(1),
-            cancellationToken);
+        CoreLib.Entities.Pvpc[]? Prices = await dbCtx.Pvpcs.AsNoTracking()
+            .Where(x => x.AtDateTimeOffset >= dateTimeToObtain)
+            .Where(x => x.AtDateTimeOffset < dateTimeToObtain.AddDays(1))
+            .ToArrayAsync(cancellationToken: cancellationToken);
 
-        string responseText = MessageGetMarkdownV2TextForPrices(Prices.Cast<CoreLib.Entities.PvpcBase>().Cast<CoreLib.Entities.Pvpc>());
+        string responseText = MessageGetMarkdownV2TextForPrices(Prices);
 
         return await MessageSendTextAsync(message.Chat.Id, responseText, Telegram.Bot.Types.Enums.ParseMode.MarkdownV2, cancellationToken);
     }
@@ -580,6 +582,7 @@ public partial class TelegramHostedService : Microsoft.Extensions.Hosting.IHoste
 
             _ = await MessageSendSimpleTextAsync(SenderChatId, "Añadida URL para seguimiento", cancellationToken);
         }
+
         _ = await dbCtx.SaveChangesAsync(cancellationToken);
 
         CoreLib.Entities.Subscriber TheSubscriber = await SubscriberWithSubscriptionsGetOrCreateAsync(dbCtx, message.From!, cancellationToken);
@@ -654,7 +657,7 @@ public partial class TelegramHostedService : Microsoft.Extensions.Hosting.IHoste
         if (Subscriptions == null)
             return await MessageSendUsageAsync(TelegramUserId, cancellationToken);
 
-        string TextToSend = Subscriptions.Any()
+        string TextToSend = Subscriptions.Length != 0
             ? "Estás suscrit@ a:\n" + string.Join("\n", Subscriptions.Select(x => $"{x}"))
             : "Usted no tiene suscripciones";
 
@@ -767,7 +770,7 @@ public partial class TelegramHostedService : Microsoft.Extensions.Hosting.IHoste
         {
             CoreLib.Enums.SubscriptionName.electricidad => await MessageSendTextAsync(
                 telegramUserId,
-                MessageGetMarkdownV2TextForPrices(System.Text.Json.JsonSerializer.Deserialize<IEnumerable<CoreLib.Entities.Pvpc>>(pendingMessage.Payload)!),
+                MessageGetMarkdownV2TextForPrices(System.Text.Json.JsonSerializer.Deserialize<CoreLib.Entities.Pvpc[]>(pendingMessage.Payload)!),
                 Telegram.Bot.Types.Enums.ParseMode.MarkdownV2,
                 stoppingToken),
 
@@ -786,32 +789,30 @@ public partial class TelegramHostedService : Microsoft.Extensions.Hosting.IHoste
         };
     }
 
-    private static string MessageGetMarkdownV2TextForPrices(IEnumerable<CoreLib.Entities.Pvpc> prices)
+    private static string MessageGetMarkdownV2TextForPrices(CoreLib.Entities.Pvpc[] prices)
     {
-        if (prices == null || !prices.Any())
+        if (prices == null || prices.Length == 0)
             return "No hay datos";
-
-        var HorasRestantes = prices.ToImmutableArray();
 
         DateTime ObtainedDate = prices.First().AtDateTimeOffset.Date;
 
-        int HowMany = Math.Min(6, HorasRestantes.Length - 1);
-        decimal Min = HorasRestantes.OrderBy(x => x.KWhPriceInEuros).Take(HowMany).Max(x => x.KWhPriceInEuros);
-        decimal Max = HorasRestantes.OrderByDescending(x => x.KWhPriceInEuros).Take(HowMany).Min(x => x.KWhPriceInEuros);
+        int HowMany = Math.Min(6, prices.Length - 1);
+        decimal Min = prices.OrderBy(x => x.KWhPriceInEuros).Take(HowMany).Max(x => x.KWhPriceInEuros);
+        decimal Max = prices.OrderByDescending(x => x.KWhPriceInEuros).Take(HowMany).Min(x => x.KWhPriceInEuros);
         decimal Avg = prices.Average(x => x.KWhPriceInEuros);
 
         System.Text.StringBuilder sb = new(500);
         sb = sb.AppendLine($"Media del *{ObtainedDate.ToString(UtilsLib.Constants.Formats.LongDateFormat, UtilsLib.Constants.Formats.ESCultureInfo)}*");
         sb = sb.AppendLine($"*{Avg.ToString("N5", UtilsLib.Constants.Formats.ESCultureInfo)} € / kWh*");
 
-        for (int i = 0; i < HorasRestantes.Length; i++)
+        for (int i = 0; i < prices.Length; i++)
         {
             string emoji =
-                HorasRestantes[i].KWhPriceInEuros >= Max ? Constants.Emojis.RedCircle :
-                HorasRestantes[i].KWhPriceInEuros <= Min ? Constants.Emojis.GreenCircle :
-                HorasRestantes[i].KWhPriceInEuros <= Avg ? Constants.Emojis.YellowCircle : Constants.Emojis.OrangeCircle;
+                prices[i].KWhPriceInEuros >= Max ? Constants.Emojis.RedCircle :
+                prices[i].KWhPriceInEuros <= Min ? Constants.Emojis.GreenCircle :
+                prices[i].KWhPriceInEuros <= Avg ? Constants.Emojis.YellowCircle : Constants.Emojis.OrangeCircle;
 
-            sb = sb.AppendLine($"{HorasRestantes[i].AtDateTimeOffset.Hour:00}  {emoji}  {HorasRestantes[i].KWhPriceInEuros.ToString("N5", UtilsLib.Constants.Formats.ESCultureInfo)}");
+            sb = sb.AppendLine($"{prices[i].AtDateTimeOffset.Hour:00}  {emoji}  {prices[i].KWhPriceInEuros.ToString("N5", UtilsLib.Constants.Formats.ESCultureInfo)}");
         }
 
         return sb.ToString();

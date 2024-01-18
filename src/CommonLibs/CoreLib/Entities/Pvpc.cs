@@ -4,11 +4,13 @@ public abstract class PvpcBase
 {
     public DateTimeOffset AtDateTimeOffset { get; set; }
 
-    public DateTime FullDate => AtDateTimeOffset.DateTime;
+    public DateTime UtcDateTime => AtDateTimeOffset.UtcDateTime;
 
     public decimal MWhPriceInEuros { get; set; }
 
     public decimal KWhPriceInEuros => decimal.Divide(MWhPriceInEuros, 1_000M);
+
+    protected internal string GetDebuggerDisplay() => $"{UtcDateTime:yy.MM.dd HHzz} @ {KWhPriceInEuros:N5} €/kWh";
 }
 
 /// <summary>
@@ -22,11 +24,4 @@ public sealed class Pvpc : PvpcBase
         AtDateTimeOffset = atDateTimeOffset;
         MWhPriceInEuros = mWhPriceInEuros;
     }
-
-    private string GetDebuggerDisplay() => $"{FullDate:yy.MM.dd HHzz} @ {KWhPriceInEuros:N5} €/kWh";
-}
-
-public sealed class PvpcView : PvpcBase
-{
-    public long AtDateTimeUnix { get; private set; }
 }

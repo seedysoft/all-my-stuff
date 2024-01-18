@@ -29,11 +29,13 @@ public sealed class CarburantesDbContext : CarburantesDbContextBase
     {
         if (!optionsBuilder.IsConfigured)
         {
-            string ConnectionString = $"{CoreLib.Constants.DatabaseStrings.DataSource}../../../../databases/Carburantes.sqlite3";
-            Console.WriteLine(ConnectionString);
-            string FullFilePath = Path.GetFullPath(ConnectionString[CoreLib.Constants.DatabaseStrings.DataSource.Length..]);
+            string DatabasePath = "../../../../../../../databases/Carburantes.sqlite3";
+            string FullFilePath = Path.GetFullPath(DatabasePath);
             if (!File.Exists(FullFilePath))
                 throw new FileNotFoundException("Database file not found.", FullFilePath);
+
+            string ConnectionString = $"{CoreLib.Constants.DatabaseStrings.DataSource}{DatabasePath}";
+            Console.WriteLine(ConnectionString);
 
             _ = optionsBuilder.UseSqlite(ConnectionString);
         }
@@ -64,11 +66,13 @@ public sealed class CarburantesHistDbContext : CarburantesDbContextBase
     {
         if (!optionsBuilder.IsConfigured)
         {
-            string ConnectionString = $"{CoreLib.Constants.DatabaseStrings.DataSource}../../../../databases/CarburantesHist.sqlite3";
-            Console.WriteLine(ConnectionString);
-            string FullFilePath = Path.GetFullPath(ConnectionString[CoreLib.Constants.DatabaseStrings.DataSource.Length..]);
+            string DatabasePath = "../../../../../../../databases/CarburantesHist.sqlite3";
+            string FullFilePath = Path.GetFullPath(DatabasePath);
             if (!File.Exists(FullFilePath))
                 throw new FileNotFoundException("Database file not found.", FullFilePath);
+
+            string ConnectionString = $"{CoreLib.Constants.DatabaseStrings.DataSource}{DatabasePath}";
+            Console.WriteLine(ConnectionString);
 
             _ = optionsBuilder.UseSqlite(ConnectionString);
         }
