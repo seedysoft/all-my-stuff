@@ -2,11 +2,10 @@
 
 namespace Seedysoft.InfrastructureLib.DbContexts;
 
-// TODO                     Use same fieldId across database tables
 public sealed partial class DbCxt : DbContext
 {
 #if DEBUG
-    public DbCxt() : base() { }
+    public DbCxt() : base() => ChangeTracker.LazyLoadingEnabled = false;
 #endif
     public DbCxt(DbContextOptions<DbCxt> options) : base(options) => ChangeTracker.LazyLoadingEnabled = false;
 

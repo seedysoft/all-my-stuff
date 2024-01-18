@@ -4,6 +4,7 @@ using Seedysoft.CoreLib.Entities;
 using Seedysoft.PvpcLib.Extensions;
 using Seedysoft.PvpcLib.Settings;
 using Seedysoft.UtilsLib.Extensions;
+using System.Diagnostics;
 
 namespace Seedysoft.PvpcLib.Services;
 
@@ -39,7 +40,19 @@ public sealed class TuyaManagerCronBackgroundService(
             {
                 TuyaDevice tuyaDevice = Devices[i];
                 var tuyaDeviceBase = tuyaDevice.ToTuyaDeviceBase();
-                _ = IsTimeToCharge ? tuyaDeviceBase.TurnOn() : tuyaDeviceBase.TurnOff();
+                //_ = tuyaDeviceBase.GetStatus();
+
+                object? TurnResult = IsTimeToCharge ? tuyaDeviceBase.TurnOn() : tuyaDeviceBase.TurnOff();
+                if (TurnResult is Dictionary<string, object> dict)
+                {
+                    Debug.WriteLine($"TurnOn results:");
+                    foreach (KeyValuePair<string, object> kvp in dict)
+                        Debug.WriteLine($"\t'{kvp.Key}'='{kvp.Value}'");
+                }
+                else
+                {
+                    Debug.WriteLine($"TurnOn result: '{TurnResult}'");
+                }
             }
         }
         catch (Exception e) when (Logger.LogAndHandle(e, "Unexpected error")) { }

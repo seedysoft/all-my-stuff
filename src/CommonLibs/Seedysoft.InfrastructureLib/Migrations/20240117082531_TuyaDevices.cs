@@ -24,6 +24,8 @@ namespace Seedysoft.InfrastructureLib.Migrations
                     table.PrimaryKey("PK_TuyaDevice", x => x.Id);
                 });
 
+            migrationBuilder.Sql("INSERT INTO TuyaDevice SELECT 'bf73f8d9933c68f98az7hb', '192.168.1.72', 3.4, 'lG{U}YHRM5F}vI-u';");
+
             migrationBuilder.Sql("DROP VIEW IF EXISTS main.OutboxView");
             migrationBuilder.Sql("DROP VIEW IF EXISTS main.PvpcView");
             migrationBuilder.Sql("DROP VIEW IF EXISTS main.WebDataView");

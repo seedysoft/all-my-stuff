@@ -1,5 +1,4 @@
-﻿using Seedysoft.CoreLib.Entities;
-using Seedysoft.TuyaDeviceControlLib.Exceptions;
+﻿using Seedysoft.TuyaDeviceControlLib.Exceptions;
 using Seedysoft.TuyaDeviceControlLib.Extensions;
 using System.Diagnostics;
 using System.Net.Sockets;
@@ -19,8 +18,8 @@ public class TuyaDeviceBase
     private bool DevTypeAuto { get; set; }
     private string LastDevType { get; set; }
 
-    private float ConnTimeout;
-    private float ConnectionTimeout
+    private int ConnTimeout;
+    public int ConnectionTimeout
     {
         get => ConnTimeout;
         set
@@ -76,7 +75,7 @@ public class TuyaDeviceBase
         }
     }
 
-    private string VersionStr => $"v{Vers:0.0}";
+    private string VersionStr => string.Create(System.Globalization.CultureInfo.InvariantCulture, $"v{Vers:0.0}");
     private byte[] VersionBytes => JsonSerializer.SerializeToUtf8Bytes(Vers);
     private byte[] VersionHeader => [.. VersionBytes, .. ProtocolVersionsAndHeaders.PROTOCOL_3x_HEADER];
 
@@ -105,6 +104,9 @@ public class TuyaDeviceBase
         int connectionRetryLimit = 5,
         int connectionRetryDelay = 5)
     {
+        ArgumentException.ThrowIfNullOrWhiteSpace(address);
+        ArgumentException.ThrowIfNullOrWhiteSpace(localKey);
+
         Id = devId;
         Address = address;
         DevType = devType;
@@ -114,7 +116,6 @@ public class TuyaDeviceBase
         IsRetryEnabled = true;
         IsDetectDisabled = false;
         Port = GlobalsNetworkSettings.TCPPORT;
-        Socket = null;
         IsSocketPersistent = persist;
         IsSocketNoDelay = true;
         SocketRetryLimit = connectionRetryLimit;
@@ -123,14 +124,9 @@ public class TuyaDeviceBase
         SeqNo = 1;
         SendWait = 0.01f;
         RemoteNonce = [];
-        PayloadDict = null;
-
-        ArgumentException.ThrowIfNullOrWhiteSpace(address);
-        ArgumentException.ThrowIfNullOrWhiteSpace(localKey);
 
         LocalKey = Encoding.Latin1.GetBytes(localKey);//.encode("latin1");
         RealLocalKey = LocalKey;
-        Cipher = null;
 
         // #make sure we call our set_version() and not a subclass since some of
         // #them (such as BulbDevice) make connections when called
@@ -322,7 +318,7 @@ public class TuyaDeviceBase
         }
 
         Debug.WriteLine($"Session Local nonce={Convert.ToHexString(LocalNonce)}");
-        Debug.WriteLine($"Session Remot nonce={Convert.ToHexString(RemoteNonce)}");
+        Debug.WriteLine($"Session Rmote nonce={Convert.ToHexString(RemoteNonce)}");
         byte[] rkeyHmac = HMACSHA256.HashData(LocalKey, RemoteNonce);
 
         return new MessagePayload((uint)TuyaCommandTypes.SESS_KEY_NEG_FINISH, rkeyHmac);
@@ -355,7 +351,7 @@ public class TuyaDeviceBase
     // similar to _send_receive() but never retries sending and does not decode the response
     private TuyaMessage? SendReceiveQuick(MessagePayload payload, int recvRetries)
     {
-        //Debug.WriteLine($"sending payload quick");
+        Debug.WriteLine($"sending payload quick");
         if (GetSocket(false) != ErrorCode.NoError)
             return null;
 
@@ -530,7 +526,6 @@ public class TuyaDeviceBase
             if (!Constants.HEADER_COMMANDS_WITHOUT_PROTOCOL.Contains(msg.Cmd))
                 // add the 3.x header
                 payload = [.. VersionHeader, .. payload];
-            //Debug.WriteLine($"final payload='{Encoding.ASCII.GetString(payload)}'");
             Debug.WriteLine($"final payload='{Convert.ToHexString(payload)}'");
 
             if (Version >= 3.5f)
@@ -717,19 +712,16 @@ public class TuyaDeviceBase
 
         commandOverride ??= command;
 
-        if (jsonData == null || jsonData.Count < 0 || string.IsNullOrWhiteSpace(jsonData.FirstOrDefault().Value?.ToString()))
-        {
-            // I have yet to see a device complain about included but unneeded attribs, but they *will*
-            // complain about missing attribs, so just include them all unless otherwise specified
-            jsonData = new Dictionary<string, object> { { "gwId", string.Empty }, { "devId", string.Empty }, { "uid", string.Empty }, { "t", string.Empty } };
-        }
+        // I have yet to see a device complain about included but unneeded attribs, but they *will*
+        // complain about missing attribs, so just include them all unless otherwise specified
+        jsonData ??= new Dictionary<string, object> { { "gwId", string.Empty }, { "devId", string.Empty }, { "uid", string.Empty }, { "t", string.Empty } };
 
         if (jsonData.ContainsKey("gwId"))
-            jsonData["gwId"] = gwId is not null ? gwId : Id;
+            jsonData["gwId"] = gwId ?? Id;
         if (jsonData.ContainsKey("devId"))
-            jsonData["devId"] = devId is not null ? devId : Id;
+            jsonData["devId"] = devId ?? Id;
         if (jsonData.ContainsKey("uid"))
-            jsonData["uid"] = uid is not null ? uid : Id;
+            jsonData["uid"] = uid ?? Id;
         if (jsonData.TryGetValue("t", out object? value))
         {
             // time.time(): Return the time in seconds since the epoch as a floating point number.
@@ -767,7 +759,7 @@ public class TuyaDeviceBase
         // if spaces are not removed device does not respond!
         payload = payload.Replace(" ", string.Empty);
         //payload = payload.encode("utf-8")
-        Debug.WriteLine($"building command '{commandType}' payload='{payload}'");
+        Debug.WriteLine($"building command '{command}({tuyaCommand})' payload='{payload}'");
 
         // create Tuya message packet
         return new MessagePayload(commandOverride.Value, Encoding.UTF8.GetBytes(payload));
@@ -1015,7 +1007,9 @@ public class TuyaDeviceBase
         // #open device, send request, then close connection
         // #if isinstance(switch, int) :
         //     #switch = str(switch)  # index and payload is a string
-        MessagePayload payload = GenerateMessagePayload(TuyaCommandTypes.CONTROL, new Dictionary<string, object>() { { $"{switchNumber}", isOn } });
+        MessagePayload payload = GenerateMessagePayload(
+            TuyaCommandTypes.CONTROL,
+            new Dictionary<string, object>() { { $"{switchNumber}", isOn } });
 
         object? data = SendReceive(payload, getResponse: !noWait);
         //log.debug("set_status received data=%r", data);
