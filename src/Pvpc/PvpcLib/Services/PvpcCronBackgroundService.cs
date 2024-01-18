@@ -23,10 +23,10 @@ public sealed class PvpcCronBackgroundService(
     {
         DateTime ForDate = DateTimeOffset.UtcNow.AddDays(1).Date;
 
-        await PvpcForDateAsync(ForDate, stoppingToken);
+        await GetPvpcFromReeForDateAsync(ForDate, stoppingToken);
     }
 
-    public async Task PvpcForDateAsync(DateTime forDate, CancellationToken stoppingToken)
+    public async Task GetPvpcFromReeForDateAsync(DateTime forDate, CancellationToken stoppingToken)
     {
         string? AppName = GetType().FullName;
 
@@ -66,10 +66,9 @@ public sealed class PvpcCronBackgroundService(
         }
 
         List<CoreLib.Entities.PvpcBase> Prices = new(24);
-
-        CoreLib.Entities.Pvpc[] ExistingPvpcs =
-            await DbCxt.Pvpcs
-            .Where(p => p.AtDateTimeOffset >= NewEntities.Min(x => x.AtDateTimeOffset) && p.AtDateTimeOffset <= NewEntities.Max(x => x.AtDateTimeOffset))
+        CoreLib.Entities.Pvpc[] ExistingPvpcs = await DbCxt.Pvpcs
+            .Where(p => p.AtDateTimeOffset >= NewEntities.Min(x => x.AtDateTimeOffset))
+            .Where(p => p.AtDateTimeOffset <= NewEntities.Max(x => x.AtDateTimeOffset))
             .ToArrayAsync(stoppingToken);
 
         foreach ((CoreLib.Entities.Pvpc NewEntity, CoreLib.Entities.Pvpc ExistingEntity) in

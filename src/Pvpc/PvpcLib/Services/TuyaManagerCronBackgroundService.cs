@@ -32,7 +32,8 @@ public sealed class TuyaManagerCronBackgroundService(
             DateTimeOffset dateToQueryDateTimeOffset = timeToCheckDateTimeOffset.Subtract(timeToCheckDateTimeOffset.TimeOfDay);
 
             Pvpc[] PricesForDayPvpcs = await DbCxt.Pvpcs.AsNoTracking()
-                .Where(x => x.AtDateTimeOffset >= dateToQueryDateTimeOffset && x.AtDateTimeOffset < dateToQueryDateTimeOffset.AddDays(1))
+                .Where(x => x.AtDateTimeOffset >= dateToQueryDateTimeOffset)
+                .Where(x => x.AtDateTimeOffset < dateToQueryDateTimeOffset.AddDays(1))
                 .ToArrayAsync(cancellationToken: stoppingToken);
             bool IsTimeToCharge = PvpcCronBackgroundService.IsTimeToCharge(PricesForDayPvpcs, timeToCheckDateTimeOffset, allowWhenKWhPriceInEurosBelow: 0.07M);
 

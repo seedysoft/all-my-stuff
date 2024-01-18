@@ -455,14 +455,15 @@ public partial class TelegramHostedService : Microsoft.Extensions.Hosting.IHoste
             dateTimeToObtain = DateTime.Now.TimeOfDay > new TimeSpan(20, 30, 00) ? DateTime.Today.AddDays(1) : DateTime.Today;
         }
 
-        await ServiceProvider.GetRequiredService<PvpcLib.Services.PvpcCronBackgroundService>().PvpcForDateAsync(dateTimeToObtain, cancellationToken);
+        await ServiceProvider.GetRequiredService<PvpcLib.Services.PvpcCronBackgroundService>()
+            .GetPvpcFromReeForDateAsync(dateTimeToObtain, cancellationToken);
 
-        CoreLib.Entities.PvpcView[]? Prices = await dbCtx.GetPvpcBetweenDatesAsync(
-            dateTimeToObtain.Date,
-            dateTimeToObtain.Date.AddDays(1),
-            cancellationToken);
+        CoreLib.Entities.Pvpc[]? Prices = await dbCtx.Pvpcs.AsNoTracking()
+            .Where(x => x.AtDateTimeOffset >= dateTimeToObtain)
+            .Where(x => x.AtDateTimeOffset < dateTimeToObtain.AddDays(1))
+            .ToArrayAsync(cancellationToken: cancellationToken);
 
-        string responseText = MessageGetMarkdownV2TextForPrices(Prices.Cast<CoreLib.Entities.PvpcBase>().Cast<CoreLib.Entities.Pvpc>().ToArray());
+        string responseText = MessageGetMarkdownV2TextForPrices(Prices);
 
         return await MessageSendTextAsync(message.Chat.Id, responseText, Telegram.Bot.Types.Enums.ParseMode.MarkdownV2, cancellationToken);
     }
@@ -656,7 +657,7 @@ public partial class TelegramHostedService : Microsoft.Extensions.Hosting.IHoste
         if (Subscriptions == null)
             return await MessageSendUsageAsync(TelegramUserId, cancellationToken);
 
-        string TextToSend = Subscriptions.Any()
+        string TextToSend = Subscriptions.Length != 0
             ? "Estás suscrit@ a:\n" + string.Join("\n", Subscriptions.Select(x => $"{x}"))
             : "Usted no tiene suscripciones";
 
