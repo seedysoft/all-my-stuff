@@ -1,16 +1,16 @@
 ﻿namespace Seedysoft.Carburantes.Core.Settings;
 
-public sealed class Minetur
+public record Minetur
 {
-    public Uris Uris { get; set; } = default!;
+    public Uris Uris { get; init; } = default!;
 }
 
-public sealed class Uris
+public record Uris
 {
-    public string Base { get; set; } = default!;
+    public string Base { get; init; } = default!;
 
-    public string EstacionesTerrestres { get; set; } = default!;
-    public string EstacionesTerrestresFiltroProducto { get; set; } = default!;
+    public string EstacionesTerrestres { get; init; } = default!;
+    public string EstacionesTerrestresFiltroProducto { get; init; } = default!;
 
-    public string ListadosBase { get; set; } = default!;
+    public string ListadosBase { get; init; } = default!;
 }

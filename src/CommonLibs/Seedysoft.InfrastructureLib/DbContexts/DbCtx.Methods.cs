@@ -11,13 +11,21 @@ public sealed partial class DbCxt
             .FirstOrDefaultAsync(x => x.TelegramUserId == telegramUserId, cancellationToken);
     }
 
-    // TODO         Implementar reintento cuando SqliteException (0x80004005): SQLite Error 5: 'database is locked'.
-    public override int SaveChanges()
-        => base.SaveChanges();
-    public override int SaveChanges(bool acceptAllChangesOnSuccess)
-        => base.SaveChanges(acceptAllChangesOnSuccess);
-    public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
-        => base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
-        => base.SaveChangesAsync(cancellationToken);
+    {
+        int Retries = 2;
+        while (Retries > 0)
+        {
+            try
+            {
+                return base.SaveChangesAsync(cancellationToken);
+            }
+            catch (DbUpdateException dbEx) when (dbEx.InnerException is Microsoft.Data.Sqlite.SqliteException se && se.SqliteErrorCode == 5)
+            {
+                Retries--;
+            }
+        }
+
+        return base.SaveChangesAsync(cancellationToken);
+    }
 }
