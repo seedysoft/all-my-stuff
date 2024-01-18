@@ -27,7 +27,11 @@ public sealed class OutboxCronBackgroundService(
 
             CoreLib.Entities.Outbox[] PendingMessages = await dbCtx.Outbox.Where(x => x.SentAtDateTimeOffset == null).ToArrayAsync(stoppingToken);
 
-            if (PendingMessages.Length != 0)
+            if (PendingMessages.Length == 0)
+            {
+                Logger.LogInformation("NO pending messages");
+            }
+            else
             {
                 Logger.LogInformation("Obtained {PendingMessages} pending messages", PendingMessages.Length);
 
@@ -82,13 +86,10 @@ public sealed class OutboxCronBackgroundService(
                     _ = await dbCtx.SaveChangesAsync(stoppingToken);
                 }
             }
-            else
-            {
-                Logger.LogInformation("NO pending messages");
-            }
 
             const int KeepDays = 20;
-            await dbCtx.BulkDeleteAsync(dbCtx.Outbox.Where(x => x.SentAtDateTimeOffset < DateTimeOffset.Now.AddDays(-KeepDays)), cancellationToken: stoppingToken);
+            DateTimeOffset dateTimeOffset = DateTimeOffset.Now.AddDays(-KeepDays);
+            await dbCtx.BulkDeleteAsync(dbCtx.Outbox.Where(x => x.SentAtDateTimeOffset < dateTimeOffset), cancellationToken: stoppingToken);
             Logger.LogDebug("Removed {Entities} old entities", await dbCtx.SaveChangesAsync(stoppingToken));
         }
         catch (Exception e) when (Logger.LogAndHandle(e, "Unexpected error")) { }

@@ -18,6 +18,14 @@ public sealed class TuyaManagerCronBackgroundService(
 
     private TuyaManagerSettings Options => (TuyaManagerSettings)Config;
 
+    public override async Task StartAsync(CancellationToken cancellationToken)
+    {
+        // Execute on init
+        await DoWorkAsync(cancellationToken);
+
+        await base.StartAsync(cancellationToken);
+    }
+
     public override async Task DoWorkAsync(CancellationToken stoppingToken)
     {
         string? AppName = GetType().FullName;
@@ -46,13 +54,13 @@ public sealed class TuyaManagerCronBackgroundService(
                 object? TurnResult = IsTimeToCharge ? tuyaDeviceBase.TurnOn() : tuyaDeviceBase.TurnOff();
                 if (TurnResult is Dictionary<string, object> dict)
                 {
-                    Debug.WriteLine($"TurnOn results:");
+                    Debug.WriteLine($"Turn {IsTimeToCharge} results:");
                     foreach (KeyValuePair<string, object> kvp in dict)
                         Debug.WriteLine($"\t'{kvp.Key}'='{kvp.Value}'");
                 }
                 else
                 {
-                    Debug.WriteLine($"TurnOn result: '{TurnResult}'");
+                    Debug.WriteLine($"Turn {IsTimeToCharge} result: '{TurnResult}'");
                 }
             }
         }
