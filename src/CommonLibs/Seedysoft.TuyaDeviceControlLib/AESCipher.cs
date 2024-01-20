@@ -6,6 +6,8 @@ namespace Seedysoft.TuyaDeviceControlLib;
 
 internal class AESCipher(byte[] key)
 {
+    public byte[] Key { get; } = key;
+
     public byte[] Encrypt(
         byte[] raw,
         bool useBase64 = true,
@@ -20,14 +22,14 @@ internal class AESCipher(byte[] key)
                 raw = AESCipherExtensions.Pad(raw, 16);
 
             using var cipher = Aes.Create();
-            cipher.Key = key;
+            cipher.Key = Key;
             cipher.Mode = CipherMode.ECB;
             cryptedText = cipher.EncryptEcb(raw, PaddingMode.None);
         }
         else
         {
             initialVector = AESCipherExtensions.GetEncryptionInitVector(initialVector);
-            using AesGcm cipher = new(key, AesGcm.NonceByteSizes.MaxSize);
+            using AesGcm cipher = new(Key, AesGcm.NonceByteSizes.MaxSize);
 
             byte[] tag = [];
             cipher.Encrypt(initialVector ?? [], raw, cryptedText, tag, header);
@@ -65,13 +67,13 @@ internal class AESCipher(byte[] key)
             byte[]? initialVectorDecrypted;
             byte[] encDecrypted;
             (initialVectorDecrypted, encDecrypted) = AESCipherExtensions.GetDecryptionInitVector(initialVector, enc);
-            using AesGcm cipher = new(key, AesGcm.NonceByteSizes.MaxSize);
+            using AesGcm cipher = new(Key, AesGcm.NonceByteSizes.MaxSize);
             cipher.Decrypt(initialVectorDecrypted ?? [], enc, tag ?? [], raw, header);
         }
         else
         {
             using var cipher = Aes.Create();
-            cipher.Key = key;
+            cipher.Key = Key;
             cipher.Mode = CipherMode.ECB;
 
             raw = cipher.DecryptEcb(enc, PaddingMode.None);

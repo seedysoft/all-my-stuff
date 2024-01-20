@@ -46,7 +46,6 @@ public sealed class PvpcCronBackgroundServiceFixture : IDisposable
 {
     public PvpcCronBackgroundServiceFixture()
     {
-        // TODO         FAKE DATABASE in memory
         Settings.PvpcSettings pvpcSettings = new()
         {
             CronExpression = "* * 30 2 *", // At every minute on day-of-month 30 in February.
