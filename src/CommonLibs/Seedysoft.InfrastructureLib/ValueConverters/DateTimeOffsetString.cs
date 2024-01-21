@@ -1,6 +1,8 @@
-﻿namespace Seedysoft.UtilsLib.Constants;
+﻿using Seedysoft.UtilsLib.Constants;
 
-public static class ValueConverters
+namespace Seedysoft.InfrastructureLib.ValueConverters;
+
+public static class DateTimeOffsetString
 {
     public const string DateTimeOffsetToStringFormat = "yyyy-MM-dd HH:mm:sszzz";
 

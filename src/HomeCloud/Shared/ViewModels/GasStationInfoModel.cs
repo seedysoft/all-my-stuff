@@ -23,6 +23,6 @@ public record GasStationInfoModel
 
     public string Provincia { get; set; } = default!;
 
-    // TODO                     Usar la ruta seleccionada y mostrar el punto
+    // TODO     Usar la ruta seleccionada y mostrar el punto
     public string GoogleMapsUri => $"https://www.google.com/maps/place/{Latitud.Replace(",", ".")},{Longitud.Replace(",", ".")}/";
 }
