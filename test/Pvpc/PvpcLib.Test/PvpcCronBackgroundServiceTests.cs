@@ -46,24 +46,25 @@ public sealed class PvpcCronBackgroundServiceFixture : IDisposable
 {
     public PvpcCronBackgroundServiceFixture()
     {
+        DbContextOptions<InfrastructureLib.DbContexts.DbCxt> options = new();
+        InfrastructureLib.DbContexts.DbCxt dbCxt = new(options);
+        dbCxt.Database.Migrate();
+
         Settings.PvpcSettings pvpcSettings = new()
         {
             CronExpression = "* * 30 2 *", // At every minute on day-of-month 30 in February.
         };
-        DbContextOptions<InfrastructureLib.DbContexts.DbCxt> options = new();
-        InfrastructureLib.DbContexts.DbCxt dbCxt = new(options);
-        dbCxt.Database.Migrate();
-        Microsoft.Extensions.Logging.ILogger<PvpcCronBackgroundService> logger = new Microsoft.Extensions.Logging.Abstractions.NullLogger<PvpcCronBackgroundService>();
+        Microsoft.Extensions.Logging.Abstractions.NullLogger<PvpcCronBackgroundService> logger = new();
         PvpcService = new(pvpcSettings, dbCxt, logger);
 
         TimeToQuery = DateTimeOffset.UtcNow;
         MinPriceAllowed = 0.05M;
-        Prices =
-            Enumerable.Range(0, 24)
+        Prices = Enumerable.Range(0, 24)
             .Select(i => new CoreLib.Entities.Pvpc(
                 TimeToQuery.UtcDateTime.AddHours(i),
                 decimal.Divide(Random.Shared.Next(40_000, 220_000), 1_000M)))
             .ToArray();
+        Prices.Last(x => x.AtDateTimeOffset <= TimeToQuery).MWhPriceInEuros = 49M; // 0.049 KWhPriceInEuros
     }
 
     public PvpcCronBackgroundService PvpcService { get; }
