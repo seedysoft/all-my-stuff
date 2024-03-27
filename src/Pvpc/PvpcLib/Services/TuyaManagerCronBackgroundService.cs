@@ -16,7 +16,7 @@ public sealed class TuyaManagerCronBackgroundService(
     private readonly InfrastructureLib.DbContexts.DbCxt DbCxt = dbCxt;
     private readonly ILogger<TuyaManagerCronBackgroundService> Logger = logger;
 
-    private TuyaManagerSettings Options => (TuyaManagerSettings)Config;
+    private TuyaManagerSettings Settings => (TuyaManagerSettings)Config;
 
     public override async Task StartAsync(CancellationToken cancellationToken)
     {
@@ -44,8 +44,7 @@ public sealed class TuyaManagerCronBackgroundService(
                 .Where(x => x.AtDateTimeOffset < dateToQueryDateTimeOffset.AddDays(1))
                 .ToArrayAsync(cancellationToken: stoppingToken);
 
-            // TODO             Parametrize allowWhenKWhPriceInEurosBelow and a setting to return always true.
-            bool IsTimeToCharge = PvpcCronBackgroundService.IsTimeToCharge(PricesForDayPvpcs, timeToCheckDateTimeOffset, allowWhenKWhPriceInEurosBelow: 0.07M);
+            bool IsTimeToCharge = PvpcCronBackgroundService.IsTimeToCharge(PricesForDayPvpcs, timeToCheckDateTimeOffset, Settings);
 
             for (int i = 0; i < Devices.Length; i++)
             {

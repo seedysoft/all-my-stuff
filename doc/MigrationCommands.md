@@ -1,6 +1,7 @@
 **Add a migration:**
 ```
 dotnet ef migrations add FirstEmpty -c DbCxt -p .\CommonLibs\Seedysoft.InfrastructureLib\Seedysoft.InfrastructureLib.csproj -s .\HomeCloud\Server\Seedysoft.HomeCloud.Server.csproj --no-build -v
+
 Add-Migration FirstEmpty -Context DbCxt -Project CommonLibs\Seedysoft.InfrastructureLib -StartupProject HomeCloud\Seedysoft.HomeCloud.Server -Verbose
 Add-Migration WebDataUseHttpClient -Context DbCxt -Project CommonLibs\Seedysoft.InfrastructureLib -StartupProject HomeCloud\Seedysoft.HomeCloud.Server -Verbose
 ```

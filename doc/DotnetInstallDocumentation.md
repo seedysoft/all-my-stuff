@@ -21,4 +21,5 @@
 ==NOTE: Must be root (sudo su)==: *root@raspberrypi4:/opt/dotnet#* \
 `./dotnet workload search [<SEARCH_STRING>] [-v|--verbosity <LEVEL>]` \
 `./dotnet workload search -?|-h|--help` \
+
 `./dotnet workload install wasm-tools`

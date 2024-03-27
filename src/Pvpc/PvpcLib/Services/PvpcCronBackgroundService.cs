@@ -17,7 +17,7 @@ public sealed class PvpcCronBackgroundService(
     private readonly InfrastructureLib.DbContexts.DbCxt DbCxt = dbCxt;
     private readonly ILogger<PvpcCronBackgroundService> Logger = logger;
 
-    private PvpcSettings Options => (PvpcSettings)Config;
+    private PvpcSettings Settings => (PvpcSettings)Config;
 
     public override async Task DoWorkAsync(CancellationToken stoppingToken)
     {
@@ -34,14 +34,14 @@ public sealed class PvpcCronBackgroundService(
 
         Logger.LogInformation("Obtaining PVPC for the day {ForDate}", forDate.ToString(UtilsLib.Constants.Formats.YearMonthDayFormat));
 
-        string UrlString = string.Format(Options.DataUrlTemplate, forDate);
+        string UrlString = string.Format(Settings.DataUrlTemplate, forDate);
         Logger.LogInformation("From {UrlString}", UrlString);
 
         try
         {
             Rootobject? Response = await client.GetFromJsonAsync<Rootobject>(UrlString, stoppingToken);
 
-            Included? PvpcIncluded = Response?.included?.FirstOrDefault(x => x.id == Options.PvpcId);
+            Included? PvpcIncluded = Response?.included?.FirstOrDefault(x => x.id == Settings.PvpcId);
 
             CoreLib.Entities.Pvpc[]? NewEntities = PvpcIncluded?.attributes?.values?
                 .Select(x => new CoreLib.Entities.Pvpc(x.datetime.GetValueOrDefault(), (decimal)x.value.GetValueOrDefault()))
@@ -115,18 +115,16 @@ public sealed class PvpcCronBackgroundService(
     internal static bool IsTimeToCharge(
         CoreLib.Entities.Pvpc[] pvpcs
         , DateTimeOffset timeToCheckDateTimeOffset
-        , decimal allowWhenKWhPriceInEurosBelow = decimal.Zero)
+        , TuyaManagerSettings tuyaManagerSettings)
     {
         if (pvpcs.Length == 0)
             return false;
 
         CoreLib.Entities.Pvpc? CurrentHourPrice = pvpcs.LastOrDefault(x => x.AtDateTimeOffset <= timeToCheckDateTimeOffset);
 
-        const int ChargingHoursPerDay = 4;
-
-        return CurrentHourPrice != null &&
-            (CurrentHourPrice.KWhPriceInEuros < allowWhenKWhPriceInEurosBelow ||
-            CurrentHourPrice.KWhPriceInEuros < pvpcs.OrderBy(x => x.KWhPriceInEuros).Take(ChargingHoursPerDay).Max(x => x.KWhPriceInEuros));
+        return
+            CurrentHourPrice?.KWhPriceInEuros < tuyaManagerSettings.AllowChargeWhenKWhPriceInEurosIsBelowThan ||
+            CurrentHourPrice?.KWhPriceInEuros < pvpcs.OrderBy(x => x.KWhPriceInEuros).Take(tuyaManagerSettings.ChargingHoursPerDay).Max(x => x.KWhPriceInEuros);
     }
 
     public override void Dispose()
