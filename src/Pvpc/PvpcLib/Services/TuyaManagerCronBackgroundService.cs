@@ -43,6 +43,8 @@ public sealed class TuyaManagerCronBackgroundService(
                 .Where(x => x.AtDateTimeOffset >= dateToQueryDateTimeOffset)
                 .Where(x => x.AtDateTimeOffset < dateToQueryDateTimeOffset.AddDays(1))
                 .ToArrayAsync(cancellationToken: stoppingToken);
+
+            // TODO             Parametrize allowWhenKWhPriceInEurosBelow and a setting to return always true.
             bool IsTimeToCharge = PvpcCronBackgroundService.IsTimeToCharge(PricesForDayPvpcs, timeToCheckDateTimeOffset, allowWhenKWhPriceInEurosBelow: 0.07M);
 
             for (int i = 0; i < Devices.Length; i++)

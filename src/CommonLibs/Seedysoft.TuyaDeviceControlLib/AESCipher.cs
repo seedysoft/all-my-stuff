@@ -65,8 +65,7 @@ internal class AESCipher(byte[] key)
         if (initialVector != null)
         {
             byte[]? initialVectorDecrypted;
-            byte[] encDecrypted;
-            (initialVectorDecrypted, encDecrypted) = AESCipherExtensions.GetDecryptionInitVector(initialVector, enc);
+            (initialVectorDecrypted, _) = AESCipherExtensions.GetDecryptionInitVector(initialVector, enc);
             using AesGcm cipher = new(Key, AesGcm.NonceByteSizes.MaxSize);
             cipher.Decrypt(initialVectorDecrypted ?? [], enc, tag ?? [], raw, header);
         }

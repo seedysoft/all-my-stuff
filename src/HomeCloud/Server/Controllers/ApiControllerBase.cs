@@ -4,11 +4,9 @@ using System.Text.Json;
 namespace Seedysoft.HomeCloud.Server.Controllers;
 
 [ApiController]
-public abstract class ApiControllerBase : ControllerBase
+public abstract class ApiControllerBase(ILogger logger) : ControllerBase
 {
-    protected virtual ILogger Logger { get; init; }
+    protected virtual ILogger Logger { get; init; } = logger;
 
     protected internal JsonSerializerOptions JsonOptions { get; } = new() { };
-
-    protected ApiControllerBase(ILogger logger) => Logger = logger;
 }
