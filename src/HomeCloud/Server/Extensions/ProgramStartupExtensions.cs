@@ -86,7 +86,7 @@ public static class ProgramStartupExtensions
                 if (!File.Exists(FullFilePath))
                     throw new FileNotFoundException("Database file not found.", FullFilePath);
 
-                _ = dbContextOptionsBuilder.UseSqlite(ConnectionString);
+                _ = dbContextOptionsBuilder.UseSqlite($"{CoreLib.Constants.DatabaseStrings.DataSource}{FullFilePath}");
                 dbContextOptionsBuilder.ConfigureDebugOptions();
             }
             , ServiceLifetime.Transient
@@ -102,7 +102,7 @@ public static class ProgramStartupExtensions
                 if (!File.Exists(FullFilePath))
                     throw new FileNotFoundException("Database file not found.", FullFilePath);
 
-                _ = dbContextOptionsBuilder.UseSqlite(ConnectionString);
+                _ = dbContextOptionsBuilder.UseSqlite($"{CoreLib.Constants.DatabaseStrings.DataSource}{FullFilePath}");
                 dbContextOptionsBuilder.ConfigureDebugOptions();
             }
             , ServiceLifetime.Transient
@@ -118,7 +118,7 @@ public static class ProgramStartupExtensions
                 if (!File.Exists(FullFilePath))
                     throw new FileNotFoundException("Database file not found.", FullFilePath);
 
-                _ = dbContextOptionsBuilder.UseSqlite(ConnectionString);
+                _ = dbContextOptionsBuilder.UseSqlite($"{CoreLib.Constants.DatabaseStrings.DataSource}{FullFilePath}");
                 dbContextOptionsBuilder.ConfigureDebugOptions();
             }
             , ServiceLifetime.Transient

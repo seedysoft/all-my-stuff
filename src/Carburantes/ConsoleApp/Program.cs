@@ -39,7 +39,7 @@ public sealed class Program
                         if (!File.Exists(FullFilePath))
                             throw new FileNotFoundException("Database file not found.", FullFilePath);
 
-                        _ = dbContextOptionsBuilder.UseSqlite(ConnectionString);
+                        _ = dbContextOptionsBuilder.UseSqlite($"{CoreLib.Constants.DatabaseStrings.DataSource}{FullFilePath}");
                         if (System.Diagnostics.Debugger.IsAttached)
                         {
                             _ = dbContextOptionsBuilder
@@ -59,7 +59,7 @@ public sealed class Program
                         if (!File.Exists(FullFilePath))
                             throw new FileNotFoundException("Database file not found.", FullFilePath);
 
-                        _ = dbContextOptionsBuilder.UseSqlite(ConnectionString);
+                        _ = dbContextOptionsBuilder.UseSqlite($"{CoreLib.Constants.DatabaseStrings.DataSource}{FullFilePath}");
                         if (System.Diagnostics.Debugger.IsAttached)
                         {
                             _ = dbContextOptionsBuilder
