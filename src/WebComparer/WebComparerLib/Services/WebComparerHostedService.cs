@@ -92,6 +92,8 @@ public sealed class WebComparerHostedService(IServiceProvider serviceProvider, I
     {
         string Content;
 
+        // TODO     Selenium https://www.selenium.dev/documentation/selenium_manager/#alternative-architectures
+
         try
         {
             using OpenQA.Selenium.Chrome.ChromeDriver WebDriver = GetWebDriver();

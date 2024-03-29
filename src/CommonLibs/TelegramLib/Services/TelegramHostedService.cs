@@ -4,7 +4,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Seedysoft.UtilsLib.Extensions;
-using System.Collections.Immutable;
 using Telegram.Bot;
 
 namespace Seedysoft.TelegramLib.Services;
@@ -30,7 +29,8 @@ public partial class TelegramHostedService : Microsoft.Extensions.Hosting.IHoste
     {
         Logger.LogInformation("Called {ApplicationName} version {Version}", GetType().FullName, System.Reflection.Assembly.GetExecutingAssembly().GetName().Version);
 
-        IEnumerable<Telegram.Bot.Types.BotCommand>? Commands = GetMyCommands();
+        Telegram.Bot.Types.BotCommand[] Commands = GetMyCommands();
+
         await StartReceivingAsync(Commands, cancellationToken);
     }
 
@@ -41,10 +41,15 @@ public partial class TelegramHostedService : Microsoft.Extensions.Hosting.IHoste
         await Task.CompletedTask;
     }
 
-    private static IEnumerable<Telegram.Bot.Types.BotCommand>? GetMyCommands()
+    private static Telegram.Bot.Types.BotCommand[] GetMyCommands()
     {
-        // TODO     Obtain BotActionName elements and parse
-        return null;
+        return Enum.GetValues<Enums.BotActionName>().
+            Select(x => new Telegram.Bot.Types.BotCommand()
+            {
+                Command = x.ToString(),
+                Description = x.GetEnumDescription()
+            })
+            .ToArray();
     }
 
     private async Task StartReceivingAsync(
