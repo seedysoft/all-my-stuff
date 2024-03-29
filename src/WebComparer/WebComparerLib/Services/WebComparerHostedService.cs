@@ -159,19 +159,26 @@ public sealed class WebComparerHostedService(IServiceProvider serviceProvider, I
 
     private void TryPerformWebDriverActions(OpenQA.Selenium.Chrome.ChromeDriver webDriver)
     {
-        // TODO         Add retry logic when timeout
-        // TODO Personalizar cada web con lo que podemos hacer antes de obtener datos
-        try
-        {
-            // SubscriptionId: 3 JCyL Convocatorias
-            if (webDriver.PageSource.Contains("elemento-invisible"))
-                webDriver.ExecuteJavaScript("jQuery('.elemento-invisible').removeClass('elemento-invisible');");
+        int RetryCount = 2;
 
-            // SubscriptionId: 20 Inscripción en Pruebas Selectivas
-            if (webDriver.PageSource.Contains("view-more-link"))
-                ((OpenQA.Selenium.IWebElement?)webDriver.FindElement(OpenQA.Selenium.By.Id("view-more-link")))?.Click();
+        do
+        {
+            // TODO Personalizar cada web con lo que podemos hacer antes de obtener datos
+            try
+            {
+                // SubscriptionId: 3 JCyL Convocatorias
+                if (webDriver.PageSource.Contains("elemento-invisible"))
+                    webDriver.ExecuteJavaScript("jQuery('.elemento-invisible').removeClass('elemento-invisible');");
+
+                // SubscriptionId: 20 Inscripción en Pruebas Selectivas
+                if (webDriver.PageSource.Contains("view-more-link"))
+                    ((OpenQA.Selenium.IWebElement?)webDriver.FindElement(OpenQA.Selenium.By.Id("view-more-link")))?.Click();
+
+                RetryCount = 0;
+            }
+            catch (Exception e) when (logger.LogAndHandle(e, "{TryToPerformWebDriverActions} failed", nameof(TryPerformWebDriverActions))) { RetryCount--; }
         }
-        catch (Exception e) when (logger.LogAndHandle(e, "{TryToPerformWebDriverActions} failed", nameof(TryPerformWebDriverActions))) { }
+        while (RetryCount > 0);
     }
 
     private static string? GetDifferencesOrNull(CoreLib.Entities.WebData webData, string obtainedString)
