@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Seedysoft.InfrastructureLib.Extensions;
 using Seedysoft.UtilsLib.Extensions;
 
 namespace Seedysoft.Carburantes.ConsoleApp;
@@ -12,69 +13,46 @@ public sealed class Program
 {
     public static async Task Main(string[] args)
     {
-        HostBuilder builder = new();
+        HostApplicationBuilder builder = new();
 
         InfrastructureLib.Dependencies.ConfigureDefaultDependencies(builder, args);
 
-        _ = builder
-            .ConfigureAppConfiguration((hostBuilderContext, iConfigurationBuilder) =>
-            {
-                string CurrentEnvironmentName = hostBuilderContext.HostingEnvironment.EnvironmentName;
+        _ = builder.Configuration
+            .AddJsonFile($"appsettings.Carburantes.Infrastructure.json", false, true)
+            .AddJsonFile($"appsettings.Carburantes.Infrastructure.{builder.Environment.EnvironmentName}.json", false, true)
+            .AddJsonFile($"appsettings.CarburantesConnectionStrings.{builder.Environment.EnvironmentName}.json", false, true);
 
-                _ = iConfigurationBuilder
-                    .AddJsonFile($"appsettings.Carburantes.Infrastructure.json", false, true)
-                    .AddJsonFile($"appsettings.Carburantes.Infrastructure.{CurrentEnvironmentName}.json", false, true)
+        _ = builder.Services.AddDbContext<Infrastructure.Data.CarburantesDbContext>((iServiceProvider, dbContextOptionsBuilder) =>
+        {
+            string ConnectionStringName = nameof(Infrastructure.Data.CarburantesDbContext);
+            string ConnectionString = builder.Configuration.GetConnectionString($"{ConnectionStringName}") ?? throw new KeyNotFoundException($"Connection string '{ConnectionStringName}' not found.");
+            string FullFilePath = Path.GetFullPath(ConnectionString[CoreLib.Constants.DatabaseStrings.DataSource.Length..]);
+            if (!File.Exists(FullFilePath))
+                throw new FileNotFoundException("Database file not found.", FullFilePath);
 
-                    .AddJsonFile($"appsettings.CarburantesConnectionStrings.{CurrentEnvironmentName}.json", false, true);
-            })
+            _ = dbContextOptionsBuilder.UseSqlite($"{CoreLib.Constants.DatabaseStrings.DataSource}{FullFilePath}");
+            dbContextOptionsBuilder.ConfigureDebugOptions();
+        }
+        , ServiceLifetime.Transient
+        , ServiceLifetime.Transient)
 
-            .ConfigureServices((hostBuilderContext, serviceCollection) =>
-            {
-                _ = serviceCollection
-                    .AddDbContext<Infrastructure.Data.CarburantesDbContext>((iServiceProvider, dbContextOptionsBuilder) =>
-                    {
-                        string ConnectionStringName = nameof(Infrastructure.Data.CarburantesDbContext);
-                        string ConnectionString = hostBuilderContext.Configuration.GetConnectionString($"{ConnectionStringName}") ?? throw new KeyNotFoundException($"Connection string '{ConnectionStringName}' not found.");
-                        string FullFilePath = Path.GetFullPath(ConnectionString[CoreLib.Constants.DatabaseStrings.DataSource.Length..]);
-                        if (!File.Exists(FullFilePath))
-                            throw new FileNotFoundException("Database file not found.", FullFilePath);
+        .AddDbContext<Infrastructure.Data.CarburantesHistDbContext>((iServiceProvider, dbContextOptionsBuilder) =>
+        {
+            string ConnectionStringName = nameof(Infrastructure.Data.CarburantesHistDbContext);
+            string ConnectionString = builder.Configuration.GetConnectionString($"{ConnectionStringName}") ?? throw new KeyNotFoundException($"Connection string '{ConnectionStringName}' not found.");
+            string FullFilePath = Path.GetFullPath(ConnectionString[CoreLib.Constants.DatabaseStrings.DataSource.Length..]);
+            if (!File.Exists(FullFilePath))
+                throw new FileNotFoundException("Database file not found.", FullFilePath);
 
-                        _ = dbContextOptionsBuilder.UseSqlite($"{CoreLib.Constants.DatabaseStrings.DataSource}{FullFilePath}");
-                        if (System.Diagnostics.Debugger.IsAttached)
-                        {
-                            _ = dbContextOptionsBuilder
-                                .EnableDetailedErrors()
-                                .EnableSensitiveDataLogging()
-                                .LogTo(Console.WriteLine, LogLevel.Trace);
-                        }
-                    }
-                    , ServiceLifetime.Transient
-                    , ServiceLifetime.Transient)
+            _ = dbContextOptionsBuilder.UseSqlite($"{CoreLib.Constants.DatabaseStrings.DataSource}{FullFilePath}");
+            dbContextOptionsBuilder.ConfigureDebugOptions();
+        }
+        , ServiceLifetime.Transient
+        , ServiceLifetime.Transient);
 
-                    .AddDbContext<Infrastructure.Data.CarburantesHistDbContext>((iServiceProvider, dbContextOptionsBuilder) =>
-                    {
-                        string ConnectionStringName = nameof(Infrastructure.Data.CarburantesHistDbContext);
-                        string ConnectionString = hostBuilderContext.Configuration.GetConnectionString($"{ConnectionStringName}") ?? throw new KeyNotFoundException($"Connection string '{ConnectionStringName}' not found.");
-                        string FullFilePath = Path.GetFullPath(ConnectionString[CoreLib.Constants.DatabaseStrings.DataSource.Length..]);
-                        if (!File.Exists(FullFilePath))
-                            throw new FileNotFoundException("Database file not found.", FullFilePath);
+        _ = builder.Services.AddHttpClient(nameof(Core.Settings.Minetur));
 
-                        _ = dbContextOptionsBuilder.UseSqlite($"{CoreLib.Constants.DatabaseStrings.DataSource}{FullFilePath}");
-                        if (System.Diagnostics.Debugger.IsAttached)
-                        {
-                            _ = dbContextOptionsBuilder
-                                .EnableDetailedErrors()
-                                .EnableSensitiveDataLogging()
-                                .LogTo(Console.WriteLine, LogLevel.Trace);
-                        }
-                    }
-                    , ServiceLifetime.Transient
-                    , ServiceLifetime.Transient);
-
-                _ = serviceCollection.AddHttpClient(nameof(Core.Settings.Minetur));
-
-                serviceCollection.TryAddSingleton<Services.ObtainDataCronBackgroundService>();
-            });
+        builder.Services.TryAddSingleton<Services.ObtainDataCronBackgroundService>();
 
         SQLitePCL.Batteries.Init();
 

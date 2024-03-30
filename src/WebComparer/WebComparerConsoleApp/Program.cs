@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
@@ -11,26 +10,12 @@ public sealed class Program
 {
     public static async Task Main(string[] args)
     {
-        HostBuilder builder = new();
+        HostApplicationBuilder builder = new();
 
         InfrastructureLib.Dependencies.ConfigureDefaultDependencies(builder, args);
+        InfrastructureLib.Dependencies.AddDbCxtContext(builder);
 
-        _ = builder
-
-            .ConfigureAppConfiguration((hostBuilderContext, configurationBuilder) =>
-            {
-                string CurrentEnvironmentName = hostBuilderContext.HostingEnvironment.EnvironmentName;
-
-                _ = configurationBuilder
-                   .AddJsonFile($"appsettings.dbConnectionString.{CurrentEnvironmentName}.json", false, true);
-            })
-
-            .ConfigureServices((hostBuilderContext, iServiceCollection) =>
-            {
-                InfrastructureLib.Dependencies.AddDbCxtContext(hostBuilderContext.Configuration, iServiceCollection);
-
-                iServiceCollection.TryAddSingleton<WebComparerLib.Services.WebComparerHostedService>();
-            });
+        builder.Services.TryAddSingleton<WebComparerLib.Services.WebComparerHostedService>();
 
         IHost host = builder.Build();
 
