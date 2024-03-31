@@ -90,29 +90,9 @@ public sealed class WebComparerHostedService(IServiceProvider serviceProvider, I
 
     private string GetContent(CoreLib.Entities.WebData webData)
     {
-        string Content;
+        string Content = default!;
 
-        // TODO     Selenium https://www.selenium.dev/documentation/selenium_manager/#alternative-architectures
-
-        try
-        {
-            using OpenQA.Selenium.Chrome.ChromeDriver WebDriver = GetWebDriver();
-            {
-                WebDriver.Navigate().GoToUrl(webData.WebUrl);
-
-                TryPerformWebDriverActions(WebDriver);
-
-                Content = WebDriver.FindElement(OpenQA.Selenium.By.CssSelector(webData.CssSelector)).Text;
-
-                WebDriver.Quit();
-            }
-        }
-        catch (Exception e) when (logger.LogAndHandle(e, "GetContent failed with ChromeDriver for '{WebUrl}'", webData.WebUrl))
-        {
-            Content = default!;
-        }
-
-        if (string.IsNullOrWhiteSpace(Content) || webData.UseHttpClient)
+        if (webData.UseHttpClient)
         {
             HtmlAgilityPack.HtmlWeb htmlWeb = new()
             {
@@ -123,6 +103,28 @@ public sealed class WebComparerHostedService(IServiceProvider serviceProvider, I
             HtmlAgilityPack.HtmlDocument htmlDocument = htmlWeb.Load(webData.WebUrl);
 
             Content = htmlDocument.DocumentNode.SelectSingleNode("//body").InnerText;
+        }
+        else
+        {
+            try
+            {
+                // TODO     Selenium https://www.selenium.dev/documentation/selenium_manager/#alternative-architectures
+
+                using OpenQA.Selenium.Chrome.ChromeDriver WebDriver = GetWebDriver();
+                {
+                    WebDriver.Navigate().GoToUrl(webData.WebUrl);
+
+                    TryPerformWebDriverActions(WebDriver);
+
+                    Content = WebDriver.FindElement(OpenQA.Selenium.By.CssSelector(webData.CssSelector)).Text;
+
+                    WebDriver.Quit();
+                }
+            }
+            catch (Exception e) when (logger.LogAndHandle(e, "GetContent failed with ChromeDriver for '{WebUrl}'", webData.WebUrl))
+            {
+                Content = default!;
+            }
         }
 
         return Content;
@@ -274,20 +276,17 @@ public sealed class WebComparerHostedService(IServiceProvider serviceProvider, I
 
     private static bool ShouldIgnoreChanges(DiffPlex.DiffBuilder.Model.DiffPaneModel diffModel, CoreLib.Entities.WebData webData)
     {
-        if (!diffModel.HasDifferences)
+        if (!diffModel.HasDifferences || string.IsNullOrWhiteSpace(webData.IgnoreChangeWhen))
             return true;
 
-        if (!string.IsNullOrWhiteSpace(webData.IgnoreChangeWhen))
+        DiffPlex.DiffBuilder.Model.DiffPiece[] ChangedLines = diffModel.Lines.Where(x => x.Type != DiffPlex.DiffBuilder.Model.ChangeType.Unchanged).ToArray();
+        string[] IgnoreTexts = webData.IgnoreChangeWhen.Split(';');
+        for (int i = 0; i < ChangedLines.Length; i++)
         {
-            DiffPlex.DiffBuilder.Model.DiffPiece[] ChangedLines = diffModel.Lines.Where(x => x.Type != DiffPlex.DiffBuilder.Model.ChangeType.Unchanged).ToArray();
-            string[] IgnoreTexts = webData.IgnoreChangeWhen.Split(';');
-            for (int i = 0; i < ChangedLines.Length; i++)
+            for (int j = 0; j < IgnoreTexts.Length; j++)
             {
-                for (int j = 0; j < IgnoreTexts.Length; j++)
-                {
-                    if (diffModel.Lines[i].Text.Contains(IgnoreTexts[j]))
-                        return true;
-                }
+                if (diffModel.Lines[i].Text.Contains(IgnoreTexts[j]))
+                    return true;
             }
         }
 
