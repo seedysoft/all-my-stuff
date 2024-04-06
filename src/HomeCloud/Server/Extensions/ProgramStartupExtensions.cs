@@ -1,30 +1,29 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Serilog;
+using Seedysoft.InfrastructureLib.Extensions;
 
 namespace Seedysoft.HomeCloud.Server.Extensions;
 
 public static class ProgramStartupExtensions
 {
-    public static WebApplicationBuilder AddMyDependencies(this WebApplicationBuilder builder)
+    public static IHostApplicationBuilder AddMyDependencies(this IHostApplicationBuilder builder)
     {
         return builder
             .AddJsonFiles()
-            .AddSerilogLogger()
             .AddDbContexts()
             .AddMyServices();
     }
 
-    public static WebApplication MigrateDbContexts(this WebApplication webApp)
+    public static IHost MigrateDbContexts(this IHost builder)
     {
-        webApp.Services.GetRequiredService<InfrastructureLib.DbContexts.DbCxt>().Database.Migrate();
-        webApp.Services.GetRequiredService<Carburantes.Infrastructure.Data.CarburantesDbContext>().Database.Migrate();
-        webApp.Services.GetRequiredService<Carburantes.Infrastructure.Data.CarburantesHistDbContext>().Database.Migrate();
+        builder.Services.GetRequiredService<InfrastructureLib.DbContexts.DbCxt>().Database.Migrate();
+        builder.Services.GetRequiredService<Carburantes.Infrastructure.Data.CarburantesDbContext>().Database.Migrate();
+        builder.Services.GetRequiredService<Carburantes.Infrastructure.Data.CarburantesHistDbContext>().Database.Migrate();
 
-        return webApp;
+        return builder;
     }
 
-    private static WebApplicationBuilder AddJsonFiles(this WebApplicationBuilder builder)
+    private static IHostApplicationBuilder AddJsonFiles(this IHostApplicationBuilder builder)
     {
         if (System.Diagnostics.Debugger.IsAttached)
             builder.Environment.EnvironmentName = Environments.Development/*.Production*/;
@@ -39,8 +38,6 @@ public static class ProgramStartupExtensions
             .AddJsonFile($"appsettings.Carburantes.Infrastructure.json", false, true)
             .AddJsonFile($"appsettings.Carburantes.Infrastructure.{CurrentEnvironmentName}.json", false, true)
 
-            .AddJsonFile($"appsettings.dbConnectionString.{CurrentEnvironmentName}.json", false, true)
-
             .AddJsonFile($"appsettings.Serilog.json", false, true)
             .AddJsonFile($"appsettings.Serilog.{CurrentEnvironmentName}.json", false, true)
 
@@ -52,46 +49,11 @@ public static class ProgramStartupExtensions
         return builder;
     }
 
-    private static WebApplicationBuilder AddSerilogLogger(this WebApplicationBuilder builder)
+    private static IHostApplicationBuilder AddDbContexts(this IHostApplicationBuilder builder)
     {
-        _ = builder.Services.AddLogging(iLoggingBuilder =>
-        {
-            IConfigurationSection configurationSection = builder.Configuration.GetRequiredSection("Serilog:WriteTo:1:Args:path");
-            Console.WriteLine("Obtained '{0}' from Serilog:WriteTo:1:Args:path", configurationSection.Value);
+        InfrastructureLib.Dependencies.AddDbCxtContext(builder);
 
-            if (System.Diagnostics.Debugger.IsAttached)
-                configurationSection.Value = $"{configurationSection.Value!}"["../../../".Length..];
-
-            configurationSection.Value = Path.GetFullPath(configurationSection.Value!.Replace("{ApplicationName}", builder.Environment.ApplicationName));
-            Console.WriteLine("Final value of Serilog:WriteTo:1:Args:path: '{0}'", configurationSection.Value);
-
-            _ = iLoggingBuilder.AddSerilog(new LoggerConfiguration()
-                .ReadFrom.Configuration(builder.Configuration)
-                .CreateLogger());
-        });
-
-        return builder;
-    }
-
-    private static WebApplicationBuilder AddDbContexts(this WebApplicationBuilder builder)
-    {
         _ = builder.Services
-            .AddDbContext<InfrastructureLib.DbContexts.DbCxt>((iServiceProvider, dbContextOptionsBuilder) =>
-            {
-                string ConnectionStringName = nameof(InfrastructureLib.DbContexts.DbCxt);
-                string ConnectionString = builder.Configuration.GetConnectionString($"{ConnectionStringName}") ?? throw new KeyNotFoundException($"Connection string '{ConnectionStringName}' not found.");
-                if (System.Diagnostics.Debugger.IsAttached)
-                    ConnectionString = ConnectionString.Replace($"{CoreLib.Constants.DatabaseStrings.DataSource}../../../", $"{CoreLib.Constants.DatabaseStrings.DataSource}");
-                string FullFilePath = Path.GetFullPath(ConnectionString[CoreLib.Constants.DatabaseStrings.DataSource.Length..]);
-                if (!File.Exists(FullFilePath))
-                    throw new FileNotFoundException("Database file not found.", FullFilePath);
-
-                _ = dbContextOptionsBuilder.UseSqlite(ConnectionString);
-                dbContextOptionsBuilder.ConfigureDebugOptions();
-            }
-            , ServiceLifetime.Transient
-            , ServiceLifetime.Transient)
-
             .AddDbContext<Carburantes.Infrastructure.Data.CarburantesDbContext>((iServiceProvider, dbContextOptionsBuilder) =>
             {
                 string ConnectionStringName = nameof(Carburantes.Infrastructure.Data.CarburantesDbContext);
@@ -102,7 +64,7 @@ public static class ProgramStartupExtensions
                 if (!File.Exists(FullFilePath))
                     throw new FileNotFoundException("Database file not found.", FullFilePath);
 
-                _ = dbContextOptionsBuilder.UseSqlite(ConnectionString);
+                _ = dbContextOptionsBuilder.UseSqlite($"{CoreLib.Constants.DatabaseStrings.DataSource}{FullFilePath}");
                 dbContextOptionsBuilder.ConfigureDebugOptions();
             }
             , ServiceLifetime.Transient
@@ -118,7 +80,7 @@ public static class ProgramStartupExtensions
                 if (!File.Exists(FullFilePath))
                     throw new FileNotFoundException("Database file not found.", FullFilePath);
 
-                _ = dbContextOptionsBuilder.UseSqlite(ConnectionString);
+                _ = dbContextOptionsBuilder.UseSqlite($"{CoreLib.Constants.DatabaseStrings.DataSource}{FullFilePath}");
                 dbContextOptionsBuilder.ConfigureDebugOptions();
             }
             , ServiceLifetime.Transient
@@ -127,7 +89,7 @@ public static class ProgramStartupExtensions
         return builder;
     }
 
-    private static WebApplicationBuilder AddMyServices(this WebApplicationBuilder builder)
+    private static IHostApplicationBuilder AddMyServices(this IHostApplicationBuilder builder)
     {
         builder.Services.TryAddSingleton(builder.Configuration.GetSection(nameof(SmtpServiceLib.Settings.SmtpServiceSettings)).Get<SmtpServiceLib.Settings.SmtpServiceSettings>()!);
         builder.Services.TryAddTransient<SmtpServiceLib.Services.SmtpService>();
@@ -152,16 +114,5 @@ public static class ProgramStartupExtensions
         _ = builder.Services.AddHostedService<WebComparerLib.Services.WebComparerHostedService>();
 
         return builder;
-    }
-
-    private static void ConfigureDebugOptions(this DbContextOptionsBuilder dbContextOptionsBuilder)
-    {
-        if (System.Diagnostics.Debugger.IsAttached)
-        {
-            _ = dbContextOptionsBuilder
-                .EnableDetailedErrors()
-                .EnableSensitiveDataLogging()
-                .LogTo(Console.WriteLine, LogLevel.Trace);
-        }
     }
 }

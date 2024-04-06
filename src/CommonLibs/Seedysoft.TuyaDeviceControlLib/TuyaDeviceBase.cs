@@ -133,7 +133,7 @@ public class TuyaDeviceBase
         Version = version ?? float.Parse(ProtocolVersionsAndHeaders.VERSION_31);
     }
 
-    // TODO          Wrap results into class/record
+    // TODO                     Wrap results into class/record
     public object? GetStatus(bool noWait = false)
     {
         Debug.WriteLine($"{nameof(GetStatus)}() called ({nameof(DevType)} is '{DevType}')");
@@ -567,7 +567,6 @@ public class TuyaDeviceBase
                 [.. "data="u8.ToArray(), .. payload, .. "||lpv="u8.ToArray(), .. ProtocolVersionsAndHeaders.PROTOCOL_VERSION_BYTES_31, .. "||"u8.ToArray(), .. LocalKey];
 
             string hexDigest = BitConverter.ToString(MD5.HashData(preMd5String)).Replace("-", string.Empty);
-            // TODO         Comprobar
             // #some tuya libraries strip 8: to :24
             // #payload = (PROTOCOL_VERSION_BYTES_31 + hexdigest[8:][:16].encode("latin1") + payload)
             payload = [.. ProtocolVersionsAndHeaders.PROTOCOL_VERSION_BYTES_31, .. Encoding.Latin1.GetBytes(hexDigest[8..]).Concat(payload)];

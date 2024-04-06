@@ -11,34 +11,22 @@ public sealed class Program
 {
     public static async Task Main(string[] args)
     {
-        HostBuilder builder = new();
+        HostApplicationBuilder builder = new();
 
         InfrastructureLib.Dependencies.ConfigureDefaultDependencies(builder, args);
+        InfrastructureLib.Dependencies.AddDbCxtContext(builder);
 
-        _ = builder
+        _ = builder.Configuration
+            .AddJsonFile($"appsettings.SmtpServiceSettings.json", false, true)
+            .AddJsonFile($"appsettings.TelegramSettings.{builder.Environment.EnvironmentName}.json", false, true);
 
-            .ConfigureAppConfiguration((hostBuilderContext, iConfigurationBuilder) =>
-            {
-                string CurrentEnvironmentName = hostBuilderContext.HostingEnvironment.EnvironmentName;
+        builder.Services.TryAddSingleton(builder.Configuration.GetSection(nameof(SmtpServiceLib.Settings.SmtpServiceSettings)).Get<SmtpServiceLib.Settings.SmtpServiceSettings>()!);
+        builder.Services.TryAddTransient<SmtpServiceLib.Services.SmtpService>();
 
-                _ = iConfigurationBuilder
-                    .AddJsonFile($"appsettings.dbConnectionString.{CurrentEnvironmentName}.json", false, true)
-                    .AddJsonFile($"appsettings.SmtpServiceSettings.json", false, true)
-                    .AddJsonFile($"appsettings.TelegramSettings.{CurrentEnvironmentName}.json", false, true);
-            })
+        builder.Services.TryAddSingleton(builder.Configuration.GetSection(nameof(TelegramLib.Settings.TelegramSettings)).Get<TelegramLib.Settings.TelegramSettings>()!);
+        builder.Services.TryAddSingleton<TelegramLib.Services.TelegramHostedService>();
 
-            .ConfigureServices((hostBuilderContext, iServiceCollection) =>
-            {
-                InfrastructureLib.Dependencies.AddDbCxtContext(hostBuilderContext.Configuration, iServiceCollection);
-
-                iServiceCollection.TryAddSingleton(hostBuilderContext.Configuration.GetSection(nameof(SmtpServiceLib.Settings.SmtpServiceSettings)).Get<SmtpServiceLib.Settings.SmtpServiceSettings>()!);
-                iServiceCollection.TryAddTransient<SmtpServiceLib.Services.SmtpService>();
-
-                iServiceCollection.TryAddSingleton(hostBuilderContext.Configuration.GetSection(nameof(TelegramLib.Settings.TelegramSettings)).Get<TelegramLib.Settings.TelegramSettings>()!);
-                iServiceCollection.TryAddSingleton<TelegramLib.Services.TelegramHostedService>();
-
-                iServiceCollection.TryAddSingleton<OutboxLib.Services.OutboxCronBackgroundService>();
-            });
+        builder.Services.TryAddSingleton<OutboxLib.Services.OutboxCronBackgroundService>();
 
         IHost host = builder.Build();
 

@@ -9,7 +9,7 @@ public record GasStationQueryModel
     public decimal MaxDistanceInKm { get; set; } = default!;
     public double MaxDistanceInMeters => (double)MaxDistanceInKm * 1_000D;
 
-    public IEnumerable<int> PetroleumProductsSelectedIds { get; set; } = Enumerable.Empty<int>();
+    public IEnumerable<int> PetroleumProductsSelectedIds { get; set; } = [];
 
     public StepObtainedModel[] Steps { get; set; } = default!;
 }

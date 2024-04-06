@@ -37,5 +37,5 @@ public abstract class CronBackgroundService : Microsoft.Extensions.Hosting.Backg
         finally { await Task.CompletedTask; }
     }
 
-    public virtual async Task DoWorkAsync(CancellationToken cancellationToken) => await Task.CompletedTask;
+    public abstract Task DoWorkAsync(CancellationToken cancellationToken);
 }

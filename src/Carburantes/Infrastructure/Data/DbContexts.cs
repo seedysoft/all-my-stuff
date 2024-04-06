@@ -34,7 +34,7 @@ public sealed class CarburantesDbContext : CarburantesDbContextBase
             if (!File.Exists(FullFilePath))
                 throw new FileNotFoundException("Database file not found.", FullFilePath);
 
-            string ConnectionString = $"{CoreLib.Constants.DatabaseStrings.DataSource}{DatabasePath}";
+            string ConnectionString = $"{CoreLib.Constants.DatabaseStrings.DataSource}{FullFilePath}";
             Console.WriteLine(ConnectionString);
 
             _ = optionsBuilder.UseSqlite(ConnectionString);
@@ -71,7 +71,7 @@ public sealed class CarburantesHistDbContext : CarburantesDbContextBase
             if (!File.Exists(FullFilePath))
                 throw new FileNotFoundException("Database file not found.", FullFilePath);
 
-            string ConnectionString = $"{CoreLib.Constants.DatabaseStrings.DataSource}{DatabasePath}";
+            string ConnectionString = $"{CoreLib.Constants.DatabaseStrings.DataSource}{FullFilePath}";
             Console.WriteLine(ConnectionString);
 
             _ = optionsBuilder.UseSqlite(ConnectionString);

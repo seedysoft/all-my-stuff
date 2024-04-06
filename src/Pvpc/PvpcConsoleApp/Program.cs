@@ -13,30 +13,19 @@ public sealed class Program
 {
     public static async Task Main(string[] args)
     {
-        HostBuilder builder = new();
+        HostApplicationBuilder builder = new();
 
         InfrastructureLib.Dependencies.ConfigureDefaultDependencies(builder, args);
+        InfrastructureLib.Dependencies.AddDbCxtContext(builder);
 
-        _ = builder
-            .ConfigureAppConfiguration((hostBuilderContext, iConfigurationBuilder) =>
-            {
-                string CurrentEnvironmentName = hostBuilderContext.HostingEnvironment.EnvironmentName;
+        _ = builder.Configuration
+            .AddJsonFile($"appsettings.PvpcSettings.json", false, true)
+            .AddJsonFile($"appsettings.TuyaManagerSettings.json", false, true);
 
-                _ = iConfigurationBuilder
-                    .AddJsonFile($"appsettings.dbConnectionString.{CurrentEnvironmentName}.json", false, true)
-                    .AddJsonFile($"appsettings.PvpcSettings.json", false, true)
-                    .AddJsonFile($"appsettings.TuyaManagerSettings.json", false, true);
-            })
-
-            .ConfigureServices((hostBuilderContext, iServiceCollection) =>
-            {
-                InfrastructureLib.Dependencies.AddDbCxtContext(hostBuilderContext.Configuration, iServiceCollection);
-
-                iServiceCollection.TryAddSingleton(hostBuilderContext.Configuration.GetSection(nameof(PvpcSettings)).Get<PvpcSettings>()!);
-                iServiceCollection.TryAddSingleton(hostBuilderContext.Configuration.GetSection(nameof(TuyaManagerSettings)).Get<TuyaManagerSettings>()!);
-                iServiceCollection.TryAddSingleton<PvpcCronBackgroundService>();
-                iServiceCollection.TryAddSingleton<TuyaManagerCronBackgroundService>();
-            });
+        builder.Services.TryAddSingleton(builder.Configuration.GetSection(nameof(PvpcSettings)).Get<PvpcSettings>()!);
+        builder.Services.TryAddSingleton(builder.Configuration.GetSection(nameof(TuyaManagerSettings)).Get<TuyaManagerSettings>()!);
+        builder.Services.TryAddSingleton<PvpcCronBackgroundService>();
+        builder.Services.TryAddSingleton<TuyaManagerCronBackgroundService>();
 
         IHost host = builder.Build();
 

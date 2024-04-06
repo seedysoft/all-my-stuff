@@ -8,7 +8,7 @@ internal abstract class PvpcEntityTypeConfigurationT<T> : IEntityTypeConfigurati
     {
         _ = builder
             .Property(x => x.AtDateTimeOffset)
-            .HasConversion(UtilsLib.Constants.ValueConverters.DateTimeOffsetStringValueConverter);
+            .HasConversion(ValueConverters.DateTimeOffsetString.DateTimeOffsetStringValueConverter);
 
         _ = builder
             .Property(x => x.MWhPriceInEuros);

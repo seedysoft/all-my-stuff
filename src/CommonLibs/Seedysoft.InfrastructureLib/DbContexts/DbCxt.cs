@@ -19,7 +19,7 @@ public sealed partial class DbCxt : DbContext
             if (!File.Exists(FullFilePath))
                 throw new FileNotFoundException("Database file not found.", FullFilePath);
 
-            string ConnectionString = $"{CoreLib.Constants.DatabaseStrings.DataSource}{DatabasePath}";
+            string ConnectionString = $"{CoreLib.Constants.DatabaseStrings.DataSource}{FullFilePath}";
             Console.WriteLine(ConnectionString);
 
             _ = optionsBuilder.UseSqlite(ConnectionString);

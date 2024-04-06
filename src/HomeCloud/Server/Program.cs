@@ -8,11 +8,13 @@ public sealed class Program
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
-        Microsoft.AspNetCore.Hosting.StaticWebAssets.StaticWebAssetsLoader.UseStaticWebAssets(builder.Environment, builder.Configuration);
-
         // Add services to the container.
         if (System.Diagnostics.Debugger.IsAttached)
             _ = builder.Configuration.SetBasePath(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location)!);
+
+        InfrastructureLib.Dependencies.ConfigureDefaultDependencies(builder, args);
+
+        Microsoft.AspNetCore.Hosting.StaticWebAssets.StaticWebAssetsLoader.UseStaticWebAssets(builder.Environment, builder.Configuration);
 
         _ = builder.Logging.AddSystemdConsole();
 

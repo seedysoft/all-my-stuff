@@ -2,6 +2,7 @@
 
 public record TelegramUserBase
 {
+    // TODO                           Encrypt
     private static readonly TelegramUserBase TestBotTelegramUser = new(5025594021L, "Raspberrypi4FokyTestbot");
     private static readonly TelegramUserBase ProdBotTelegramUser = new(2099959399L, "Raspberrypi4Foky_bot");
 

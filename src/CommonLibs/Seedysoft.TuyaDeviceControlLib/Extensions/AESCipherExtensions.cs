@@ -15,7 +15,7 @@ internal static class AESCipherExtensions
     {
         return iv == null || iv.Length == 0
             ? ((byte[]?, byte[]))(iv, data)
-            : (data.Take(12).ToArray(), data.Skip(12).ToArray());
+            : (data[..12], data[12..]);
     }
 
     internal static byte[] Pad(byte[] s, int bs)
@@ -34,6 +34,7 @@ internal static class AESCipherExtensions
         return padlen switch
         {
             < 1 or > 16 => throw new ArgumentException("invalid padding length byte"),
+
             _ => verifyPadding && !s.Skip(s.Length - padlen).SequenceEqual(Enumerable.Repeat((byte)padlen, padlen))
                 ? throw new ArgumentException("invalid padding data")
                 : s.Take(s.Length - padlen).ToArray(),
