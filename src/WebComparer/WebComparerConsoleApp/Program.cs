@@ -46,7 +46,7 @@ public sealed class Program
                 {
                     WebComparerLib.Services.WebComparerHostedService webComparerHostedService = host.Services.GetRequiredService<WebComparerLib.Services.WebComparerHostedService>();
 
-                    await webComparerHostedService.StartAsync(CancelTokenSource.Token);
+                    await webComparerHostedService.FindDifferencesAsync(CancelTokenSource.Token);
                 }
             }
 

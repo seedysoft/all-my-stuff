@@ -9,59 +9,67 @@ namespace Seedysoft.WebComparerLib.Services;
 public sealed class WebComparerHostedService(IServiceProvider serviceProvider, ILogger<WebComparerHostedService> logger) : Microsoft.Extensions.Hosting.IHostedService
 {
     private static readonly TimeSpan FiveSecondsTimeSpan = TimeSpan.FromSeconds(5);
+    private static readonly CancellationTokenSource cancellationTokenSource = new();
 
     public async Task StartAsync(CancellationToken cancellationToken)
     {
         logger.LogInformation("Called {ApplicationName} version {Version}", GetType().FullName, System.Reflection.Assembly.GetExecutingAssembly().GetName().Version);
 
-        _ = await Task.Factory.StartNew(() => FindDifferencesAsync(cancellationToken));
+        _ = await Task.Factory.StartNew(() => InfiniteMethodAsync(cancellationToken), cancellationTokenSource.Token);
     }
     public async Task StopAsync(CancellationToken cancellationToken)
     {
+        cancellationTokenSource.Cancel();
+
         logger.LogInformation("End {ApplicationName}", GetType().FullName);
 
         await Task.CompletedTask;
     }
 
-    private async Task FindDifferencesAsync(CancellationToken cancellationToken)
+    private async Task InfiniteMethodAsync(CancellationToken cancellationToken)
     {
         while (!cancellationToken.IsCancellationRequested)
         {
-            InfrastructureLib.DbContexts.DbCxt dbCtx = serviceProvider.GetRequiredService<InfrastructureLib.DbContexts.DbCxt>();
-
-            try
-            {
-                IQueryable<CoreLib.Entities.WebData> WebDatasWithSubscribers =
-                    from w in dbCtx.WebDatas
-                    join s in dbCtx.Subscriptions on w.SubscriptionId equals s.SubscriptionId
-                    where s.Subscribers.Count != 0
-                    select w;
-                CoreLib.Entities.WebData[] WebDatas = await WebDatasWithSubscribers
-                    .Distinct()
-                    .ToArrayAsync(cancellationToken);
-                logger.LogInformation("Obtained {WebDatas} URLs to check", WebDatas.Length);
-
-                for (int i = 0; i < WebDatas.Length; i++)
-                {
-                    CoreLib.Entities.WebData webData = WebDatas[i];
-
-                    try
-                    {
-                        await FindDataToSendAsync(dbCtx, webData, cancellationToken);
-
-                        if (!System.Diagnostics.Debugger.IsAttached)
-                            await Task.Delay(FiveSecondsTimeSpan, cancellationToken);
-                    }
-                    catch (TaskCanceledException e) when (e.InnerException is TimeoutException && logger.LogAndHandle(e.InnerException, "Request to '{WebUrl}' timeout", webData.WebUrl)) { continue; }
-                    catch (TaskCanceledException e) when (logger.LogAndHandle(e, "Task request to '{WebUrl}' cancelled", webData.WebUrl)) { continue; }
-                    catch (Exception e) when (logger.LogAndHandle(e, "Request to '{WebUrl}' failed", webData.WebUrl)) { continue; }
-                }
-            }
-            catch (Exception e) when (logger.LogAndHandle(e, "Unexpected error")) { }
-            finally { await Task.CompletedTask; }
+            await FindDifferencesAsync(cancellationToken);
 
             await Task.Delay(TimeSpan.FromHours(1), cancellationToken);
         }
+    }
+
+    public async Task FindDifferencesAsync(CancellationToken cancellationToken)
+    {
+        InfrastructureLib.DbContexts.DbCxt dbCtx = serviceProvider.GetRequiredService<InfrastructureLib.DbContexts.DbCxt>();
+
+        try
+        {
+            IQueryable<CoreLib.Entities.WebData> WebDatasWithSubscribers =
+                from w in dbCtx.WebDatas
+                join s in dbCtx.Subscriptions on w.SubscriptionId equals s.SubscriptionId
+                where s.Subscribers.Count != 0
+                select w;
+            CoreLib.Entities.WebData[] WebDatas = await WebDatasWithSubscribers
+                .Distinct()
+                .ToArrayAsync(cancellationToken);
+            logger.LogInformation("Obtained {WebDatas} URLs to check", WebDatas.Length);
+
+            for (int i = 0; i < WebDatas.Length; i++)
+            {
+                CoreLib.Entities.WebData webData = WebDatas[i];
+
+                try
+                {
+                    await FindDataToSendAsync(dbCtx, webData, cancellationToken);
+
+                    if (!System.Diagnostics.Debugger.IsAttached)
+                        await Task.Delay(FiveSecondsTimeSpan, cancellationToken);
+                }
+                catch (TaskCanceledException e) when (e.InnerException is TimeoutException && logger.LogAndHandle(e.InnerException, "Request to '{WebUrl}' timeout", webData.WebUrl)) { continue; }
+                catch (TaskCanceledException e) when (logger.LogAndHandle(e, "Task request to '{WebUrl}' cancelled", webData.WebUrl)) { continue; }
+                catch (Exception e) when (logger.LogAndHandle(e, "Request to '{WebUrl}' failed", webData.WebUrl)) { continue; }
+            }
+        }
+        catch (Exception e) when (logger.LogAndHandle(e, "Unexpected error")) { }
+        finally { await Task.CompletedTask; }
     }
 
     private async Task FindDataToSendAsync(InfrastructureLib.DbContexts.DbCxt dbCtx, CoreLib.Entities.WebData webData, CancellationToken cancellationToken)
@@ -108,8 +116,6 @@ public sealed class WebComparerHostedService(IServiceProvider serviceProvider, I
         {
             try
             {
-                // TODO     Selenium https://www.selenium.dev/documentation/selenium_manager/#alternative-architectures
-
                 using OpenQA.Selenium.Chrome.ChromeDriver WebDriver = GetWebDriver();
                 {
                     WebDriver.Navigate().GoToUrl(webData.WebUrl);
@@ -135,6 +141,7 @@ public sealed class WebComparerHostedService(IServiceProvider serviceProvider, I
         OpenQA.Selenium.Chrome.ChromeOptions Options = new()
         {
             AcceptInsecureCertificates = true,
+            BrowserVersion = "stable",
             LeaveBrowserRunning = false,
         };
         //Options.AddArgument("start-maximized");
@@ -143,12 +150,13 @@ public sealed class WebComparerHostedService(IServiceProvider serviceProvider, I
         //Options.AddArgument("--disable-dev-shm-usage");
         //Options.AddArgument("--no-sandbox");
         Options.AddArgument("--headless");
-        Options.BrowserVersion = "stable";
 
         if (System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(System.Runtime.InteropServices.OSPlatform.Linux))
-            Options.BinaryLocation = "/usr/bin/chromium-browser";
+            Options.BinaryLocation = "/usr/lib/chromium-browser/chromium-browser";
 
-        OpenQA.Selenium.Chrome.ChromeDriver WebDriver = new(Options);
+        var Service = OpenQA.Selenium.Chrome.ChromeDriverService.CreateDefaultService("/usr/lib/chromium-browser/", "chromedriver");
+
+        OpenQA.Selenium.Chrome.ChromeDriver WebDriver = new(Service, Options);
 
         // TODO Add TimeoutsTimeSpan setting (best for each website?)
         var TimeoutsTimeSpan = TimeSpan.FromMinutes(2);
@@ -185,6 +193,9 @@ public sealed class WebComparerHostedService(IServiceProvider serviceProvider, I
 
     private static string? GetDifferencesOrNull(CoreLib.Entities.WebData webData, string obtainedString)
     {
+        if (string.IsNullOrWhiteSpace(obtainedString))
+            return null;
+
         string ObtainedTextNormalized = NormalizeObtainedText(obtainedString);
 
         if (string.IsNullOrWhiteSpace(ObtainedTextNormalized))
