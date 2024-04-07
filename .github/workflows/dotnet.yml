@@ -23,6 +23,6 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore Seedysoft.Tests.sln --verbosity normal
     - name: Build
-      run: dotnet Seedysoft.Tests.sln --no-restore --verbosity normal
+      run: dotnet build Seedysoft.Tests.sln --no-restore --verbosity normal
     - name: Test
       run: dotnet test Seedysoft.Tests.sln --verbosity normal
