@@ -11,10 +11,16 @@ public sealed class PvpcCronBackgroundServiceTests(PvpcCronBackgroundServiceFixt
     [Fact]
     public void IsTimeToChargeNoPrices()
     {
+        Settings.TuyaManagerSettings tuyaManagerSettings = new()
+        {
+            AllowChargeWhenKWhPriceInEurosIsBelowThan = decimal.MaxValue,
+            ChargingHoursPerDay = 4,
+        };
+
         bool res = PvpcCronBackgroundService.IsTimeToCharge(
             [],
             PvpcServiceFixture.TimeToQuery,
-            decimal.MaxValue);
+            tuyaManagerSettings);
 
         Assert.False(res);
     }
@@ -22,10 +28,16 @@ public sealed class PvpcCronBackgroundServiceTests(PvpcCronBackgroundServiceFixt
     [Fact]
     public void IsTimeToChargeAllowBelowDecimalMaxValue()
     {
+        Settings.TuyaManagerSettings tuyaManagerSettings = new()
+        {
+            AllowChargeWhenKWhPriceInEurosIsBelowThan = decimal.MaxValue,
+            ChargingHoursPerDay = 4,
+        };
+
         bool res = PvpcCronBackgroundService.IsTimeToCharge(
             PvpcServiceFixture.Prices,
             PvpcServiceFixture.TimeToQuery,
-            decimal.MaxValue);
+            tuyaManagerSettings);
 
         Assert.True(res);
     }
@@ -33,10 +45,15 @@ public sealed class PvpcCronBackgroundServiceTests(PvpcCronBackgroundServiceFixt
     [Fact]
     public void IsTimeToChargeIfAnyPriceBelow()
     {
+        Settings.TuyaManagerSettings tuyaManagerSettings = new()
+        {
+            AllowChargeWhenKWhPriceInEurosIsBelowThan = PvpcServiceFixture.MinPriceAllowed,
+            ChargingHoursPerDay = 4,
+        };
         bool res = PvpcCronBackgroundService.IsTimeToCharge(
             PvpcServiceFixture.Prices,
             PvpcServiceFixture.TimeToQuery,
-            PvpcServiceFixture.MinPriceAllowed);
+            tuyaManagerSettings);
 
         Assert.Equal(res, PvpcServiceFixture.Prices.Any(x => x.KWhPriceInEuros <= PvpcServiceFixture.MinPriceAllowed));
     }
