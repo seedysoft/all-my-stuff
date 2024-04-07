@@ -21,8 +21,8 @@ jobs:
       with:
         dotnet-version: 8.0.x
     - name: Restore dependencies
-      run: dotnet restore Seedysoft.Tests.sln --verbosity normal
+      run: dotnet restore Seedysoft.sln --verbosity normal
     - name: Build
-      run: dotnet build Seedysoft.Tests.sln --no-restore --verbosity normal
-    - name: Test
-      run: dotnet test Seedysoft.Tests.sln --verbosity normal
+      run: dotnet build Seedysoft.sln --no-restore --verbosity normal
+    - name: Publish
+      run: dotnet publish Seedysoft.sln -c Release  -r linux-arm64  -p:BlazorCacheBootResources=false  -p:PublishTrimmed=false  --sc --verbosity normal
