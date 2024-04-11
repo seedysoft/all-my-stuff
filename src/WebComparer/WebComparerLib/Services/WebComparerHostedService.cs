@@ -151,12 +151,19 @@ public sealed class WebComparerHostedService(IServiceProvider serviceProvider, I
         //Options.AddArgument("--no-sandbox");
         Options.AddArgument("--headless");
 
+        OpenQA.Selenium.Chrome.ChromeDriver WebDriver;
         if (System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(System.Runtime.InteropServices.OSPlatform.Linux))
+        {
             Options.BinaryLocation = "/usr/lib/chromium-browser/chromium-browser";
 
-        var Service = OpenQA.Selenium.Chrome.ChromeDriverService.CreateDefaultService("/usr/lib/chromium-browser/", "chromedriver");
+            var Service = OpenQA.Selenium.Chrome.ChromeDriverService.CreateDefaultService("/usr/lib/chromium-browser/", "chromedriver");
 
-        OpenQA.Selenium.Chrome.ChromeDriver WebDriver = new(Service, Options);
+            WebDriver = new(Service, Options);
+        }
+        else
+        {
+            WebDriver = new(Options);
+        }
 
         // TODO Add TimeoutsTimeSpan setting (best for each website?)
         var TimeoutsTimeSpan = TimeSpan.FromMinutes(2);
@@ -287,14 +294,14 @@ public sealed class WebComparerHostedService(IServiceProvider serviceProvider, I
 
     private static bool ShouldIgnoreChanges(DiffPlex.DiffBuilder.Model.DiffPaneModel diffModel, CoreLib.Entities.WebData webData)
     {
-        if (!diffModel.HasDifferences || string.IsNullOrWhiteSpace(webData.IgnoreChangeWhen))
+        if (!diffModel.HasDifferences)
             return true;
 
         DiffPlex.DiffBuilder.Model.DiffPiece[] ChangedLines = diffModel.Lines.Where(x => x.Type != DiffPlex.DiffBuilder.Model.ChangeType.Unchanged).ToArray();
-        string[] IgnoreTexts = webData.IgnoreChangeWhen.Split(';');
-        for (int i = 0; i < ChangedLines.Length; i++)
+        string[]? IgnoreTexts = webData.IgnoreChangeWhen?.Split(';');
+        for (int j = 0; j < IgnoreTexts?.Length; j++)
         {
-            for (int j = 0; j < IgnoreTexts.Length; j++)
+            for (int i = 0; i < ChangedLines.Length; i++)
             {
                 if (diffModel.Lines[i].Text.Contains(IgnoreTexts[j]))
                     return true;
