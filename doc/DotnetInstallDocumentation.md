@@ -8,7 +8,7 @@
 <https://learn.microsoft.com/en-us/dotnet/core/install/linux-scripted-manual#set-environment-variables-system-wide>
 
 **Extract compressed file in current directory (/opt/dotnet/):** \
-`tar zxfv dotnet... -C "$DOTNET_ROOT"`
+`tar zxvF dotnet... -C "$DOTNET_ROOT"`
 
 **Help commands:** \
 `dotnet --list-sdks` \
