@@ -298,7 +298,7 @@ public sealed class WebComparerHostedService(IServiceProvider serviceProvider, I
             return true;
 
         DiffPlex.DiffBuilder.Model.DiffPiece[] ChangedLines = diffModel.Lines.Where(x => x.Type != DiffPlex.DiffBuilder.Model.ChangeType.Unchanged).ToArray();
-        string[]? IgnoreTexts = webData.IgnoreChangeWhen?.Split(';');
+        string[]? IgnoreTexts = webData.IgnoreChangeWhen?.Split(';', StringSplitOptions.RemoveEmptyEntries);
         for (int j = 0; j < IgnoreTexts?.Length; j++)
         {
             for (int i = 0; i < ChangedLines.Length; i++)
