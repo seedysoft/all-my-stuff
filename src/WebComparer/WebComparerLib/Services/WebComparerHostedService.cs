@@ -303,7 +303,7 @@ public sealed class WebComparerHostedService(IServiceProvider serviceProvider, I
         {
             for (int i = 0; i < ChangedLines.Length; i++)
             {
-                if (diffModel.Lines[i].Text.Contains(IgnoreTexts[j]))
+                if (ChangedLines[i].Text.Contains(IgnoreTexts[j]))
                     return true;
             }
         }
