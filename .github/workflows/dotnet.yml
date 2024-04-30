@@ -63,7 +63,6 @@ jobs:
         run: |
           echo "Running ${{ github.job }}"
           release_name=$(printf '%(%Y.%m.%d)T\n' -1)
-          echo "release_name contains: ${{ release_name }}"
           # Publish everything
           dotnet publish Seedysoft.sln -c Release -r linux-arm64  -p:BlazorCacheBootResources=false  -p:PublishTrimmed=false  --sc --verbosity normal
           # Pack files
@@ -76,7 +75,6 @@ jobs:
         run: |
           echo "Running ${{ github.job }}"
           release_name=$(printf '%(%Y.%m.%d)T\n' -1)
-          echo "release_name contains: ${{ release_name }}"
           # Publish everything
           dotnet publish Seedysoft.sln -c Release -r win-x64      -p:BlazorCacheBootResources=false  -p:PublishTrimmed=false  --sc --verbosity normal
           # Pack files
