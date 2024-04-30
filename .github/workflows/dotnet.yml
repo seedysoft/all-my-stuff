@@ -20,9 +20,11 @@ jobs:
   build:
     name: Build
     runs-on: [ubuntu-latest]
-    env:
-      release_name: $(printf '%(%Y.%m.%d)T\n' -1)
     steps:
+      - name: Name release
+        id: name-release
+        run: release_name=$(printf '%(%Y.%m.%d)T\n' -1)
+
       - name: Checkout Code
         id: checkout-code
         uses: actions/checkout@main
