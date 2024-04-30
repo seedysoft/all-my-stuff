@@ -8,12 +8,14 @@ defaults:
     shell: bash
 
 on:
-  push:
-    branches:
-      - main
   pull_request:
     branches:
       - main
+  push:
+    branches:
+      - main
+    tags:
+      - '*'
   workflow_dispatch:
 
 jobs:
@@ -44,7 +46,7 @@ jobs:
           # Publish
           dotnet publish Seedysoft.sln -c Release -r linux-arm64  -p:BlazorCacheBootResources=false  -p:PublishTrimmed=false  --sc --verbosity normal -o ${{ steps.name-release.outputs.release_name }}
           # Pack files
-          tar czvf "${{ steps.name-release.outputs.release_name }}.tar.gz" "${{ steps.name-release.outputs.release_name }}"
+          tar czvf "${{ github.ref_name }}.tar.gz" "${{ steps.name-release.outputs.release_name }}"
           # Delete output directory
           rm -r "${{ steps.name-release.outputs.release_name }}"
 
@@ -54,7 +56,7 @@ jobs:
           # Publish
           dotnet publish Seedysoft.sln -c Release -r win-x64      -p:BlazorCacheBootResources=false  -p:PublishTrimmed=false  --sc --verbosity normal -o ${{ steps.name-release.outputs.release_name }}
           # Pack files
-          7z a -tzip "${{ steps.name-release.outputs.release_name }}.zip" "./${{ steps.name-release.outputs.release_name }}/*"
+          7z a -tzip "${{ github.ref_name }}.zip" "./${{ steps.name-release.outputs.release_name }}/*"
           # Delete output directory
           rm -r "${{ steps.name-release.outputs.release_name }}"
 
@@ -65,5 +67,5 @@ jobs:
         with:
           name: Release ${{ github.ref_name }}
           files: |
-            "${{ steps.name-release.outputs.release_name }}.tar.gz"
-            "${{ steps.name-release.outputs.release_name }}.zip"
+            "${{ github.ref_name }}.tar.gz"
+            "${{ github.ref_name }}.zip"
