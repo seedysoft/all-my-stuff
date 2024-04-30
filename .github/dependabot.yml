@@ -12,6 +12,5 @@ updates:
       interval: daily
     allow:
       - dependency-name: *
-    ignore:
-      - dependency-name: Selenium.*
-      
+    # ignore:
+    #   - dependency-name: Selenium.*
