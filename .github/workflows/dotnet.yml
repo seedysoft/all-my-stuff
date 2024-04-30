@@ -23,7 +23,8 @@ jobs:
     steps:
       - name: Name release
         id: name-release
-        run: release_name=$(printf '%(%Y.%m.%d)T\n' -1)
+        run: |
+          echo "release_name=$(printf '%(%Y.%m.%d)T\n' -1)" >> $GITHUB_OUTPUT
 
       - name: Checkout Code
         id: checkout-code
@@ -41,11 +42,11 @@ jobs:
         id: publish-linux-arm64-runtime
         run: |
           # Publish
-          dotnet publish Seedysoft.sln -c Release -r linux-arm64  -p:BlazorCacheBootResources=false  -p:PublishTrimmed=false  --sc --verbosity normal -o ${release_name}
+          dotnet publish Seedysoft.sln -c Release -r linux-arm64  -p:BlazorCacheBootResources=false  -p:PublishTrimmed=false  --sc --verbosity normal -o ${{ steps.name-release.outputs.release_name }}
           # Pack files
-          tar czvf "${release_name}.tar.gz" "$release_name"
+          tar czvf "${{ steps.name-release.outputs.release_name }}.tar.gz" "${{ steps.name-release.outputs.release_name }}"
           # Delete output directory
-          rm -r "$release_name"
+          rm -r "${{ steps.name-release.outputs.release_name }}"
 
       # - name: Publish win-x64 runtime
       #   id: publish-win-x64-runtime
