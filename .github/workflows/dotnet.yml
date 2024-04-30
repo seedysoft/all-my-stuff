@@ -19,7 +19,8 @@ on:
 jobs:
   build:
     name: Build
-    runs-on: [SWIFT-SF514-55T, ubuntu-latest]
+    #runs-on: [SWIFT-SF514-55T, ubuntu-latest]
+    runs-on: [SWIFT-SF514-55T]
     strategy:
       matrix:
         kind: ["linux", "windows"]
