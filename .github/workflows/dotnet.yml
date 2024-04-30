@@ -7,9 +7,6 @@ defaults:
   run:
     shell: bash
 
-env:
-  release_name: printf '%(%Y.%m.%d)T\n' -1
-
 on:
   push:
     branches:
@@ -74,6 +71,7 @@ jobs:
         id: publish-win-x64-runtime
         run: |
           echo "Running ${{ github.job }}"
+          release_name=printf '%(%Y.%m.%d)T\n' -1
           # Publish everything
           dotnet publish Seedysoft.sln -c Release -r win-x64      -p:BlazorCacheBootResources=false  -p:PublishTrimmed=false  --sc --verbosity normal
           # Pack files
