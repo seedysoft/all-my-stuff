@@ -3,26 +3,77 @@
 
 name: .NET
 
+defaults:
+  run:
+    shell: bash
+
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - $default-branch
   pull_request:
-    branches: [ "main" ]
+    branches:
+      - $default-branch
 
 jobs:
   build:
-
-    runs-on: ubuntu-latest
-
+    name: Build
+    runs-on: [SWIFT-SF514-55T, ubuntu-latest]
+    strategy:
+      matrix:
+        kind: ["linux", "windows"]
+        include:
+          - kind: linux
+            os: ubuntu-latest
+            target: linux-arm64
+          - kind: windows
+            os: windows-latest
+            target: win-x64
     steps:
-    - uses: actions/checkout@v4
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: 8.0.x
-    - name: Restore dependencies
-      run: dotnet restore Seedysoft.sln --verbosity normal
-    - name: Build
-      run: dotnet build Seedysoft.sln --no-restore --verbosity normal
-    - name: Publish
-      run: dotnet publish Seedysoft.sln -c Release  -r linux-arm64  -p:BlazorCacheBootResources=false  -p:PublishTrimmed=false  --sc --verbosity normal
+      - name: Checkout Code
+        id: checkout-code
+        uses: actions/checkout@main
+        with:
+          fetch-depth: 0
+          run: echo "Running ${{ github.job }}"
+      - name: Setup .NET
+        id: setup-dotnet
+        uses: actions/setup-dotnet@main
+        with:
+          dotnet-version: 8.0.x
+          run: echo "Running ${{ github.job }}"
+      - name: Restore dependencies
+        id: restore-dependencies
+        run: |
+          echo "Running ${{ github.job }}"
+          # Restore everything
+          dotnet restore Seedysoft.sln verbosity normal
+      - name: Build solution
+        id: build-solution
+        run: |
+          echo "Running ${{ github.job }}"
+          # Build everything
+          dotnet build Seedysoft.sln no-restore  --verbosity normal
+      - name: Publish solution
+        id: publish-solution
+        run: |
+          echo "Running ${{ github.job }}"
+          # Publish everything
+          dotnet publish Seedysoft.sln -c Release -r "${{ matrix.target }}" -p:BlazorCacheBootResources=false  -p:PublishTrimmed=false  --sc --verbosity normal
+          # Pack files
+          if [ "${{ matrix.target }}" == "win-x64" ]; then
+            # Pack to zip for Windows
+            7z a -tzip "${release_name}.zip" "./${release_name}/*"
+          else
+            # Pack to tar elsewhere
+            tar czvf "${release_name}.tar.gz" "$release_name"
+          fi
+          # Delete output directory
+          rm -r "$release_name"
+      - name: Make Release
+        id: make-release
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          run: |
+            echo "Running ${{ github.job }}"
