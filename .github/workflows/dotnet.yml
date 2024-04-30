@@ -49,14 +49,14 @@ jobs:
         run: |
           echo "Running ${{ github.job }}"
           # Restore everything
-          dotnet restore Seedysoft.sln verbosity normal
+          dotnet restore Seedysoft.sln --verbosity normal
 
       - name: Build solution
         id: build-solution
         run: |
           echo "Running ${{ github.job }}"
           # Build everything
-          dotnet build Seedysoft.sln no-restore  --verbosity normal
+          dotnet build Seedysoft.sln  --no-restore  --verbosity normal
 
       - name: Publish linux-arm64 runtime
         id: publish-linux-arm64-runtime
