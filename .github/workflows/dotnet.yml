@@ -7,30 +7,33 @@ defaults:
   run:
     shell: bash
 
+env:
+  release_name: printf '%(%Y.%m.%d)T\n' -1
+
 on:
   push:
     branches:
-      - $default-branch
+      - main
   pull_request:
     branches:
-      - $default-branch
+      - main
   workflow_dispatch:
 
 jobs:
   build:
     name: Build
     #runs-on: [SWIFT-SF514-55T, ubuntu-latest]
-    runs-on: [SWIFT-SF514-55T]
-    strategy:
-      matrix:
-        kind: ["linux", "windows"]
-        include:
-          - kind: linux
-            os: ubuntu-latest
-            target: linux-arm64
-          - kind: windows
-            os: windows-latest
-            target: win-x64
+    runs-on: [ubuntu-latest]
+    # strategy:
+    #   matrix:
+    #     kind: ["linux", "windows"]
+    #     include:
+    #       - kind: linux
+    #         os: ubuntu-latest
+    #         target: linux-arm64
+    #       - kind: windows
+    #         os: windows-latest
+    #         target: win-x64
     steps:
       - name: Checkout Code
         id: checkout-code
@@ -56,20 +59,25 @@ jobs:
           echo "Running ${{ github.job }}"
           # Build everything
           dotnet build Seedysoft.sln no-restore  --verbosity normal
-      - name: Publish solution
-        id: publish-solution
+      - name: Publish linux-arm64 runtime
+        id: publish-linux-arm64-runtime
+        run: |
+          echo "Running ${{ github.job }}"
+          release_name=printf '%(%Y.%m.%d)T\n' -1
+          # Publish everything
+          dotnet publish Seedysoft.sln -c Release -r linux-arm64  -p:BlazorCacheBootResources=false  -p:PublishTrimmed=false  --sc --verbosity normal
+          # Pack files
+          tar czvf "${release_name}.tar.gz" "$release_name"
+          # Delete output directory
+          rm -r "$release_name"
+      - name: Publish win-x64 runtime
+        id: publish-win-x64-runtime
         run: |
           echo "Running ${{ github.job }}"
           # Publish everything
-          dotnet publish Seedysoft.sln -c Release -r "${{ matrix.target }}" -p:BlazorCacheBootResources=false  -p:PublishTrimmed=false  --sc --verbosity normal
+          dotnet publish Seedysoft.sln -c Release -r win-x64      -p:BlazorCacheBootResources=false  -p:PublishTrimmed=false  --sc --verbosity normal
           # Pack files
-          if [ "${{ matrix.target }}" == "win-x64" ]; then
-            # Pack to zip for Windows
-            7z a -tzip "${release_name}.zip" "./${release_name}/*"
-          else
-            # Pack to tar elsewhere
-            tar czvf "${release_name}.tar.gz" "$release_name"
-          fi
+          7z a -tzip "${release_name}.zip" "./${release_name}/*"
           # Delete output directory
           rm -r "$release_name"
       - name: Make Release
