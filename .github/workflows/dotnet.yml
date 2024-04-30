@@ -48,20 +48,22 @@ jobs:
           # Delete output directory
           rm -r "${{ steps.name-release.outputs.release_name }}"
 
-      # - name: Publish win-x64 runtime
-      #   id: publish-win-x64-runtime
-      #   run: |
-      #     # Publish
-      #     dotnet publish Seedysoft.sln -c Release -r win-x64      -p:BlazorCacheBootResources=false  -p:PublishTrimmed=false  --sc --verbosity normal -o ${release_name}
-      #     # Pack files
-      #     7z a -tzip "${release_name}.zip" "./${release_name}/*"
-      #     # Delete output directory
-      #     rm -r "$release_name"
+      - name: Publish win-x64 runtime
+        id: publish-win-x64-runtime
+        run: |
+          # Publish
+          dotnet publish Seedysoft.sln -c Release -r win-x64      -p:BlazorCacheBootResources=false  -p:PublishTrimmed=false  --sc --verbosity normal -o ${{ steps.name-release.outputs.release_name }}
+          # Pack files
+          7z a -tzip "${{ steps.name-release.outputs.release_name }}.zip" "./${{ steps.name-release.outputs.release_name }}/*"
+          # Delete output directory
+          rm -r "${{ steps.name-release.outputs.release_name }}"
 
       - name: Make Release
         id: make-release
         uses: softprops/action-gh-release@v2
-        # if: startsWith(github.ref, 'refs/tags/')
+        if: startsWith(github.ref, 'refs/tags/')
         with:
-          run: |
-            echo "Running ${{ github.job }}"
+          name: Release ${{ github.ref_name }}
+          files: |
+            "${{ steps.name-release.outputs.release_name }}.tar.gz"
+            "${{ steps.name-release.outputs.release_name }}.zip"
