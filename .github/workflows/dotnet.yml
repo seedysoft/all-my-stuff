@@ -37,25 +37,27 @@ jobs:
         uses: actions/checkout@main
         with:
           fetch-depth: 0
-          run: echo "Running ${{ github.job }}"
+
       - name: Setup .NET
         id: setup-dotnet
         uses: actions/setup-dotnet@main
         with:
           dotnet-version: 8.0.x
-          run: echo "Running ${{ github.job }}"
+
       - name: Restore dependencies
         id: restore-dependencies
         run: |
           echo "Running ${{ github.job }}"
           # Restore everything
           dotnet restore Seedysoft.sln verbosity normal
+
       - name: Build solution
         id: build-solution
         run: |
           echo "Running ${{ github.job }}"
           # Build everything
           dotnet build Seedysoft.sln no-restore  --verbosity normal
+
       - name: Publish linux-arm64 runtime
         id: publish-linux-arm64-runtime
         run: |
@@ -67,6 +69,7 @@ jobs:
           tar czvf "${release_name}.tar.gz" "$release_name"
           # Delete output directory
           rm -r "$release_name"
+
       - name: Publish win-x64 runtime
         id: publish-win-x64-runtime
         run: |
@@ -78,6 +81,7 @@ jobs:
           7z a -tzip "${release_name}.zip" "./${release_name}/*"
           # Delete output directory
           rm -r "$release_name"
+
       - name: Make Release
         id: make-release
         uses: softprops/action-gh-release@v2
