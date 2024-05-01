@@ -1,23 +1,20 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-	<IsPackable>false</IsPackable>
+    <IsPackable>false</IsPackable>
     <IsPublishable>False</IsPublishable>
+    <RuntimeIdentifiers>linux-arm64;win-x64</RuntimeIdentifiers>
   </PropertyGroup>
-  
   <PropertyGroup Condition="'$(Configuration)' == 'Release'">
     <AssemblyVersion>$([System.DateTime]::UtcNow.ToString(yy.MM.dd.HHmm))</AssemblyVersion>
     <FileVersion>$(AssemblyVersion)</FileVersion>
     <Version>$(AssemblyVersion)</Version>
   </PropertyGroup>
-  
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DefineConstants>$(DefineConstants);SKIP_DEBUG_TELEGRAM</DefineConstants>
   </PropertyGroup>
-
   <ItemGroup>
     <None Remove="appsettings.TelegramSettings.Development.json" />
     <Content Include="appsettings.TelegramSettings.json">
@@ -25,7 +22,6 @@
     </Content>
     <None Remove="appsettings.TelegramSettings.Production.json" />
   </ItemGroup>
-
   <ItemGroup Condition="'$(Configuration)' == 'Debug'">
     <Content Include="appsettings.TelegramSettings.Development.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -46,12 +42,10 @@
       <DependentUpon>appsettings.TelegramSettings.json</DependentUpon>
     </Content>
   </ItemGroup>
-
   <ItemGroup>
     <PackageReference Include="EFCore.BulkExtensions.Sqlite" Version="8.0.2" />
     <PackageReference Include="Telegram.Bot" Version="19.0.0" />
   </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\..\Pvpc\PvpcLib\Seedysoft.PvpcLib.csproj" />
     <ProjectReference Include="..\CoreLib\Seedysoft.CoreLib.csproj" />
@@ -60,5 +54,4 @@
     <ProjectReference Include="..\SmtpServiceLib\Seedysoft.SmtpServiceLib.csproj" />
     <ProjectReference Include="..\UtilsLib\Seedysoft.UtilsLib.csproj" />
   </ItemGroup>
-
 </Project>

@@ -1,21 +1,18 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
     <IsPublishable>False</IsPublishable>
+    <RuntimeIdentifiers>linux-arm64;win-x64</RuntimeIdentifiers>
   </PropertyGroup>
-
   <PropertyGroup Condition="'$(Configuration)' == 'Release'">
     <AssemblyVersion>$([System.DateTime]::UtcNow.ToString(yy.MM.dd.HHmm))</AssemblyVersion>
     <FileVersion>$(AssemblyVersion)</FileVersion>
     <Version>$(AssemblyVersion)</Version>
   </PropertyGroup>
-
   <ItemGroup>
     <InternalsVisibleTo Include="Seedysoft.CoreLib.Test" />
   </ItemGroup>
-
 </Project>

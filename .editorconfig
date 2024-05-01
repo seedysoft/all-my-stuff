@@ -1,6 +1,12 @@
 # Remove the line below if you want to inherit .editorconfig settings from higher directories
 root = true
 
+[*.{csproj}]
+charset = utf-8-bom
+indent_style = space
+indent_size = 2
+tab_width = 2
+
 # C# and VB files
 [*.{cs,vb}]
 
@@ -45,12 +51,12 @@ dotnet_style_require_accessibility_modifiers = for_non_interface_members:warning
 dotnet_style_coalesce_expression = true:warning
 dotnet_style_collection_initializer = true:warning
 dotnet_style_explicit_tuple_names = true:warning
-dotnet_style_namespace_match_folder = true
+dotnet_style_namespace_match_folder = true:warning
 dotnet_style_null_propagation = true:warning
 dotnet_style_object_initializer = true:warning
 dotnet_style_operator_placement_when_wrapping = beginning_of_line
 dotnet_style_prefer_auto_properties = true:warning
-dotnet_style_prefer_collection_expression = true:warning
+dotnet_style_prefer_collection_expression = when_types_exactly_match:warning
 dotnet_style_prefer_compound_assignment = true:warning
 dotnet_style_prefer_conditional_expression_over_assignment = true:warning
 dotnet_style_prefer_conditional_expression_over_return = true:warning
@@ -223,8 +229,6 @@ dotnet_naming_style.begins_with_i.required_prefix = I
 dotnet_naming_style.begins_with_i.required_suffix = 
 dotnet_naming_style.begins_with_i.word_separator = 
 dotnet_naming_style.begins_with_i.capitalization = pascal_case
-
-
 
 dotnet_diagnostic.CA1000.severity = warning
 dotnet_diagnostic.CA1001.severity = warning

@@ -1,33 +1,28 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-	<IsPackable>false</IsPackable>
+    <IsPackable>false</IsPackable>
     <IsPublishable>False</IsPublishable>
+    <RuntimeIdentifiers>linux-arm64;win-x64</RuntimeIdentifiers>
   </PropertyGroup>
-  
   <PropertyGroup Condition="'$(Configuration)' == 'Release'">
     <AssemblyVersion>$([System.DateTime]::UtcNow.ToString(yy.MM.dd.HHmm))</AssemblyVersion>
     <FileVersion>$(AssemblyVersion)</FileVersion>
     <Version>$(AssemblyVersion)</Version>
   </PropertyGroup>
-
   <ItemGroup>
     <None Remove="appsettings.SmtpServiceSettings.json" />
   </ItemGroup>
-
   <ItemGroup>
     <Content Include="appsettings.SmtpServiceSettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="8.0.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="8.0.0" />
   </ItemGroup>
-
 </Project>

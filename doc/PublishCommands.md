@@ -18,8 +18,9 @@ Para ver errores podemos añadir --verbosity
 
 **Explicación de las opciones:**
 ```
--c | --configuration
--p | --property
--r | --runtime
+ -c  | --configuration
+ -p  | --property
+ -r  | --runtime
 --sc | --self-contained
+ -v  | --verbosity <LEVEL> # Allowed values are q[uiet], m[inimal], n[ormal], d[etailed], and diag[nostic]. The default is minimal.
 ```

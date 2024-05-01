@@ -1,0 +1,47 @@
+# -v  | --verbosity <LEVEL> # Allowed values are q[uiet], m[inimal], n[ormal], d[etailed], and diag[nostic]. The default is minimal.
+
+name: CI
+
+defaults:
+  run:
+    shell: bash
+
+permissions:
+  contents: write
+
+on:
+  pull_request:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build-and-test:
+    name: Build and test
+    runs-on: [ubuntu-latest]
+
+    steps:
+      - name: Checkout Code
+        id: checkout-code
+        uses: actions/checkout
+        with:
+          fetch-depth: 0
+
+      - name: Setup .NET
+        id: setup-dotnet
+        uses: actions/setup-dotnet
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Restore dependencies
+        run: |
+          dotnet restore Seedysoft.sln -v n
+          dotnet restore Seedysoft.Tests.sln -v n
+
+      - name: Build
+        run: |
+          dotnet build Seedysoft.sln -c Release --no-restore -v n
+          dotnet build Seedysoft.Tests.sln -c Release --no-restore -v n
+
+      - name: Test
+        run: |
+          dotnet test Seedysoft.Tests.sln -c Release -v n

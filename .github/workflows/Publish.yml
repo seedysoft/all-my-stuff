@@ -1,0 +1,54 @@
+# -v  | --verbosity <LEVEL> # Allowed values are q[uiet], m[inimal], n[ormal], d[etailed], and diag[nostic]. The default is minimal.
+
+name: Publish
+
+defaults:
+  run:
+    shell: bash
+
+permissions:
+  contents: write
+
+on:
+  push:
+    tags:
+      - "*"
+
+jobs:
+  build:
+    name: Build
+    runs-on: [ubuntu-latest]
+
+    steps:
+      - name: Checkout Code
+        id: checkout-code
+        uses: actions/checkout
+        with:
+          fetch-depth: 0
+
+      - name: Setup .NET
+        id: setup-dotnet
+        uses: actions/setup-dotnet
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Publish runtimes
+        id: publish-runtimes
+        run: |
+          # Publish
+          dotnet publish Seedysoft.sln -c Release -p:BlazorCacheBootResources=false -p:PublishTrimmed=false --sc -v n
+          # Pack files
+          tar czvf "${{ github.ref_name }}.tar.gz" "./linux-arm64/publish/"
+          7z a -tzip "${{ github.ref_name }}.zip" "./win-x64/publish/*"
+
+      - name: Make Release
+        id: make-release
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          name: Release ${{ github.ref_name }}
+          fail_on_unmatched_files: false
+          generate_release_notes: true
+          files: |
+            ${{ github.ref_name }}.tar.gz
+            ${{ github.ref_name }}.zip
