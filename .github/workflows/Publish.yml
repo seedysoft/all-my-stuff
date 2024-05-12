@@ -15,8 +15,8 @@ on:
       - "*"
 
 jobs:
-  build:
-    name: Build
+  publish-and-release:
+    name: Publish and release
     runs-on: [ubuntu-latest]
 
     steps:
