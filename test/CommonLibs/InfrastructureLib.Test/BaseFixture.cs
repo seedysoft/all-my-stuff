@@ -20,7 +20,7 @@ public abstract class BaseFixture : IDisposable
 
     protected DbContexts.DbCxt GetDbCxt() => new(options);
 
-    public void Dispose()
+    public virtual void Dispose()
     {
         GC.SuppressFinalize(this);
         sqliteConnection?.Dispose();

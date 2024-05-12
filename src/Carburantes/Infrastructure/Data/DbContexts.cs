@@ -22,7 +22,14 @@ public sealed class CarburantesDbContext : CarburantesDbContextBase
 #if DEBUG
     public CarburantesDbContext() : base() { }
 #endif
+
+#if !DEBUG
+#pragma warning disable IDE0290 // Use primary constructor
+#endif
     public CarburantesDbContext(DbContextOptions<CarburantesDbContext> options) : base(options) { }
+#if !DEBUG
+#pragma warning restore IDE0290 // Use primary constructor
+#endif
 
 #if DEBUG
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -59,7 +66,14 @@ public sealed class CarburantesHistDbContext : CarburantesDbContextBase
 #if DEBUG
     public CarburantesHistDbContext() : base() { }
 #endif
+
+#if !DEBUG
+#pragma warning disable IDE0290 // Use primary constructor
+#endif
     public CarburantesHistDbContext(DbContextOptions<CarburantesHistDbContext> options) : base(options) { }
+#if !DEBUG
+#pragma warning restore IDE0290 // Use primary constructor
+#endif
 
 #if DEBUG
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

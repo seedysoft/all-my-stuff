@@ -88,5 +88,9 @@ public sealed class PvpcCronBackgroundServiceFixture : InfrastructureLib.Test.Ba
     public DateTimeOffset TimeToQuery { get; }
     public decimal MinPriceAllowed { get; }
 
-    public void Dispose() => PvpcService?.Dispose();
+    public override void Dispose()
+    {
+        PvpcService?.Dispose();
+        base.Dispose();
+    }
 }

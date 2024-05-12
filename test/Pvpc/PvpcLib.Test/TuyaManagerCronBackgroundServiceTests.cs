@@ -29,5 +29,9 @@ public sealed class TuyaManagerCronBackgroundServiceFixture : InfrastructureLib.
 
     public TuyaManagerCronBackgroundService TuyaManagerService { get; }
 
-    public void Dispose() => TuyaManagerService.Dispose();
+    public override void Dispose()
+    {
+        TuyaManagerService.Dispose();
+        base.Dispose();
+    }
 }
