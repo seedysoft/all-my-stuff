@@ -1,8 +1,0 @@
-{
-    "yaml.schemas": {
-        "https://json.schemastore.org/github-workflow.json": "file:///c%3A/Users/alfon/_prog/seedysoft/all-my-stuff/.github/workflows/dependabot.yml"
-    },
-    "dotnet.defaultSolution": "disable",
-	"prettyxml.settings.indentSpaceLength": 2,
-	"prettyxml.settings.positionAllAttributesOnFirstLine": true,
-}

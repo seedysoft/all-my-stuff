@@ -1,4 +1,3 @@
-using Microsoft.EntityFrameworkCore;
 using Seedysoft.PvpcLib.Services;
 
 namespace Seedysoft.PvpcLib.Test;
@@ -59,19 +58,19 @@ public sealed class PvpcCronBackgroundServiceTests(PvpcCronBackgroundServiceFixt
     }
 }
 
-public sealed class PvpcCronBackgroundServiceFixture : IDisposable
+public sealed class PvpcCronBackgroundServiceFixture : InfrastructureLib.Test.BaseFixture
 {
     public PvpcCronBackgroundServiceFixture()
     {
-        DbContextOptions<InfrastructureLib.DbContexts.DbCxt> options = new();
-        InfrastructureLib.DbContexts.DbCxt dbCxt = new(options);
-        dbCxt.Database.Migrate();
-
         Settings.PvpcSettings pvpcSettings = new()
         {
             CronExpression = "* * 30 2 *", // At every minute on day-of-month 30 in February.
         };
+
+        InfrastructureLib.DbContexts.DbCxt dbCxt = GetDbCxt();
+
         Microsoft.Extensions.Logging.Abstractions.NullLogger<PvpcCronBackgroundService> logger = new();
+
         PvpcService = new(pvpcSettings, dbCxt, logger);
 
         TimeToQuery = DateTimeOffset.UtcNow;

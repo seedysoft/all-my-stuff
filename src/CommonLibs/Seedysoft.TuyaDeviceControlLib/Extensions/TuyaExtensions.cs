@@ -1,5 +1,4 @@
-﻿using Seedysoft.CoreLib.Entities;
-using Seedysoft.TuyaDeviceControlLib.Exceptions;
+﻿using Seedysoft.TuyaDeviceControlLib.Exceptions;
 using System.Diagnostics;
 
 namespace Seedysoft.TuyaDeviceControlLib.Extensions;

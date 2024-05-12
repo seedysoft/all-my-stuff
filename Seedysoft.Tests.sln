@@ -76,9 +76,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Seedysoft.CoreLib", "src\Co
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Seedysoft.CoreLib.Tests", "test\CommonLibs\CoreLib.Tests\Seedysoft.CoreLib.Tests.csproj", "{79021581-4172-41AB-B7F2-D85C204F90AF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Seedysoft.UtilsLib.Tests", "test\CommonLibs\UtilsLib.Tests\Seedysoft.UtilsLib.Tests.csproj", "{23B20361-9735-4D82-961B-0D9277F77C5E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Seedysoft.UtilsLib.Tests", "test\CommonLibs\UtilsLib.Tests\Seedysoft.UtilsLib.Tests.csproj", "{23B20361-9735-4D82-961B-0D9277F77C5E}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Seedysoft.PvpcLib.Test", "test\Pvpc\PvpcLib.Test\Seedysoft.PvpcLib.Test.csproj", "{C90DDC88-3D11-4491-A97F-36D4ED9BDED4}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Seedysoft.InfrastructureLib.Test", "test\CommonLibs\InfrastructureLib.Test\Seedysoft.InfrastructureLib.Test.csproj", "{3D03581D-CA4D-429C-92AC-CBF4B5B6D834}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -178,6 +180,10 @@ Global
 		{C90DDC88-3D11-4491-A97F-36D4ED9BDED4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C90DDC88-3D11-4491-A97F-36D4ED9BDED4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C90DDC88-3D11-4491-A97F-36D4ED9BDED4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3D03581D-CA4D-429C-92AC-CBF4B5B6D834}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3D03581D-CA4D-429C-92AC-CBF4B5B6D834}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3D03581D-CA4D-429C-92AC-CBF4B5B6D834}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3D03581D-CA4D-429C-92AC-CBF4B5B6D834}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -208,6 +214,7 @@ Global
 		{79021581-4172-41AB-B7F2-D85C204F90AF} = {1B84AE05-2D2A-49BD-A067-883B8FA01D75}
 		{23B20361-9735-4D82-961B-0D9277F77C5E} = {1B84AE05-2D2A-49BD-A067-883B8FA01D75}
 		{C90DDC88-3D11-4491-A97F-36D4ED9BDED4} = {D502505E-CB81-4391-8F4A-C08474E89805}
+		{3D03581D-CA4D-429C-92AC-CBF4B5B6D834} = {1B84AE05-2D2A-49BD-A067-883B8FA01D75}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {76CD9B0B-E4FA-4E83-9623-2163AE82F180}
