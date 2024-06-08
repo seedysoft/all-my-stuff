@@ -12,6 +12,7 @@ public partial class TelegramHostedService : Microsoft.Extensions.Hosting.IHoste
 {
     private readonly ILogger<TelegramHostedService> Logger;
     private readonly IServiceProvider ServiceProvider;
+    private readonly Settings.TelegramSettings TelegramSettings;
     private readonly TelegramBotClient LocalTelegramBotClient;
 
     public TelegramHostedService(IServiceProvider serviceProvider)
@@ -19,8 +20,10 @@ public partial class TelegramHostedService : Microsoft.Extensions.Hosting.IHoste
         ServiceProvider = serviceProvider;
         Logger = ServiceProvider.GetRequiredService<ILogger<TelegramHostedService>>();
 
+        TelegramSettings = ServiceProvider.GetRequiredService<Settings.TelegramSettings>();
+
         TelegramBotClientOptions telegramBotClientOptions = new(
-            token: $"{TelegramUserBase.Current.Id}:{ServiceProvider.GetRequiredService<Settings.TelegramSettings>().Tokens[TelegramUserBase.Current.Id.ToString()]}");
+            token: $"{TelegramSettings.CurrentBot.Id}:{TelegramSettings.CurrentBot.Token}");
 
         LocalTelegramBotClient = new TelegramBotClient(telegramBotClientOptions);
     }
@@ -69,10 +72,10 @@ public partial class TelegramHostedService : Microsoft.Extensions.Hosting.IHoste
         , CancellationToken cancellationToken)
     {
         if (System.Diagnostics.Debugger.IsAttached)
-            to = TelegramUserBase.TestTelegramUser.Id;
+            to = long.Parse(TelegramSettings.Users.UserTest.Id);
+        Telegram.Bot.Types.ChatId ToChatId = new(to);
 
         text = text[..Math.Min(text.Length, UtilsLib.Constants.Telegram.MessageLengthLimit)];
-        Telegram.Bot.Types.ChatId ToChatId = new(to);
 
         try
         {
@@ -97,7 +100,7 @@ public partial class TelegramHostedService : Microsoft.Extensions.Hosting.IHoste
         }
     }
 #else
-        TelegramUserBase.Current.SetMe(await LocalTelegramBotClient.GetMeAsync(stoppingToken));
+        TelegramSettings.CurrentBot.SetMe(await LocalTelegramBotClient.GetMeAsync(stoppingToken));
 
         if (myCommands != null)
             //TelegramBotClient.DeleteMyCommandsAsync
@@ -184,7 +187,7 @@ public partial class TelegramHostedService : Microsoft.Extensions.Hosting.IHoste
         , CancellationToken cancellationToken)
     {
         if (System.Diagnostics.Debugger.IsAttached)
-            to = TelegramUserBase.TestTelegramUser.Id;
+            to = long.Parse(TelegramSettings.Users.UserTest.Id);
 
         text = text[..Math.Min(text.Length, UtilsLib.Constants.Telegram.MessageLengthLimit)];
         Telegram.Bot.Types.ChatId ToChatId = new(to);
@@ -219,7 +222,7 @@ public partial class TelegramHostedService : Microsoft.Extensions.Hosting.IHoste
         , CancellationToken cancellationToken)
     {
         if (System.Diagnostics.Debugger.IsAttached)
-            to = TelegramUserBase.TestTelegramUser.Id;
+            to = long.Parse(TelegramSettings.Users.UserTest.Id);
 
         text = text[..Math.Min(text.Length, UtilsLib.Constants.Telegram.MessageLengthLimit)];
         Telegram.Bot.Types.ChatId ToChatId = new(to);

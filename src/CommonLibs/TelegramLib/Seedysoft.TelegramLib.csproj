@@ -50,6 +50,7 @@
     <ProjectReference Include="..\..\Pvpc\PvpcLib\Seedysoft.PvpcLib.csproj" />
     <ProjectReference Include="..\CoreLib\Seedysoft.CoreLib.csproj" />
     <ProjectReference Include="..\CronBackgroundServiceLib\Seedysoft.CronBackgroundServiceLib.csproj" />
+    <ProjectReference Include="..\CryptoLib\Seedysoft.CryptoLib.csproj" />
     <ProjectReference Include="..\Seedysoft.InfrastructureLib\Seedysoft.InfrastructureLib.csproj" />
     <ProjectReference Include="..\SmtpServiceLib\Seedysoft.SmtpServiceLib.csproj" />
     <ProjectReference Include="..\UtilsLib\Seedysoft.UtilsLib.csproj" />

@@ -1,9 +1,19 @@
-﻿namespace Seedysoft.SmtpServiceLib.Settings;
+﻿using Seedysoft.UtilsLib.Helpers;
+
+namespace Seedysoft.SmtpServiceLib.Settings;
 
 public record SmtpServiceSettings
 {
-    public string Host { get; init; } = default!;
+    public required string Host { get; init; }
+
     public int Port { get; init; }
-    public string Username { get; init; } = default!;
-    public string Password { get; init; } = default!;
+
+    public required string Username { get; init; }
+
+    private string password = default!;
+    public string Password
+    {
+        get => password;
+        init => password = CryptoLib.Crypto.DecryptText(value, EnvironmentHelper.GetMasterKey());
+    }
 }

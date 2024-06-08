@@ -25,4 +25,8 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="8.0.0" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CryptoLib\Seedysoft.CryptoLib.csproj" />
+    <ProjectReference Include="..\UtilsLib\Seedysoft.UtilsLib.csproj" />
+  </ItemGroup>
 </Project>
