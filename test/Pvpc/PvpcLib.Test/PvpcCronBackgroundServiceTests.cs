@@ -65,6 +65,8 @@ public sealed class PvpcCronBackgroundServiceFixture : InfrastructureLib.Test.Ba
         Settings.PvpcSettings pvpcSettings = new()
         {
             CronExpression = "* * 30 2 *", // At every minute on day-of-month 30 in February.
+            DataUrlTemplate = @"https://apidatos.ree.es/es/datos/mercados/precios-mercados-tiempo-real?start_date={0:yyyy-MM-dd}T00:00&end_date={0:yyyy-MM-dd}T23:59&time_trunc=hour&geo_limit=peninsular",
+            PvpcId = "1001",
         };
 
         InfrastructureLib.DbContexts.DbCxt dbCxt = GetDbCxt();

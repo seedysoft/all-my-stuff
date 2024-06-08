@@ -23,6 +23,6 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\src\CommonLibs\UtilsLib\Seedysoft.UtilsLib.csproj" />
+    <ProjectReference Include="..\..\..\src\CommonLibs\CryptoLib\Seedysoft.CryptoLib.csproj" />
   </ItemGroup>
 </Project>
