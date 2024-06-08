@@ -2,9 +2,9 @@
 
 public record SettingsRoot
 {
-    public GoogleMapsPlatform GoogleMapsPlatform { get; init; } = default!;
+    public required GoogleMapsPlatform GoogleMapsPlatform { get; init; }
 
-    public Minetur Minetur { get; init; } = default!;
+    public required Minetur Minetur { get; init; }
 
-    public ObtainDataSettings ObtainDataSettings { get; init; } = default!;
+    public required ObtainDataSettings ObtainDataSettings { get; init; }
 }

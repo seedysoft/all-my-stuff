@@ -2,15 +2,15 @@
 
 public record Minetur
 {
-    public Uris Uris { get; init; } = default!;
+    public required Uris Uris { get; init; }
 }
 
 public record Uris
 {
-    public string Base { get; init; } = default!;
+    public required string Base { get; init; }
 
-    public string EstacionesTerrestres { get; init; } = default!;
-    public string EstacionesTerrestresFiltroProducto { get; init; } = default!;
+    public required string EstacionesTerrestres { get; init; }
+    public required string EstacionesTerrestresFiltroProducto { get; init; }
 
-    public string ListadosBase { get; init; } = default!;
+    public required string ListadosBase { get; init; }
 }
