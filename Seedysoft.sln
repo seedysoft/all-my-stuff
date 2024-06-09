@@ -54,7 +54,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "doc", "doc", "{623B6345-334F-4699-B2FB-B928EBC6471B}"
 	ProjectSection(SolutionItems) = preProject
 		doc\DotnetInstallDocumentation.md = doc\DotnetInstallDocumentation.md
-		doc\DotnetToolsReference.md = doc\DotnetToolsReference.md
 		doc\MigrationCommands.md = doc\MigrationCommands.md
 		doc\PublishCommands.md = doc\PublishCommands.md
 	EndProjectSection
