@@ -1,5 +1,6 @@
 ﻿@page "/routesearch"
 
+@using Seedysoft.HomeCloud.Client.ViewModels
 @using System.Collections.Immutable;
 
 @inject HttpClient Http
@@ -62,10 +63,10 @@
                 <MudSelect @bind-SelectedValues="PetroleumProductsSelected" @bind-Value="PetroleumProductsSelectedValue" Adornment="Adornment.Start"
                            AdornmentIcon="@Icons.Material.Filled.LocalGasStation" Class="d-flex flex-grow-1 gap-4" Clearable="true" Dense="true" FullWidth="true" Label="Products"
                            MultiSelection="true" MultiSelectionTextFunc="@(new Func<List<string>, string>(GetMultiSelectionText))" SelectAll="true" Strict="true" Style="min-width: 300px;"
-                           T="HomeCloud.Shared.ViewModels.IdDescRecord" ToStringFunc="@HomeCloud.Shared.ViewModels.IdDescRecord.IdDescRecordConverter" Variant="Variant.Outlined">
-                    @foreach (HomeCloud.Shared.ViewModels.IdDescRecord item in PetroleumProducts ?? ImmutableArray<HomeCloud.Shared.ViewModels.IdDescRecord>.Empty)
+                           T="IdDescRecord" ToStringFunc="@IdDescRecord.IdDescRecordConverter" Variant="Variant.Outlined">
+                    @foreach (IdDescRecord item in PetroleumProducts ?? ImmutableArray<IdDescRecord>.Empty)
                     {
-                        <MudSelectItem T="HomeCloud.Shared.ViewModels.IdDescRecord" Value="@item">@item.Desc</MudSelectItem>
+                        <MudSelectItem T="IdDescRecord" Value="@item">@item.Desc</MudSelectItem>
                     }
                 </MudSelect>
                 <MudButton Class="ml-auto" Disabled="@(IsLoadingRoutes || IsLoadingGasStations)" OnClick="OnSubmitGasStationsAsync" StartIcon="@Icons.Material.Filled.Search"

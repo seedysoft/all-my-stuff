@@ -1,4 +1,4 @@
-﻿namespace Seedysoft.HomeCloud.Shared;
+﻿namespace Seedysoft.HomeCloud.Client;
 
 public static class ControllerUris
 {

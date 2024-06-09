@@ -33,15 +33,10 @@ jobs:
           dotnet-version: 8.0.x
 
       - name: Restore dependencies
-        run: |
-          dotnet restore Seedysoft.sln -v n
-          dotnet restore Seedysoft.Tests.sln -v n
+        run: dotnet restore Seedysoft.Tests.sln -v n
 
       - name: Build
-        run: |
-          dotnet build Seedysoft.sln -c Release --no-restore -v n
-          dotnet build Seedysoft.Tests.sln -c Release --no-restore -v n
+        run: dotnet build Seedysoft.Tests.sln -c Release --no-restore -v n
 
       - name: Test
-        run: |
-          dotnet test Seedysoft.Tests.sln -c Release -v n
+        run: dotnet test Seedysoft.Tests.sln -c Release -v n

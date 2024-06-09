@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Seedysoft.HomeCloud.Client;
 
 namespace Seedysoft.HomeCloud.Server.Controllers;
 
@@ -21,10 +22,10 @@ public sealed class WeatherForecastController(ILogger<WeatherForecastController>
     ];
 
     [HttpGet]
-    public IEnumerable<Shared.WeatherForecast> Get()
+    public IEnumerable<WeatherForecast> Get()
     {
         Random rng = new();
-        return Enumerable.Range(1, 5).Select(index => new Shared.WeatherForecast
+        return Enumerable.Range(1, 5).Select(index => new WeatherForecast
         {
             Date = DateTime.Now.AddDays(index),
             TemperatureC = rng.Next(-20, 55),

@@ -12,10 +12,10 @@ public partial class RouteSearch
 
     [Inject] private ILogger<RouteSearch> Logger { get; set; } = default!;
 
-    private MudDataGrid<HomeCloud.Shared.ViewModels.RouteObtainedModel> RoutesMudDataGrid = default!;
+    private MudDataGrid<ViewModels.RouteObtainedModel> RoutesMudDataGrid = default!;
     private MudForm GasStationMudForm = default!;
 
-    private readonly HomeCloud.Shared.ViewModels.RouteQueryModel RouteQuery = new()
+    private readonly ViewModels.RouteQueryModel RouteQuery = new()
 #if DEBUG
     {
         Origin = "Brazuelo",
@@ -23,30 +23,30 @@ public partial class RouteSearch
     }
 #endif
     ;
-    private readonly HomeCloud.Shared.ViewModels.GasStationQueryModel GasStationQuery = new()
+    private readonly ViewModels.GasStationQueryModel GasStationQuery = new()
     {
         MaxDistanceInKm = 5.0M,
     }
     ;
 
-    private IImmutableList<HomeCloud.Shared.ViewModels.IdDescRecord> PetroleumProducts = ImmutableArray<HomeCloud.Shared.ViewModels.IdDescRecord>.Empty;
+    private IImmutableList<ViewModels.IdDescRecord> PetroleumProducts = ImmutableArray<ViewModels.IdDescRecord>.Empty;
 
-    private IImmutableList<HomeCloud.Shared.ViewModels.RouteObtainedModel> RoutesObtained = ImmutableArray<HomeCloud.Shared.ViewModels.RouteObtainedModel>.Empty;
+    private IImmutableList<ViewModels.RouteObtainedModel> RoutesObtained = ImmutableArray<ViewModels.RouteObtainedModel>.Empty;
 
-    private IImmutableList<HomeCloud.Shared.ViewModels.GasStationInfoModel> GasStations = ImmutableArray<HomeCloud.Shared.ViewModels.GasStationInfoModel>.Empty;
+    private IImmutableList<ViewModels.GasStationInfoModel> GasStations = ImmutableArray<ViewModels.GasStationInfoModel>.Empty;
 
     private bool IsLoadingRoutes;
     private bool IsLoadingGasStations;
 
-    public IEnumerable<HomeCloud.Shared.ViewModels.IdDescRecord> PetroleumProductsSelected { get; set; } = new HashSet<HomeCloud.Shared.ViewModels.IdDescRecord>();
-    private HomeCloud.Shared.ViewModels.IdDescRecord? PetroleumProductsSelectedValue { get; set; }
+    public IEnumerable<ViewModels.IdDescRecord> PetroleumProductsSelected { get; set; } = new HashSet<ViewModels.IdDescRecord>();
+    private ViewModels.IdDescRecord? PetroleumProductsSelectedValue { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
 
-        string FromUri = $"{NavManager.BaseUri}{HomeCloud.Shared.ControllerUris.PetroleumProductsControllerUri}/PetroleumProductsForFilter";
-        PetroleumProducts = await Http.GetFromJsonAsync<IImmutableList<HomeCloud.Shared.ViewModels.IdDescRecord>>(FromUri) ?? ImmutableArray<HomeCloud.Shared.ViewModels.IdDescRecord>.Empty;
+        string FromUri = $"{NavManager.BaseUri}{ControllerUris.PetroleumProductsControllerUri}/PetroleumProductsForFilter";
+        PetroleumProducts = await Http.GetFromJsonAsync<IImmutableList<ViewModels.IdDescRecord>>(FromUri) ?? ImmutableArray<ViewModels.IdDescRecord>.Empty;
         PetroleumProductsSelected = PetroleumProducts;
     }
 
@@ -70,12 +70,12 @@ public partial class RouteSearch
 
         try
         {
-            GasStations = ImmutableArray<HomeCloud.Shared.ViewModels.GasStationInfoModel>.Empty;
+            GasStations = ImmutableArray<ViewModels.GasStationInfoModel>.Empty;
 
-            string FromUri = $"{NavManager.BaseUri}{HomeCloud.Shared.ControllerUris.RoutesControllerUri}/ObtainRoutes";
+            string FromUri = $"{NavManager.BaseUri}{ControllerUris.RoutesControllerUri}/ObtainRoutes";
 
             using (HttpResponseMessage Response = await Http.PostAsJsonAsync(FromUri, RouteQuery))
-                RoutesObtained = (IImmutableList<HomeCloud.Shared.ViewModels.RouteObtainedModel>)(await Response.Content.ReadFromJsonAsync<IImmutableList<HomeCloud.Shared.ViewModels.RouteObtainedModel>>() ?? ImmutableArray<HomeCloud.Shared.ViewModels.RouteObtainedModel>.Empty);
+                RoutesObtained = (IImmutableList<ViewModels.RouteObtainedModel>)(await Response.Content.ReadFromJsonAsync<IImmutableList<ViewModels.RouteObtainedModel>>() ?? ImmutableArray<ViewModels.RouteObtainedModel>.Empty);
 
             switch (RoutesObtained.Count)
             {
@@ -98,7 +98,7 @@ public partial class RouteSearch
         }
     }
 
-    private string RoutesMudDataGridRowClassFunc(HomeCloud.Shared.ViewModels.RouteObtainedModel element, int rowNumber) =>
+    private string RoutesMudDataGridRowClassFunc(ViewModels.RouteObtainedModel element, int rowNumber) =>
         RoutesMudDataGrid.SelectedItem != null && RoutesMudDataGrid.SelectedItem.Equals(element) ? "selected" : string.Empty;
 
     private async void OnSubmitGasStationsAsync()
@@ -121,15 +121,15 @@ public partial class RouteSearch
 
         try
         {
-            string FromUri = $"{NavManager.BaseUri}{HomeCloud.Shared.ControllerUris.RoutesControllerUri}/ObtainGasStations";
-            HomeCloud.Shared.ViewModels.GasStationQueryModel StationsFilter = new()
+            string FromUri = $"{NavManager.BaseUri}{ControllerUris.RoutesControllerUri}/ObtainGasStations";
+            ViewModels.GasStationQueryModel StationsFilter = new()
             {
                 MaxDistanceInKm = GasStationQuery.MaxDistanceInKm,
                 PetroleumProductsSelectedIds = PetroleumProductsSelected.Select(x => x.Id),
                 Steps = RoutesMudDataGrid.SelectedItem.Steps,
             };
             using (HttpResponseMessage Response = await Http.PostAsJsonAsync(FromUri, StationsFilter))
-                GasStations = await Response.Content.ReadFromJsonAsync<IImmutableList<HomeCloud.Shared.ViewModels.GasStationInfoModel>>() ?? ImmutableArray<HomeCloud.Shared.ViewModels.GasStationInfoModel>.Empty;
+                GasStations = await Response.Content.ReadFromJsonAsync<IImmutableList<ViewModels.GasStationInfoModel>>() ?? ImmutableArray<ViewModels.GasStationInfoModel>.Empty;
 
             if (!GasStations.Any())
                 _ = Snackbar.Add("No gas stations obtained", Severity.Warning);

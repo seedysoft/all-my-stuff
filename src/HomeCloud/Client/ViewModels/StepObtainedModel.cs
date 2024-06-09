@@ -1,4 +1,4 @@
-﻿namespace Seedysoft.HomeCloud.Shared.ViewModels;
+﻿namespace Seedysoft.HomeCloud.Client.ViewModels;
 
 public record StepObtainedModel
 {

@@ -40,6 +40,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="8.0.6" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.1" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Systemd" Version="8.0.0" />
     <PackageReference Include="Serilog.Extensions.Logging" Version="8.0.0" />
@@ -56,6 +57,5 @@
     <ProjectReference Include="..\..\Pvpc\PvpcLib\Seedysoft.PvpcLib.csproj" />
     <ProjectReference Include="..\..\WebComparer\WebComparerLib\Seedysoft.WebComparerLib.csproj" />
     <ProjectReference Include="..\Client\Seedysoft.HomeCloud.Client.csproj" />
-    <ProjectReference Include="..\Shared\Seedysoft.HomeCloud.Shared.csproj" />
   </ItemGroup>
 </Project>

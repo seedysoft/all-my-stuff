@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Seedysoft.HomeCloud.Shared;
-using Seedysoft.HomeCloud.Shared.ViewModels;
+using Seedysoft.HomeCloud.Client;
 using System.Collections.Immutable;
 
 namespace Seedysoft.HomeCloud.Server.Controllers;
@@ -13,13 +12,13 @@ public sealed class PetroleumProductsController : ApiControllerBase
 
     [HttpGet()]
     [Route("[action]")]
-    public async Task<IImmutableList<IdDescRecord>> PetroleumProductsForFilterAsync(
+    public async Task<IImmutableList<Client.ViewModels.IdDescRecord>> PetroleumProductsForFilterAsync(
         [FromServices] Carburantes.Infrastructure.Data.CarburantesDbContext carburantesDbContext)
     {
-        IQueryable<IdDescRecord> Query =
+        IQueryable<Client.ViewModels.IdDescRecord> Query =
             from p in carburantesDbContext.ProductosPetroliferos
             orderby p.NombreProducto
-            select new IdDescRecord(p.IdProducto, p.NombreProducto);
+            select new Client.ViewModels.IdDescRecord(p.IdProducto, p.NombreProducto);
 
         return ImmutableArray.Create(await Query.ToArrayAsync());
     }

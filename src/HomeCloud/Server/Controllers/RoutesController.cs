@@ -1,19 +1,20 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Geometries;
+using Seedysoft.HomeCloud.Client;
 using Seedysoft.UtilsLib.Extensions;
 using System.Collections.Immutable;
 
 namespace Seedysoft.HomeCloud.Server.Controllers;
 
-[Route(Shared.ControllerUris.RoutesControllerUri)]
+[Route(ControllerUris.RoutesControllerUri)]
 public sealed class RoutesController : ApiControllerBase
 {
     public RoutesController(ILogger<RoutesController> logger) : base(logger) => Logger = logger;
 
     [HttpPost]
-    public async Task<IImmutableList<Shared.ViewModels.RouteObtainedModel>> ObtainRoutesAsync(
-        [AsParameters] Shared.ViewModels.RouteQueryModel routeQueryModel,
+    public async Task<IImmutableList<Client.ViewModels.RouteObtainedModel>> ObtainRoutesAsync(
+        [AsParameters] Client.ViewModels.RouteQueryModel routeQueryModel,
         [FromServices] IHttpClientFactory httpClientFactory,
         [FromServices] Carburantes.Core.Settings.SettingsRoot settings)
     {
@@ -32,27 +33,27 @@ public sealed class RoutesController : ApiControllerBase
         {
             Logger.LogError("La petición de ruta a Google Maps ha devuelto null para '{Origin}' y '{Destination}'.", routeQueryModel.Origin, routeQueryModel.Destination);
 
-            return ImmutableArray<Shared.ViewModels.RouteObtainedModel>.Empty;
+            return ImmutableArray<Client.ViewModels.RouteObtainedModel>.Empty;
         }
 
         if (!(DistanceApiResult.Routes?.Length > 0))
         {
             Logger.LogError("La petición de ruta a Google Maps no ha devuelto ningún resultado para '{Origin}' y '{Destination}'.", routeQueryModel.Origin, routeQueryModel.Destination);
 
-            return ImmutableArray<Shared.ViewModels.RouteObtainedModel>.Empty;
+            return ImmutableArray<Client.ViewModels.RouteObtainedModel>.Empty;
         }
 
         var ToReturn = (
             from Route in DistanceApiResult.Routes
             from Leg in Route.Legs
-            select new Shared.ViewModels.RouteObtainedModel()
+            select new Client.ViewModels.RouteObtainedModel()
             {
                 FromPlace = Leg.StartAddress,
                 ToPlace = Leg.EndAddress,
                 Summary = Route.Summary,
                 Duration = Leg.Duration,
                 Distance = Leg.Distance,
-                Steps = Leg.Steps.Select(Step => new Shared.ViewModels.StepObtainedModel()
+                Steps = Leg.Steps.Select(Step => new Client.ViewModels.StepObtainedModel()
                 {
                     //Instructions = HtmlHelper.ParseHtml(Step.HtmlInstructions),
                     Locations = Step.Polyline.Locations(),
@@ -64,8 +65,8 @@ public sealed class RoutesController : ApiControllerBase
     }
 
     [HttpPost]
-    public async Task<IImmutableList<Shared.ViewModels.GasStationInfoModel>> ObtainGasStationsAsync(
-        [FromBody] Shared.ViewModels.GasStationQueryModel filter
+    public async Task<IImmutableList<Client.ViewModels.GasStationInfoModel>> ObtainGasStationsAsync(
+        [FromBody] Client.ViewModels.GasStationQueryModel filter
         , [FromServices] Carburantes.Infrastructure.Data.CarburantesDbContext carburantesDbContext
         , [FromServices] Carburantes.Core.Settings.SettingsRoot settings)
     {
@@ -83,17 +84,17 @@ public sealed class RoutesController : ApiControllerBase
                         .ProjectTo(UtilsLib.Constants.CoordinateSystemCodes.Epsg3857))
             }).ToListAsync();
         if (AllStations.Count == 0)
-            return ImmutableArray<Shared.ViewModels.GasStationInfoModel>.Empty;
+            return ImmutableArray<Client.ViewModels.GasStationInfoModel>.Empty;
 
         var Locations = filter.Steps
             .SelectMany(x => x.Locations)
             .Distinct()
             .ToImmutableArray();
         if (!Locations.Any())
-            return ImmutableArray<Shared.ViewModels.GasStationInfoModel>.Empty;
+            return ImmutableArray<Client.ViewModels.GasStationInfoModel>.Empty;
 
         var RoutePointsImmutable = Locations
-            .Select(x => new Shared.ViewModels.RoutePoint()
+            .Select(x => new Client.ViewModels.RoutePoint()
             {
                 PointEpsg3857 = GeomFactEpsg3857
                     .CreateGeometry(GeomFactWgs84
@@ -101,7 +102,7 @@ public sealed class RoutesController : ApiControllerBase
                         .ProjectTo(UtilsLib.Constants.CoordinateSystemCodes.Epsg3857))
             }).ToImmutableArray();
         if (!RoutePointsImmutable.Any())
-            return ImmutableArray<Shared.ViewModels.GasStationInfoModel>.Empty;
+            return ImmutableArray<Client.ViewModels.GasStationInfoModel>.Empty;
 
         List<Geometry> FilteredPoints = new(RoutePointsImmutable.Length) { RoutePointsImmutable.First().PointEpsg3857 };
         Geometry LastPointAdded = FilteredPoints.First();
@@ -138,7 +139,7 @@ public sealed class RoutesController : ApiControllerBase
         if (filter.PetroleumProductsSelectedIds != null && filter.PetroleumProductsSelectedIds.Any())
             TempQuery = TempQuery.Where(x => filter.PetroleumProductsSelectedIds.Contains(x.IdProducto));
 
-        IQueryable<Shared.ViewModels.GasStationInfoModel> ToReturnQuery =
+        IQueryable<Client.ViewModels.GasStationInfoModel> ToReturnQuery =
             from h in carburantesDbContext.EstacionProductoPrecios.AsNoTracking()
             join e in carburantesDbContext.EstacionesServicio.AsNoTracking() on h.IdEstacion equals e.IdEstacion
             join m in carburantesDbContext.Municipios.AsNoTracking() on e.IdMunicipio equals m.IdMunicipio
@@ -146,7 +147,7 @@ public sealed class RoutesController : ApiControllerBase
             join p in TempQuery on h.IdProducto equals p.IdProducto
             where NearStationIds.Contains(e.IdEstacion)
             orderby p.NombreProducto/*, h.Precio IQueryable cannot order by decimals*/
-            select new Shared.ViewModels.GasStationInfoModel()
+            select new Client.ViewModels.GasStationInfoModel()
             {
                 IdEstacion = e.IdEstacion,
                 Estacion = e.Rotulo,
