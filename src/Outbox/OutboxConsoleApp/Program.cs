@@ -18,6 +18,7 @@ public sealed class Program
 
         _ = builder.Configuration
             .AddJsonFile($"appsettings.SmtpServiceSettings.json", false, true)
+            .AddJsonFile($"appsettings.TelegramSettings.json", false, true)
             .AddJsonFile($"appsettings.TelegramSettings.{builder.Environment.EnvironmentName}.json", false, true);
 
         builder.Services.TryAddSingleton(builder.Configuration.GetSection(nameof(SmtpServiceLib.Settings.SmtpServiceSettings)).Get<SmtpServiceLib.Settings.SmtpServiceSettings>()!);

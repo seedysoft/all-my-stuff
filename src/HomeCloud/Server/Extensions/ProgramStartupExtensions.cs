@@ -6,30 +6,44 @@ namespace Seedysoft.HomeCloud.Server.Extensions;
 
 public static class ProgramStartupExtensions
 {
-    public static IHostApplicationBuilder AddMyDependencies(this IHostApplicationBuilder builder)
+    public static WebApplicationBuilder AddMyDependencies(this WebApplicationBuilder webApplicationBuilder)
     {
-        return builder
+        return webApplicationBuilder
             .AddJsonFiles()
             .AddDbContexts()
             .AddMyServices();
     }
 
-    public static IHost MigrateDbContexts(this IHost builder)
+    public static WebApplication MigrateDbContexts(this WebApplication webApplication)
     {
-        builder.Services.GetRequiredService<InfrastructureLib.DbContexts.DbCxt>().Database.Migrate();
-        builder.Services.GetRequiredService<Carburantes.Infrastructure.Data.CarburantesDbContext>().Database.Migrate();
-        builder.Services.GetRequiredService<Carburantes.Infrastructure.Data.CarburantesHistDbContext>().Database.Migrate();
+        webApplication.Services.GetRequiredService<InfrastructureLib.DbContexts.DbCxt>().Database.Migrate();
+        webApplication.Services.GetRequiredService<Carburantes.Infrastructure.Data.CarburantesDbContext>().Database.Migrate();
+        webApplication.Services.GetRequiredService<Carburantes.Infrastructure.Data.CarburantesHistDbContext>().Database.Migrate();
 
-        return builder;
+        return webApplication;
     }
 
-    private static IHostApplicationBuilder AddJsonFiles(this IHostApplicationBuilder builder)
+    public static WebApplication SetApiEndpoints(this WebApplication webApplication)
     {
-        if (System.Diagnostics.Debugger.IsAttached)
-            builder.Environment.EnvironmentName = Environments.Development/*.Production*/;
+        // Set up API endpoints and methods
+        RouteGroupBuilder todoItems = webApplication.MapGroup("/movies");
 
-        string CurrentEnvironmentName = builder.Environment.EnvironmentName;
-        _ = builder.Configuration
+        //_ = todoItems.MapGet("/", GetAllMovies);
+        //_ = todoItems.MapGet("/watched", GetWatchedMovies);
+        //_ = todoItems.MapGet("/{id}", GetMovie);
+        //_ = todoItems.MapPost("/", CreateMovie);
+        //_ = todoItems.MapPut("/{id}", UpdateMovie);
+        //_ = todoItems.MapDelete("/{id}", DeleteMovie);
+
+        _ = webApplication.MapControllers();
+
+        return webApplication;
+    }
+
+    private static WebApplicationBuilder AddJsonFiles(this WebApplicationBuilder webApplicationBuilder)
+    {
+        string CurrentEnvironmentName = webApplicationBuilder.Environment.EnvironmentName;
+        _ = webApplicationBuilder.Configuration
             .AddJsonFile($"appsettings.HomeCloudServer.json", false, true)
             .AddJsonFile($"appsettings.HomeCloudServer.{CurrentEnvironmentName}.json", false, true)
 
@@ -43,24 +57,25 @@ public static class ProgramStartupExtensions
 
             .AddJsonFile($"appsettings.PvpcSettings.json", false, true)
             .AddJsonFile($"appsettings.SmtpServiceSettings.json", false, true)
+            .AddJsonFile($"appsettings.TelegramSettings.json", false, true)
             .AddJsonFile($"appsettings.TelegramSettings.{CurrentEnvironmentName}.json", false, true)
             .AddJsonFile($"appsettings.TuyaManagerSettings.json", false, true);
 
-        return builder;
+        return webApplicationBuilder;
     }
 
-    private static IHostApplicationBuilder AddDbContexts(this IHostApplicationBuilder builder)
+    private static WebApplicationBuilder AddDbContexts(this WebApplicationBuilder webApplicationBuilder)
     {
-        InfrastructureLib.Dependencies.AddDbCxtContext(builder);
+        InfrastructureLib.Dependencies.AddDbCxtContext(webApplicationBuilder);
 
-        _ = builder.Services
+        _ = webApplicationBuilder.Services
             .AddDbContext<Carburantes.Infrastructure.Data.CarburantesDbContext>((iServiceProvider, dbContextOptionsBuilder) =>
             {
                 string ConnectionStringName = nameof(Carburantes.Infrastructure.Data.CarburantesDbContext);
-                string ConnectionString = builder.Configuration.GetConnectionString($"{ConnectionStringName}") ?? throw new KeyNotFoundException($"Connection string '{ConnectionStringName}' not found.");
-                if (System.Diagnostics.Debugger.IsAttached)
-                    ConnectionString = ConnectionString.Replace($"{CoreLib.Constants.DatabaseStrings.DataSource}../../../", $"{CoreLib.Constants.DatabaseStrings.DataSource}");
-                string FullFilePath = Path.GetFullPath(ConnectionString[CoreLib.Constants.DatabaseStrings.DataSource.Length..]);
+                string ConnectionString = webApplicationBuilder.Configuration.GetConnectionString($"{ConnectionStringName}") ?? throw new KeyNotFoundException($"Connection string '{ConnectionStringName}' not found.");
+                string FullFilePath = Path.GetFullPath(
+                    ConnectionString[CoreLib.Constants.DatabaseStrings.DataSource.Length..],
+                    System.Reflection.Assembly.GetExecutingAssembly().Location);
                 if (!File.Exists(FullFilePath))
                     throw new FileNotFoundException("Database file not found.", FullFilePath);
 
@@ -73,10 +88,10 @@ public static class ProgramStartupExtensions
             .AddDbContext<Carburantes.Infrastructure.Data.CarburantesHistDbContext>((iServiceProvider, dbContextOptionsBuilder) =>
             {
                 string ConnectionStringName = nameof(Carburantes.Infrastructure.Data.CarburantesHistDbContext);
-                string ConnectionString = builder.Configuration.GetConnectionString($"{ConnectionStringName}") ?? throw new KeyNotFoundException($"Connection string '{ConnectionStringName}' not found.");
-                if (System.Diagnostics.Debugger.IsAttached)
-                    ConnectionString = ConnectionString.Replace($"{CoreLib.Constants.DatabaseStrings.DataSource}../../../", $"{CoreLib.Constants.DatabaseStrings.DataSource}");
-                string FullFilePath = Path.GetFullPath(ConnectionString[CoreLib.Constants.DatabaseStrings.DataSource.Length..]);
+                string ConnectionString = webApplicationBuilder.Configuration.GetConnectionString($"{ConnectionStringName}") ?? throw new KeyNotFoundException($"Connection string '{ConnectionStringName}' not found.");
+                string FullFilePath = Path.GetFullPath(
+                    ConnectionString[CoreLib.Constants.DatabaseStrings.DataSource.Length..],
+                    System.Reflection.Assembly.GetExecutingAssembly().Location);
                 if (!File.Exists(FullFilePath))
                     throw new FileNotFoundException("Database file not found.", FullFilePath);
 
@@ -86,33 +101,36 @@ public static class ProgramStartupExtensions
             , ServiceLifetime.Transient
             , ServiceLifetime.Transient);
 
-        return builder;
+        return webApplicationBuilder;
     }
 
-    private static IHostApplicationBuilder AddMyServices(this IHostApplicationBuilder builder)
+    private static WebApplicationBuilder AddMyServices(this WebApplicationBuilder webApplicationBuilder)
     {
-        builder.Services.TryAddSingleton(builder.Configuration.GetSection(nameof(SmtpServiceLib.Settings.SmtpServiceSettings)).Get<SmtpServiceLib.Settings.SmtpServiceSettings>()!);
-        builder.Services.TryAddTransient<SmtpServiceLib.Services.SmtpService>();
+        // Add Todo service for components adopting SSR
+        //_ = webApplicationBuilder.Services.AddScoped<IMovieService, ServerMovieService>();
 
-        builder.Services.TryAddSingleton(builder.Configuration.GetSection(nameof(TelegramLib.Settings.TelegramSettings)).Get<TelegramLib.Settings.TelegramSettings>()!);
-        builder.Services.TryAddSingleton<TelegramLib.Services.TelegramHostedService>();
-        _ = builder.Services.AddHostedService<TelegramLib.Services.TelegramHostedService>();
+        webApplicationBuilder.Services.TryAddSingleton(webApplicationBuilder.Configuration.GetSection(nameof(SmtpServiceLib.Settings.SmtpServiceSettings)).Get<SmtpServiceLib.Settings.SmtpServiceSettings>()!);
+        webApplicationBuilder.Services.TryAddTransient<SmtpServiceLib.Services.SmtpService>();
 
-        _ = builder.Services.AddHttpClient(nameof(Carburantes.Core.Settings.Minetur));
-        _ = builder.Services.AddHostedService<Carburantes.Services.ObtainDataCronBackgroundService>();
+        webApplicationBuilder.Services.TryAddSingleton(webApplicationBuilder.Configuration.GetSection(nameof(TelegramLib.Settings.TelegramSettings)).Get<TelegramLib.Settings.TelegramSettings>()!);
+        webApplicationBuilder.Services.TryAddSingleton<TelegramLib.Services.TelegramHostedService>();
+        _ = webApplicationBuilder.Services.AddHostedService<TelegramLib.Services.TelegramHostedService>();
 
-        builder.Services.TryAddSingleton(builder.Configuration.GetSection(nameof(PvpcLib.Settings.PvpcSettings)).Get<PvpcLib.Settings.PvpcSettings>()!);
-        builder.Services.TryAddSingleton(builder.Configuration.GetSection(nameof(PvpcLib.Settings.TuyaManagerSettings)).Get<PvpcLib.Settings.TuyaManagerSettings>()!);
-        builder.Services.TryAddSingleton<PvpcLib.Services.PvpcCronBackgroundService>();
-        _ = builder.Services.AddHostedService<PvpcLib.Services.PvpcCronBackgroundService>();
-        builder.Services.TryAddSingleton<PvpcLib.Services.TuyaManagerCronBackgroundService>();
-        _ = builder.Services.AddHostedService<PvpcLib.Services.TuyaManagerCronBackgroundService>();
+        _ = webApplicationBuilder.Services.AddHttpClient(nameof(Carburantes.Core.Settings.Minetur));
+        _ = webApplicationBuilder.Services.AddHostedService<Carburantes.Services.ObtainDataCronBackgroundService>();
 
-        _ = builder.Services.AddHostedService<OutboxLib.Services.OutboxCronBackgroundService>();
+        webApplicationBuilder.Services.TryAddSingleton(webApplicationBuilder.Configuration.GetSection(nameof(PvpcLib.Settings.PvpcSettings)).Get<PvpcLib.Settings.PvpcSettings>()!);
+        webApplicationBuilder.Services.TryAddSingleton(webApplicationBuilder.Configuration.GetSection(nameof(PvpcLib.Settings.TuyaManagerSettings)).Get<PvpcLib.Settings.TuyaManagerSettings>()!);
+        webApplicationBuilder.Services.TryAddSingleton<PvpcLib.Services.PvpcCronBackgroundService>();
+        _ = webApplicationBuilder.Services.AddHostedService<PvpcLib.Services.PvpcCronBackgroundService>();
+        webApplicationBuilder.Services.TryAddSingleton<PvpcLib.Services.TuyaManagerCronBackgroundService>();
+        _ = webApplicationBuilder.Services.AddHostedService<PvpcLib.Services.TuyaManagerCronBackgroundService>();
 
-        builder.Services.TryAddSingleton<WebComparerLib.Services.WebComparerHostedService>();
-        _ = builder.Services.AddHostedService<WebComparerLib.Services.WebComparerHostedService>();
+        _ = webApplicationBuilder.Services.AddHostedService<OutboxLib.Services.OutboxCronBackgroundService>();
 
-        return builder;
+        webApplicationBuilder.Services.TryAddSingleton<WebComparerLib.Services.WebComparerHostedService>();
+        _ = webApplicationBuilder.Services.AddHostedService<WebComparerLib.Services.WebComparerHostedService>();
+
+        return webApplicationBuilder;
     }
 }

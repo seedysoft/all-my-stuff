@@ -13,7 +13,11 @@ public static class Dependencies
     public static void ConfigureDefaultDependencies(IHostApplicationBuilder builder, string[] args)
     {
         if (System.Diagnostics.Debugger.IsAttached)
+        {
             _ = builder.Logging.AddConsole();
+            _ = builder.Configuration.SetBasePath(
+                Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location)!);
+        }
 
         _ = builder.Configuration
             .AddCommandLine(args)
@@ -29,8 +33,11 @@ public static class Dependencies
                 IConfigurationSection configurationSection = builder.Configuration.GetRequiredSection("Serilog:WriteTo:1:Args:path");
                 Console.WriteLine("Obtained '{0}' from Serilog:WriteTo:1:Args:path", configurationSection.Value);
 
-                configurationSection.Value = Path.GetFullPath(configurationSection.Value!.Replace("{ApplicationName}", builder.Environment.ApplicationName));
-                Console.WriteLine("Final value of Serilog:WriteTo:1:Args:path: '{0}'", configurationSection.Value);
+                configurationSection.Value = Path.GetFullPath(
+                    configurationSection.Value!.Replace("{ApplicationName}", builder.Environment.ApplicationName),
+                    System.Reflection.Assembly.GetExecutingAssembly().Location);
+                if (!Path.Exists(Path.GetDirectoryName(configurationSection.Value)))
+                    throw new FileNotFoundException("Log folder not found.", configurationSection.Value);
 
                 _ = iLoggingBuilder.AddSerilog(new LoggerConfiguration()
                     .ReadFrom.Configuration(builder.Configuration)
@@ -46,7 +53,9 @@ public static class Dependencies
         {
             string ConnectionStringName = nameof(DbContexts.DbCxt);
             string ConnectionString = builder.Configuration.GetConnectionString($"{ConnectionStringName}") ?? throw new KeyNotFoundException($"Connection string '{ConnectionStringName}' not found.");
-            string FullFilePath = Path.GetFullPath(ConnectionString[CoreLib.Constants.DatabaseStrings.DataSource.Length..]);
+            string FullFilePath = Path.GetFullPath(
+                ConnectionString[CoreLib.Constants.DatabaseStrings.DataSource.Length..],
+                System.Reflection.Assembly.GetExecutingAssembly().Location);
             if (!File.Exists(FullFilePath))
                 throw new FileNotFoundException("Database file not found.", FullFilePath);
 

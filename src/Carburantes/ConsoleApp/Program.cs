@@ -26,7 +26,9 @@ public sealed class Program
         {
             string ConnectionStringName = nameof(Infrastructure.Data.CarburantesDbContext);
             string ConnectionString = builder.Configuration.GetConnectionString($"{ConnectionStringName}") ?? throw new KeyNotFoundException($"Connection string '{ConnectionStringName}' not found.");
-            string FullFilePath = Path.GetFullPath(ConnectionString[CoreLib.Constants.DatabaseStrings.DataSource.Length..]);
+            string FullFilePath = Path.GetFullPath(
+                ConnectionString[CoreLib.Constants.DatabaseStrings.DataSource.Length..],
+                System.Reflection.Assembly.GetExecutingAssembly().Location);
             if (!File.Exists(FullFilePath))
                 throw new FileNotFoundException("Database file not found.", FullFilePath);
 
@@ -40,7 +42,9 @@ public sealed class Program
         {
             string ConnectionStringName = nameof(Infrastructure.Data.CarburantesHistDbContext);
             string ConnectionString = builder.Configuration.GetConnectionString($"{ConnectionStringName}") ?? throw new KeyNotFoundException($"Connection string '{ConnectionStringName}' not found.");
-            string FullFilePath = Path.GetFullPath(ConnectionString[CoreLib.Constants.DatabaseStrings.DataSource.Length..]);
+            string FullFilePath = Path.GetFullPath(
+                ConnectionString[CoreLib.Constants.DatabaseStrings.DataSource.Length..],
+                System.Reflection.Assembly.GetExecutingAssembly().Location);
             if (!File.Exists(FullFilePath))
                 throw new FileNotFoundException("Database file not found.", FullFilePath);
 
