@@ -2,17 +2,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.7.34024.191
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Seedysoft.HomeCloud.Server", "src\HomeCloud\Server\Seedysoft.HomeCloud.Server.csproj", "{F589E3F6-F244-4AA0-9664-8ACFB155E8EA}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Seedysoft.HomeCloud.Client", "src\HomeCloud\Client\Seedysoft.HomeCloud.Client.csproj", "{3004FAFB-0B31-4B52-ABEC-15C1150CFCB0}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Seedysoft.Carburantes.Services", "src\Carburantes\Services\Seedysoft.Carburantes.Services.csproj", "{439E5D31-4799-4DFB-A5EF-C0D7B3357808}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Seedysoft.Carburantes.Core", "src\Carburantes\Core\Seedysoft.Carburantes.Core.csproj", "{54750684-6611-4E2B-970D-EA894361661C}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Carburantes", "Carburantes", "{72066A4C-B25F-4CE6-A9A0-4AD80C544B2A}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "HomeCloud", "HomeCloud", "{A5ED8A2D-D6D2-4358-9B42-0B563F4DBAEA}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Seedysoft.Carburantes.ConsoleApp", "src\Carburantes\ConsoleApp\Seedysoft.Carburantes.ConsoleApp.csproj", "{E4D27BA2-3457-41FB-85AF-930EE0FA3297}"
 EndProject
@@ -58,8 +52,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "doc", "doc", "{623B6345-334
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "bashScripts", "bashScripts", "{278EDAC9-2DDC-4F89-8C6F-6A8B66E01A2E}"
 	ProjectSection(SolutionItems) = preProject
+		bashScripts\create-BlazorWebApp-daemon.sh = bashScripts\create-BlazorWebApp-daemon.sh
 		bashScripts\create-daemon.sh = bashScripts\create-daemon.sh
-		bashScripts\create-HomeCloudServer-daemon.sh = bashScripts\create-HomeCloudServer-daemon.sh
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Seedysoft.TuyaDeviceControlLib", "src\CommonLibs\Seedysoft.TuyaDeviceControlLib\Seedysoft.TuyaDeviceControlLib.csproj", "{B9DCB14B-43FC-4920-9829-E1AA7955CAB9}"
@@ -82,20 +76,16 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Seedysoft.CryptoLib", "src\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Seedysoft.CryptoLib.Tests", "test\CommonLibs\CryptoLib.Tests\Seedysoft.CryptoLib.Tests.csproj", "{70B94E3B-AB15-4FD8-99D0-6B7DD632888C}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Seedysoft.BlazorWebApp.Client", "src\BlazorWebApp\Client\Seedysoft.BlazorWebApp.Client.csproj", "{B61C7BCC-0966-4960-8A96-3AF0C5985814}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Seedysoft.BlazorWebApp.Server", "src\BlazorWebApp\Server\Seedysoft.BlazorWebApp.Server.csproj", "{7330CF79-2BF4-4D53-9D22-21042281891C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{F589E3F6-F244-4AA0-9664-8ACFB155E8EA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F589E3F6-F244-4AA0-9664-8ACFB155E8EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F589E3F6-F244-4AA0-9664-8ACFB155E8EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F589E3F6-F244-4AA0-9664-8ACFB155E8EA}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3004FAFB-0B31-4B52-ABEC-15C1150CFCB0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3004FAFB-0B31-4B52-ABEC-15C1150CFCB0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3004FAFB-0B31-4B52-ABEC-15C1150CFCB0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3004FAFB-0B31-4B52-ABEC-15C1150CFCB0}.Release|Any CPU.Build.0 = Release|Any CPU
 		{439E5D31-4799-4DFB-A5EF-C0D7B3357808}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{439E5D31-4799-4DFB-A5EF-C0D7B3357808}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{439E5D31-4799-4DFB-A5EF-C0D7B3357808}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -184,13 +174,19 @@ Global
 		{70B94E3B-AB15-4FD8-99D0-6B7DD632888C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{70B94E3B-AB15-4FD8-99D0-6B7DD632888C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{70B94E3B-AB15-4FD8-99D0-6B7DD632888C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B61C7BCC-0966-4960-8A96-3AF0C5985814}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B61C7BCC-0966-4960-8A96-3AF0C5985814}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B61C7BCC-0966-4960-8A96-3AF0C5985814}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B61C7BCC-0966-4960-8A96-3AF0C5985814}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7330CF79-2BF4-4D53-9D22-21042281891C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7330CF79-2BF4-4D53-9D22-21042281891C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7330CF79-2BF4-4D53-9D22-21042281891C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7330CF79-2BF4-4D53-9D22-21042281891C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{F589E3F6-F244-4AA0-9664-8ACFB155E8EA} = {A5ED8A2D-D6D2-4358-9B42-0B563F4DBAEA}
-		{3004FAFB-0B31-4B52-ABEC-15C1150CFCB0} = {A5ED8A2D-D6D2-4358-9B42-0B563F4DBAEA}
 		{439E5D31-4799-4DFB-A5EF-C0D7B3357808} = {72066A4C-B25F-4CE6-A9A0-4AD80C544B2A}
 		{54750684-6611-4E2B-970D-EA894361661C} = {72066A4C-B25F-4CE6-A9A0-4AD80C544B2A}
 		{E4D27BA2-3457-41FB-85AF-930EE0FA3297} = {72066A4C-B25F-4CE6-A9A0-4AD80C544B2A}
