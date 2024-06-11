@@ -12,14 +12,14 @@ Windows (PowerShell): \
 `[Environment]::SetEnvironmentVariable("SEEDY_MASTER_KEY", "", [System.EnvironmentVariableTarget]::User)`
 
 Raspberrypi ($): \
-`sudo nano /etc/profile.d/environment.sh`
+`sudo nano /etc/environment`
 ```
-export DOTNET_ROOT=/opt/dotnet/
-export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:
-export prgDir=/mnt/wd/_prog/seedysoft/
-export pubDir=/mnt/st/Seedysoft/
+DOTNET_ROOT=/opt/dotnet/
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:
+prgDir=/mnt/wd/_prog/seedysoft/
+pubDir=/mnt/st/Seedysoft/
 
-export SEEDY_MASTER_KEY=""
+SEEDY_MASTER_KEY=""
 ```
 WSL (PowerShell): \
 `[Environment]::SetEnvironmentVariable("WSLENV", $env:WSLENV + "SEEDY_MASTER_KEY:", [System.EnvironmentVariableTarget]::User)`

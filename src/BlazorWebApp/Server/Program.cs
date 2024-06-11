@@ -7,63 +7,78 @@ public class Program
 {
     public static void Main(string[] args)
     {
-        WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+        WebApplicationBuilder webApplicationBuilder = WebApplication.CreateBuilder(args);
 
         if (System.Diagnostics.Debugger.IsAttached)
-            _ = builder.Configuration.SetBasePath(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location)!);
+        {
+            _ = webApplicationBuilder.Configuration.SetBasePath(
+                Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location)!);
+        }
 
         // Add services to the container.
-        _ = builder.Services.AddRazorComponents()
+        _ = webApplicationBuilder.Services
+            .AddRazorComponents()
             .AddInteractiveServerComponents()
             .AddInteractiveWebAssemblyComponents();
 
-        _ = builder.Services.AddMudServices();
+        _ = webApplicationBuilder.Services
+            .AddSystemd()
 
-        _ = builder.Services.AddControllers();
-        
+            .AddMudServices()
+
+            .AddHttpClient() // Needed for server rendering
+
+            .AddControllers()
+        ;
+
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-        _ = builder.Services.AddEndpointsApiExplorer();
-        _ = builder.Services.AddOpenApiDocument();
+        _ = webApplicationBuilder.Services
+            .AddEndpointsApiExplorer()
+            .AddOpenApiDocument()
+        ;
 
-        InfrastructureLib.Dependencies.ConfigureDefaultDependencies(builder, args);
+        InfrastructureLib.Dependencies.ConfigureDefaultDependencies(webApplicationBuilder, args);
 
-        _ = builder.AddMyDependencies();
+        _ = webApplicationBuilder.AddMyDependencies();
 
-        WebApplication app = builder.Build();
+        WebApplication webApplication = webApplicationBuilder.Build();
 
         // Configure the HTTP request pipeline.
-        if (app.Environment.IsDevelopment())
+        if (webApplication.Environment.IsDevelopment())
         {
-            app.UseWebAssemblyDebugging();
+            webApplication.UseWebAssemblyDebugging();
 
             // Add OpenAPI/Swagger generator and the Swagger UI
-            _ = app.UseOpenApi();
-            _ = app.UseSwaggerUi();
+            _ = webApplication
+                .UseOpenApi()
+                .UseSwaggerUi();
         }
         else
         {
-            _ = app.UseExceptionHandler("/Error");
+            _ = webApplication.UseExceptionHandler("/Error");
             // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-            _ = app.UseHsts();
+            _ = webApplication.UseHsts();
         }
 
-        _ = app.UseHttpsRedirection();
+        _ = webApplication
+            .UseHttpsRedirection()
 
-        _ = app.UseStaticFiles();
-        _ = app.UseAntiforgery();
+            .UseStaticFiles()
+            .UseAntiforgery()
+        ;
 
-        _ = app.MapRazorComponents<Components.App>()
+        _ = webApplication.MapRazorComponents<Components.App>()
             .AddInteractiveServerRenderMode()
             .AddInteractiveWebAssemblyRenderMode()
             .AddAdditionalAssemblies(typeof(Client._Imports).Assembly);
 
-        _ = app.MapControllers();
+        _ = webApplication.MapControllers();
 
         SQLitePCL.Batteries.Init();
 
         // Migrate and seed the database during startup. Must be synchronous.
-        _ = app.MigrateDbContexts();
+        _ = webApplication.MigrateDbContexts();
 
-        app.Run();
+        webApplication.Run();
     }
 }

@@ -139,6 +139,7 @@ Group=${WORKER_SERVICE_USER}
 WorkingDirectory=${WORKER_SERVICE_DIRECTORY}
 ExecStart=${WORKER_SERVICE_DIRECTORY}/${EXECUTABLE_FILE_NAME}
 TimeoutStopSec=30
+EnvironmentFile=/etc/environment
 
 [Install]
 WantedBy=multi-user.target

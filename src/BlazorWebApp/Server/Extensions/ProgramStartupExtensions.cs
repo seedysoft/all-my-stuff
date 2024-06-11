@@ -59,7 +59,8 @@ public static class ProgramStartupExtensions
             .AddJsonFile($"appsettings.SmtpServiceSettings.json", false, true)
             .AddJsonFile($"appsettings.TelegramSettings.json", false, true)
             .AddJsonFile($"appsettings.TelegramSettings.{CurrentEnvironmentName}.json", false, true)
-            .AddJsonFile($"appsettings.TuyaManagerSettings.json", false, true);
+            .AddJsonFile($"appsettings.TuyaManagerSettings.json", false, true)
+        ;
 
         return webApplicationBuilder;
     }

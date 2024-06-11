@@ -7,7 +7,7 @@ dotnet publish C:\Users\alfon\_prog\seedysoft\all-my-stuff\src\Carburantes\Conso
 dotnet publish C:\Users\alfon\_prog\seedysoft\all-my-stuff\src\Outbox\OutboxConsoleApp\Seedysoft.OutboxConsoleApp.csproj -p:PublishDir=D:\\_Syncthing\Seedysoft\linux-arm64\  -c Release  -r linux-arm64  -p:PublishTrimmed=false  --sc ;
 dotnet publish C:\Users\alfon\_prog\seedysoft\all-my-stuff\src\Pvpc\PvpcConsoleApp\Seedysoft.PvpcConsoleApp.csproj -p:PublishDir=D:\\_Syncthing\Seedysoft\linux-arm64\  -c Release  -r linux-arm64  -p:PublishTrimmed=false  --sc ;
 dotnet publish C:\Users\alfon\_prog\seedysoft\all-my-stuff\src\WebComparer\WebComparerConsoleApp\Seedysoft.WebComparerConsoleApp.csproj -p:PublishDir=D:\\_Syncthing\Seedysoft\linux-arm64\  -c Release  -r linux-arm64  -p:PublishTrimmed=false  --sc ;
-dotnet publish C:\Users\alfon\_prog\seedysoft\all-my-stuff\src\HomeCloud\Server\Seedysoft.HomeCloud.Server.csproj -p:PublishDir=D:\\_Syncthing\Seedysoft\linux-arm64\  -c Release  -r linux-arm64  -p:BlazorCacheBootResources=false  -p:PublishTrimmed=false  --sc ;
+dotnet publish C:\Users\alfon\_prog\seedysoft\all-my-stuff\src\BlazorWebApp\Server\Seedysoft.BlazorWebApp.Server.csproj -p:PublishDir=D:\\_Syncthing\Seedysoft\linux-arm64\  -c Release  -r linux-arm64  -p:BlazorCacheBootResources=false  -p:PublishTrimmed=false  --sc ;
 ```
 
 **Publish all projects from Raspberrypi4:**
