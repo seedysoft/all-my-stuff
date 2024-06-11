@@ -35,10 +35,8 @@ jobs:
       - name: Publish runtimes
         id: publish-runtimes
         run: |
-          echo ${{ github.workspace }} 
-          ls -la
           # Publish
-          dotnet publish Seedysoft.BlazorWebApp.Server.csproj -c Release -p:PublishTrimmed=false --sc -v n
+          dotnet publish ./src/BlazorWebApp/Server/Seedysoft.BlazorWebApp.Server.csproj -c Release -p:PublishTrimmed=false --sc -v n
           # Pack files
           tar czvf "${{ github.ref_name }}.tar.gz" "./linux-arm64/publish/"
           7z a -tzip "${{ github.ref_name }}.zip" "./win-x64/publish/*"
