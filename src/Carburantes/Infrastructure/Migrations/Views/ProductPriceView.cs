@@ -1,4 +1,4 @@
-﻿namespace Seedysoft.Carburantes.Infrastructure.Migrations.Carburantes.Views;
+﻿namespace Seedysoft.Carburantes.Infrastructure.Migrations.Views;
 
 public static class ProductPriceView
 {

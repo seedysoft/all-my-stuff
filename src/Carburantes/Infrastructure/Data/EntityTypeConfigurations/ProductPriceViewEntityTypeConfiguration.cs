@@ -3,10 +3,12 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Seedysoft.Carburantes.Infrastructure.Data.EntityTypeConfigurations;
 
-internal abstract class ProductPriceBaseEntityTypeConfiguration<T> : EntityTypeConfigurationBase<T> where T : Core.Entities.ProductPriceBase
+internal sealed class ProductPriceEntityTypeConfiguration : EntityTypeConfigurationBase<Core.Entities.ProductPrice>, IEntityTypeConfiguration<Core.Entities.ProductPrice>
 {
-    public override void Configure(EntityTypeBuilder<T> builder)
+    public override void Configure(EntityTypeBuilder<Core.Entities.ProductPrice> builder)
     {
+        base.Configure(builder);
+
         _ = builder
             .Property(x => x.AtDate)
             .IsRequired()
@@ -63,29 +65,9 @@ internal abstract class ProductPriceBaseEntityTypeConfiguration<T> : EntityTypeC
         _ = builder
             .Property(x => x.Rotulo)
             .IsRequired();
-    }
-}
-
-internal sealed class ProductPriceEntityTypeConfiguration : ProductPriceBaseEntityTypeConfiguration<Core.Entities.ProductPrice>, IEntityTypeConfiguration<Core.Entities.ProductPrice>
-{
-    public override void Configure(EntityTypeBuilder<Core.Entities.ProductPrice> builder)
-    {
-        base.Configure(builder);
 
         _ = builder
             .HasNoKey()
             .ToView(nameof(Core.Entities.ProductPrice));
-    }
-}
-
-internal sealed class ProductPriceHistViewEntityTypeConfiguration : ProductPriceBaseEntityTypeConfiguration<Core.Entities.ProductPriceHist>, IEntityTypeConfiguration<Core.Entities.ProductPriceHist>
-{
-    public override void Configure(EntityTypeBuilder<Core.Entities.ProductPriceHist> builder)
-    {
-        base.Configure(builder);
-
-        _ = builder
-            .HasNoKey()
-            .ToView(nameof(Core.Entities.ProductPriceHist));
     }
 }

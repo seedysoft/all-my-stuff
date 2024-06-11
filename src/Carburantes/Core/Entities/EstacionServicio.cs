@@ -1,8 +1,7 @@
-﻿using System.Diagnostics;
+﻿namespace Seedysoft.Carburantes.Core.Entities;
 
-namespace Seedysoft.Carburantes.Core.Entities;
-
-public abstract class EstacionServicioBase : Core.EntityBase
+[System.Diagnostics.DebuggerDisplay("{" + nameof(GetDebuggerDisplay) + "(),nq}")]
+public sealed class EstacionServicio : Core.EntityBase
 {
     public int IdEstacion { get; set; }
 
@@ -26,16 +25,6 @@ public abstract class EstacionServicioBase : Core.EntityBase
 
     public double LatNotNull => double.Parse(Latitud);
     public double LngNotNull => double.Parse(LongitudWgs84);
-}
 
-[DebuggerDisplay("{" + nameof(GetDebuggerDisplay) + "(),nq}")]
-public sealed class EstacionServicio : EstacionServicioBase
-{
-    private string GetDebuggerDisplay() => $"{Rotulo}";
-}
-
-[DebuggerDisplay("{" + nameof(GetDebuggerDisplay) + "(),nq}")]
-public sealed class EstacionServicioHist : EstacionServicioBase
-{
     private string GetDebuggerDisplay() => $"{Rotulo} @ {AtDate}";
 }

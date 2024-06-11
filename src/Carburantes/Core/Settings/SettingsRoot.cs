@@ -2,6 +2,8 @@
 
 public record SettingsRoot
 {
+    public const int FirstObtainedDate = 230712;
+
     public required GoogleMapsPlatform GoogleMapsPlatform { get; init; }
 
     public required Minetur Minetur { get; init; }

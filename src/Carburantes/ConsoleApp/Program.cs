@@ -26,9 +26,7 @@ public sealed class Program
         {
             string ConnectionStringName = nameof(Infrastructure.Data.CarburantesDbContext);
             string ConnectionString = builder.Configuration.GetConnectionString($"{ConnectionStringName}") ?? throw new KeyNotFoundException($"Connection string '{ConnectionStringName}' not found.");
-            string FullFilePath = Path.GetFullPath(
-                ConnectionString[CoreLib.Constants.DatabaseStrings.DataSource.Length..],
-                System.Reflection.Assembly.GetExecutingAssembly().Location);
+            string FullFilePath = Path.GetFullPath(ConnectionString, System.Reflection.Assembly.GetExecutingAssembly().Location);
             if (!File.Exists(FullFilePath))
                 throw new FileNotFoundException("Database file not found.", FullFilePath);
 
@@ -38,21 +36,7 @@ public sealed class Program
         , ServiceLifetime.Transient
         , ServiceLifetime.Transient)
 
-        .AddDbContext<Infrastructure.Data.CarburantesHistDbContext>((iServiceProvider, dbContextOptionsBuilder) =>
-        {
-            string ConnectionStringName = nameof(Infrastructure.Data.CarburantesHistDbContext);
-            string ConnectionString = builder.Configuration.GetConnectionString($"{ConnectionStringName}") ?? throw new KeyNotFoundException($"Connection string '{ConnectionStringName}' not found.");
-            string FullFilePath = Path.GetFullPath(
-                ConnectionString[CoreLib.Constants.DatabaseStrings.DataSource.Length..],
-                System.Reflection.Assembly.GetExecutingAssembly().Location);
-            if (!File.Exists(FullFilePath))
-                throw new FileNotFoundException("Database file not found.", FullFilePath);
-
-            _ = dbContextOptionsBuilder.UseSqlite($"{CoreLib.Constants.DatabaseStrings.DataSource}{FullFilePath}");
-            dbContextOptionsBuilder.ConfigureDebugOptions();
-        }
-        , ServiceLifetime.Transient
-        , ServiceLifetime.Transient);
+        ;
 
         _ = builder.Services.AddHttpClient(nameof(Core.Settings.Minetur));
 
@@ -76,7 +60,6 @@ public sealed class Program
             using IServiceScope Scope = host.Services.CreateScope();
 
             Scope.ServiceProvider.GetRequiredService<Infrastructure.Data.CarburantesDbContext>().Database.Migrate();
-            Scope.ServiceProvider.GetRequiredService<Infrastructure.Data.CarburantesHistDbContext>().Database.Migrate();
 
             Services.ObtainDataCronBackgroundService obtainDataCronBackgroundService = host.Services.GetRequiredService<Services.ObtainDataCronBackgroundService>();
 

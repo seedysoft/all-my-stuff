@@ -1,9 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Seedysoft.Carburantes.Core.Entities;
 
-public abstract class ProductoPetroliferoBase : Core.EntityBase
+[System.Diagnostics.DebuggerDisplay("{" + nameof(GetDebuggerDisplay) + "(),nq}")]
+public sealed class ProductoPetrolifero : Core.EntityBase
 {
     public int IdProducto { get; set; }
 
@@ -12,16 +13,12 @@ public abstract class ProductoPetroliferoBase : Core.EntityBase
 
     [Display(Description = "Abreviatura del producto", Name = "Abreviatura")]
     public string NombreProductoAbreviatura { get; set; } = default!;
-}
 
-[DebuggerDisplay("{" + nameof(GetDebuggerDisplay) + "(),nq}")]
-public sealed class ProductoPetrolifero : ProductoPetroliferoBase
-{
-    private string GetDebuggerDisplay() => $"{NombreProducto} ({IdProducto})";
-}
-
-[DebuggerDisplay("{" + nameof(GetDebuggerDisplay) + "(),nq}")]
-public sealed class ProductoPetroliferoHist : ProductoPetroliferoBase
-{
     private string GetDebuggerDisplay() => $"{NombreProducto} ({IdProducto}) @ {AtDate}";
+}
+
+public class ProductoPetroliferoEqualityComparer : IEqualityComparer<ProductoPetrolifero>
+{
+    public bool Equals(ProductoPetrolifero? x, ProductoPetrolifero? y) => x?.AtDate == y?.AtDate && x?.IdProducto == y?.IdProducto;
+    public int GetHashCode([DisallowNull] ProductoPetrolifero obj) => throw new NotImplementedException();
 }

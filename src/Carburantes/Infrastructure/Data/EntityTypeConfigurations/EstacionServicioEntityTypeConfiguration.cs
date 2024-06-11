@@ -3,10 +3,12 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Seedysoft.Carburantes.Infrastructure.Data.EntityTypeConfigurations;
 
-internal abstract class EstacionServicioEntityTypeConfigurationBase<T> : EntityTypeConfigurationBase<T> where T : Core.Entities.EstacionServicioBase
+internal sealed class EstacionServicioEntityTypeConfiguration : EntityTypeConfigurationBase<Core.Entities.EstacionServicio>, IEntityTypeConfiguration<Core.Entities.EstacionServicio>
 {
-    public override void Configure(EntityTypeBuilder<T> builder)
+    public override void Configure(EntityTypeBuilder<Core.Entities.EstacionServicio> builder)
     {
+        base.Configure(builder);
+
         _ = builder
             .Property(x => x.IdEstacion)
             .IsRequired()
@@ -48,30 +50,8 @@ internal abstract class EstacionServicioEntityTypeConfigurationBase<T> : EntityT
             .Property(x => x.Rotulo)
             .IsRequired();
 
-        base.Configure(builder);
-    }
-}
-
-internal sealed class EstacionServicioEntityTypeConfiguration : EstacionServicioEntityTypeConfigurationBase<Core.Entities.EstacionServicio>, IEntityTypeConfiguration<Core.Entities.EstacionServicio>
-{
-    public override void Configure(EntityTypeBuilder<Core.Entities.EstacionServicio> builder)
-    {
-        base.Configure(builder);
-
         _ = builder
             .ToTable(nameof(Core.Entities.EstacionServicio))
-            .HasKey(x => new { x.IdEstacion });
-    }
-}
-
-internal sealed class EstacionServicioHistEntityTypeConfiguration : EstacionServicioEntityTypeConfigurationBase<Core.Entities.EstacionServicioHist>, IEntityTypeConfiguration<Core.Entities.EstacionServicioHist>
-{
-    public override void Configure(EntityTypeBuilder<Core.Entities.EstacionServicioHist> builder)
-    {
-        base.Configure(builder);
-
-        _ = builder
-            .ToTable(nameof(Core.Entities.EstacionServicioHist))
             .HasKey(x => new { x.IdEstacion, x.AtDate });
     }
 }

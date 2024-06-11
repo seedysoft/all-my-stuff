@@ -1,6 +1,9 @@
-﻿namespace Seedysoft.Carburantes.Core.Entities;
+﻿using System.ComponentModel.DataAnnotations;
 
-public abstract class ProductPriceBase : Core.EntityBase
+namespace Seedysoft.Carburantes.Core.Entities;
+
+[System.Diagnostics.DebuggerDisplay("{" + nameof(GetDebuggerDisplay) + "(),nq}")]
+public sealed class ProductPrice : Core.EntityBase
 {
     public int CentimosDeEuro { get; set; }
     public decimal Euros => decimal.Divide(CentimosDeEuro, 1_000M);
@@ -25,25 +28,15 @@ public abstract class ProductPriceBase : Core.EntityBase
 
     public string NombreMunicipio { get; set; } = default!;
 
-    [System.ComponentModel.DataAnnotations.Display(Description = "Nombre del producto", Name = "Producto")]
+    [Display(Description = "Nombre del producto", Name = "Producto")]
     public string NombreProducto { get; set; } = default!;
 
-    [System.ComponentModel.DataAnnotations.Display(Description = "Abreviatura del producto", Name = "Abreviatura")]
+    [Display(Description = "Abreviatura del producto", Name = "Abreviatura")]
     public string NombreProductoAbreviatura { get; set; } = default!;
 
     public string NombreProvincia { get; set; } = default!;
 
     public string Rotulo { get; set; } = default!;
-}
 
-[System.Diagnostics.DebuggerDisplay("{" + nameof(GetDebuggerDisplay) + "(),nq}")]
-public sealed class ProductPrice : ProductPriceBase
-{
-    private string GetDebuggerDisplay() => $"{NombreProducto})";
-}
-
-[System.Diagnostics.DebuggerDisplay("{" + nameof(GetDebuggerDisplay) + "(),nq}")]
-public sealed class ProductPriceHist : ProductPriceBase
-{
     private string GetDebuggerDisplay() => $"{NombreProducto} @ {AtDate}";
 }

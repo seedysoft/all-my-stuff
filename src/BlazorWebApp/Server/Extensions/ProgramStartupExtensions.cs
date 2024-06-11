@@ -18,7 +18,6 @@ public static class ProgramStartupExtensions
     {
         webApplication.Services.GetRequiredService<InfrastructureLib.DbContexts.DbCxt>().Database.Migrate();
         webApplication.Services.GetRequiredService<Carburantes.Infrastructure.Data.CarburantesDbContext>().Database.Migrate();
-        webApplication.Services.GetRequiredService<Carburantes.Infrastructure.Data.CarburantesHistDbContext>().Database.Migrate();
 
         return webApplication;
     }
@@ -43,6 +42,7 @@ public static class ProgramStartupExtensions
     private static WebApplicationBuilder AddJsonFiles(this WebApplicationBuilder webApplicationBuilder)
     {
         string CurrentEnvironmentName = webApplicationBuilder.Environment.EnvironmentName;
+
         _ = webApplicationBuilder.Configuration
             .AddJsonFile($"appsettings.BlazorWebApp.Server.json", false, true)
             .AddJsonFile($"appsettings.BlazorWebApp.Server.{CurrentEnvironmentName}.json", false, true)
@@ -74,9 +74,7 @@ public static class ProgramStartupExtensions
             {
                 string ConnectionStringName = nameof(Carburantes.Infrastructure.Data.CarburantesDbContext);
                 string ConnectionString = webApplicationBuilder.Configuration.GetConnectionString($"{ConnectionStringName}") ?? throw new KeyNotFoundException($"Connection string '{ConnectionStringName}' not found.");
-                string FullFilePath = Path.GetFullPath(
-                    ConnectionString[CoreLib.Constants.DatabaseStrings.DataSource.Length..],
-                    System.Reflection.Assembly.GetExecutingAssembly().Location);
+                string FullFilePath = Path.GetFullPath(ConnectionString, System.Reflection.Assembly.GetExecutingAssembly().Location);
                 if (!File.Exists(FullFilePath))
                     throw new FileNotFoundException("Database file not found.", FullFilePath);
 
@@ -86,21 +84,7 @@ public static class ProgramStartupExtensions
             , ServiceLifetime.Transient
             , ServiceLifetime.Transient)
 
-            .AddDbContext<Carburantes.Infrastructure.Data.CarburantesHistDbContext>((iServiceProvider, dbContextOptionsBuilder) =>
-            {
-                string ConnectionStringName = nameof(Carburantes.Infrastructure.Data.CarburantesHistDbContext);
-                string ConnectionString = webApplicationBuilder.Configuration.GetConnectionString($"{ConnectionStringName}") ?? throw new KeyNotFoundException($"Connection string '{ConnectionStringName}' not found.");
-                string FullFilePath = Path.GetFullPath(
-                    ConnectionString[CoreLib.Constants.DatabaseStrings.DataSource.Length..],
-                    System.Reflection.Assembly.GetExecutingAssembly().Location);
-                if (!File.Exists(FullFilePath))
-                    throw new FileNotFoundException("Database file not found.", FullFilePath);
-
-                _ = dbContextOptionsBuilder.UseSqlite($"{CoreLib.Constants.DatabaseStrings.DataSource}{FullFilePath}");
-                dbContextOptionsBuilder.ConfigureDebugOptions();
-            }
-            , ServiceLifetime.Transient
-            , ServiceLifetime.Transient);
+            ;
 
         return webApplicationBuilder;
     }
