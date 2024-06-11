@@ -11,7 +11,7 @@ permissions:
 
 on:
   push:
-    branches:
+    tags:
       - '**'
 
 jobs:
@@ -38,8 +38,8 @@ jobs:
           # Publish
           dotnet publish ./src/BlazorWebApp/Server/Seedysoft.BlazorWebApp.Server.csproj -c Release -p:PublishTrimmed=false --sc -v n
           # Pack files
-          # tar czvf "${{ github.ref_name }}.tar.gz" "./src/BlazorWebApp/Server/bin/Release/net8.0/linux-x64/publish/"
-          7z a -tzip "${{ github.ref_name }}.zip" "./src/BlazorWebApp/Server/bin/Release/net8.0/win-x64/publish/*"
+          tar czvf "${{ github.ref_name }}.tar.gz" "./src/BlazorWebApp/Server/bin/Release/net8.0/linux-x64/publish/"
+          # 7z a -tzip "${{ github.ref_name }}.zip" "./src/BlazorWebApp/Server/bin/Release/net8.0/win-x64/publish/*"
 
       - name: Make Release
         id: make-release
