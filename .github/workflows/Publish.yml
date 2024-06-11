@@ -11,8 +11,8 @@ permissions:
 
 on:
   push:
-    tags:
-      - "*"
+    branches:
+      - '**'
 
 jobs:
   publish-and-release:
@@ -35,6 +35,8 @@ jobs:
       - name: Publish runtimes
         id: publish-runtimes
         run: |
+          echo ${{ github.workspace }} 
+          ls -la
           # Publish
           dotnet publish Seedysoft.BlazorWebApp.Server.csproj -c Release -p:PublishTrimmed=false --sc -v n
           # Pack files
