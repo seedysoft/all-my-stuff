@@ -46,8 +46,8 @@
     <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Carburantes\CarburantesLib\Seedysoft.CarburantesLib.csproj" />
-    <ProjectReference Include="..\..\CommonLibs\CoreLib\Seedysoft.CoreLib.csproj" />
+    <ProjectReference Include="..\..\Carburantes\Infrastructure\Seedysoft.Carburantes.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\Carburantes\Services\Seedysoft.Carburantes.Services.csproj" />
     <ProjectReference Include="..\..\CommonLibs\TelegramLib\Seedysoft.TelegramLib.csproj" />
     <ProjectReference Include="..\..\CommonLibs\UtilsLib\Seedysoft.UtilsLib.csproj" />
     <ProjectReference Include="..\..\Outbox\OutboxLib\Seedysoft.OutboxLib.csproj" />

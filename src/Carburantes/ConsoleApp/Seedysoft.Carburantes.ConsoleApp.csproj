@@ -23,6 +23,8 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="EFCore.BulkExtensions.Sqlite" Version="8.0.4" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.1" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />
     <PackageReference Include="Serilog.Extensions.Logging" Version="8.0.0" />
@@ -34,6 +36,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\CommonLibs\CoreLib\Seedysoft.CoreLib.csproj" />
     <ProjectReference Include="..\..\CommonLibs\UtilsLib\Seedysoft.UtilsLib.csproj" />
-    <ProjectReference Include="..\CarburantesLib\Seedysoft.CarburantesLib.csproj" />
+    <ProjectReference Include="..\Infrastructure\Seedysoft.Carburantes.Infrastructure.csproj" />
+    <ProjectReference Include="..\Services\Seedysoft.Carburantes.Services.csproj" />
   </ItemGroup>
 </Project>

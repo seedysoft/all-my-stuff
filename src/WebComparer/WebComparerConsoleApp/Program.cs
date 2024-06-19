@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Seedysoft.UtilsLib.Extensions;
 
 namespace Seedysoft.WebComparerConsoleApp;
 
@@ -10,11 +10,14 @@ public sealed class Program
 {
     public static async Task Main(string[] args)
     {
-        HostApplicationBuilder hostApplicationBuilder = new(args);
+        HostApplicationBuilder builder = new();
 
-        _ = hostApplicationBuilder.AddAllMyDependencies();
+        InfrastructureLib.Dependencies.ConfigureDefaultDependencies(builder, args);
+        InfrastructureLib.Dependencies.AddDbCxtContext(builder);
 
-        IHost host = hostApplicationBuilder.Build();
+        builder.Services.TryAddSingleton<WebComparerLib.Services.WebComparerHostedService>();
+
+        IHost host = builder.Build();
 
         ILogger<Program> Logger = host.Services.GetRequiredService<ILogger<Program>>();
 

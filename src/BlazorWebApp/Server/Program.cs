@@ -1,5 +1,5 @@
 using MudBlazor.Services;
-using Seedysoft.UtilsLib.Extensions;
+using Seedysoft.BlazorWebApp.Server.Extensions;
 
 namespace Seedysoft.BlazorWebApp.Server;
 
@@ -9,7 +9,11 @@ public class Program
     {
         WebApplicationBuilder webApplicationBuilder = WebApplication.CreateBuilder(args);
 
-        _ = webApplicationBuilder.AddAllMyDependencies();
+        if (System.Diagnostics.Debugger.IsAttached)
+        {
+            _ = webApplicationBuilder.Configuration.SetBasePath(
+                Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location)!);
+        }
 
         // Add services to the container.
         _ = webApplicationBuilder.Services
@@ -32,6 +36,10 @@ public class Program
             .AddEndpointsApiExplorer()
             .AddOpenApiDocument()
         ;
+
+        InfrastructureLib.Dependencies.ConfigureDefaultDependencies(webApplicationBuilder, args);
+
+        _ = webApplicationBuilder.AddMyDependencies();
 
         WebApplication webApplication = webApplicationBuilder.Build();
 
@@ -66,8 +74,10 @@ public class Program
 
         _ = webApplication.MapControllers();
 
-        //// Migrate and seed the database during startup. Must be synchronous.
-        //_ = webApplication.MigrateDbContexts();
+        SQLitePCL.Batteries.Init();
+
+        // Migrate and seed the database during startup. Must be synchronous.
+        _ = webApplication.MigrateDbContexts();
 
         webApplication.Run();
     }

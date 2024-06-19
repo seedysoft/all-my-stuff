@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Carburantes\CoreLib\Seedysoft.Carburantes.CoreLib.csproj" />
+    <ProjectReference Include="..\..\Carburantes\Core\Seedysoft.Carburantes.Core.csproj" />
   </ItemGroup>
 
 </Project>

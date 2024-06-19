@@ -1,7 +1,7 @@
 ﻿@page "/routesearch"
 
+@using Seedysoft.BlazorWebApp.Client.ViewModels
 @using System.Collections.Immutable;
-@using Seedysoft.Carburantes.CoreLib.ViewModels;
 
 @inject HttpClient Http
 @inject NavigationManager NavManager
@@ -64,7 +64,7 @@
                            AdornmentIcon="@Icons.Material.Filled.LocalGasStation" Class="d-flex flex-grow-1 gap-4" Clearable="true" Dense="true" FullWidth="true" Label="Products"
                            MultiSelection="true" MultiSelectionTextFunc="@(new Func<List<string>, string>(GetMultiSelectionText))" SelectAll="true" Strict="true" Style="min-width: 300px;"
                            T="IdDescRecord" ToStringFunc="@IdDescRecord.IdDescRecordConverter" Variant="Variant.Outlined">
-                    @foreach (IdDescRecord item in PetroleumProducts ?? Array.Empty<IdDescRecord>())
+                    @foreach (IdDescRecord item in PetroleumProducts ?? ImmutableArray<IdDescRecord>.Empty)
                     {
                         <MudSelectItem T="IdDescRecord" Value="@item">@item.Desc</MudSelectItem>
                     }
