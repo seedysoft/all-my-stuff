@@ -1,11 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Seedysoft.PvpcLib.Services;
-using Seedysoft.PvpcLib.Settings;
+using Seedysoft.UtilsLib.Extensions;
 
 namespace Seedysoft.PvpcConsoleApp;
 
@@ -13,21 +11,11 @@ public sealed class Program
 {
     public static async Task Main(string[] args)
     {
-        HostApplicationBuilder builder = new();
+        HostApplicationBuilder hostApplicationBuilder = new(args);
 
-        InfrastructureLib.Dependencies.ConfigureDefaultDependencies(builder, args);
-        InfrastructureLib.Dependencies.AddDbCxtContext(builder);
+        _ = hostApplicationBuilder.AddAllMyDependencies();
 
-        _ = builder.Configuration
-            .AddJsonFile($"appsettings.PvpcSettings.json", false, true)
-            .AddJsonFile($"appsettings.TuyaManagerSettings.json", false, true);
-
-        builder.Services.TryAddSingleton(builder.Configuration.GetSection(nameof(PvpcSettings)).Get<PvpcSettings>()!);
-        builder.Services.TryAddSingleton(builder.Configuration.GetSection(nameof(TuyaManagerSettings)).Get<TuyaManagerSettings>()!);
-        builder.Services.TryAddSingleton<PvpcCronBackgroundService>();
-        builder.Services.TryAddSingleton<TuyaManagerCronBackgroundService>();
-
-        IHost host = builder.Build();
+        IHost host = hostApplicationBuilder.Build();
 
         ILogger<Program> Logger = host.Services.GetRequiredService<ILogger<Program>>();
 

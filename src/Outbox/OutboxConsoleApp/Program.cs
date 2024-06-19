@@ -1,9 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Seedysoft.UtilsLib.Extensions;
 
 namespace Seedysoft.OutboxConsoleApp;
 
@@ -11,25 +10,11 @@ public sealed class Program
 {
     public static async Task Main(string[] args)
     {
-        HostApplicationBuilder builder = new();
+        HostApplicationBuilder hostApplicationBuilder = new(args);
 
-        InfrastructureLib.Dependencies.ConfigureDefaultDependencies(builder, args);
-        InfrastructureLib.Dependencies.AddDbCxtContext(builder);
+        _ = hostApplicationBuilder.AddAllMyDependencies();
 
-        _ = builder.Configuration
-            .AddJsonFile($"appsettings.SmtpServiceSettings.json", false, true)
-            .AddJsonFile($"appsettings.TelegramSettings.json", false, true)
-            .AddJsonFile($"appsettings.TelegramSettings.{builder.Environment.EnvironmentName}.json", false, true);
-
-        builder.Services.TryAddSingleton(builder.Configuration.GetSection(nameof(SmtpServiceLib.Settings.SmtpServiceSettings)).Get<SmtpServiceLib.Settings.SmtpServiceSettings>()!);
-        builder.Services.TryAddTransient<SmtpServiceLib.Services.SmtpService>();
-
-        builder.Services.TryAddSingleton(builder.Configuration.GetSection(nameof(TelegramLib.Settings.TelegramSettings)).Get<TelegramLib.Settings.TelegramSettings>()!);
-        builder.Services.TryAddSingleton<TelegramLib.Services.TelegramHostedService>();
-
-        builder.Services.TryAddSingleton<OutboxLib.Services.OutboxCronBackgroundService>();
-
-        IHost host = builder.Build();
+        IHost host = hostApplicationBuilder.Build();
 
         ILogger<Program> Logger = host.Services.GetRequiredService<ILogger<Program>>();
 

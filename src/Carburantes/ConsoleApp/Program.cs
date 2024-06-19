@@ -1,10 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Seedysoft.InfrastructureLib.Extensions;
 using Seedysoft.UtilsLib.Extensions;
 
 namespace Seedysoft.Carburantes.ConsoleApp;
@@ -13,38 +9,11 @@ public sealed class Program
 {
     public static async Task Main(string[] args)
     {
-        HostApplicationBuilder builder = new();
+        HostApplicationBuilder hostApplicationBuilder = new(args);
 
-        InfrastructureLib.Dependencies.ConfigureDefaultDependencies(builder, args);
+        _ = hostApplicationBuilder.AddAllMyDependencies();
 
-        _ = builder.Configuration
-            .AddJsonFile($"appsettings.Carburantes.Infrastructure.json", false, true)
-            .AddJsonFile($"appsettings.Carburantes.Infrastructure.{builder.Environment.EnvironmentName}.json", false, true)
-            .AddJsonFile($"appsettings.CarburantesConnectionStrings.{builder.Environment.EnvironmentName}.json", false, true);
-
-        _ = builder.Services.AddDbContext<Infrastructure.Data.CarburantesDbContext>((iServiceProvider, dbContextOptionsBuilder) =>
-        {
-            string ConnectionStringName = nameof(Infrastructure.Data.CarburantesDbContext);
-            string ConnectionString = builder.Configuration.GetConnectionString($"{ConnectionStringName}") ?? throw new KeyNotFoundException($"Connection string '{ConnectionStringName}' not found.");
-            string FullFilePath = Path.GetFullPath(ConnectionString, System.Reflection.Assembly.GetExecutingAssembly().Location);
-            if (!File.Exists(FullFilePath))
-                throw new FileNotFoundException("Database file not found.", FullFilePath);
-
-            _ = dbContextOptionsBuilder.UseSqlite($"{CoreLib.Constants.DatabaseStrings.DataSource}{FullFilePath}");
-            dbContextOptionsBuilder.ConfigureDebugOptions();
-        }
-        , ServiceLifetime.Transient
-        , ServiceLifetime.Transient)
-
-        ;
-
-        _ = builder.Services.AddHttpClient(nameof(Core.Settings.Minetur));
-
-        builder.Services.TryAddSingleton<Services.ObtainDataCronBackgroundService>();
-
-        SQLitePCL.Batteries.Init();
-
-        IHost host = builder.Build();
+        IHost host = hostApplicationBuilder.Build();
 
         ILogger<Program> Logger = host.Services.GetRequiredService<ILogger<Program>>();
 
@@ -59,9 +28,8 @@ public sealed class Program
             // Migrate and seed the database during startup. Must be synchronous.
             using IServiceScope Scope = host.Services.CreateScope();
 
-            Scope.ServiceProvider.GetRequiredService<Infrastructure.Data.CarburantesDbContext>().Database.Migrate();
-
-            Services.ObtainDataCronBackgroundService obtainDataCronBackgroundService = host.Services.GetRequiredService<Services.ObtainDataCronBackgroundService>();
+            CarburantesLib.Services.ObtainDataCronBackgroundService obtainDataCronBackgroundService =
+                Scope.ServiceProvider.GetRequiredService<CarburantesLib.Services.ObtainDataCronBackgroundService>();
 
             await obtainDataCronBackgroundService.DoWorkAsync(CancelTokenSource.Token);
         }

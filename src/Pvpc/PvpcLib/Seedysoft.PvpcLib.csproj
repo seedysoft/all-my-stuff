@@ -28,9 +28,6 @@
     <InternalsVisibleTo Include="Seedysoft.PvpcLib.Test" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.6" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\..\CommonLibs\CoreLib\Seedysoft.CoreLib.csproj" />
     <ProjectReference Include="..\..\CommonLibs\CronBackgroundServiceLib\Seedysoft.CronBackgroundServiceLib.csproj" />
     <ProjectReference Include="..\..\CommonLibs\Seedysoft.InfrastructureLib\Seedysoft.InfrastructureLib.csproj" />

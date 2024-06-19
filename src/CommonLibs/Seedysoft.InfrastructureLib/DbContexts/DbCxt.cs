@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Seedysoft.UtilsLib.Constants;
 
 namespace Seedysoft.InfrastructureLib.DbContexts;
 
@@ -19,7 +20,7 @@ public sealed partial class DbCxt : DbContext
             if (!File.Exists(FullFilePath))
                 throw new FileNotFoundException("Database file not found.", FullFilePath);
 
-            string ConnectionString = $"{CoreLib.Constants.DatabaseStrings.DataSource}{FullFilePath}";
+            string ConnectionString = $"{DatabaseStrings.DataSource}{FullFilePath}";
             Console.WriteLine(ConnectionString);
 
             _ = optionsBuilder.UseSqlite(ConnectionString);

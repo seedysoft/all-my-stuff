@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
-using System.Collections.Immutable;
+using Seedysoft.Carburantes.CoreLib.ViewModels;
 using System.Net.Http.Json;
 
 namespace Seedysoft.BlazorWebApp.Client.Pages;
@@ -11,10 +11,10 @@ public partial class RouteSearch
 
     [Inject] private ILogger<RouteSearch> Logger { get; set; } = default!;
 
-    private MudDataGrid<ViewModels.RouteObtainedModel> RoutesMudDataGrid = default!;
+    private MudDataGrid<RouteObtainedModel> RoutesMudDataGrid = default!;
     private MudForm GasStationMudForm = default!;
 
-    private readonly ViewModels.RouteQueryModel RouteQuery = new()
+    private readonly RouteQueryModel RouteQuery = new()
 #if DEBUG
     {
         Origin = "Brazuelo",
@@ -22,30 +22,30 @@ public partial class RouteSearch
     }
 #endif
     ;
-    private readonly ViewModels.GasStationQueryModel GasStationQuery = new()
+    private readonly GasStationQueryModel GasStationQuery = new()
     {
         MaxDistanceInKm = 5.0M,
     }
     ;
 
-    private IImmutableList<ViewModels.IdDescRecord> PetroleumProducts = ImmutableArray<ViewModels.IdDescRecord>.Empty;
+    private IdDescRecord[] PetroleumProducts = [];
 
-    private IImmutableList<ViewModels.RouteObtainedModel> RoutesObtained = ImmutableArray<ViewModels.RouteObtainedModel>.Empty;
+    private RouteObtainedModel[] RoutesObtained = [];
 
-    private IImmutableList<ViewModels.GasStationInfoModel> GasStations = ImmutableArray<ViewModels.GasStationInfoModel>.Empty;
+    private GasStationInfoModel[] GasStations = [];
 
     private bool IsLoadingRoutes;
     private bool IsLoadingGasStations;
 
-    public IEnumerable<ViewModels.IdDescRecord> PetroleumProductsSelected { get; set; } = new HashSet<ViewModels.IdDescRecord>();
-    private ViewModels.IdDescRecord? PetroleumProductsSelectedValue { get; set; }
+    public IEnumerable<IdDescRecord> PetroleumProductsSelected { get; set; } = new HashSet<IdDescRecord>();
+    private IdDescRecord? PetroleumProductsSelectedValue { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
 
         string FromUri = $"{NavManager.BaseUri}{ControllerUris.PetroleumProductsControllerUri}/PetroleumProductsForFilter";
-        PetroleumProducts = await Http.GetFromJsonAsync<IImmutableList<ViewModels.IdDescRecord>>(FromUri) ?? ImmutableArray<ViewModels.IdDescRecord>.Empty;
+        PetroleumProducts = await Http.GetFromJsonAsync<IdDescRecord[]>(FromUri) ?? [];
         PetroleumProductsSelected = PetroleumProducts;
     }
 
@@ -69,14 +69,14 @@ public partial class RouteSearch
 
         try
         {
-            GasStations = ImmutableArray<ViewModels.GasStationInfoModel>.Empty;
+            GasStations = [];
 
             string FromUri = $"{NavManager.BaseUri}{ControllerUris.RoutesControllerUri}/ObtainRoutes";
 
             using (HttpResponseMessage Response = await Http.PostAsJsonAsync(FromUri, RouteQuery))
-                RoutesObtained = (IImmutableList<ViewModels.RouteObtainedModel>)(await Response.Content.ReadFromJsonAsync<IImmutableList<ViewModels.RouteObtainedModel>>() ?? ImmutableArray<ViewModels.RouteObtainedModel>.Empty);
+                RoutesObtained = await Response.Content.ReadFromJsonAsync<RouteObtainedModel[]>() ?? [];
 
-            switch (RoutesObtained.Count)
+            switch (RoutesObtained.Length)
             {
                 case 0:
                     _ = Snackbar.Add("No routes obtained", Severity.Warning);
@@ -97,7 +97,7 @@ public partial class RouteSearch
         }
     }
 
-    private string RoutesMudDataGridRowClassFunc(ViewModels.RouteObtainedModel element, int rowNumber) =>
+    private string RoutesMudDataGridRowClassFunc(RouteObtainedModel element, int rowNumber) =>
         RoutesMudDataGrid.SelectedItem != null && RoutesMudDataGrid.SelectedItem.Equals(element) ? "selected" : string.Empty;
 
     private async void OnSubmitGasStationsAsync()
@@ -121,16 +121,16 @@ public partial class RouteSearch
         try
         {
             string FromUri = $"{NavManager.BaseUri}{ControllerUris.RoutesControllerUri}/ObtainGasStations";
-            ViewModels.GasStationQueryModel StationsFilter = new()
+            GasStationQueryModel StationsFilter = new()
             {
                 MaxDistanceInKm = GasStationQuery.MaxDistanceInKm,
                 PetroleumProductsSelectedIds = PetroleumProductsSelected.Select(x => x.Id),
                 Steps = RoutesMudDataGrid.SelectedItem.Steps,
             };
             using (HttpResponseMessage Response = await Http.PostAsJsonAsync(FromUri, StationsFilter))
-                GasStations = await Response.Content.ReadFromJsonAsync<IImmutableList<ViewModels.GasStationInfoModel>>() ?? ImmutableArray<ViewModels.GasStationInfoModel>.Empty;
+                GasStations = await Response.Content.ReadFromJsonAsync<GasStationInfoModel[]>() ?? [];
 
-            if (!GasStations.Any())
+            if (GasStations.Length == 0)
                 _ = Snackbar.Add("No gas stations obtained", Severity.Warning);
         }
         catch (Exception e)

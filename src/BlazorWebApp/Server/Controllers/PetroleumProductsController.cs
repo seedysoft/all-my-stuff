@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Seedysoft.BlazorWebApp.Client;
-using System.Collections.Immutable;
+using Seedysoft.Carburantes.CoreLib.ViewModels;
 
 namespace Seedysoft.BlazorWebApp.Server.Controllers;
 
@@ -12,14 +11,7 @@ public sealed class PetroleumProductsController : ApiControllerBase
 
     [HttpGet()]
     [Route("[action]")]
-    public async Task<IImmutableList<Client.ViewModels.IdDescRecord>> PetroleumProductsForFilterAsync(
-        [FromServices] Carburantes.Infrastructure.Data.CarburantesDbContext carburantesDbContext)
-    {
-        IQueryable<Client.ViewModels.IdDescRecord> Query =
-            from p in carburantesDbContext.ProductosPetroliferos
-            orderby p.NombreProducto
-            select new Client.ViewModels.IdDescRecord(p.IdProducto, p.NombreProducto);
-
-        return ImmutableArray.Create(await Query.ToArrayAsync());
-    }
+    public async Task<IdDescRecord[]> PetroleumProductsForFilterAsync(
+        [FromServices] CarburantesLib.Services.ObtainDataCronBackgroundService obtainDataCronBackgroundService)
+        => await obtainDataCronBackgroundService.GetPetroleumProductsForFilterAsync();
 }

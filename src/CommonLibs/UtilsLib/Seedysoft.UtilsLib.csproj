@@ -16,7 +16,8 @@
     <InternalsVisibleTo Include="Seedysoft.UtilsLib.Tests" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.6" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.1" />
     <PackageReference Include="NetTopologySuite" Version="2.5.0" />
     <PackageReference Include="ProjNET" Version="2.0.0" />
   </ItemGroup>
