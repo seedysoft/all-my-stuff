@@ -2,7 +2,8 @@
 using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Geometries;
 using Seedysoft.BlazorWebApp.Client;
-using Seedysoft.UtilsLib.Extensions;
+using Seedysoft.Libs.Utils.Constants;
+using Seedysoft.Libs.Utils.Extensions;
 using System.Collections.Immutable;
 
 namespace Seedysoft.BlazorWebApp.Server.Controllers;
@@ -16,15 +17,15 @@ public sealed class RoutesController : ApiControllerBase
     public async Task<IImmutableList<Client.ViewModels.RouteObtainedModel>> ObtainRoutesAsync(
         [AsParameters] Client.ViewModels.RouteQueryModel routeQueryModel,
         [FromServices] IHttpClientFactory httpClientFactory,
-        [FromServices] Carburantes.Core.Settings.SettingsRoot settings)
+        [FromServices] FuelPrices.Lib.Core.Settings.SettingsRoot settings)
     {
-        Carburantes.Core.JsonObjects.GoogleMaps.Directions.DistanceApiRootJson? DistanceApiResult = await
+        FuelPrices.Lib.Core.JsonObjects.GoogleMaps.Directions.DistanceApiRootJson? DistanceApiResult = await
 #if false //DEBUG
             System.Text.Json.JsonSerializer.DeserializeAsync<DistanceApiRootJson>(
                 System.IO.File.OpenRead(
                     Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Distance.json")));
 #else
-            LoadJsonAsync<Carburantes.Core.JsonObjects.GoogleMaps.Directions.DistanceApiRootJson>(
+            LoadJsonAsync<FuelPrices.Lib.Core.JsonObjects.GoogleMaps.Directions.DistanceApiRootJson>(
                 httpClientFactory,
                 settings.GoogleMapsPlatform.Directions.GetUri(routeQueryModel.Origin, routeQueryModel.Destination, settings.GoogleMapsPlatform.ApiKey));
 #endif
@@ -67,11 +68,11 @@ public sealed class RoutesController : ApiControllerBase
     [HttpPost]
     public async Task<IImmutableList<Client.ViewModels.GasStationInfoModel>> ObtainGasStationsAsync(
         [FromBody] Client.ViewModels.GasStationQueryModel filter
-        , [FromServices] Carburantes.Infrastructure.Data.CarburantesDbContext carburantesDbContext
-        , [FromServices] Carburantes.Core.Settings.SettingsRoot settings)
+        , [FromServices] FuelPrices.Lib.Infrastructure.Data.CarburantesDbContext carburantesDbContext
+        , [FromServices] FuelPrices.Lib.Core.Settings.SettingsRoot settings)
     {
-        GeometryFactory GeomFactWgs84 = NetTopologySuite.NtsGeometryServices.Instance.CreateGeometryFactory(UtilsLib.Constants.CoordinateSystemCodes.Wgs84);
-        GeometryFactory GeomFactEpsg3857 = NetTopologySuite.NtsGeometryServices.Instance.CreateGeometryFactory(UtilsLib.Constants.CoordinateSystemCodes.Epsg3857);
+        GeometryFactory GeomFactWgs84 = NetTopologySuite.NtsGeometryServices.Instance.CreateGeometryFactory(CoordinateSystemCodes.Wgs84);
+        GeometryFactory GeomFactEpsg3857 = NetTopologySuite.NtsGeometryServices.Instance.CreateGeometryFactory(CoordinateSystemCodes.Epsg3857);
 
         var AllStations = await carburantesDbContext.EstacionesServicio
             .AsNoTracking()
@@ -81,7 +82,7 @@ public sealed class RoutesController : ApiControllerBase
                 LocationEpsg3857 = GeomFactEpsg3857
                     .CreateGeometry(GeomFactWgs84
                         .CreatePoint(new Coordinate(x.LngNotNull, x.LatNotNull))
-                        .ProjectTo(UtilsLib.Constants.CoordinateSystemCodes.Epsg3857))
+                        .ProjectTo(CoordinateSystemCodes.Epsg3857))
             }).ToListAsync();
         if (AllStations.Count == 0)
             return ImmutableArray<Client.ViewModels.GasStationInfoModel>.Empty;
@@ -99,7 +100,7 @@ public sealed class RoutesController : ApiControllerBase
                 PointEpsg3857 = GeomFactEpsg3857
                     .CreateGeometry(GeomFactWgs84
                         .CreatePoint(new Coordinate(x.LngNotNull, x.LatNotNull))
-                        .ProjectTo(UtilsLib.Constants.CoordinateSystemCodes.Epsg3857))
+                        .ProjectTo(CoordinateSystemCodes.Epsg3857))
             }).ToImmutableArray();
         if (!RoutePointsImmutable.Any())
             return ImmutableArray<Client.ViewModels.GasStationInfoModel>.Empty;
@@ -134,7 +135,7 @@ public sealed class RoutesController : ApiControllerBase
         }
 
         NearStationIds.Sort();
-        IQueryable<Carburantes.Core.Entities.ProductoPetrolifero> TempQuery = carburantesDbContext.ProductosPetroliferos.AsNoTracking();
+        IQueryable<FuelPrices.Lib.Core.Entities.ProductoPetrolifero> TempQuery = carburantesDbContext.ProductosPetroliferos.AsNoTracking();
 
         if (filter.PetroleumProductsSelectedIds != null && filter.PetroleumProductsSelectedIds.Any())
             TempQuery = TempQuery.Where(x => filter.PetroleumProductsSelectedIds.Contains(x.IdProducto));

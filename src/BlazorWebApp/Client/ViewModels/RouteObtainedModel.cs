@@ -10,12 +10,12 @@ public record RouteObtainedModel
 
     public string ToPlace { get; set; } = default!;
 
-    public Carburantes.Core.JsonObjects.GoogleMaps.Directions.TextAndValueJson Distance { get; set; } = default!;
+    public FuelPrices.Lib.Core.JsonObjects.GoogleMaps.Directions.TextAndValueJson Distance { get; set; } = default!;
 
     [Display(Description = "Distance")]
     public string DistanceText => Distance.Text;
 
-    public Carburantes.Core.JsonObjects.GoogleMaps.Directions.TextAndValueJson Duration { get; set; } = default!;
+    public FuelPrices.Lib.Core.JsonObjects.GoogleMaps.Directions.TextAndValueJson Duration { get; set; } = default!;
 
     [Display(Description = "Duration")]
     public string DurationText => Duration.Text;

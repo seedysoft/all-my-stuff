@@ -46,12 +46,11 @@
     <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Carburantes\Infrastructure\Seedysoft.Carburantes.Infrastructure.csproj" />
-    <ProjectReference Include="..\..\Carburantes\Services\Seedysoft.Carburantes.Services.csproj" />
-    <ProjectReference Include="..\..\CommonLibs\TelegramLib\Seedysoft.TelegramLib.csproj" />
-    <ProjectReference Include="..\..\CommonLibs\UtilsLib\Seedysoft.UtilsLib.csproj" />
-    <ProjectReference Include="..\..\Outbox\OutboxLib\Seedysoft.OutboxLib.csproj" />
-    <ProjectReference Include="..\..\WebComparer\WebComparerLib\Seedysoft.WebComparerLib.csproj" />
+    <ProjectReference Include="..\..\FuelPrices\Lib\Seedysoft.FuelPrices.Lib.csproj" />
+    <ProjectReference Include="..\..\Libs\Telegram\Seedysoft.Libs.Telegram.csproj" />
+    <ProjectReference Include="..\..\Libs\Utils\Seedysoft.Libs.Utils.csproj" />
+    <ProjectReference Include="..\..\Outbox\Lib\Seedysoft.Outbox.Lib.csproj" />
+    <ProjectReference Include="..\..\WebComparer\Lib\Seedysoft.WebComparer.Lib.csproj" />
     <ProjectReference Include="..\Client\Seedysoft.BlazorWebApp.Client.csproj" />
   </ItemGroup>
 </Project>

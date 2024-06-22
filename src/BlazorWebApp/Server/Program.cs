@@ -1,5 +1,6 @@
 using MudBlazor.Services;
 using Seedysoft.BlazorWebApp.Server.Extensions;
+using Seedysoft.Libs.Infrastructure;
 
 namespace Seedysoft.BlazorWebApp.Server;
 
@@ -37,7 +38,7 @@ public class Program
             .AddOpenApiDocument()
         ;
 
-        InfrastructureLib.Dependencies.ConfigureDefaultDependencies(webApplicationBuilder, args);
+        Dependencies.ConfigureDefaultDependencies(webApplicationBuilder, args);
 
         _ = webApplicationBuilder.AddMyDependencies();
 

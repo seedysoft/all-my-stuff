@@ -2,35 +2,27 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.7.34024.191
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Seedysoft.Carburantes.Services", "src\Carburantes\Services\Seedysoft.Carburantes.Services.csproj", "{439E5D31-4799-4DFB-A5EF-C0D7B3357808}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Seedysoft.Carburantes.Core", "src\Carburantes\Core\Seedysoft.Carburantes.Core.csproj", "{54750684-6611-4E2B-970D-EA894361661C}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Carburantes", "Carburantes", "{72066A4C-B25F-4CE6-A9A0-4AD80C544B2A}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Seedysoft.Carburantes.ConsoleApp", "src\Carburantes\ConsoleApp\Seedysoft.Carburantes.ConsoleApp.csproj", "{E4D27BA2-3457-41FB-85AF-930EE0FA3297}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Seedysoft.Carburantes.Infrastructure", "src\Carburantes\Infrastructure\Seedysoft.Carburantes.Infrastructure.csproj", "{D2435FFF-2E6F-4ACE-8495-42DEE0C21165}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "FuelPrices", "FuelPrices", "{72066A4C-B25F-4CE6-A9A0-4AD80C544B2A}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "WebComparer", "WebComparer", "{59B3631D-CCF0-40C2-9F5B-3DE2665E5F22}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Seedysoft.WebComparerLib", "src\WebComparer\WebComparerLib\Seedysoft.WebComparerLib.csproj", "{B1F1F2EF-81B9-4284-AC8A-DA6F3A55C263}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Seedysoft.WebComparer.Lib", "src\WebComparer\Lib\Seedysoft.WebComparer.Lib.csproj", "{B1F1F2EF-81B9-4284-AC8A-DA6F3A55C263}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Seedysoft.WebComparerConsoleApp", "src\WebComparer\WebComparerConsoleApp\Seedysoft.WebComparerConsoleApp.csproj", "{9990F202-40C8-4D36-81B9-672EE1B0D56A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Seedysoft.WebComparer.ConsoleApp", "src\WebComparer\ConsoleApp\Seedysoft.WebComparer.ConsoleApp.csproj", "{9990F202-40C8-4D36-81B9-672EE1B0D56A}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Outbox", "Outbox", "{DEA953B6-AC4C-4AFF-98A2-1D900A2C8DB6}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CommonLibs", "CommonLibs", "{1B84AE05-2D2A-49BD-A067-883B8FA01D75}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libs", "Libs", "{1B84AE05-2D2A-49BD-A067-883B8FA01D75}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Seedysoft.OutboxConsoleApp", "src\Outbox\OutboxConsoleApp\Seedysoft.OutboxConsoleApp.csproj", "{A6A8C795-22BA-4459-B11E-157238F04840}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Seedysoft.Outbox.ConsoleApp", "src\Outbox\ConsoleApp\Seedysoft.Outbox.ConsoleApp.csproj", "{A6A8C795-22BA-4459-B11E-157238F04840}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Seedysoft.CronBackgroundServiceLib", "src\CommonLibs\CronBackgroundServiceLib\Seedysoft.CronBackgroundServiceLib.csproj", "{33F5FCD1-4A46-4DF1-B9E4-791077F7B688}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Seedysoft.Libs.CronBackgroundService", "src\Libs\CronBackgroundService\Seedysoft.Libs.CronBackgroundService.csproj", "{33F5FCD1-4A46-4DF1-B9E4-791077F7B688}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Seedysoft.SmtpServiceLib", "src\CommonLibs\SmtpServiceLib\Seedysoft.SmtpServiceLib.csproj", "{639FCE62-4B61-4757-A7DD-A0A7691A000F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Seedysoft.Libs.SmtpService", "src\Libs\SmtpService\Seedysoft.Libs.SmtpService.csproj", "{639FCE62-4B61-4757-A7DD-A0A7691A000F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Seedysoft.TelegramLib", "src\CommonLibs\TelegramLib\Seedysoft.TelegramLib.csproj", "{543A560A-8747-4831-B7FD-6CC48D9A40EC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Seedysoft.Libs.Telegram", "src\Libs\Telegram\Seedysoft.Libs.Telegram.csproj", "{543A560A-8747-4831-B7FD-6CC48D9A40EC}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Seedysoft.UtilsLib", "src\CommonLibs\UtilsLib\Seedysoft.UtilsLib.csproj", "{4BC74EB4-A94B-44D1-8A89-E4EA9DDDBF4B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Seedysoft.Libs.Utils", "src\Libs\Utils\Seedysoft.Libs.Utils.csproj", "{4BC74EB4-A94B-44D1-8A89-E4EA9DDDBF4B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_SolutionItems", "_SolutionItems", "{76425700-456B-44B0-B42A-B0DC73595E5E}"
 	ProjectSection(SolutionItems) = preProject
@@ -39,9 +31,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_SolutionItems", "_Solution
 		.gitignore = .gitignore
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Seedysoft.InfrastructureLib", "src\CommonLibs\Seedysoft.InfrastructureLib\Seedysoft.InfrastructureLib.csproj", "{733108C1-F3A2-4AE7-AB43-BADCB4161169}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Seedysoft.Libs.Infrastructure", "src\Libs\Infrastructure\Seedysoft.Libs.Infrastructure.csproj", "{733108C1-F3A2-4AE7-AB43-BADCB4161169}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Seedysoft.OutboxLib", "src\Outbox\OutboxLib\Seedysoft.OutboxLib.csproj", "{B9DB9188-86E8-4C27-AA48-6FA3095542EA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Seedysoft.Outbox.Lib", "src\Outbox\Lib\Seedysoft.Outbox.Lib.csproj", "{B9DB9188-86E8-4C27-AA48-6FA3095542EA}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "doc", "doc", "{623B6345-334F-4699-B2FB-B928EBC6471B}"
 	ProjectSection(SolutionItems) = preProject
@@ -56,29 +48,33 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "bashScripts", "bashScripts"
 		bashScripts\create-daemon.sh = bashScripts\create-daemon.sh
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Seedysoft.TuyaDeviceControlLib", "src\CommonLibs\Seedysoft.TuyaDeviceControlLib\Seedysoft.TuyaDeviceControlLib.csproj", "{B9DCB14B-43FC-4920-9829-E1AA7955CAB9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Seedysoft.Libs.TuyaDeviceControl", "src\Libs\TuyaDeviceControl\Seedysoft.Libs.TuyaDeviceControl.csproj", "{B9DCB14B-43FC-4920-9829-E1AA7955CAB9}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Pvpc", "Pvpc", "{D502505E-CB81-4391-8F4A-C08474E89805}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Seedysoft.PvpcLib", "src\Pvpc\PvpcLib\Seedysoft.PvpcLib.csproj", "{89A314F2-682A-4262-90C8-8C28B28406A7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Seedysoft.Pvpc.Lib", "src\Pvpc\Lib\Seedysoft.Pvpc.Lib.csproj", "{89A314F2-682A-4262-90C8-8C28B28406A7}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Seedysoft.PvpcConsoleApp", "src\Pvpc\PvpcConsoleApp\Seedysoft.PvpcConsoleApp.csproj", "{C9D74763-F199-4D59-AFE3-048A21B24161}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Seedysoft.Pvpc.ConsoleApp", "src\Pvpc\ConsoleApp\Seedysoft.Pvpc.ConsoleApp.csproj", "{C9D74763-F199-4D59-AFE3-048A21B24161}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Seedysoft.CoreLib", "src\CommonLibs\CoreLib\Seedysoft.CoreLib.csproj", "{D0101826-65C5-4D4E-95A5-CE9D96EDF7F1}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Seedysoft.CoreLib.Tests", "test\CommonLibs\CoreLib.Tests\Seedysoft.CoreLib.Tests.csproj", "{79021581-4172-41AB-B7F2-D85C204F90AF}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Seedysoft.PvpcLib.Test", "test\Pvpc\PvpcLib.Test\Seedysoft.PvpcLib.Test.csproj", "{C90DDC88-3D11-4491-A97F-36D4ED9BDED4}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Seedysoft.InfrastructureLib.Test", "test\CommonLibs\InfrastructureLib.Test\Seedysoft.InfrastructureLib.Test.csproj", "{3D03581D-CA4D-429C-92AC-CBF4B5B6D834}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Seedysoft.CryptoLib", "src\CommonLibs\CryptoLib\Seedysoft.CryptoLib.csproj", "{F37B65A4-1DD3-4418-B825-FE577AEB29E0}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Seedysoft.CryptoLib.Tests", "test\CommonLibs\CryptoLib.Tests\Seedysoft.CryptoLib.Tests.csproj", "{70B94E3B-AB15-4FD8-99D0-6B7DD632888C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Seedysoft.Libs.Core", "src\Libs\Core\Seedysoft.Libs.Core.csproj", "{D0101826-65C5-4D4E-95A5-CE9D96EDF7F1}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Seedysoft.BlazorWebApp.Client", "src\BlazorWebApp\Client\Seedysoft.BlazorWebApp.Client.csproj", "{B61C7BCC-0966-4960-8A96-3AF0C5985814}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Seedysoft.BlazorWebApp.Server", "src\BlazorWebApp\Server\Seedysoft.BlazorWebApp.Server.csproj", "{7330CF79-2BF4-4D53-9D22-21042281891C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Seedysoft.FuelPrices.ConsoleApp", "src\FuelPrices\ConsoleApp\Seedysoft.FuelPrices.ConsoleApp.csproj", "{1346864E-F175-4EA5-8F0C-D4B0B9D41CF3}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Seedysoft.FuelPrices.Lib", "src\FuelPrices\Lib\Seedysoft.FuelPrices.Lib.csproj", "{592C2F31-E2F0-42FC-9F3A-7F3A72687B0F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Seedysoft.Libs.Crypto", "src\Libs\Crypto\Seedysoft.Libs.Crypto.csproj", "{B03845DC-E517-4993-94AC-4CBBFE12C92E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Seedysoft.Libs.Core.Tests", "test\Libs\Core.Tests\Seedysoft.Libs.Core.Tests.csproj", "{9FCDE68A-2CEE-4A2C-93DF-04928A78A7BC}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Seedysoft.Libs.Crypto.Tests", "test\Libs\Crypto.Tests\Seedysoft.Libs.Crypto.Tests.csproj", "{B54717BD-B9BC-428B-A4AA-86CD77DD70AD}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Seedysoft.Libs.Infrastructure.Test", "test\Libs\Infrastructure.Test\Seedysoft.Libs.Infrastructure.Test.csproj", "{0F6D0134-0DF7-48C3-A2E2-545C032A8518}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Seedysoft.Pvpc.Lib.Test", "test\Pvpc\Lib.Test\Seedysoft.Pvpc.Lib.Test.csproj", "{98C04681-DFDB-4FFC-A421-8C10D7900431}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -86,22 +82,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{439E5D31-4799-4DFB-A5EF-C0D7B3357808}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{439E5D31-4799-4DFB-A5EF-C0D7B3357808}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{439E5D31-4799-4DFB-A5EF-C0D7B3357808}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{439E5D31-4799-4DFB-A5EF-C0D7B3357808}.Release|Any CPU.Build.0 = Release|Any CPU
-		{54750684-6611-4E2B-970D-EA894361661C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{54750684-6611-4E2B-970D-EA894361661C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{54750684-6611-4E2B-970D-EA894361661C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{54750684-6611-4E2B-970D-EA894361661C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E4D27BA2-3457-41FB-85AF-930EE0FA3297}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E4D27BA2-3457-41FB-85AF-930EE0FA3297}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E4D27BA2-3457-41FB-85AF-930EE0FA3297}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E4D27BA2-3457-41FB-85AF-930EE0FA3297}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D2435FFF-2E6F-4ACE-8495-42DEE0C21165}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D2435FFF-2E6F-4ACE-8495-42DEE0C21165}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D2435FFF-2E6F-4ACE-8495-42DEE0C21165}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D2435FFF-2E6F-4ACE-8495-42DEE0C21165}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B1F1F2EF-81B9-4284-AC8A-DA6F3A55C263}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B1F1F2EF-81B9-4284-AC8A-DA6F3A55C263}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B1F1F2EF-81B9-4284-AC8A-DA6F3A55C263}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -154,26 +134,6 @@ Global
 		{D0101826-65C5-4D4E-95A5-CE9D96EDF7F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D0101826-65C5-4D4E-95A5-CE9D96EDF7F1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D0101826-65C5-4D4E-95A5-CE9D96EDF7F1}.Release|Any CPU.Build.0 = Release|Any CPU
-		{79021581-4172-41AB-B7F2-D85C204F90AF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{79021581-4172-41AB-B7F2-D85C204F90AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{79021581-4172-41AB-B7F2-D85C204F90AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{79021581-4172-41AB-B7F2-D85C204F90AF}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C90DDC88-3D11-4491-A97F-36D4ED9BDED4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C90DDC88-3D11-4491-A97F-36D4ED9BDED4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C90DDC88-3D11-4491-A97F-36D4ED9BDED4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C90DDC88-3D11-4491-A97F-36D4ED9BDED4}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3D03581D-CA4D-429C-92AC-CBF4B5B6D834}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3D03581D-CA4D-429C-92AC-CBF4B5B6D834}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3D03581D-CA4D-429C-92AC-CBF4B5B6D834}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3D03581D-CA4D-429C-92AC-CBF4B5B6D834}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F37B65A4-1DD3-4418-B825-FE577AEB29E0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F37B65A4-1DD3-4418-B825-FE577AEB29E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F37B65A4-1DD3-4418-B825-FE577AEB29E0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F37B65A4-1DD3-4418-B825-FE577AEB29E0}.Release|Any CPU.Build.0 = Release|Any CPU
-		{70B94E3B-AB15-4FD8-99D0-6B7DD632888C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{70B94E3B-AB15-4FD8-99D0-6B7DD632888C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{70B94E3B-AB15-4FD8-99D0-6B7DD632888C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{70B94E3B-AB15-4FD8-99D0-6B7DD632888C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B61C7BCC-0966-4960-8A96-3AF0C5985814}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B61C7BCC-0966-4960-8A96-3AF0C5985814}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B61C7BCC-0966-4960-8A96-3AF0C5985814}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -182,15 +142,39 @@ Global
 		{7330CF79-2BF4-4D53-9D22-21042281891C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7330CF79-2BF4-4D53-9D22-21042281891C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7330CF79-2BF4-4D53-9D22-21042281891C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1346864E-F175-4EA5-8F0C-D4B0B9D41CF3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1346864E-F175-4EA5-8F0C-D4B0B9D41CF3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1346864E-F175-4EA5-8F0C-D4B0B9D41CF3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1346864E-F175-4EA5-8F0C-D4B0B9D41CF3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{592C2F31-E2F0-42FC-9F3A-7F3A72687B0F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{592C2F31-E2F0-42FC-9F3A-7F3A72687B0F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{592C2F31-E2F0-42FC-9F3A-7F3A72687B0F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{592C2F31-E2F0-42FC-9F3A-7F3A72687B0F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B03845DC-E517-4993-94AC-4CBBFE12C92E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B03845DC-E517-4993-94AC-4CBBFE12C92E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B03845DC-E517-4993-94AC-4CBBFE12C92E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B03845DC-E517-4993-94AC-4CBBFE12C92E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9FCDE68A-2CEE-4A2C-93DF-04928A78A7BC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9FCDE68A-2CEE-4A2C-93DF-04928A78A7BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9FCDE68A-2CEE-4A2C-93DF-04928A78A7BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9FCDE68A-2CEE-4A2C-93DF-04928A78A7BC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B54717BD-B9BC-428B-A4AA-86CD77DD70AD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B54717BD-B9BC-428B-A4AA-86CD77DD70AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B54717BD-B9BC-428B-A4AA-86CD77DD70AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B54717BD-B9BC-428B-A4AA-86CD77DD70AD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0F6D0134-0DF7-48C3-A2E2-545C032A8518}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0F6D0134-0DF7-48C3-A2E2-545C032A8518}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0F6D0134-0DF7-48C3-A2E2-545C032A8518}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0F6D0134-0DF7-48C3-A2E2-545C032A8518}.Release|Any CPU.Build.0 = Release|Any CPU
+		{98C04681-DFDB-4FFC-A421-8C10D7900431}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{98C04681-DFDB-4FFC-A421-8C10D7900431}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{98C04681-DFDB-4FFC-A421-8C10D7900431}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{98C04681-DFDB-4FFC-A421-8C10D7900431}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{439E5D31-4799-4DFB-A5EF-C0D7B3357808} = {72066A4C-B25F-4CE6-A9A0-4AD80C544B2A}
-		{54750684-6611-4E2B-970D-EA894361661C} = {72066A4C-B25F-4CE6-A9A0-4AD80C544B2A}
-		{E4D27BA2-3457-41FB-85AF-930EE0FA3297} = {72066A4C-B25F-4CE6-A9A0-4AD80C544B2A}
-		{D2435FFF-2E6F-4ACE-8495-42DEE0C21165} = {72066A4C-B25F-4CE6-A9A0-4AD80C544B2A}
 		{B1F1F2EF-81B9-4284-AC8A-DA6F3A55C263} = {59B3631D-CCF0-40C2-9F5B-3DE2665E5F22}
 		{9990F202-40C8-4D36-81B9-672EE1B0D56A} = {59B3631D-CCF0-40C2-9F5B-3DE2665E5F22}
 		{A6A8C795-22BA-4459-B11E-157238F04840} = {DEA953B6-AC4C-4AFF-98A2-1D900A2C8DB6}
@@ -206,11 +190,13 @@ Global
 		{89A314F2-682A-4262-90C8-8C28B28406A7} = {D502505E-CB81-4391-8F4A-C08474E89805}
 		{C9D74763-F199-4D59-AFE3-048A21B24161} = {D502505E-CB81-4391-8F4A-C08474E89805}
 		{D0101826-65C5-4D4E-95A5-CE9D96EDF7F1} = {1B84AE05-2D2A-49BD-A067-883B8FA01D75}
-		{79021581-4172-41AB-B7F2-D85C204F90AF} = {1B84AE05-2D2A-49BD-A067-883B8FA01D75}
-		{C90DDC88-3D11-4491-A97F-36D4ED9BDED4} = {D502505E-CB81-4391-8F4A-C08474E89805}
-		{3D03581D-CA4D-429C-92AC-CBF4B5B6D834} = {1B84AE05-2D2A-49BD-A067-883B8FA01D75}
-		{F37B65A4-1DD3-4418-B825-FE577AEB29E0} = {1B84AE05-2D2A-49BD-A067-883B8FA01D75}
-		{70B94E3B-AB15-4FD8-99D0-6B7DD632888C} = {1B84AE05-2D2A-49BD-A067-883B8FA01D75}
+		{1346864E-F175-4EA5-8F0C-D4B0B9D41CF3} = {72066A4C-B25F-4CE6-A9A0-4AD80C544B2A}
+		{592C2F31-E2F0-42FC-9F3A-7F3A72687B0F} = {72066A4C-B25F-4CE6-A9A0-4AD80C544B2A}
+		{B03845DC-E517-4993-94AC-4CBBFE12C92E} = {1B84AE05-2D2A-49BD-A067-883B8FA01D75}
+		{9FCDE68A-2CEE-4A2C-93DF-04928A78A7BC} = {1B84AE05-2D2A-49BD-A067-883B8FA01D75}
+		{B54717BD-B9BC-428B-A4AA-86CD77DD70AD} = {1B84AE05-2D2A-49BD-A067-883B8FA01D75}
+		{0F6D0134-0DF7-48C3-A2E2-545C032A8518} = {1B84AE05-2D2A-49BD-A067-883B8FA01D75}
+		{98C04681-DFDB-4FFC-A421-8C10D7900431} = {D502505E-CB81-4391-8F4A-C08474E89805}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {76CD9B0B-E4FA-4E83-9623-2163AE82F180}

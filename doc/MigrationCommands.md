@@ -13,10 +13,10 @@ Remove-Migration -Context DbCxt -Project CommonLibs\Seedysoft.InfrastructureLib 
 
 **List all existent migrations:**
 ```
-dotnet ef migrations list -c CarburantesDbContext -p .\Carburantes\Infrastructure\Seedysoft.Carburantes.Infrastructure.csproj --no-build -v
+dotnet ef migrations list -c CarburantesDbContext -p .\Carburantes\Infrastructure\Seedysoft.Infrastructure.csproj --no-build -v
 ```
 
 **Execute a previous migration:**
 ```
-dotnet ef database update InitialCarburantesDbContext -c CarburantesDbContext -p .\Carburantes\Infrastructure\Seedysoft.Carburantes.Infrastructure.csproj --no-build -v
+dotnet ef database update InitialCarburantesDbContext -c CarburantesDbContext -p .\Carburantes\Infrastructure\Seedysoft.Infrastructure.csproj --no-build -v
 ```
