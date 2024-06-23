@@ -17,42 +17,29 @@ public sealed class Program
 
         Libs.Infrastructure.Dependencies.ConfigureDefaultDependencies(builder, args);
 
+        string CurrentEnvironmentName = builder.Environment.EnvironmentName;
+
         _ = builder.Configuration
-            .AddJsonFile($"appsettings.Infrastructure.json", false, true)
-            .AddJsonFile($"appsettings.Infrastructure.{builder.Environment.EnvironmentName}.json", false, true)
-            .AddJsonFile($"appsettings.CarburantesConnectionStrings.{builder.Environment.EnvironmentName}.json", false, true);
+            .AddJsonFile($"appsettings.FuelPrices.Lib.json", false, true)
+            .AddJsonFile($"appsettings.FuelPrices.Lib.{CurrentEnvironmentName}.json", false, true)
+            .AddJsonFile($"appsettings.FuelPrices.Lib.ConnectionStrings.{CurrentEnvironmentName}.json", false, true);
 
-        _ = builder.Services.AddDbContext<Lib.Infrastructure.Data.CarburantesDbContext>((iServiceProvider, dbContextOptionsBuilder) =>
+        _ = builder.Services.AddDbContext<Lib.Infrastructure.Data.FuelPricesDbContext>((iServiceProvider, dbContextOptionsBuilder) =>
         {
-            string ConnectionStringName = nameof(Lib.Infrastructure.Data.CarburantesDbContext);
+            string ConnectionStringName = nameof(Lib.Infrastructure.Data.FuelPricesDbContext);
             string ConnectionString = builder.Configuration.GetConnectionString($"{ConnectionStringName}") ?? throw new KeyNotFoundException($"Connection string '{ConnectionStringName}' not found.");
-            string FullFilePath = Path.GetFullPath(
-                ConnectionString[Libs.Core.Constants.DatabaseStrings.DataSource.Length..],
-                System.Reflection.Assembly.GetExecutingAssembly().Location);
-            if (!File.Exists(FullFilePath))
-                throw new FileNotFoundException("Database file not found.", FullFilePath);
+            //string FullFilePath = Path.GetFullPath(
+            //    ConnectionString[Libs.Core.Constants.DatabaseStrings.DataSource.Length..],
+            //    System.Reflection.Assembly.GetExecutingAssembly().Location);
+            //if (!File.Exists(FullFilePath))
+            //    throw new FileNotFoundException("Database file not found.", FullFilePath);
 
-            _ = dbContextOptionsBuilder.UseSqlite($"{Libs.Core.Constants.DatabaseStrings.DataSource}{FullFilePath}");
+            //_ = dbContextOptionsBuilder.UseSqlite($"{Libs.Core.Constants.DatabaseStrings.DataSource}{FullFilePath}");
+            _ = dbContextOptionsBuilder.UseSqlite(ConnectionString);
             dbContextOptionsBuilder.ConfigureDebugOptions();
         }
-        , ServiceLifetime.Transient
-        , ServiceLifetime.Transient)
-
-        .AddDbContext<Lib.Infrastructure.Data.CarburantesHistDbContext>((iServiceProvider, dbContextOptionsBuilder) =>
-        {
-            string ConnectionStringName = nameof(Lib.Infrastructure.Data.CarburantesHistDbContext);
-            string ConnectionString = builder.Configuration.GetConnectionString($"{ConnectionStringName}") ?? throw new KeyNotFoundException($"Connection string '{ConnectionStringName}' not found.");
-            string FullFilePath = Path.GetFullPath(
-                ConnectionString[Libs.Core.Constants.DatabaseStrings.DataSource.Length..],
-                System.Reflection.Assembly.GetExecutingAssembly().Location);
-            if (!File.Exists(FullFilePath))
-                throw new FileNotFoundException("Database file not found.", FullFilePath);
-
-            _ = dbContextOptionsBuilder.UseSqlite($"{Libs.Core.Constants.DatabaseStrings.DataSource}{FullFilePath}");
-            dbContextOptionsBuilder.ConfigureDebugOptions();
-        }
-        , ServiceLifetime.Transient
-        , ServiceLifetime.Transient);
+        , ServiceLifetime.Singleton
+        , ServiceLifetime.Singleton);
 
         _ = builder.Services.AddHttpClient(nameof(Lib.Core.Settings.Minetur));
 
@@ -75,8 +62,7 @@ public sealed class Program
             // Migrate and seed the database during startup. Must be synchronous.
             using IServiceScope Scope = host.Services.CreateScope();
 
-            Scope.ServiceProvider.GetRequiredService<Lib.Infrastructure.Data.CarburantesDbContext>().Database.Migrate();
-            Scope.ServiceProvider.GetRequiredService<Lib.Infrastructure.Data.CarburantesHistDbContext>().Database.Migrate();
+            Scope.ServiceProvider.GetRequiredService<Lib.Infrastructure.Data.FuelPricesDbContext>().Database.Migrate();
 
             Lib.Services.ObtainDataCronBackgroundService obtainDataCronBackgroundService = host.Services.GetRequiredService<Lib.Services.ObtainDataCronBackgroundService>();
 

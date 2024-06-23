@@ -17,7 +17,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="appsettings.SmtpServiceSettings.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
   <ItemGroup>

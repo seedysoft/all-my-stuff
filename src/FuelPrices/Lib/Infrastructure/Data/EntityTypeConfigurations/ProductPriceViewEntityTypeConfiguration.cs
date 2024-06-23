@@ -4,15 +4,10 @@ using Seedysoft.FuelPrices.Lib.Core.Entities;
 
 namespace Seedysoft.FuelPrices.Lib.Infrastructure.Data.EntityTypeConfigurations;
 
-internal abstract class ProductPriceBaseEntityTypeConfiguration<T> : EntityTypeConfigurationBase<T> where T : ProductPriceBase
+internal sealed class ProductPriceEntityTypeConfiguration : EntityTypeConfigurationBase<ProductPrice>, IEntityTypeConfiguration<ProductPrice>
 {
-    public override void Configure(EntityTypeBuilder<T> builder)
+    public override void Configure(EntityTypeBuilder<ProductPrice> builder)
     {
-        _ = builder
-            .Property(x => x.AtDate)
-            .IsRequired()
-            .ValueGeneratedNever();
-
         _ = builder
             .Property(x => x.CentimosDeEuro)
             .IsRequired();
@@ -64,29 +59,11 @@ internal abstract class ProductPriceBaseEntityTypeConfiguration<T> : EntityTypeC
         _ = builder
             .Property(x => x.Rotulo)
             .IsRequired();
-    }
-}
 
-internal sealed class ProductPriceEntityTypeConfiguration : ProductPriceBaseEntityTypeConfiguration<ProductPrice>, IEntityTypeConfiguration<ProductPrice>
-{
-    public override void Configure(EntityTypeBuilder<ProductPrice> builder)
-    {
         base.Configure(builder);
 
         _ = builder
             .HasNoKey()
             .ToView(nameof(ProductPrice));
-    }
-}
-
-internal sealed class ProductPriceHistViewEntityTypeConfiguration : ProductPriceBaseEntityTypeConfiguration<ProductPriceHist>, IEntityTypeConfiguration<ProductPriceHist>
-{
-    public override void Configure(EntityTypeBuilder<ProductPriceHist> builder)
-    {
-        base.Configure(builder);
-
-        _ = builder
-            .HasNoKey()
-            .ToView(nameof(ProductPriceHist));
     }
 }

@@ -4,9 +4,9 @@ using Seedysoft.FuelPrices.Lib.Core.Entities;
 
 namespace Seedysoft.FuelPrices.Lib.Infrastructure.Data.EntityTypeConfigurations;
 
-internal abstract class EstacionServicioEntityTypeConfigurationBase<T> : EntityTypeConfigurationBase<T> where T : EstacionServicioBase
+internal sealed class EstacionServicioEntityTypeConfiguration : EntityTypeConfigurationBase<EstacionServicio>, IEntityTypeConfiguration<EstacionServicio>
 {
-    public override void Configure(EntityTypeBuilder<T> builder)
+    public override void Configure(EntityTypeBuilder<EstacionServicio> builder)
     {
         _ = builder
             .Property(x => x.IdEstacion)
@@ -50,29 +50,9 @@ internal abstract class EstacionServicioEntityTypeConfigurationBase<T> : EntityT
             .IsRequired();
 
         base.Configure(builder);
-    }
-}
-
-internal sealed class EstacionServicioEntityTypeConfiguration : EstacionServicioEntityTypeConfigurationBase<EstacionServicio>, IEntityTypeConfiguration<EstacionServicio>
-{
-    public override void Configure(EntityTypeBuilder<EstacionServicio> builder)
-    {
-        base.Configure(builder);
 
         _ = builder
             .ToTable(nameof(EstacionServicio))
-            .HasKey(x => new { x.IdEstacion });
-    }
-}
-
-internal sealed class EstacionServicioHistEntityTypeConfiguration : EstacionServicioEntityTypeConfigurationBase<EstacionServicioHist>, IEntityTypeConfiguration<EstacionServicioHist>
-{
-    public override void Configure(EntityTypeBuilder<EstacionServicioHist> builder)
-    {
-        base.Configure(builder);
-
-        _ = builder
-            .ToTable(nameof(EstacionServicioHist))
             .HasKey(x => new { x.IdEstacion, x.AtDate });
     }
 }

@@ -2,7 +2,6 @@
 using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Geometries;
 using Seedysoft.BlazorWebApp.Client;
-using Seedysoft.Libs.Utils.Constants;
 using Seedysoft.Libs.Utils.Extensions;
 using System.Collections.Immutable;
 
@@ -68,13 +67,13 @@ public sealed class RoutesController : ApiControllerBase
     [HttpPost]
     public async Task<IImmutableList<Client.ViewModels.GasStationInfoModel>> ObtainGasStationsAsync(
         [FromBody] Client.ViewModels.GasStationQueryModel filter
-        , [FromServices] FuelPrices.Lib.Infrastructure.Data.CarburantesDbContext carburantesDbContext
+        , [FromServices] FuelPrices.Lib.Infrastructure.Data.FuelPricesDbContext fuelPricesDbContext
         , [FromServices] FuelPrices.Lib.Core.Settings.SettingsRoot settings)
     {
-        GeometryFactory GeomFactWgs84 = NetTopologySuite.NtsGeometryServices.Instance.CreateGeometryFactory(CoordinateSystemCodes.Wgs84);
-        GeometryFactory GeomFactEpsg3857 = NetTopologySuite.NtsGeometryServices.Instance.CreateGeometryFactory(CoordinateSystemCodes.Epsg3857);
+        GeometryFactory GeomFactWgs84 = NetTopologySuite.NtsGeometryServices.Instance.CreateGeometryFactory(Libs.Utils.Constants.CoordinateSystemCodes.Wgs84);
+        GeometryFactory GeomFactEpsg3857 = NetTopologySuite.NtsGeometryServices.Instance.CreateGeometryFactory(Libs.Utils.Constants.CoordinateSystemCodes.Epsg3857);
 
-        var AllStations = await carburantesDbContext.EstacionesServicio
+        var AllStations = await fuelPricesDbContext.EstacionesServicio
             .AsNoTracking()
             .Select(x => new
             {
@@ -82,7 +81,7 @@ public sealed class RoutesController : ApiControllerBase
                 LocationEpsg3857 = GeomFactEpsg3857
                     .CreateGeometry(GeomFactWgs84
                         .CreatePoint(new Coordinate(x.LngNotNull, x.LatNotNull))
-                        .ProjectTo(CoordinateSystemCodes.Epsg3857))
+                        .ProjectTo(Libs.Utils.Constants.CoordinateSystemCodes.Epsg3857))
             }).ToListAsync();
         if (AllStations.Count == 0)
             return ImmutableArray<Client.ViewModels.GasStationInfoModel>.Empty;
@@ -100,7 +99,7 @@ public sealed class RoutesController : ApiControllerBase
                 PointEpsg3857 = GeomFactEpsg3857
                     .CreateGeometry(GeomFactWgs84
                         .CreatePoint(new Coordinate(x.LngNotNull, x.LatNotNull))
-                        .ProjectTo(CoordinateSystemCodes.Epsg3857))
+                        .ProjectTo(Libs.Utils.Constants.CoordinateSystemCodes.Epsg3857))
             }).ToImmutableArray();
         if (!RoutePointsImmutable.Any())
             return ImmutableArray<Client.ViewModels.GasStationInfoModel>.Empty;
@@ -135,16 +134,16 @@ public sealed class RoutesController : ApiControllerBase
         }
 
         NearStationIds.Sort();
-        IQueryable<FuelPrices.Lib.Core.Entities.ProductoPetrolifero> TempQuery = carburantesDbContext.ProductosPetroliferos.AsNoTracking();
+        IQueryable<FuelPrices.Lib.Core.Entities.ProductoPetrolifero> TempQuery = fuelPricesDbContext.ProductosPetroliferos.AsNoTracking();
 
         if (filter.PetroleumProductsSelectedIds != null && filter.PetroleumProductsSelectedIds.Any())
             TempQuery = TempQuery.Where(x => filter.PetroleumProductsSelectedIds.Contains(x.IdProducto));
 
         IQueryable<Client.ViewModels.GasStationInfoModel> ToReturnQuery =
-            from h in carburantesDbContext.EstacionProductoPrecios.AsNoTracking()
-            join e in carburantesDbContext.EstacionesServicio.AsNoTracking() on h.IdEstacion equals e.IdEstacion
-            join m in carburantesDbContext.Municipios.AsNoTracking() on e.IdMunicipio equals m.IdMunicipio
-            join a in carburantesDbContext.Provincias.AsNoTracking() on m.IdProvincia equals a.IdProvincia
+            from h in fuelPricesDbContext.EstacionProductoPrecios.AsNoTracking()
+            join e in fuelPricesDbContext.EstacionesServicio.AsNoTracking() on h.IdEstacion equals e.IdEstacion
+            join m in fuelPricesDbContext.Municipios.AsNoTracking() on e.IdMunicipio equals m.IdMunicipio
+            join a in fuelPricesDbContext.Provincias.AsNoTracking() on m.IdProvincia equals a.IdProvincia
             join p in TempQuery on h.IdProducto equals p.IdProducto
             where NearStationIds.Contains(e.IdEstacion)
             orderby p.NombreProducto/*, h.Precio IQueryable cannot order by decimals*/

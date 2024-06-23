@@ -33,7 +33,7 @@ public sealed partial class DbCxt : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
-        _ = modelBuilder.ApplyConfigurationsFromAssembly(System.Reflection.Assembly.GetExecutingAssembly());
+        _ = modelBuilder.ApplyConfigurationsFromAssembly(GetType().Assembly);
     }
 
     public DbSet<Outbox> Outbox { get; set; } = default!;

@@ -18,13 +18,13 @@
   <ItemGroup>
     <None Remove="appsettings.TelegramSettings.Development.json" />
     <Content Include="appsettings.TelegramSettings.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <None Remove="appsettings.TelegramSettings.Production.json" />
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)' == 'Debug'">
     <Content Include="appsettings.TelegramSettings.Development.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <DependentUpon>appsettings.TelegramSettings.json</DependentUpon>
     </Content>
     <None Include="appsettings.TelegramSettings.Production.json">
@@ -38,7 +38,7 @@
       <DependentUpon>appsettings.TelegramSettings.json</DependentUpon>
     </None>
     <Content Include="appsettings.TelegramSettings.Production.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <DependentUpon>appsettings.TelegramSettings.json</DependentUpon>
     </Content>
   </ItemGroup>
