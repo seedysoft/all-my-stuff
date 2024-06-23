@@ -13,7 +13,7 @@ public sealed class PetroleumProductsController : ApiControllerBase
     [HttpGet()]
     [Route("[action]")]
     public async Task<IImmutableList<Client.ViewModels.IdDescRecord>> PetroleumProductsForFilterAsync(
-        [FromServices] Carburantes.Infrastructure.Data.CarburantesDbContext carburantesDbContext)
+        [FromServices] FuelPrices.Lib.Infrastructure.Data.CarburantesDbContext carburantesDbContext)
     {
         IQueryable<Client.ViewModels.IdDescRecord> Query =
             from p in carburantesDbContext.ProductosPetroliferos

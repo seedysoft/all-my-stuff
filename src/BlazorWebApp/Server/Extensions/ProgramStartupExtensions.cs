@@ -1,6 +1,14 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Seedysoft.InfrastructureLib.Extensions;
+using Seedysoft.Libs.Core.Constants;
+using Seedysoft.Libs.Infrastructure;
+using Seedysoft.Libs.Infrastructure.Extensions;
+using Seedysoft.Libs.Telegram.Services;
+using Seedysoft.Libs.Telegram.Settings;
+using Seedysoft.Outbox.Lib.Services;
+using Seedysoft.Pvpc.Lib.Services;
+using Seedysoft.Pvpc.Lib.Settings;
+using Seedysoft.WebComparer.Lib.Services;
 
 namespace Seedysoft.BlazorWebApp.Server.Extensions;
 
@@ -17,8 +25,8 @@ public static class ProgramStartupExtensions
     public static WebApplication MigrateDbContexts(this WebApplication webApplication)
     {
         webApplication.Services.GetRequiredService<InfrastructureLib.DbContexts.DbCxt>().Database.Migrate();
-        webApplication.Services.GetRequiredService<Carburantes.Infrastructure.Data.CarburantesDbContext>().Database.Migrate();
-        webApplication.Services.GetRequiredService<Carburantes.Infrastructure.Data.CarburantesHistDbContext>().Database.Migrate();
+        webApplication.Services.GetRequiredService<FuelPrices.Lib.Infrastructure.Data.CarburantesDbContext>().Database.Migrate();
+        webApplication.Services.GetRequiredService<FuelPrices.Lib.Infrastructure.Data.CarburantesHistDbContext>().Database.Migrate();
 
         return webApplication;
     }
@@ -49,8 +57,8 @@ public static class ProgramStartupExtensions
 
             .AddJsonFile($"appsettings.CarburantesConnectionStrings.{CurrentEnvironmentName}.json", false, true)
 
-            .AddJsonFile($"appsettings.Carburantes.Infrastructure.json", false, true)
-            .AddJsonFile($"appsettings.Carburantes.Infrastructure.{CurrentEnvironmentName}.json", false, true)
+            .AddJsonFile($"appsettings.Infrastructure.json", false, true)
+            .AddJsonFile($"appsettings.Infrastructure.{CurrentEnvironmentName}.json", false, true)
 
             .AddJsonFile($"appsettings.Serilog.json", false, true)
             .AddJsonFile($"appsettings.Serilog.{CurrentEnvironmentName}.json", false, true)
@@ -67,36 +75,36 @@ public static class ProgramStartupExtensions
 
     private static WebApplicationBuilder AddDbContexts(this WebApplicationBuilder webApplicationBuilder)
     {
-        InfrastructureLib.Dependencies.AddDbCxtContext(webApplicationBuilder);
+        Dependencies.AddDbCxtContext(webApplicationBuilder);
 
         _ = webApplicationBuilder.Services
-            .AddDbContext<Carburantes.Infrastructure.Data.CarburantesDbContext>((iServiceProvider, dbContextOptionsBuilder) =>
+            .AddDbContext<FuelPrices.Lib.Infrastructure.Data.CarburantesDbContext>((iServiceProvider, dbContextOptionsBuilder) =>
             {
-                string ConnectionStringName = nameof(Carburantes.Infrastructure.Data.CarburantesDbContext);
+                string ConnectionStringName = nameof(FuelPrices.Lib.Infrastructure.Data.CarburantesDbContext);
                 string ConnectionString = webApplicationBuilder.Configuration.GetConnectionString($"{ConnectionStringName}") ?? throw new KeyNotFoundException($"Connection string '{ConnectionStringName}' not found.");
                 string FullFilePath = Path.GetFullPath(
-                    ConnectionString[CoreLib.Constants.DatabaseStrings.DataSource.Length..],
+                    ConnectionString[DatabaseStrings.DataSource.Length..],
                     System.Reflection.Assembly.GetExecutingAssembly().Location);
                 if (!File.Exists(FullFilePath))
                     throw new FileNotFoundException("Database file not found.", FullFilePath);
 
-                _ = dbContextOptionsBuilder.UseSqlite($"{CoreLib.Constants.DatabaseStrings.DataSource}{FullFilePath}");
+                _ = dbContextOptionsBuilder.UseSqlite($"{DatabaseStrings.DataSource}{FullFilePath}");
                 dbContextOptionsBuilder.ConfigureDebugOptions();
             }
             , ServiceLifetime.Transient
             , ServiceLifetime.Transient)
 
-            .AddDbContext<Carburantes.Infrastructure.Data.CarburantesHistDbContext>((iServiceProvider, dbContextOptionsBuilder) =>
+            .AddDbContext<FuelPrices.Lib.Infrastructure.Data.CarburantesHistDbContext>((iServiceProvider, dbContextOptionsBuilder) =>
             {
-                string ConnectionStringName = nameof(Carburantes.Infrastructure.Data.CarburantesHistDbContext);
+                string ConnectionStringName = nameof(FuelPrices.Lib.Infrastructure.Data.CarburantesHistDbContext);
                 string ConnectionString = webApplicationBuilder.Configuration.GetConnectionString($"{ConnectionStringName}") ?? throw new KeyNotFoundException($"Connection string '{ConnectionStringName}' not found.");
                 string FullFilePath = Path.GetFullPath(
-                    ConnectionString[CoreLib.Constants.DatabaseStrings.DataSource.Length..],
+                    ConnectionString[DatabaseStrings.DataSource.Length..],
                     System.Reflection.Assembly.GetExecutingAssembly().Location);
                 if (!File.Exists(FullFilePath))
                     throw new FileNotFoundException("Database file not found.", FullFilePath);
 
-                _ = dbContextOptionsBuilder.UseSqlite($"{CoreLib.Constants.DatabaseStrings.DataSource}{FullFilePath}");
+                _ = dbContextOptionsBuilder.UseSqlite($"{DatabaseStrings.DataSource}{FullFilePath}");
                 dbContextOptionsBuilder.ConfigureDebugOptions();
             }
             , ServiceLifetime.Transient
@@ -110,27 +118,27 @@ public static class ProgramStartupExtensions
         // Add Todo service for components adopting SSR
         //_ = webApplicationBuilder.Services.AddScoped<IMovieService, ServerMovieService>();
 
-        webApplicationBuilder.Services.TryAddSingleton(webApplicationBuilder.Configuration.GetSection(nameof(SmtpServiceLib.Settings.SmtpServiceSettings)).Get<SmtpServiceLib.Settings.SmtpServiceSettings>()!);
-        webApplicationBuilder.Services.TryAddTransient<SmtpServiceLib.Services.SmtpService>();
+        webApplicationBuilder.Services.TryAddSingleton(webApplicationBuilder.Configuration.GetSection(nameof(Libs.SmtpService.Settings.SmtpServiceSettings)).Get<Libs.SmtpService.Settings.SmtpServiceSettings>()!);
+        webApplicationBuilder.Services.TryAddTransient<Libs.SmtpService.Services.SmtpService>();
 
-        webApplicationBuilder.Services.TryAddSingleton(webApplicationBuilder.Configuration.GetSection(nameof(TelegramLib.Settings.TelegramSettings)).Get<TelegramLib.Settings.TelegramSettings>()!);
-        webApplicationBuilder.Services.TryAddSingleton<TelegramLib.Services.TelegramHostedService>();
-        _ = webApplicationBuilder.Services.AddHostedService<TelegramLib.Services.TelegramHostedService>();
+        webApplicationBuilder.Services.TryAddSingleton(webApplicationBuilder.Configuration.GetSection(nameof(TelegramSettings)).Get<TelegramSettings>()!);
+        webApplicationBuilder.Services.TryAddSingleton<TelegramHostedService>();
+        _ = webApplicationBuilder.Services.AddHostedService<TelegramHostedService>();
 
-        _ = webApplicationBuilder.Services.AddHttpClient(nameof(Carburantes.Core.Settings.Minetur));
-        _ = webApplicationBuilder.Services.AddHostedService<Carburantes.Services.ObtainDataCronBackgroundService>();
+        _ = webApplicationBuilder.Services.AddHttpClient(nameof(FuelPrices.Lib.Core.Settings.Minetur));
+        _ = webApplicationBuilder.Services.AddHostedService<FuelPrices.Lib.Services.ObtainDataCronBackgroundService>();
 
-        webApplicationBuilder.Services.TryAddSingleton(webApplicationBuilder.Configuration.GetSection(nameof(PvpcLib.Settings.PvpcSettings)).Get<PvpcLib.Settings.PvpcSettings>()!);
-        webApplicationBuilder.Services.TryAddSingleton(webApplicationBuilder.Configuration.GetSection(nameof(PvpcLib.Settings.TuyaManagerSettings)).Get<PvpcLib.Settings.TuyaManagerSettings>()!);
-        webApplicationBuilder.Services.TryAddSingleton<PvpcLib.Services.PvpcCronBackgroundService>();
-        _ = webApplicationBuilder.Services.AddHostedService<PvpcLib.Services.PvpcCronBackgroundService>();
-        webApplicationBuilder.Services.TryAddSingleton<PvpcLib.Services.TuyaManagerCronBackgroundService>();
-        _ = webApplicationBuilder.Services.AddHostedService<PvpcLib.Services.TuyaManagerCronBackgroundService>();
+        webApplicationBuilder.Services.TryAddSingleton(webApplicationBuilder.Configuration.GetSection(nameof(PvpcSettings)).Get<PvpcSettings>()!);
+        webApplicationBuilder.Services.TryAddSingleton(webApplicationBuilder.Configuration.GetSection(nameof(TuyaManagerSettings)).Get<TuyaManagerSettings>()!);
+        webApplicationBuilder.Services.TryAddSingleton<PvpcCronBackgroundService>();
+        _ = webApplicationBuilder.Services.AddHostedService<PvpcCronBackgroundService>();
+        webApplicationBuilder.Services.TryAddSingleton<TuyaManagerCronBackgroundService>();
+        _ = webApplicationBuilder.Services.AddHostedService<TuyaManagerCronBackgroundService>();
 
-        _ = webApplicationBuilder.Services.AddHostedService<OutboxLib.Services.OutboxCronBackgroundService>();
+        _ = webApplicationBuilder.Services.AddHostedService<OutboxCronBackgroundService>();
 
-        webApplicationBuilder.Services.TryAddSingleton<WebComparerLib.Services.WebComparerHostedService>();
-        _ = webApplicationBuilder.Services.AddHostedService<WebComparerLib.Services.WebComparerHostedService>();
+        webApplicationBuilder.Services.TryAddSingleton<WebComparerHostedService>();
+        _ = webApplicationBuilder.Services.AddHostedService<WebComparerHostedService>();
 
         return webApplicationBuilder;
     }
