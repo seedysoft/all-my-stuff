@@ -1,8 +1,6 @@
-﻿using Seedysoft.FuelPrices.Lib.Core.Entities.Core;
+﻿namespace Seedysoft.FuelPrices.Lib.Core.Entities;
 
-namespace Seedysoft.FuelPrices.Lib.Core.Entities;
-
-public abstract class ProductPriceBase : EntityBase
+public abstract class ProductPriceBase : Core.EntityBase
 {
     public int CentimosDeEuro { get; set; }
     public decimal Euros => decimal.Divide(CentimosDeEuro, 1_000M);

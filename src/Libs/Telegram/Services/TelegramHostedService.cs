@@ -6,8 +6,11 @@ using Microsoft.Extensions.Logging;
 using Seedysoft.Libs.Utils.Extensions;
 using Telegram.Bot;
 using Telegram.Bot.Exceptions;
+using Telegram.Bot.Polling;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
+using Telegram.Bot.Types.InlineQueryResults;
+using Telegram.Bot.Types.ReplyMarkups;
 
 namespace Seedysoft.Libs.Telegram.Services;
 
@@ -110,7 +113,7 @@ public partial class TelegramHostedService : Microsoft.Extensions.Hosting.IHoste
             await LocalTelegramBotClient.SetMyCommandsAsync(commands: myCommands, cancellationToken: stoppingToken);
 
         // StartReceiving does not block the caller thread. Receiving is done on the ThreadPool.
-        Telegram.Bot.Polling.ReceiverOptions OptionsReceiver = new()
+        ReceiverOptions OptionsReceiver = new()
         {
             AllowedUpdates = default,
             Limit = default,
@@ -130,11 +133,11 @@ public partial class TelegramHostedService : Microsoft.Extensions.Hosting.IHoste
     {
         switch (exception)
         {
-            case Telegram.Bot.Exceptions.ApiRequestException apiRequestException:
+            case ApiRequestException apiRequestException:
                 Logger.LogError("Telegram API Error:\n[{ErrorCode}]\n{Message}", apiRequestException.ErrorCode, apiRequestException.Message);
                 break;
 
-            case Telegram.Bot.Exceptions.RequestException requestException:
+            case RequestException requestException:
                 Logger.LogError("Telegram API Error:\n[{HttpStatusCode}]\n{Message}", requestException.HttpStatusCode, requestException.Message);
                 break;
 
@@ -155,19 +158,19 @@ public partial class TelegramHostedService : Microsoft.Extensions.Hosting.IHoste
         {
             Task handler = update.Type switch
             {
-                Enums.UpdateType.CallbackQuery => BotOnCallbackQueryReceivedAsync(botClient, update.CallbackQuery!, cancellationToken),
+                UpdateType.CallbackQuery => BotOnCallbackQueryReceivedAsync(botClient, update.CallbackQuery!, cancellationToken),
 
-                Enums.UpdateType.ChannelPost => BotOnMessageReceivedAsync(update.ChannelPost!, cancellationToken),
+                UpdateType.ChannelPost => BotOnMessageReceivedAsync(update.ChannelPost!, cancellationToken),
 
-                Enums.UpdateType.ChosenInlineResult => BotOnChosenInlineResultReceivedAsync(botClient, update.ChosenInlineResult!, cancellationToken),
+                UpdateType.ChosenInlineResult => BotOnChosenInlineResultReceivedAsync(botClient, update.ChosenInlineResult!, cancellationToken),
 
-                Enums.UpdateType.EditedChannelPost => BotOnMessageReceivedAsync(update.EditedChannelPost!, cancellationToken),
+                UpdateType.EditedChannelPost => BotOnMessageReceivedAsync(update.EditedChannelPost!, cancellationToken),
 
-                Enums.UpdateType.EditedMessage => BotOnMessageReceivedAsync(update.EditedMessage!, cancellationToken),
+                UpdateType.EditedMessage => BotOnMessageReceivedAsync(update.EditedMessage!, cancellationToken),
 
-                Enums.UpdateType.InlineQuery => BotOnInlineQueryReceivedAsync(botClient, update.InlineQuery!, cancellationToken),
+                UpdateType.InlineQuery => BotOnInlineQueryReceivedAsync(botClient, update.InlineQuery!, cancellationToken),
 
-                Enums.UpdateType.Message => BotOnMessageReceivedAsync(update.Message!, cancellationToken),
+                UpdateType.Message => BotOnMessageReceivedAsync(update.Message!, cancellationToken),
 
                 _ => throw new NotImplementedException(update.Type.ToString()),
             };
@@ -186,13 +189,13 @@ public partial class TelegramHostedService : Microsoft.Extensions.Hosting.IHoste
     private async Task<Message> MessageSendQueryAsync(
         long to
         , string text
-        , ReplyMarkups.IReplyMarkup replyMarkup
+        , IReplyMarkup replyMarkup
         , CancellationToken cancellationToken)
     {
         if (System.Diagnostics.Debugger.IsAttached)
             to = long.Parse(TelegramSettings.Users.UserTest.Id);
 
-        text = text[..Math.Min(text.Length, UtilsLib.Constants.Telegram.MessageLengthLimit)];
+        text = text[..Math.Min(text.Length, Utils.Constants.Telegram.MessageLengthLimit)];
         ChatId ToChatId = new(to);
 
         try
@@ -203,7 +206,7 @@ public partial class TelegramHostedService : Microsoft.Extensions.Hosting.IHoste
                 replyMarkup: replyMarkup,
                 cancellationToken: cancellationToken);
         }
-        catch (Telegram.Bot.Exceptions.ApiRequestException e) when (e.Message?.StartsWith("Bad Request: can't parse entities:", StringComparison.InvariantCultureIgnoreCase) ?? false)
+        catch (ApiRequestException e) when (e.Message?.StartsWith("Bad Request: can't parse entities:", StringComparison.InvariantCultureIgnoreCase) ?? false)
         {
             // Sample:
             //  "Telegram.Bot.Exceptions.ApiRequestException: Bad Request: can't parse entities: Unexpected end tag at byte offset 4120"
@@ -221,13 +224,13 @@ public partial class TelegramHostedService : Microsoft.Extensions.Hosting.IHoste
     private async Task<Message> MessageSendTextAsync(
         long to
         , string text
-        , Enums.ParseMode? parseMode
+        , ParseMode? parseMode
         , CancellationToken cancellationToken)
     {
         if (System.Diagnostics.Debugger.IsAttached)
             to = long.Parse(TelegramSettings.Users.UserTest.Id);
 
-        text = text[..Math.Min(text.Length, UtilsLib.Constants.Telegram.MessageLengthLimit)];
+        text = text[..Math.Min(text.Length, Utils.Constants.Telegram.MessageLengthLimit)];
         ChatId ToChatId = new(to);
 
         try
@@ -235,10 +238,10 @@ public partial class TelegramHostedService : Microsoft.Extensions.Hosting.IHoste
             return await LocalTelegramBotClient.SendTextMessageAsync(
                 chatId: ToChatId,
                 text: text,
-                parseMode: parseMode ?? (text.ContainsHtml() ? Enums.ParseMode.Html : null),
+                parseMode: parseMode ?? (text.ContainsHtml() ? ParseMode.Html : null),
                 cancellationToken: cancellationToken);
         }
-        catch (Telegram.Bot.Exceptions.ApiRequestException e) when (e.Message?.StartsWith("Bad Request: can't parse entities:", StringComparison.InvariantCultureIgnoreCase) ?? false)
+        catch (ApiRequestException e) when (e.Message?.StartsWith("Bad Request: can't parse entities:", StringComparison.InvariantCultureIgnoreCase) ?? false)
         {
             // Sample:
             //  "Telegram.Bot.Exceptions.ApiRequestException: Bad Request: can't parse entities: Unexpected end tag at byte offset 4120"
@@ -253,15 +256,15 @@ public partial class TelegramHostedService : Microsoft.Extensions.Hosting.IHoste
         }
     }
 
-    private static async Task<CoreLib.Entities.Subscriber> SubscriberWithSubscriptionsGetOrCreateAsync(
+    private static async Task<Core.Entities.Subscriber> SubscriberWithSubscriptionsGetOrCreateAsync(
         InfrastructureLib.DbContexts.DbCxt dbCtx
         , User user
         , CancellationToken cancellationToken)
     {
-        CoreLib.Entities.Subscriber? SubscriberWithSubscriptions = await dbCtx.GetSubscriberWithSubscriptionsAsync(user.Id, cancellationToken);
+        Core.Entities.Subscriber? SubscriberWithSubscriptions = await dbCtx.GetSubscriberWithSubscriptionsAsync(user.Id, cancellationToken);
         if (SubscriberWithSubscriptions == null)
         {
-            SubscriberWithSubscriptions = new CoreLib.Entities.Subscriber(user.Username ?? user.FirstName) { TelegramUserId = user.Id };
+            SubscriberWithSubscriptions = new Core.Entities.Subscriber(user.Username ?? user.FirstName) { TelegramUserId = user.Id };
             _ = await dbCtx.Subscribers.AddAsync(SubscriberWithSubscriptions, cancellationToken);
         }
 
@@ -273,7 +276,7 @@ public partial class TelegramHostedService : Microsoft.Extensions.Hosting.IHoste
         , long telegramUserId
         , CancellationToken cancellationToken)
     {
-        CoreLib.Entities.Subscriber? SubscriberWithSubscriptions = await dbCtx.GetSubscriberWithSubscriptionsAsync(telegramUserId, cancellationToken);
+        Core.Entities.Subscriber? SubscriberWithSubscriptions = await dbCtx.GetSubscriberWithSubscriptionsAsync(telegramUserId, cancellationToken);
         if (SubscriberWithSubscriptions == null)
             return null;
 
@@ -304,7 +307,7 @@ public partial class TelegramHostedService : Microsoft.Extensions.Hosting.IHoste
         _ = await botClient.EditMessageReplyMarkupAsync(
             chatId: callbackQuery.Message!.Chat.Id
             , messageId: callbackQuery.Message!.MessageId
-            , replyMarkup: ReplyMarkups.InlineKeyboardMarkup.Empty()
+            , replyMarkup: InlineKeyboardMarkup.Empty()
             , cancellationToken: cancellationToken);
 
         //await botClient.AnswerCallbackQueryAsync(
@@ -332,7 +335,7 @@ public partial class TelegramHostedService : Microsoft.Extensions.Hosting.IHoste
         , System.Net.Mail.MailAddress? mailAddress
         , CancellationToken cancellationToken)
     {
-        CoreLib.Entities.Subscriber TheSubscriber = await SubscriberWithSubscriptionsGetOrCreateAsync(dbCtx, message.From!, cancellationToken);
+        Core.Entities.Subscriber TheSubscriber = await SubscriberWithSubscriptionsGetOrCreateAsync(dbCtx, message.From!, cancellationToken);
 
         TheSubscriber.MailAddress = mailAddress?.Address;
 
@@ -360,11 +363,11 @@ public partial class TelegramHostedService : Microsoft.Extensions.Hosting.IHoste
         Logger.LogDebug("Received inline query from: {Id}", inlineQuery.From.Id);
 
         // displayed result
-        InlineQueryResults.InlineQueryResult[] results = [
-            new InlineQueryResults.InlineQueryResultArticle(
+        InlineQueryResult[] results = [
+            new InlineQueryResultArticle(
                 id: "3",
                 title: "TgBots",
-                inputMessageContent: new InlineQueryResults.InputTextMessageContent("hello"))
+                inputMessageContent: new InputTextMessageContent("hello"))
             ];
 
         await botClient.AnswerInlineQueryAsync(
@@ -387,7 +390,7 @@ public partial class TelegramHostedService : Microsoft.Extensions.Hosting.IHoste
         Message message
         , CancellationToken cancellationToken)
     {
-        await ChatActionSendAsync(message, Enums.ChatAction.Typing, cancellationToken);
+        await ChatActionSendAsync(message, ChatAction.Typing, cancellationToken);
 
         //await ProcesarDocumentoConsumosAsync(message, cancellationToken); // TODO Manejar todos los tipos de documentos
 
@@ -410,11 +413,11 @@ public partial class TelegramHostedService : Microsoft.Extensions.Hosting.IHoste
 
         Task handler = message.Type switch
         {
-            Enums.MessageType.Document => BotOnMessageDocumentReceivedAsync(message, cancellationToken),
+            MessageType.Document => BotOnMessageDocumentReceivedAsync(message, cancellationToken),
 
-            Enums.MessageType.MessageAutoDeleteTimerChanged => BotOnMessageAutoDeleteTimerChangedReceived(message),
+            MessageType.MessageAutoDeleteTimerChanged => BotOnMessageAutoDeleteTimerChangedReceived(message),
 
-            Enums.MessageType.Text => BotOnMessageTextReceivedAsync(message, cancellationToken),
+            MessageType.Text => BotOnMessageTextReceivedAsync(message, cancellationToken),
 
             _ => throw new NotImplementedException(message.Type.ToString()),
         };
@@ -430,7 +433,7 @@ public partial class TelegramHostedService : Microsoft.Extensions.Hosting.IHoste
         Message message
         , CancellationToken cancellationToken)
     {
-        await ChatActionSendAsync(message, Enums.ChatAction.Typing, cancellationToken);
+        await ChatActionSendAsync(message, ChatAction.Typing, cancellationToken);
 
         string FirstWordReceived = message.Text!.Split(' ').First();
 
@@ -466,17 +469,17 @@ public partial class TelegramHostedService : Microsoft.Extensions.Hosting.IHoste
             dateTimeToObtain = DateTime.Now.TimeOfDay > new TimeSpan(20, 30, 00) ? DateTime.Today.AddDays(1) : DateTime.Today;
         }
 
-        await ServiceProvider.GetRequiredService<PvpcLib.Services.PvpcCronBackgroundService>()
+        await ServiceProvider.GetRequiredService<Pvpc.Lib.Services.PvpcCronBackgroundService>()
             .GetPvpcFromReeForDateAsync(dateTimeToObtain, cancellationToken);
 
-        CoreLib.Entities.Pvpc[]? Prices = await dbCtx.Pvpcs.AsNoTracking()
+        Core.Entities.Pvpc[]? Prices = await dbCtx.Pvpcs.AsNoTracking()
             .Where(x => x.AtDateTimeOffset >= dateTimeToObtain)
             .Where(x => x.AtDateTimeOffset < dateTimeToObtain.AddDays(1))
             .ToArrayAsync(cancellationToken: cancellationToken);
 
         string responseText = MessageGetMarkdownV2TextForPrices(Prices);
 
-        return await MessageSendTextAsync(message.Chat.Id, responseText, Enums.ParseMode.MarkdownV2, cancellationToken);
+        return await MessageSendTextAsync(message.Chat.Id, responseText, ParseMode.MarkdownV2, cancellationToken);
     }
 
     private async Task<Message> MailSetAsync(
@@ -490,8 +493,8 @@ public partial class TelegramHostedService : Microsoft.Extensions.Hosting.IHoste
         if (data.Length < 2 || string.IsNullOrWhiteSpace(data[1]))
         {
             CallbackData RemoveEmailCallbackData = new(Enums.BotActionName.email_edit);
-            ReplyMarkups.InlineKeyboardMarkup ReplyKeyboard = new(
-                ReplyMarkups.InlineKeyboardButton.WithCallbackData("Sí", RemoveEmailCallbackData.ToString()));
+            InlineKeyboardMarkup ReplyKeyboard = new(
+                InlineKeyboardButton.WithCallbackData("Sí", RemoveEmailCallbackData.ToString()));
             ResponseText = "¿Realmente quiere quitar su correo electrónico asociado?";
 
             return await MessageSendQueryAsync(message.Chat.Id, ResponseText, ReplyKeyboard, cancellationToken);
@@ -500,7 +503,7 @@ public partial class TelegramHostedService : Microsoft.Extensions.Hosting.IHoste
         {
             // TODO MailSetAsync
             long TelegramUserId = message.From!.Id;
-            CoreLib.Entities.Subscriber? SubscriberWithSubscriptions = await dbCtx.GetSubscriberWithSubscriptionsAsync(TelegramUserId, cancellationToken);
+            Core.Entities.Subscriber? SubscriberWithSubscriptions = await dbCtx.GetSubscriberWithSubscriptionsAsync(TelegramUserId, cancellationToken);
             if (SubscriberWithSubscriptions == null)
                 return await MessageSendUsageAsync(TelegramUserId, cancellationToken);
 
@@ -529,7 +532,7 @@ public partial class TelegramHostedService : Microsoft.Extensions.Hosting.IHoste
     {
         long TelegramUserId = message.From!.Id;
 
-        CoreLib.Entities.Subscriber? Subscriber = await dbCtx.Subscribers.FirstOrDefaultAsync(x => x.TelegramUserId == TelegramUserId, cancellationToken);
+        Core.Entities.Subscriber? Subscriber = await dbCtx.Subscribers.FirstOrDefaultAsync(x => x.TelegramUserId == TelegramUserId, cancellationToken);
 
         if (Subscriber == null)
             return await MessageSendUsageAsync(message.Chat.Id, cancellationToken);
@@ -585,10 +588,10 @@ public partial class TelegramHostedService : Microsoft.Extensions.Hosting.IHoste
     {
         long SenderChatId = message.Chat.Id;
 
-        CoreLib.Entities.WebData? webData = await dbCtx.WebDatas.FirstOrDefaultAsync(x => x.WebUrl == FirstWordReceived, cancellationToken);
+        Core.Entities.WebData? webData = await dbCtx.WebDatas.FirstOrDefaultAsync(x => x.WebUrl == FirstWordReceived, cancellationToken);
         if (webData == null)
         {
-            webData = new CoreLib.Entities.WebData(FirstWordReceived, $"Recibido a través de Telegram el {message.Date}");
+            webData = new Core.Entities.WebData(FirstWordReceived, $"Recibido a través de Telegram el {message.Date}");
             _ = await dbCtx.WebDatas.AddAsync(webData, cancellationToken);
 
             _ = await MessageSendSimpleTextAsync(SenderChatId, "Añadida URL para seguimiento", cancellationToken);
@@ -596,16 +599,16 @@ public partial class TelegramHostedService : Microsoft.Extensions.Hosting.IHoste
 
         _ = await dbCtx.SaveChangesAsync(cancellationToken);
 
-        CoreLib.Entities.Subscriber TheSubscriber = await SubscriberWithSubscriptionsGetOrCreateAsync(dbCtx, message.From!, cancellationToken);
+        Core.Entities.Subscriber TheSubscriber = await SubscriberWithSubscriptionsGetOrCreateAsync(dbCtx, message.From!, cancellationToken);
         if (dbCtx.ChangeTracker.Entries().FirstOrDefault(x => x.Entity == TheSubscriber)?.State == EntityState.Added)
             _ = await MessageSendSimpleTextAsync(SenderChatId, "Gracias por usar este bot", cancellationToken);
 
-        CoreLib.Entities.Subscription? TheSubscription =
+        Core.Entities.Subscription? TheSubscription =
             await dbCtx.Subscriptions
-            .FirstOrDefaultAsync(x => x.SubscriptionId == webData.SubscriptionId && x.SubscriptionName == CoreLib.Enums.SubscriptionName.webComparer, cancellationToken);
+            .FirstOrDefaultAsync(x => x.SubscriptionId == webData.SubscriptionId && x.SubscriptionName == Core.Enums.SubscriptionName.webComparer, cancellationToken);
         if (TheSubscription == null)
         {
-            TheSubscription = new CoreLib.Entities.Subscription(CoreLib.Enums.SubscriptionName.webComparer) { SubscriptionId = webData.SubscriptionId };
+            TheSubscription = new Core.Entities.Subscription(Core.Enums.SubscriptionName.webComparer) { SubscriptionId = webData.SubscriptionId };
             _ = await dbCtx.Subscriptions.AddAsync(TheSubscription, cancellationToken);
         }
 
@@ -629,12 +632,12 @@ public partial class TelegramHostedService : Microsoft.Extensions.Hosting.IHoste
     {
         Logger.LogInformation("{Text}", message.Text);
 
-        await Task.Delay(UtilsLib.Constants.Time.OneTenthOfSecondTimeSpan, cancellationToken);
+        await Task.Delay(Utils.Constants.Time.OneTenthOfSecondTimeSpan, cancellationToken);
     }
 
     private async Task ChatActionSendAsync(
         Message message
-        , Enums.ChatAction chatAction
+        , ChatAction chatAction
         , CancellationToken cancellationToken) =>
         await LocalTelegramBotClient.SendChatActionAsync(
             chatId: message.Chat.Id,
@@ -704,11 +707,11 @@ public partial class TelegramHostedService : Microsoft.Extensions.Hosting.IHoste
         else
         {
             long TelegramUserId = message.From!.Id;
-            CoreLib.Entities.Subscriber? SubscriberWithSubscriptions = await dbCtx.GetSubscriberWithSubscriptionsAsync(TelegramUserId, cancellationToken);
+            Core.Entities.Subscriber? SubscriberWithSubscriptions = await dbCtx.GetSubscriberWithSubscriptionsAsync(TelegramUserId, cancellationToken);
             if (SubscriberWithSubscriptions == null)
                 return await MessageSendUsageAsync(TelegramUserId, cancellationToken);
 
-            CoreLib.Entities.Subscription? Subscription = SubscriberWithSubscriptions.Subscriptions.FirstOrDefault(x => x.SubscriptionId == subscriptionId);
+            Core.Entities.Subscription? Subscription = SubscriberWithSubscriptions.Subscriptions.FirstOrDefault(x => x.SubscriptionId == subscriptionId);
             if (Subscription == null)
             {
                 ResponseText = $"{Constants.Emojis.FaceWithRaisedEyebrow} No estás suscrit@ a {subscriptionId}";

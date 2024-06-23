@@ -2,20 +2,19 @@
 using Microsoft.Extensions.Logging;
 using Seedysoft.Libs.Utils.Extensions;
 using Seedysoft.Pvpc.Lib.Extensions;
-using Seedysoft.Pvpc.Lib.Settings;
 using System.Diagnostics;
 
 namespace Seedysoft.Pvpc.Lib.Services;
 
 public sealed class TuyaManagerCronBackgroundService(
-    TuyaManagerSettings config
+    Settings.TuyaManagerSettings config
     , InfrastructureLib.DbContexts.DbCxt dbCxt
     , ILogger<TuyaManagerCronBackgroundService> logger) : Libs.CronBackgroundService.CronBackgroundService(config)
 {
     private readonly InfrastructureLib.DbContexts.DbCxt DbCxt = dbCxt;
     private readonly ILogger<TuyaManagerCronBackgroundService> Logger = logger;
 
-    private TuyaManagerSettings Settings => (TuyaManagerSettings)Config;
+    private Settings.TuyaManagerSettings Settings => (Settings.TuyaManagerSettings)Config;
 
     public override async Task StartAsync(CancellationToken cancellationToken)
     {

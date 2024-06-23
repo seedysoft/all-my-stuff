@@ -1,10 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Seedysoft.FuelPrices.Lib.Core.Entities.Core;
 
 namespace Seedysoft.FuelPrices.Lib.Infrastructure.Data.EntityTypeConfigurations;
 
-public abstract class EntityTypeConfigurationBase<T> : IEntityTypeConfiguration<T> where T : EntityBase
+public abstract class EntityTypeConfigurationBase<T> : IEntityTypeConfiguration<T> where T : Core.Entities.Core.EntityBase
 {
     public virtual void Configure(EntityTypeBuilder<T> builder)
     {

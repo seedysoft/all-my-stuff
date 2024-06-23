@@ -3,8 +3,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Seedysoft.Libs.Utils.Constants;
-using Seedysoft.WebComparer.Lib.Services;
 
 namespace Seedysoft.WebComparer.ConsoleApp;
 
@@ -17,7 +15,7 @@ public sealed class Program
         Libs.Infrastructure.Dependencies.ConfigureDefaultDependencies(builder, args);
         Libs.Infrastructure.Dependencies.AddDbCxtContext(builder);
 
-        builder.Services.TryAddSingleton<WebComparerHostedService>();
+        builder.Services.TryAddSingleton<Lib.Services.WebComparerHostedService>();
 
         IHost host = builder.Build();
 
@@ -37,7 +35,7 @@ public sealed class Program
             //    Logger.LogDebug($"{item.Key}: {item.Value ?? "<<NULL>>"}");
 
             if (System.Diagnostics.Debugger.IsAttached)
-                await Task.Delay(Time.TenSecondsTimeSpan);
+                await Task.Delay(Libs.Utils.Constants.Time.TenSecondsTimeSpan);
 
             // Migrate and seed the database during startup. Must be synchronous.
             using IServiceScope Scope = host.Services.CreateScope();
@@ -46,7 +44,7 @@ public sealed class Program
 
                 using CancellationTokenSource CancelTokenSource = new();
                 {
-                    WebComparerHostedService webComparerHostedService = host.Services.GetRequiredService<WebComparerHostedService>();
+                    Lib.Services.WebComparerHostedService webComparerHostedService = host.Services.GetRequiredService<Lib.Services.WebComparerHostedService>();
 
                     await webComparerHostedService.FindDifferencesAsync(CancelTokenSource.Token);
                 }
