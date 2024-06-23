@@ -45,8 +45,6 @@ public sealed class Program
 
         builder.Services.TryAddSingleton<Lib.Services.ObtainDataCronBackgroundService>();
 
-        SQLitePCL.Batteries.Init();
-
         IHost host = builder.Build();
 
         ILogger<Program> Logger = host.Services.GetRequiredService<ILogger<Program>>();

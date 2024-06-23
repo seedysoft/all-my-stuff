@@ -6,8 +6,7 @@ using Microsoft.Extensions.Logging;
 using Seedysoft.FuelPrices.Lib.Core.Entities;
 using Seedysoft.FuelPrices.Lib.Core.JsonObjects.Minetur;
 using Seedysoft.FuelPrices.Lib.Infrastructure.Data;
-
-// TODO  Remove using Seedysoft. 
+// TODO  Remove using Seedysoft when Dependencies where well configured. 
 using Seedysoft.Libs.Utils.Extensions;
 using System.Net.Http.Json;
 

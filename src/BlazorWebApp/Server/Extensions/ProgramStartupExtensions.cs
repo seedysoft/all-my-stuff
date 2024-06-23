@@ -7,8 +7,6 @@ using Seedysoft.Libs.Telegram.Services;
 using Seedysoft.Libs.Telegram.Settings;
 using Seedysoft.Outbox.Lib.Services;
 using Seedysoft.Pvpc.Lib.Services;
-using Seedysoft.Pvpc.Lib.Settings;
-using Seedysoft.WebComparer.Lib.Services;
 
 namespace Seedysoft.BlazorWebApp.Server.Extensions;
 
@@ -112,8 +110,8 @@ public static class ProgramStartupExtensions
         _ = webApplicationBuilder.Services.AddHttpClient(nameof(FuelPrices.Lib.Core.Settings.Minetur));
         _ = webApplicationBuilder.Services.AddHostedService<FuelPrices.Lib.Services.ObtainDataCronBackgroundService>();
 
-        webApplicationBuilder.Services.TryAddSingleton(webApplicationBuilder.Configuration.GetSection(nameof(PvpcSettings)).Get<PvpcSettings>()!);
-        webApplicationBuilder.Services.TryAddSingleton(webApplicationBuilder.Configuration.GetSection(nameof(TuyaManagerSettings)).Get<TuyaManagerSettings>()!);
+        webApplicationBuilder.Services.TryAddSingleton(webApplicationBuilder.Configuration.GetSection(nameof(Pvpc.Lib.Settings.PvpcSettings)).Get<Pvpc.Lib.Settings.PvpcSettings>()!);
+        webApplicationBuilder.Services.TryAddSingleton(webApplicationBuilder.Configuration.GetSection(nameof(Pvpc.Lib.Settings.TuyaManagerSettings)).Get<Pvpc.Lib.Settings.TuyaManagerSettings>()!);
         webApplicationBuilder.Services.TryAddSingleton<PvpcCronBackgroundService>();
         _ = webApplicationBuilder.Services.AddHostedService<PvpcCronBackgroundService>();
         webApplicationBuilder.Services.TryAddSingleton<TuyaManagerCronBackgroundService>();
@@ -121,8 +119,8 @@ public static class ProgramStartupExtensions
 
         _ = webApplicationBuilder.Services.AddHostedService<OutboxCronBackgroundService>();
 
-        webApplicationBuilder.Services.TryAddSingleton<WebComparerHostedService>();
-        _ = webApplicationBuilder.Services.AddHostedService<WebComparerHostedService>();
+        webApplicationBuilder.Services.TryAddSingleton<WebComparer.Lib.Services.WebComparerHostedService>();
+        _ = webApplicationBuilder.Services.AddHostedService<WebComparer.Lib.Services.WebComparerHostedService>();
 
         return webApplicationBuilder;
     }
