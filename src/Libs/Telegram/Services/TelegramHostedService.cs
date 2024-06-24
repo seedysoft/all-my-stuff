@@ -1,5 +1,8 @@
 ﻿#if !SKIP_DEBUG_TELEGRAM
 using Microsoft.EntityFrameworkCore;
+using Telegram.Bot.Polling;
+using Telegram.Bot.Types.InlineQueryResults;
+using Telegram.Bot.Types.ReplyMarkups;
 #endif
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
