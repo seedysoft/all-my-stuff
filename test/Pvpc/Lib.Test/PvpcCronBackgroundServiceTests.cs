@@ -69,7 +69,7 @@ public sealed class PvpcCronBackgroundServiceFixture : Libs.Infrastructure.Test.
             PvpcId = "1001",
         };
 
-        InfrastructureLib.DbContexts.DbCxt dbCxt = GetDbCxt();
+        Libs.Infrastructure.DbContexts.DbCxt dbCxt = GetDbCxt();
 
         Microsoft.Extensions.Logging.Abstractions.NullLogger<Services.PvpcCronBackgroundService> logger = new();
 

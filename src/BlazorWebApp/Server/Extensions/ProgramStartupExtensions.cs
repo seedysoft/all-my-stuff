@@ -22,7 +22,7 @@ public static class ProgramStartupExtensions
 
     public static WebApplication MigrateDbContexts(this WebApplication webApplication)
     {
-        webApplication.Services.GetRequiredService<InfrastructureLib.DbContexts.DbCxt>().Database.Migrate();
+        webApplication.Services.GetRequiredService<Libs.Infrastructure.DbContexts.DbCxt>().Database.Migrate();
         webApplication.Services.GetRequiredService<FuelPrices.Lib.Infrastructure.Data.FuelPricesDbContext>().Database.Migrate();
 
         return webApplication;

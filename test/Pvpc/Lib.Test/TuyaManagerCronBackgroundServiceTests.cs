@@ -20,7 +20,7 @@ public sealed class TuyaManagerCronBackgroundServiceFixture : Libs.Infrastructur
             CronExpression = "* * 30 2 *", // At every minute on day-of-month 30 in February.
         };
 
-        InfrastructureLib.DbContexts.DbCxt dbCxt = GetDbCxt();
+        Libs.Infrastructure.DbContexts.DbCxt dbCxt = GetDbCxt();
 
         Microsoft.Extensions.Logging.ILogger<Services.TuyaManagerCronBackgroundService> logger = new Microsoft.Extensions.Logging.Abstractions.NullLogger<Services.TuyaManagerCronBackgroundService>();
 

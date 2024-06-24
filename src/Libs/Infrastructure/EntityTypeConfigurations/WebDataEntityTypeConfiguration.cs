@@ -56,7 +56,7 @@ internal sealed class WebDataEntityTypeConfiguration : WebDataEntityTypeConfigur
             .Ignore(x => x.DataToSend);
 
         _ = builder
-            .ToTable(nameof(Libs.Core.Entities.WebData))
+            .ToTable(nameof(Core.Entities.WebData))
             .HasKey(x => x.SubscriptionId);
     }
 }

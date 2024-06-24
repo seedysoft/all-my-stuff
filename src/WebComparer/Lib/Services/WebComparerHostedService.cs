@@ -38,7 +38,7 @@ public sealed class WebComparerHostedService(IServiceProvider serviceProvider, I
 
     public async Task FindDifferencesAsync(CancellationToken cancellationToken)
     {
-        InfrastructureLib.DbContexts.DbCxt dbCtx = serviceProvider.GetRequiredService<InfrastructureLib.DbContexts.DbCxt>();
+        Libs.Infrastructure.DbContexts.DbCxt dbCtx = serviceProvider.GetRequiredService<Libs.Infrastructure.DbContexts.DbCxt>();
 
         try
         {
@@ -72,7 +72,7 @@ public sealed class WebComparerHostedService(IServiceProvider serviceProvider, I
         finally { await Task.CompletedTask; }
     }
 
-    private async Task FindDataToSendAsync(InfrastructureLib.DbContexts.DbCxt dbCtx, Libs.Core.Entities.WebData webData, CancellationToken cancellationToken)
+    private async Task FindDataToSendAsync(Libs.Infrastructure.DbContexts.DbCxt dbCtx, Libs.Core.Entities.WebData webData, CancellationToken cancellationToken)
     {
         string Content = GetContent(webData);
 

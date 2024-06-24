@@ -1,6 +1,6 @@
 ﻿using Seedysoft.FuelPrices.Lib.Core.Entities;
 
-namespace Seedysoft.FuelPrices.Lib.Infrastructure;
+namespace Seedysoft.FuelPrices.Lib.Infrastructure.Migrations.Views;
 
 public static class ProductPriceView
 {

@@ -8,13 +8,13 @@ namespace Seedysoft.Pvpc.Lib.Services;
 
 public sealed class PvpcCronBackgroundService(
     Settings.PvpcSettings config
-    , InfrastructureLib.DbContexts.DbCxt dbCxt
+    , Libs.Infrastructure.DbContexts.DbCxt dbCxt
     , ILogger<PvpcCronBackgroundService> logger) : Libs.CronBackgroundService.CronBackgroundService(config)
 {
     // HttpClient is intended to be instantiated once per application, rather than per-use. See Remarks.
     private static readonly HttpClient client = new();
 
-    private readonly InfrastructureLib.DbContexts.DbCxt DbCxt = dbCxt;
+    private readonly Libs.Infrastructure.DbContexts.DbCxt DbCxt = dbCxt;
     private readonly ILogger<PvpcCronBackgroundService> Logger = logger;
 
     private Settings.PvpcSettings Settings => (Settings.PvpcSettings)Config;
