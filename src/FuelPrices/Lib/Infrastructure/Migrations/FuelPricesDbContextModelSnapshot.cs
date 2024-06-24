@@ -6,34 +6,17 @@ using Seedysoft.FuelPrices.Lib.Infrastructure.Data;
 
 #nullable disable
 
-namespace Seedysoft.Infrastructure.Migrations.CarburantesHist
+namespace Seedysoft.FuelPrices.Lib.Infrastructure.Migrations
 {
-    [DbContext(typeof(CarburantesHistDbContext))]
-    partial class CarburantesHistDbContextModelSnapshot : ModelSnapshot
+    [DbContext(typeof(FuelPricesDbContext))]
+    partial class FuelPricesDbContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "7.0.12");
+            modelBuilder.HasAnnotation("ProductVersion", "8.0.6");
 
-            modelBuilder.Entity("Seedysoft.Core.Entities.ComunidadAutonoma", b =>
-                {
-                    b.Property<int>("IdComunidadAutonoma")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("AtDate")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("NombreComunidadAutonoma")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("IdComunidadAutonoma");
-
-                    b.ToTable("ComunidadAutonoma", (string)null);
-                });
-
-            modelBuilder.Entity("Seedysoft.Core.Entities.ComunidadAutonomaHist", b =>
+            modelBuilder.Entity("Seedysoft.FuelPrices.Lib.Core.Entities.ComunidadAutonoma", b =>
                 {
                     b.Property<int>("IdComunidadAutonoma")
                         .HasColumnType("INTEGER");
@@ -47,10 +30,10 @@ namespace Seedysoft.Infrastructure.Migrations.CarburantesHist
 
                     b.HasKey("IdComunidadAutonoma", "AtDate");
 
-                    b.ToTable("ComunidadAutonomaHist", (string)null);
+                    b.ToTable("ComunidadAutonoma", (string)null);
                 });
 
-            modelBuilder.Entity("Seedysoft.Core.Entities.EstacionProductoPrecio", b =>
+            modelBuilder.Entity("Seedysoft.FuelPrices.Lib.Core.Entities.EstacionProductoPrecio", b =>
                 {
                     b.Property<int>("IdEstacion")
                         .HasColumnType("INTEGER");
@@ -69,74 +52,7 @@ namespace Seedysoft.Infrastructure.Migrations.CarburantesHist
                     b.ToTable("EstacionProductoPrecio", (string)null);
                 });
 
-            modelBuilder.Entity("Seedysoft.Core.Entities.EstacionProductoPrecioHist", b =>
-                {
-                    b.Property<int>("IdEstacion")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("IdProducto")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("AtDate")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("CentimosDeEuro")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("IdEstacion", "IdProducto", "AtDate");
-
-                    b.ToTable("EstacionProductoPrecioHist", (string)null);
-                });
-
-            modelBuilder.Entity("Seedysoft.Core.Entities.EstacionServicio", b =>
-                {
-                    b.Property<int>("IdEstacion")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("AtDate")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("CodigoPostal")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Direccion")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Horario")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("IdMunicipio")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Latitud")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Localidad")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("LongitudWgs84")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Margen")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Rotulo")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("IdEstacion");
-
-                    b.ToTable("EstacionServicio", (string)null);
-                });
-
-            modelBuilder.Entity("Seedysoft.Core.Entities.EstacionServicioHist", b =>
+            modelBuilder.Entity("Seedysoft.FuelPrices.Lib.Core.Entities.EstacionServicio", b =>
                 {
                     b.Property<int>("IdEstacion")
                         .HasColumnType("INTEGER");
@@ -181,30 +97,10 @@ namespace Seedysoft.Infrastructure.Migrations.CarburantesHist
 
                     b.HasKey("IdEstacion", "AtDate");
 
-                    b.ToTable("EstacionServicioHist", (string)null);
+                    b.ToTable("EstacionServicio", (string)null);
                 });
 
-            modelBuilder.Entity("Seedysoft.Core.Entities.Municipio", b =>
-                {
-                    b.Property<int>("IdMunicipio")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("AtDate")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("IdProvincia")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("NombreMunicipio")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("IdMunicipio");
-
-                    b.ToTable("Municipio", (string)null);
-                });
-
-            modelBuilder.Entity("Seedysoft.Core.Entities.MunicipioHist", b =>
+            modelBuilder.Entity("Seedysoft.FuelPrices.Lib.Core.Entities.Municipio", b =>
                 {
                     b.Property<int>("IdMunicipio")
                         .HasColumnType("INTEGER");
@@ -221,16 +117,54 @@ namespace Seedysoft.Infrastructure.Migrations.CarburantesHist
 
                     b.HasKey("IdMunicipio", "AtDate");
 
-                    b.ToTable("MunicipioHist", (string)null);
+                    b.ToTable("Municipio", (string)null);
                 });
 
-            modelBuilder.Entity("Seedysoft.Core.Entities.ProductoPetrolifero", b =>
+            modelBuilder.Entity("Seedysoft.FuelPrices.Lib.Core.Entities.ProductPrice", b =>
                 {
+                    b.Property<int>("AtDate")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("CentimosDeEuro")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("CodigoPostal")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Direccion")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Horario")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("IdEstacion")
+                        .HasColumnType("INTEGER");
+
                     b.Property<int>("IdProducto")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("AtDate")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("Latitud")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Localidad")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("LongitudWgs84")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Margen")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("NombreMunicipio")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("NombreProducto")
                         .IsRequired()
@@ -240,12 +174,20 @@ namespace Seedysoft.Infrastructure.Migrations.CarburantesHist
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.HasKey("IdProducto");
+                    b.Property<string>("NombreProvincia")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
 
-                    b.ToTable("ProductoPetrolifero", (string)null);
+                    b.Property<string>("Rotulo")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.ToTable((string)null);
+
+                    b.ToView("ProductPrice", (string)null);
                 });
 
-            modelBuilder.Entity("Seedysoft.Core.Entities.ProductoPetroliferoHist", b =>
+            modelBuilder.Entity("Seedysoft.FuelPrices.Lib.Core.Entities.ProductoPetrolifero", b =>
                 {
                     b.Property<int>("IdProducto")
                         .HasColumnType("INTEGER");
@@ -263,30 +205,10 @@ namespace Seedysoft.Infrastructure.Migrations.CarburantesHist
 
                     b.HasKey("IdProducto", "AtDate");
 
-                    b.ToTable("ProductoPetroliferoHist", (string)null);
+                    b.ToTable("ProductoPetrolifero", (string)null);
                 });
 
-            modelBuilder.Entity("Seedysoft.Core.Entities.Provincia", b =>
-                {
-                    b.Property<int>("IdProvincia")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("AtDate")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("IdComunidadAutonoma")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("NombreProvincia")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("IdProvincia");
-
-                    b.ToTable("Provincia", (string)null);
-                });
-
-            modelBuilder.Entity("Seedysoft.Core.Entities.ProvinciaHist", b =>
+            modelBuilder.Entity("Seedysoft.FuelPrices.Lib.Core.Entities.Provincia", b =>
                 {
                     b.Property<int>("IdProvincia")
                         .HasColumnType("INTEGER");
@@ -303,7 +225,7 @@ namespace Seedysoft.Infrastructure.Migrations.CarburantesHist
 
                     b.HasKey("IdProvincia", "AtDate");
 
-                    b.ToTable("ProvinciaHist", (string)null);
+                    b.ToTable("Provincia", (string)null);
                 });
 #pragma warning restore 612, 618
         }

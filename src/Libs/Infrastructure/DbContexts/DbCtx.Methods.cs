@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Seedysoft.Libs.Core.Entities;
 
-namespace Seedysoft.InfrastructureLib.DbContexts;
+namespace Seedysoft.Libs.Infrastructure.DbContexts;
 
 public sealed partial class DbCxt
 {

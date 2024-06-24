@@ -7,8 +7,6 @@ using Seedysoft.Libs.Telegram.Services;
 using Seedysoft.Libs.Telegram.Settings;
 using Seedysoft.Outbox.Lib.Services;
 using Seedysoft.Pvpc.Lib.Services;
-using Seedysoft.Pvpc.Lib.Settings;
-using Seedysoft.WebComparer.Lib.Services;
 
 namespace Seedysoft.BlazorWebApp.Server.Extensions;
 
@@ -24,9 +22,8 @@ public static class ProgramStartupExtensions
 
     public static WebApplication MigrateDbContexts(this WebApplication webApplication)
     {
-        webApplication.Services.GetRequiredService<InfrastructureLib.DbContexts.DbCxt>().Database.Migrate();
-        webApplication.Services.GetRequiredService<FuelPrices.Lib.Infrastructure.Data.CarburantesDbContext>().Database.Migrate();
-        webApplication.Services.GetRequiredService<FuelPrices.Lib.Infrastructure.Data.CarburantesHistDbContext>().Database.Migrate();
+        webApplication.Services.GetRequiredService<Libs.Infrastructure.DbContexts.DbCxt>().Database.Migrate();
+        webApplication.Services.GetRequiredService<FuelPrices.Lib.Infrastructure.Data.FuelPricesDbContext>().Database.Migrate();
 
         return webApplication;
     }
@@ -51,14 +48,15 @@ public static class ProgramStartupExtensions
     private static WebApplicationBuilder AddJsonFiles(this WebApplicationBuilder webApplicationBuilder)
     {
         string CurrentEnvironmentName = webApplicationBuilder.Environment.EnvironmentName;
+
         _ = webApplicationBuilder.Configuration
             .AddJsonFile($"appsettings.BlazorWebApp.Server.json", false, true)
             .AddJsonFile($"appsettings.BlazorWebApp.Server.{CurrentEnvironmentName}.json", false, true)
 
-            .AddJsonFile($"appsettings.CarburantesConnectionStrings.{CurrentEnvironmentName}.json", false, true)
+            .AddJsonFile($"appsettings.FuelPrices.Lib.ConnectionStrings.{CurrentEnvironmentName}.json", false, true)
 
-            .AddJsonFile($"appsettings.Infrastructure.json", false, true)
-            .AddJsonFile($"appsettings.Infrastructure.{CurrentEnvironmentName}.json", false, true)
+            .AddJsonFile($"appsettings.FuelPrices.Lib.json", false, true)
+            .AddJsonFile($"appsettings.FuelPrices.Lib.{CurrentEnvironmentName}.json", false, true)
 
             .AddJsonFile($"appsettings.Serilog.json", false, true)
             .AddJsonFile($"appsettings.Serilog.{CurrentEnvironmentName}.json", false, true)
@@ -78,9 +76,9 @@ public static class ProgramStartupExtensions
         Dependencies.AddDbCxtContext(webApplicationBuilder);
 
         _ = webApplicationBuilder.Services
-            .AddDbContext<FuelPrices.Lib.Infrastructure.Data.CarburantesDbContext>((iServiceProvider, dbContextOptionsBuilder) =>
+            .AddDbContext<FuelPrices.Lib.Infrastructure.Data.FuelPricesDbContext>((iServiceProvider, dbContextOptionsBuilder) =>
             {
-                string ConnectionStringName = nameof(FuelPrices.Lib.Infrastructure.Data.CarburantesDbContext);
+                string ConnectionStringName = nameof(FuelPrices.Lib.Infrastructure.Data.FuelPricesDbContext);
                 string ConnectionString = webApplicationBuilder.Configuration.GetConnectionString($"{ConnectionStringName}") ?? throw new KeyNotFoundException($"Connection string '{ConnectionStringName}' not found.");
                 string FullFilePath = Path.GetFullPath(
                     ConnectionString[DatabaseStrings.DataSource.Length..],
@@ -91,24 +89,8 @@ public static class ProgramStartupExtensions
                 _ = dbContextOptionsBuilder.UseSqlite($"{DatabaseStrings.DataSource}{FullFilePath}");
                 dbContextOptionsBuilder.ConfigureDebugOptions();
             }
-            , ServiceLifetime.Transient
-            , ServiceLifetime.Transient)
-
-            .AddDbContext<FuelPrices.Lib.Infrastructure.Data.CarburantesHistDbContext>((iServiceProvider, dbContextOptionsBuilder) =>
-            {
-                string ConnectionStringName = nameof(FuelPrices.Lib.Infrastructure.Data.CarburantesHistDbContext);
-                string ConnectionString = webApplicationBuilder.Configuration.GetConnectionString($"{ConnectionStringName}") ?? throw new KeyNotFoundException($"Connection string '{ConnectionStringName}' not found.");
-                string FullFilePath = Path.GetFullPath(
-                    ConnectionString[DatabaseStrings.DataSource.Length..],
-                    System.Reflection.Assembly.GetExecutingAssembly().Location);
-                if (!File.Exists(FullFilePath))
-                    throw new FileNotFoundException("Database file not found.", FullFilePath);
-
-                _ = dbContextOptionsBuilder.UseSqlite($"{DatabaseStrings.DataSource}{FullFilePath}");
-                dbContextOptionsBuilder.ConfigureDebugOptions();
-            }
-            , ServiceLifetime.Transient
-            , ServiceLifetime.Transient);
+            , ServiceLifetime.Singleton
+            , ServiceLifetime.Singleton);
 
         return webApplicationBuilder;
     }
@@ -128,8 +110,8 @@ public static class ProgramStartupExtensions
         _ = webApplicationBuilder.Services.AddHttpClient(nameof(FuelPrices.Lib.Core.Settings.Minetur));
         _ = webApplicationBuilder.Services.AddHostedService<FuelPrices.Lib.Services.ObtainDataCronBackgroundService>();
 
-        webApplicationBuilder.Services.TryAddSingleton(webApplicationBuilder.Configuration.GetSection(nameof(PvpcSettings)).Get<PvpcSettings>()!);
-        webApplicationBuilder.Services.TryAddSingleton(webApplicationBuilder.Configuration.GetSection(nameof(TuyaManagerSettings)).Get<TuyaManagerSettings>()!);
+        webApplicationBuilder.Services.TryAddSingleton(webApplicationBuilder.Configuration.GetSection(nameof(Pvpc.Lib.Settings.PvpcSettings)).Get<Pvpc.Lib.Settings.PvpcSettings>()!);
+        webApplicationBuilder.Services.TryAddSingleton(webApplicationBuilder.Configuration.GetSection(nameof(Pvpc.Lib.Settings.TuyaManagerSettings)).Get<Pvpc.Lib.Settings.TuyaManagerSettings>()!);
         webApplicationBuilder.Services.TryAddSingleton<PvpcCronBackgroundService>();
         _ = webApplicationBuilder.Services.AddHostedService<PvpcCronBackgroundService>();
         webApplicationBuilder.Services.TryAddSingleton<TuyaManagerCronBackgroundService>();
@@ -137,8 +119,8 @@ public static class ProgramStartupExtensions
 
         _ = webApplicationBuilder.Services.AddHostedService<OutboxCronBackgroundService>();
 
-        webApplicationBuilder.Services.TryAddSingleton<WebComparerHostedService>();
-        _ = webApplicationBuilder.Services.AddHostedService<WebComparerHostedService>();
+        webApplicationBuilder.Services.TryAddSingleton<WebComparer.Lib.Services.WebComparerHostedService>();
+        _ = webApplicationBuilder.Services.AddHostedService<WebComparer.Lib.Services.WebComparerHostedService>();
 
         return webApplicationBuilder;
     }

@@ -1,5 +1,5 @@
 ﻿**Publish all projects from Acer:**
-```
+```PowerShell
 dotnet publish Seedysoft.Tests.sln -p:PublishDir=D:\\_Syncthing\Seedysoft\linux-arm64\  -c Release  -r linux-arm64  -p:BlazorCacheBootResources=false  -p:PublishTrimmed=false  --sc ;
 dotnet publish Seedysoft.Tests.sln -p:PublishDir=D:\\_Syncthing\Seedysoft\win-x64\      -c Release  -r win-x64      -p:BlazorCacheBootResources=false  -p:PublishTrimmed=false  --sc ;
 
@@ -11,7 +11,7 @@ dotnet publish C:\Users\alfon\_prog\seedysoft\all-my-stuff\src\BlazorWebApp\Serv
 ```
 
 **Publish all projects from Raspberrypi4:**
-```
+```bash
 dotnet publish /mnt/wd/_prog/seedysoft/all-my-stuff/Seedysoft.Test.sln -p:PublishDir=/mnt/st/Seedysoft/linux-arm64/ -c Release  -r linux-arm64  -p:BlazorCacheBootResources=false  -p:PublishTrimmed=false  --sc ;
 cd /mnt/st/Seedysoft/linux-arm64 ;
 bash create-HomeCloudServer-daemon.sh ;

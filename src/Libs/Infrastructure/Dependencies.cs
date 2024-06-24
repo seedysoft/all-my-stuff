@@ -50,9 +50,9 @@ public static class Dependencies
     {
         _ = builder.Configuration.AddJsonFile($"appsettings.dbConnectionString.{builder.Environment.EnvironmentName}.json", false, true);
 
-        _ = builder.Services.AddDbContext<InfrastructureLib.DbContexts.DbCxt>(dbContextOptionsBuilder =>
+        _ = builder.Services.AddDbContext<DbContexts.DbCxt>(dbContextOptionsBuilder =>
         {
-            string ConnectionStringName = nameof(InfrastructureLib.DbContexts.DbCxt);
+            string ConnectionStringName = nameof(DbContexts.DbCxt);
             string ConnectionString = builder.Configuration.GetConnectionString($"{ConnectionStringName}") ?? throw new KeyNotFoundException($"Connection string '{ConnectionStringName}' not found.");
             string FullFilePath = Path.GetFullPath(
                 ConnectionString[DatabaseStrings.DataSource.Length..],

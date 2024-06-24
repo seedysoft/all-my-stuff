@@ -20,13 +20,13 @@
     <None Remove="appsettings.dbConnectionString.Production.json" />
     <None Remove="appsettings.Serilog.Development.json" />
     <Content Include="appsettings.Serilog.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <None Remove="appsettings.Serilog.Production.json" />
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)' == 'Debug'">
     <Content Include="appsettings.dbConnectionString.Development.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <DependentUpon>appsettings.dbConnectionString.json</DependentUpon>
     </Content>
     <None Include="appsettings.dbConnectionString.Production.json">
@@ -34,7 +34,7 @@
       <DependentUpon>appsettings.dbConnectionString.json</DependentUpon>
     </None>
     <Content Include="appsettings.Serilog.Development.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <DependentUpon>appsettings.Serilog.json</DependentUpon>
     </Content>
     <None Include="appsettings.Serilog.Production.json">
@@ -48,7 +48,7 @@
       <DependentUpon>appsettings.dbConnectionString.json</DependentUpon>
     </None>
     <Content Include="appsettings.dbConnectionString.Production.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <DependentUpon>appsettings.dbConnectionString.json</DependentUpon>
     </Content>
     <None Include="appsettings.Serilog.Development.json">
@@ -56,11 +56,12 @@
       <DependentUpon>appsettings.Serilog.json</DependentUpon>
     </None>
     <Content Include="appsettings.Serilog.Production.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <DependentUpon>appsettings.Serilog.json</DependentUpon>
     </Content>
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)' == 'Debug'">
+    <PackageReference Include="EfCore.SchemaCompare" Version="8.0.4" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.6">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

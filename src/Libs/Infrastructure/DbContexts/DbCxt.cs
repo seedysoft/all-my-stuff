@@ -1,8 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Seedysoft.Libs.Core.Constants;
 using Seedysoft.Libs.Core.Entities;
 
-namespace Seedysoft.InfrastructureLib.DbContexts;
+namespace Seedysoft.Libs.Infrastructure.DbContexts;
 
 public sealed partial class DbCxt : DbContext
 {
@@ -14,14 +13,16 @@ public sealed partial class DbCxt : DbContext
 #if DEBUG
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
+        base.OnConfiguring(optionsBuilder);
+
         if (!optionsBuilder.IsConfigured)
         {
-            string DatabasePath = "../../../../../../../databases/db.sqlite3";
+            string DatabasePath = "../../../../databases/db.sqlite3";
             string FullFilePath = Path.GetFullPath(DatabasePath);
             if (!File.Exists(FullFilePath))
                 throw new FileNotFoundException("Database file not found.", FullFilePath);
 
-            string ConnectionString = $"{DatabaseStrings.DataSource}{FullFilePath}";
+            string ConnectionString = $"{Core.Constants.DatabaseStrings.DataSource}{FullFilePath}";
             Console.WriteLine(ConnectionString);
 
             _ = optionsBuilder.UseSqlite(ConnectionString);
@@ -33,7 +34,7 @@ public sealed partial class DbCxt : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
-        _ = modelBuilder.ApplyConfigurationsFromAssembly(System.Reflection.Assembly.GetExecutingAssembly());
+        _ = modelBuilder.ApplyConfigurationsFromAssembly(GetType().Assembly);
     }
 
     public DbSet<Outbox> Outbox { get; set; } = default!;

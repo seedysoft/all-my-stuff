@@ -1,6 +1,6 @@
 ﻿// LEAVE FOR SAMPLE
 
-//namespace Seedysoft.InfrastructureLib.Migrations.Views;
+//namespace Seedysoft.Libs.Infrastructure.Migrations.Views;
 
 //public static class WebDataView
 //{

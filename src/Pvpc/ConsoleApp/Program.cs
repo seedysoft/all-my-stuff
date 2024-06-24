@@ -6,7 +6,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Seedysoft.Libs.Utils.Constants;
 using Seedysoft.Pvpc.Lib.Services;
-using Seedysoft.Pvpc.Lib.Settings;
 
 namespace Seedysoft.Pvpc.ConsoleApp;
 
@@ -23,8 +22,8 @@ public sealed class Program
             .AddJsonFile($"appsettings.PvpcSettings.json", false, true)
             .AddJsonFile($"appsettings.TuyaManagerSettings.json", false, true);
 
-        builder.Services.TryAddSingleton(builder.Configuration.GetSection(nameof(PvpcSettings)).Get<PvpcSettings>()!);
-        builder.Services.TryAddSingleton(builder.Configuration.GetSection(nameof(TuyaManagerSettings)).Get<TuyaManagerSettings>()!);
+        builder.Services.TryAddSingleton(builder.Configuration.GetSection(nameof(Lib.Settings.PvpcSettings)).Get<Lib.Settings.PvpcSettings>()!);
+        builder.Services.TryAddSingleton(builder.Configuration.GetSection(nameof(Lib.Settings.TuyaManagerSettings)).Get<Lib.Settings.TuyaManagerSettings>()!);
         builder.Services.TryAddSingleton<PvpcCronBackgroundService>();
         builder.Services.TryAddSingleton<TuyaManagerCronBackgroundService>();
 
@@ -51,7 +50,7 @@ public sealed class Program
             // Migrate and seed the database during startup. Must be synchronous.
             using IServiceScope Scope = host.Services.CreateScope();
 
-            Scope.ServiceProvider.GetRequiredService<InfrastructureLib.DbContexts.DbCxt>().Database.Migrate();
+            Scope.ServiceProvider.GetRequiredService<Libs.Infrastructure.DbContexts.DbCxt>().Database.Migrate();
 
             DateTime ForDate = DateTime.MinValue;
 

@@ -4,23 +4,23 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Seedysoft.InfrastructureLib.DbContexts;
+using Seedysoft.Libs.Infrastructure.DbContexts;
 
 #nullable disable
 
-namespace Seedysoft.InfrastructureLib.Migrations
+namespace Seedysoft.Libs.Infrastructure.Migrations
 {
     [DbContext(typeof(DbCxt))]
-    [Migration("20231112184935_WebDataUseHttpClient")]
-    partial class WebDataUseHttpClient
+    [Migration("20240624090621_Creating")]
+    partial class Creating
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "7.0.13");
+            modelBuilder.HasAnnotation("ProductVersion", "8.0.6");
 
-            modelBuilder.Entity("Seedysoft.CoreLib.Entities.Outbox", b =>
+            modelBuilder.Entity("Seedysoft.Libs.Core.Entities.Outbox", b =>
                 {
                     b.Property<long>("OutboxId")
                         .ValueGeneratedOnAdd()
@@ -45,7 +45,7 @@ namespace Seedysoft.InfrastructureLib.Migrations
                     b.ToTable("Outbox", (string)null);
                 });
 
-            modelBuilder.Entity("Seedysoft.CoreLib.Entities.OutboxView", b =>
+            modelBuilder.Entity("Seedysoft.Libs.Core.Entities.OutboxView", b =>
                 {
                     b.Property<long>("OutboxId")
                         .ValueGeneratedOnAdd()
@@ -73,7 +73,7 @@ namespace Seedysoft.InfrastructureLib.Migrations
                     b.ToView("OutboxView", (string)null);
                 });
 
-            modelBuilder.Entity("Seedysoft.CoreLib.Entities.Pvpc", b =>
+            modelBuilder.Entity("Seedysoft.Libs.Core.Entities.Pvpc", b =>
                 {
                     b.Property<string>("AtDateTimeOffset")
                         .HasColumnType("TEXT");
@@ -86,24 +86,7 @@ namespace Seedysoft.InfrastructureLib.Migrations
                     b.ToTable("Pvpc", (string)null);
                 });
 
-            modelBuilder.Entity("Seedysoft.CoreLib.Entities.PvpcView", b =>
-                {
-                    b.Property<string>("AtDateTimeOffset")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<long>("AtDateTimeUnix")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<decimal>("MWhPriceInEuros")
-                        .HasColumnType("TEXT");
-
-                    b.ToTable((string)null);
-
-                    b.ToView("PvpcView", (string)null);
-                });
-
-            modelBuilder.Entity("Seedysoft.CoreLib.Entities.SubcriptionDataView", b =>
+            modelBuilder.Entity("Seedysoft.Libs.Core.Entities.SubcriptionDataView", b =>
                 {
                     b.Property<string>("Description")
                         .HasColumnType("TEXT");
@@ -134,7 +117,7 @@ namespace Seedysoft.InfrastructureLib.Migrations
                     b.ToView("SubcriptionDataView", (string)null);
                 });
 
-            modelBuilder.Entity("Seedysoft.CoreLib.Entities.Subscriber", b =>
+            modelBuilder.Entity("Seedysoft.Libs.Core.Entities.Subscriber", b =>
                 {
                     b.Property<long>("SubscriberId")
                         .ValueGeneratedOnAdd()
@@ -155,7 +138,7 @@ namespace Seedysoft.InfrastructureLib.Migrations
                     b.ToTable("Subscriber", (string)null);
                 });
 
-            modelBuilder.Entity("Seedysoft.CoreLib.Entities.SubscriberSubscription", b =>
+            modelBuilder.Entity("Seedysoft.Libs.Core.Entities.SubscriberSubscription", b =>
                 {
                     b.Property<long>("SubscriberId")
                         .HasColumnType("INTEGER");
@@ -170,7 +153,7 @@ namespace Seedysoft.InfrastructureLib.Migrations
                     b.ToTable("SubscriberSubscription", (string)null);
                 });
 
-            modelBuilder.Entity("Seedysoft.CoreLib.Entities.Subscription", b =>
+            modelBuilder.Entity("Seedysoft.Libs.Core.Entities.Subscription", b =>
                 {
                     b.Property<long>("SubscriptionId")
                         .ValueGeneratedOnAdd()
@@ -185,7 +168,28 @@ namespace Seedysoft.InfrastructureLib.Migrations
                     b.ToTable("Subscription", (string)null);
                 });
 
-            modelBuilder.Entity("Seedysoft.CoreLib.Entities.WebData", b =>
+            modelBuilder.Entity("Seedysoft.Libs.Core.Entities.TuyaDevice", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("LocalKey")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<float>("Version")
+                        .HasColumnType("REAL");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("TuyaDevice", (string)null);
+                });
+
+            modelBuilder.Entity("Seedysoft.Libs.Core.Entities.WebData", b =>
                 {
                     b.Property<long>("SubscriptionId")
                         .ValueGeneratedOnAdd()
@@ -232,64 +236,15 @@ namespace Seedysoft.InfrastructureLib.Migrations
                     b.ToTable("WebData", (string)null);
                 });
 
-            modelBuilder.Entity("Seedysoft.CoreLib.Entities.WebDataView", b =>
+            modelBuilder.Entity("Seedysoft.Libs.Core.Entities.SubscriberSubscription", b =>
                 {
-                    b.Property<string>("CssSelector")
-                        .IsRequired()
-                        .HasColumnType("TEXT")
-                        .HasDefaultValue("body");
-
-                    b.Property<string>("CurrentWebContent")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("IgnoreChangeWhen")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("SeenAtDateTimeOffset")
-                        .HasColumnType("TEXT");
-
-                    b.Property<long?>("SeenAtDateTimeUnix")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<long>("SubscriptionId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<long>("TakeAboveBelowLines")
-                        .HasColumnType("INTEGER")
-                        .HasDefaultValue(3L);
-
-                    b.Property<string>("UpdatedAtDateTimeOffset")
-                        .HasColumnType("TEXT");
-
-                    b.Property<long?>("UpdatedAtDateTimeUnix")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<bool>("UseHttpClient")
-                        .HasColumnType("INTEGER")
-                        .HasDefaultValue(false);
-
-                    b.Property<string>("WebUrl")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.ToTable((string)null);
-
-                    b.ToView("WebDataView", (string)null);
-                });
-
-            modelBuilder.Entity("Seedysoft.CoreLib.Entities.SubscriberSubscription", b =>
-                {
-                    b.HasOne("Seedysoft.CoreLib.Entities.Subscriber", null)
+                    b.HasOne("Seedysoft.Libs.Core.Entities.Subscriber", null)
                         .WithMany()
                         .HasForeignKey("SubscriberId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Seedysoft.CoreLib.Entities.Subscription", null)
+                    b.HasOne("Seedysoft.Libs.Core.Entities.Subscription", null)
                         .WithMany()
                         .HasForeignKey("SubscriptionId")
                         .OnDelete(DeleteBehavior.Cascade)

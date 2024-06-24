@@ -2,23 +2,22 @@
 using Microsoft.Extensions.Logging;
 using Seedysoft.Libs.Utils.Constants;
 using Seedysoft.Libs.Utils.Extensions;
-using Seedysoft.Pvpc.Lib.Settings;
 using System.Net.Http.Json;
 
 namespace Seedysoft.Pvpc.Lib.Services;
 
 public sealed class PvpcCronBackgroundService(
-    PvpcSettings config
-    , InfrastructureLib.DbContexts.DbCxt dbCxt
+    Settings.PvpcSettings config
+    , Libs.Infrastructure.DbContexts.DbCxt dbCxt
     , ILogger<PvpcCronBackgroundService> logger) : Libs.CronBackgroundService.CronBackgroundService(config)
 {
     // HttpClient is intended to be instantiated once per application, rather than per-use. See Remarks.
     private static readonly HttpClient client = new();
 
-    private readonly InfrastructureLib.DbContexts.DbCxt DbCxt = dbCxt;
+    private readonly Libs.Infrastructure.DbContexts.DbCxt DbCxt = dbCxt;
     private readonly ILogger<PvpcCronBackgroundService> Logger = logger;
 
-    private PvpcSettings Settings => (PvpcSettings)Config;
+    private Settings.PvpcSettings Settings => (Settings.PvpcSettings)Config;
 
     public override async Task DoWorkAsync(CancellationToken stoppingToken)
     {
@@ -116,7 +115,7 @@ public sealed class PvpcCronBackgroundService(
     internal static bool IsTimeToCharge(
         Libs.Core.Entities.Pvpc[] pvpcs
         , DateTimeOffset timeToCheckDateTimeOffset
-        , TuyaManagerSettings tuyaManagerSettings)
+        , Settings.TuyaManagerSettings tuyaManagerSettings)
     {
         if (pvpcs.Length == 0)
             return false;

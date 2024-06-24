@@ -1,6 +1,7 @@
 ﻿namespace Seedysoft.FuelPrices.Lib.Core.Entities;
 
-public abstract class ProductPriceBase : Core.EntityBase
+[System.Diagnostics.DebuggerDisplay("{" + nameof(GetDebuggerDisplay) + "(),nq}")]
+public sealed class ProductPrice : Core.EntityBase
 {
     public int CentimosDeEuro { get; set; }
     public decimal Euros => decimal.Divide(CentimosDeEuro, 1_000M);
@@ -34,16 +35,6 @@ public abstract class ProductPriceBase : Core.EntityBase
     public string NombreProvincia { get; set; } = default!;
 
     public string Rotulo { get; set; } = default!;
-}
 
-[System.Diagnostics.DebuggerDisplay("{" + nameof(GetDebuggerDisplay) + "(),nq}")]
-public sealed class ProductPrice : ProductPriceBase
-{
-    private string GetDebuggerDisplay() => $"{NombreProducto})";
-}
-
-[System.Diagnostics.DebuggerDisplay("{" + nameof(GetDebuggerDisplay) + "(),nq}")]
-public sealed class ProductPriceHist : ProductPriceBase
-{
     private string GetDebuggerDisplay() => $"{NombreProducto} @ {AtDate}";
 }

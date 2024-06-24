@@ -13,10 +13,10 @@ public sealed class PetroleumProductsController : ApiControllerBase
     [HttpGet()]
     [Route("[action]")]
     public async Task<IImmutableList<Client.ViewModels.IdDescRecord>> PetroleumProductsForFilterAsync(
-        [FromServices] FuelPrices.Lib.Infrastructure.Data.CarburantesDbContext carburantesDbContext)
+        [FromServices] FuelPrices.Lib.Infrastructure.Data.FuelPricesDbContext fuelPricesDbContext)
     {
         IQueryable<Client.ViewModels.IdDescRecord> Query =
-            from p in carburantesDbContext.ProductosPetroliferos
+            from p in fuelPricesDbContext.ProductosPetroliferos
             orderby p.NombreProducto
             select new Client.ViewModels.IdDescRecord(p.IdProducto, p.NombreProducto);
 

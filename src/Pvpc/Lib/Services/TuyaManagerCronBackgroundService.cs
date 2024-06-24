@@ -8,10 +8,10 @@ namespace Seedysoft.Pvpc.Lib.Services;
 
 public sealed class TuyaManagerCronBackgroundService(
     Settings.TuyaManagerSettings config
-    , InfrastructureLib.DbContexts.DbCxt dbCxt
+    , Libs.Infrastructure.DbContexts.DbCxt dbCxt
     , ILogger<TuyaManagerCronBackgroundService> logger) : Libs.CronBackgroundService.CronBackgroundService(config)
 {
-    private readonly InfrastructureLib.DbContexts.DbCxt DbCxt = dbCxt;
+    private readonly Libs.Infrastructure.DbContexts.DbCxt DbCxt = dbCxt;
     private readonly ILogger<TuyaManagerCronBackgroundService> Logger = logger;
 
     private Settings.TuyaManagerSettings Settings => (Settings.TuyaManagerSettings)Config;

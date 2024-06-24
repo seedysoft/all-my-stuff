@@ -5,8 +5,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Seedysoft.FuelPrices.Lib.Core.Entities;
 using Seedysoft.FuelPrices.Lib.Core.JsonObjects.Minetur;
-using Seedysoft.FuelPrices.Lib.Core.Settings;
 using Seedysoft.FuelPrices.Lib.Infrastructure.Data;
+// TODO  Remove using Seedysoft when Dependencies where well configured. 
 using Seedysoft.Libs.Utils.Extensions;
 using System.Net.Http.Json;
 
@@ -18,18 +18,18 @@ public sealed class ObtainDataCronBackgroundService : Libs.CronBackgroundService
 
     private readonly IServiceProvider ServiceProvider;
     private readonly ILogger<ObtainDataCronBackgroundService> Logger;
-    private readonly SettingsRoot Settings;
+    private readonly Core.Settings.SettingsRoot Settings;
     private readonly HttpClient Client = default!;
 
     public ObtainDataCronBackgroundService(IServiceProvider serviceProvider)
-        : base(serviceProvider.GetRequiredService<IConfiguration>().GetSection(nameof(SettingsRoot)).Get<SettingsRoot>()!.ObtainDataSettings)
+        : base(serviceProvider.GetRequiredService<IConfiguration>().GetSection(nameof(Core.Settings.SettingsRoot)).Get<Core.Settings.SettingsRoot>()!.ObtainDataSettings)
     {
         ServiceProvider = serviceProvider;
-        Settings = serviceProvider.GetRequiredService<IConfiguration>().GetSection(nameof(SettingsRoot)).Get<SettingsRoot>()!;
+        Settings = serviceProvider.GetRequiredService<IConfiguration>().GetSection(nameof(Core.Settings.SettingsRoot)).Get<Core.Settings.SettingsRoot>()!;
 
         Logger = ServiceProvider.GetRequiredService<ILogger<ObtainDataCronBackgroundService>>();
 
-        Client = ServiceProvider.GetRequiredService<IHttpClientFactory>().CreateClient(nameof(Minetur));
+        Client = ServiceProvider.GetRequiredService<IHttpClientFactory>().CreateClient(nameof(Core.Settings.Minetur));
         Client.BaseAddress = new Uri(Settings.Minetur.Uris.Base);
     }
 
@@ -39,7 +39,7 @@ public sealed class ObtainDataCronBackgroundService : Libs.CronBackgroundService
         {
             using IServiceScope ServiceScope = ServiceProvider.CreateScope();
 
-            await DeleteAllRecordsAsync(ServiceScope.ServiceProvider.GetRequiredService<CarburantesDbContext>());
+            await DeleteAllRecordsAsync(ServiceScope.ServiceProvider.GetRequiredService<FuelPricesDbContext>());
 
             int Today = int.Parse(DateTime.UtcNow.Date.ToString(Libs.Utils.Constants.Formats.YearMonthDayFormat));
 
@@ -72,7 +72,7 @@ public sealed class ObtainDataCronBackgroundService : Libs.CronBackgroundService
         finally { await Task.CompletedTask; }
     }
 
-    private async Task DeleteAllRecordsAsync(CarburantesDbContext dbCtx)
+    private async Task DeleteAllRecordsAsync(FuelPricesDbContext dbCtx)
     {
         try
         {
@@ -100,11 +100,9 @@ public sealed class ObtainDataCronBackgroundService : Libs.CronBackgroundService
             if (!(Resultado?.Length > 0))
                 return;
 
-            CarburantesDbContext DbCtx = serviceProvider.GetRequiredService<CarburantesDbContext>();
-            CarburantesHistDbContext HistDbCtx = serviceProvider.GetRequiredService<CarburantesHistDbContext>();
+            FuelPricesDbContext DbCtx = serviceProvider.GetRequiredService<FuelPricesDbContext>();
 
             List<ProductoPetrolifero> NewObjects = new(Resultado.Length);
-            List<ProductoPetroliferoHist> HistObjects = new(Resultado.Length);
 
             for (int i = 0; i < Resultado.Length; i++)
             {
@@ -117,17 +115,9 @@ public sealed class ObtainDataCronBackgroundService : Libs.CronBackgroundService
                     NombreProductoAbreviatura = Resultado[i].NombreProductoAbreviatura,
                     AtDate = today
                 });
-                HistObjects.Add(new ProductoPetroliferoHist()
-                {
-                    IdProducto = IdProd,
-                    NombreProducto = Resultado[i].NombreProducto,
-                    NombreProductoAbreviatura = Resultado[i].NombreProductoAbreviatura,
-                    AtDate = today
-                });
             }
 
             await DbCtx.BulkInsertAsync(NewObjects, cancellationToken: cancellationToken);
-            await HistDbCtx.BulkInsertOrUpdateAsync(HistObjects, cancellationToken: cancellationToken);
         }
         catch (Exception e) when (Logger.Handle(e, $"Error on '{OrigenRegistros}' failed.")) { }
     }
@@ -145,11 +135,9 @@ public sealed class ObtainDataCronBackgroundService : Libs.CronBackgroundService
             if (!(Resultado?.Length > 0))
                 return;
 
-            CarburantesDbContext DbCtx = serviceProvider.GetRequiredService<CarburantesDbContext>();
-            CarburantesHistDbContext HistDbCtx = serviceProvider.GetRequiredService<CarburantesHistDbContext>();
+            FuelPricesDbContext DbCtx = serviceProvider.GetRequiredService<FuelPricesDbContext>();
 
             List<ComunidadAutonoma> NewObjects = new(Resultado.Length);
-            List<ComunidadAutonomaHist> HistObjects = new(Resultado.Length);
 
             for (int i = 0; i < Resultado.Length; i++)
             {
@@ -161,16 +149,9 @@ public sealed class ObtainDataCronBackgroundService : Libs.CronBackgroundService
                     NombreComunidadAutonoma = Resultado[i].CCAA,
                     AtDate = today
                 });
-                HistObjects.Add(new ComunidadAutonomaHist()
-                {
-                    IdComunidadAutonoma = IdCcaa,
-                    NombreComunidadAutonoma = Resultado[i].CCAA,
-                    AtDate = today
-                });
             }
 
             await DbCtx.BulkInsertAsync(NewObjects, cancellationToken: cancellationToken);
-            await HistDbCtx.BulkInsertOrUpdateAsync(HistObjects, cancellationToken: cancellationToken);
         }
         catch (Exception e) when (Logger.Handle(e, $"Error on '{OrigenRegistros}' failed.")) { }
     }
@@ -188,11 +169,9 @@ public sealed class ObtainDataCronBackgroundService : Libs.CronBackgroundService
             if (!(Resultado?.Length > 0))
                 return;
 
-            CarburantesDbContext DbCtx = serviceProvider.GetRequiredService<CarburantesDbContext>();
-            CarburantesHistDbContext HistDbCtx = serviceProvider.GetRequiredService<CarburantesHistDbContext>();
+            FuelPricesDbContext DbCtx = serviceProvider.GetRequiredService<FuelPricesDbContext>();
 
             List<Provincia> NewObjects = new(Resultado.Length);
-            List<ProvinciaHist> HistObjects = new(Resultado.Length);
 
             DateTimeOffset AhoraUtc = DateTimeOffset.UtcNow;
 
@@ -208,17 +187,9 @@ public sealed class ObtainDataCronBackgroundService : Libs.CronBackgroundService
                     NombreProvincia = Resultado[i].Provincia,
                     AtDate = today
                 });
-                HistObjects.Add(new ProvinciaHist()
-                {
-                    IdProvincia = IdProv,
-                    IdComunidadAutonoma = IdCcaa,
-                    NombreProvincia = Resultado[i].Provincia,
-                    AtDate = today
-                });
             }
 
             await DbCtx.BulkInsertAsync(NewObjects, cancellationToken: cancellationToken);
-            await HistDbCtx.BulkInsertOrUpdateAsync(HistObjects, cancellationToken: cancellationToken);
         }
         catch (Exception e) when (Logger.Handle(e, $"Error on '{OrigenRegistros}' failed.")) { }
     }
@@ -236,11 +207,9 @@ public sealed class ObtainDataCronBackgroundService : Libs.CronBackgroundService
             if (!(Resultado?.Length > 0))
                 return;
 
-            CarburantesDbContext DbCtx = serviceProvider.GetRequiredService<CarburantesDbContext>();
-            CarburantesHistDbContext HistDbCtx = serviceProvider.GetRequiredService<CarburantesHistDbContext>();
+            FuelPricesDbContext DbCtx = serviceProvider.GetRequiredService<FuelPricesDbContext>();
 
             List<Municipio> NewObjects = new(Resultado.Length);
-            List<MunicipioHist> HistObjects = new(Resultado.Length);
 
             DateTimeOffset AhoraUtc = DateTimeOffset.UtcNow;
 
@@ -256,17 +225,9 @@ public sealed class ObtainDataCronBackgroundService : Libs.CronBackgroundService
                     NombreMunicipio = Resultado[i].Municipio,
                     AtDate = today
                 });
-                HistObjects.Add(new MunicipioHist()
-                {
-                    IdMunicipio = IdMun,
-                    IdProvincia = IdProv,
-                    NombreMunicipio = Resultado[i].Municipio,
-                    AtDate = today
-                });
             }
 
             await DbCtx.BulkInsertAsync(NewObjects, cancellationToken: cancellationToken);
-            await HistDbCtx.BulkInsertOrUpdateAsync(HistObjects, cancellationToken: cancellationToken);
         }
         catch (Exception e) when (Logger.Handle(e, $"Error on '{OrigenRegistros}' failed.")) { }
     }
@@ -284,11 +245,9 @@ public sealed class ObtainDataCronBackgroundService : Libs.CronBackgroundService
             if (!(Resultado?.Estaciones.Length > 0))
                 return;
 
-            CarburantesDbContext DbCtx = serviceProvider.GetRequiredService<CarburantesDbContext>();
-            CarburantesHistDbContext HistDbCtx = serviceProvider.GetRequiredService<CarburantesHistDbContext>();
+            FuelPricesDbContext DbCtx = serviceProvider.GetRequiredService<FuelPricesDbContext>();
 
             List<EstacionServicio> NewObjects = new(Resultado.Estaciones.Length);
-            List<EstacionServicioHist> HistObjects = new(Resultado.Estaciones.Length);
 
             DateTimeOffset AhoraUtc = DateTimeOffset.UtcNow;
 
@@ -312,24 +271,9 @@ public sealed class ObtainDataCronBackgroundService : Libs.CronBackgroundService
                     Rotulo = EstacionServicioJson.Rotulo,
                     AtDate = today
                 });
-                HistObjects.Add(new EstacionServicioHist()
-                {
-                    IdEstacion = IdEs,
-                    CodigoPostal = EstacionServicioJson.CodigoPostal,
-                    Direccion = EstacionServicioJson.Direccion,
-                    Horario = EstacionServicioJson.Horario,
-                    IdMunicipio = IdMunicipio,
-                    Latitud = EstacionServicioJson.Latitud,
-                    LongitudWgs84 = EstacionServicioJson.LongitudWgs84,
-                    Localidad = EstacionServicioJson.Localidad,
-                    Margen = EstacionServicioJson.Margen,
-                    Rotulo = EstacionServicioJson.Rotulo,
-                    AtDate = today
-                });
             }
 
             await DbCtx.BulkInsertAsync(NewObjects, cancellationToken: cancellationToken);
-            await HistDbCtx.BulkInsertOrUpdateAsync(HistObjects, cancellationToken: cancellationToken);
         }
         catch (Exception e) when (Logger.Handle(e, $"Error on '{OrigenRegistros}' failed.")) { }
     }
@@ -340,8 +284,7 @@ public sealed class ObtainDataCronBackgroundService : Libs.CronBackgroundService
 
         try
         {
-            CarburantesDbContext DbCtx = serviceProvider.GetRequiredService<CarburantesDbContext>();
-            CarburantesHistDbContext HistDbCtx = serviceProvider.GetRequiredService<CarburantesHistDbContext>();
+            FuelPricesDbContext DbCtx = serviceProvider.GetRequiredService<FuelPricesDbContext>();
 
             int[] ProductoPetroliferoIds = await DbCtx.ProductosPetroliferos
                 .Select(x => x.IdProducto)
@@ -362,7 +305,6 @@ public sealed class ObtainDataCronBackgroundService : Libs.CronBackgroundService
                     continue;
 
                 List<EstacionProductoPrecio> NewObjects = new(Resultado.EstacionServicioProducto.Length);
-                List<EstacionProductoPrecioHist> HistObjects = new(Resultado.EstacionServicioProducto.Length);
 
                 for (int j = 0; j < Resultado.EstacionServicioProducto.Length; j++)
                 {
@@ -377,17 +319,9 @@ public sealed class ObtainDataCronBackgroundService : Libs.CronBackgroundService
                         CentimosDeEuro = NuevoPrecio,
                         AtDate = today
                     });
-                    HistObjects.Add(new EstacionProductoPrecioHist()
-                    {
-                        IdEstacion = EstacionServicioId,
-                        IdProducto = ProductoPetroliferoId,
-                        CentimosDeEuro = NuevoPrecio,
-                        AtDate = today
-                    });
                 }
 
                 await DbCtx.BulkInsertAsync(NewObjects, cancellationToken: cancellationToken);
-                await HistDbCtx.BulkInsertOrUpdateAsync(HistObjects, cancellationToken: cancellationToken);
             }
         }
         catch (Exception e) when (Logger.Handle(e, $"Error on '{OrigenRegistros}' failed.")) { }

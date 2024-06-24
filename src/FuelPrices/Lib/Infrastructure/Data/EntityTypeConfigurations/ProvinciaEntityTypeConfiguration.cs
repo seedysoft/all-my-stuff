@@ -4,9 +4,9 @@ using Seedysoft.FuelPrices.Lib.Core.Entities;
 
 namespace Seedysoft.FuelPrices.Lib.Infrastructure.Data.EntityTypeConfigurations;
 
-internal abstract class ProvinciaEntityTypeConfigurationBase<T> : EntityTypeConfigurationBase<T> where T : ProvinciaBase
+internal sealed class ProvinciaEntityTypeConfiguration : EntityTypeConfigurationBase<Provincia>, IEntityTypeConfiguration<Provincia>
 {
-    public override void Configure(EntityTypeBuilder<T> builder)
+    public override void Configure(EntityTypeBuilder<Provincia> builder)
     {
         _ = builder
             .Property(x => x.IdProvincia)
@@ -22,29 +22,9 @@ internal abstract class ProvinciaEntityTypeConfigurationBase<T> : EntityTypeConf
             .IsRequired();
 
         base.Configure(builder);
-    }
-}
-
-internal sealed class ProvinciaEntityTypeConfiguration : ProvinciaEntityTypeConfigurationBase<Provincia>, IEntityTypeConfiguration<Provincia>
-{
-    public override void Configure(EntityTypeBuilder<Provincia> builder)
-    {
-        base.Configure(builder);
 
         _ = builder
             .ToTable(nameof(Provincia))
-            .HasKey(x => new { x.IdProvincia });
-    }
-}
-
-internal sealed class ProvinciaHistEntityTypeConfiguration : ProvinciaEntityTypeConfigurationBase<ProvinciaHist>, IEntityTypeConfiguration<ProvinciaHist>
-{
-    public override void Configure(EntityTypeBuilder<ProvinciaHist> builder)
-    {
-        base.Configure(builder);
-
-        _ = builder
-            .ToTable(nameof(ProvinciaHist))
             .HasKey(x => new { x.IdProvincia, x.AtDate });
     }
 }
