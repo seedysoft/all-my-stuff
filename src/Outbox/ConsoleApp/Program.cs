@@ -1,10 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Seedysoft.Libs.Utils.Constants;
+using Seedysoft.Libs.Utils.Extensions;
 
 namespace Seedysoft.Outbox.ConsoleApp;
 
@@ -12,25 +10,11 @@ public sealed class Program
 {
     public static async Task Main(string[] args)
     {
-        HostApplicationBuilder builder = new();
+        HostApplicationBuilder hostApplicationBuilder = new(args);
 
-        Libs.Infrastructure.Dependencies.ConfigureDefaultDependencies(builder, args);
-        Libs.Infrastructure.Dependencies.AddDbCxtContext(builder);
+        _ = hostApplicationBuilder.AddAllMyDependencies();
 
-        _ = builder.Configuration
-            .AddJsonFile($"appsettings.SmtpServiceSettings.json", false, true)
-            .AddJsonFile($"appsettings.TelegramSettings.json", false, true)
-            .AddJsonFile($"appsettings.TelegramSettings.{builder.Environment.EnvironmentName}.json", false, true);
-
-        builder.Services.TryAddSingleton(builder.Configuration.GetSection(nameof(Libs.SmtpService.Settings.SmtpServiceSettings)).Get<Libs.SmtpService.Settings.SmtpServiceSettings>()!);
-        builder.Services.TryAddTransient<Libs.SmtpService.Services.SmtpService>();
-
-        builder.Services.TryAddSingleton(builder.Configuration.GetSection(nameof(Libs.Telegram.Settings.TelegramSettings)).Get<Libs.Telegram.Settings.TelegramSettings>()!);
-        builder.Services.TryAddSingleton<Libs.Telegram.Services.TelegramHostedService>();
-
-        builder.Services.TryAddSingleton<Lib.Services.OutboxCronBackgroundService>();
-
-        IHost host = builder.Build();
+        IHost host = hostApplicationBuilder.Build();
 
         ILogger<Program> Logger = host.Services.GetRequiredService<ILogger<Program>>();
 
@@ -48,7 +32,7 @@ public sealed class Program
             //    Logger.LogDebug($"{item.Key}: {item.Value ?? "<<NULL>>"}");
 
             if (System.Diagnostics.Debugger.IsAttached)
-                await Task.Delay(Time.TenSecondsTimeSpan);
+                await Task.Delay(Libs.Utils.Constants.Time.TenSecondsTimeSpan);
 
             // Migrate and seed the database during startup. Must be synchronous.
             using IServiceScope Scope = host.Services.CreateScope();

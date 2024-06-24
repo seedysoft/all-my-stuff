@@ -1,12 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Seedysoft.FuelPrices.Lib.Core.Entities;
 
 namespace Seedysoft.FuelPrices.Lib.Infrastructure.Data.EntityTypeConfigurations;
 
-internal sealed class ProductoPetroliferoEntityTypeConfiguration : EntityTypeConfigurationBase<ProductoPetrolifero>, IEntityTypeConfiguration<ProductoPetrolifero>
+internal sealed class ProductoPetroliferoEntityTypeConfiguration : EntityTypeConfigurationBase<Core.Entities.ProductoPetrolifero>, IEntityTypeConfiguration<Core.Entities.ProductoPetrolifero>
 {
-    public override void Configure(EntityTypeBuilder<ProductoPetrolifero> builder)
+    public override void Configure(EntityTypeBuilder<Core.Entities.ProductoPetrolifero> builder)
     {
         _ = builder
             .Property(x => x.IdProducto)
@@ -24,7 +23,7 @@ internal sealed class ProductoPetroliferoEntityTypeConfiguration : EntityTypeCon
         base.Configure(builder);
 
         _ = builder
-            .ToTable(nameof(ProductoPetrolifero))
+            .ToTable(nameof(Core.Entities.ProductoPetrolifero))
             .HasKey(x => new { x.IdProducto, x.AtDate });
     }
 }

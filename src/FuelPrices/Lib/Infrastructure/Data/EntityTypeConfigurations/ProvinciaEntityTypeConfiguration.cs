@@ -1,12 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Seedysoft.FuelPrices.Lib.Core.Entities;
 
 namespace Seedysoft.FuelPrices.Lib.Infrastructure.Data.EntityTypeConfigurations;
 
-internal sealed class ProvinciaEntityTypeConfiguration : EntityTypeConfigurationBase<Provincia>, IEntityTypeConfiguration<Provincia>
+internal sealed class ProvinciaEntityTypeConfiguration : EntityTypeConfigurationBase<Core.Entities.Provincia>, IEntityTypeConfiguration<Core.Entities.Provincia>
 {
-    public override void Configure(EntityTypeBuilder<Provincia> builder)
+    public override void Configure(EntityTypeBuilder<Core.Entities.Provincia> builder)
     {
         _ = builder
             .Property(x => x.IdProvincia)
@@ -24,7 +23,7 @@ internal sealed class ProvinciaEntityTypeConfiguration : EntityTypeConfiguration
         base.Configure(builder);
 
         _ = builder
-            .ToTable(nameof(Provincia))
+            .ToTable(nameof(Core.Entities.Provincia))
             .HasKey(x => new { x.IdProvincia, x.AtDate });
     }
 }

@@ -1,11 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Seedysoft.Libs.Core.Entities;
 
 namespace Seedysoft.Libs.Infrastructure.EntityTypeConfigurations;
 
-internal sealed class SubscriptionEntityTypeConfiguration : IEntityTypeConfiguration<Subscription>
+internal sealed class SubscriptionEntityTypeConfiguration : IEntityTypeConfiguration<Core.Entities.Subscription>
 {
-    public void Configure(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder<Subscription> builder)
+    public void Configure(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder<Core.Entities.Subscription> builder)
     {
         _ = builder
             .Property(s => s.SubscriptionId)
@@ -16,7 +15,7 @@ internal sealed class SubscriptionEntityTypeConfiguration : IEntityTypeConfigura
             .HasConversion<string>();
 
         _ = builder
-            .ToTable(nameof(Subscription))
+            .ToTable(nameof(Core.Entities.Subscription))
             .HasKey(s => s.SubscriptionId);
 
         _ = builder

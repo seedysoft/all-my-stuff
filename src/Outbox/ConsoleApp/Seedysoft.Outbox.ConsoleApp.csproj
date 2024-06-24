@@ -35,6 +35,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\Libs\SmtpService\Seedysoft.Libs.SmtpService.csproj" />
     <ProjectReference Include="..\..\Libs\Telegram\Seedysoft.Libs.Telegram.csproj" />
+    <ProjectReference Include="..\..\Libs\Utils\Seedysoft.Libs.Utils.csproj" />
     <ProjectReference Include="..\Lib\Seedysoft.Outbox.Lib.csproj" />
   </ItemGroup>
 </Project>

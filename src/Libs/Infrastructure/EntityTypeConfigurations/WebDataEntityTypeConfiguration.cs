@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Seedysoft.Libs.Infrastructure.ValueConverters;
 
 namespace Seedysoft.Libs.Infrastructure.EntityTypeConfigurations;
 
@@ -23,11 +22,11 @@ internal abstract class WebDataEntityTypeConfigurationT<T> : IEntityTypeConfigur
 
         _ = builder
             .Property(x => x.SeenAtDateTimeOffset)
-            .HasConversion(DateTimeOffsetString.NullableDateTimeOffsetStringValueConverter);
+            .HasConversion(ValueConverters.DateTimeOffsetString.NullableDateTimeOffsetStringValueConverter);
 
         _ = builder
             .Property(x => x.UpdatedAtDateTimeOffset)
-            .HasConversion(DateTimeOffsetString.NullableDateTimeOffsetStringValueConverter);
+            .HasConversion(ValueConverters.DateTimeOffsetString.NullableDateTimeOffsetStringValueConverter);
 
         _ = builder
             .Property(x => x.IgnoreChangeWhen);

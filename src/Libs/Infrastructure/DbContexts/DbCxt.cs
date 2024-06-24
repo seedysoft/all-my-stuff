@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Seedysoft.Libs.Core.Entities;
 
 namespace Seedysoft.Libs.Infrastructure.DbContexts;
 
@@ -37,15 +36,15 @@ public sealed partial class DbCxt : DbContext
         _ = modelBuilder.ApplyConfigurationsFromAssembly(GetType().Assembly);
     }
 
-    public DbSet<Outbox> Outbox { get; set; } = default!;
+    public DbSet<Core.Entities.Outbox> Outbox { get; set; } = default!;
 
-    public DbSet<Pvpc> Pvpcs { get; set; } = default!;
+    public DbSet<Core.Entities.Pvpc> Pvpcs { get; set; } = default!;
 
-    public DbSet<Subscriber> Subscribers { get; set; } = default!;
-    public DbSet<Subscription> Subscriptions { get; set; } = default!;
-    public DbSet<SubcriptionDataView> SubcriptionsDataView { get; set; } = default!;
+    public DbSet<Core.Entities.Subscriber> Subscribers { get; set; } = default!;
+    public DbSet<Core.Entities.Subscription> Subscriptions { get; set; } = default!;
+    public DbSet<Core.Entities.SubcriptionDataView> SubcriptionsDataView { get; set; } = default!;
 
-    public DbSet<TuyaDevice> TuyaDevices { get; set; } = default!;
+    public DbSet<Core.Entities.TuyaDevice> TuyaDevices { get; set; } = default!;
 
-    public DbSet<WebData> WebDatas { get; set; } = default!;
+    public DbSet<Core.Entities.WebData> WebDatas { get; set; } = default!;
 }

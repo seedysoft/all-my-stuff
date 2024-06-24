@@ -1,11 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Seedysoft.Libs.Core.Entities;
 
 namespace Seedysoft.Libs.Infrastructure.EntityTypeConfigurations;
 
-internal sealed class TuyaDeviceEntityTypeConfiguration : IEntityTypeConfiguration<TuyaDevice>
+internal sealed class TuyaDeviceEntityTypeConfiguration : IEntityTypeConfiguration<Core.Entities.TuyaDevice>
 {
-    public void Configure(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder<TuyaDevice> builder)
+    public void Configure(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder<Core.Entities.TuyaDevice> builder)
     {
         // TODO                           Encrypt
 
@@ -26,7 +25,7 @@ internal sealed class TuyaDeviceEntityTypeConfiguration : IEntityTypeConfigurati
             .IsRequired();
 
         _ = builder
-            .ToTable(nameof(TuyaDevice))
+            .ToTable(nameof(Core.Entities.TuyaDevice))
             .HasKey(s => s.Id);
     }
 }

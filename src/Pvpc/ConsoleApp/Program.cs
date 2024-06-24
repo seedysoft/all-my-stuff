@@ -1,11 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Seedysoft.Libs.Utils.Constants;
-using Seedysoft.Pvpc.Lib.Services;
+using Seedysoft.Libs.Utils.Extensions;
 
 namespace Seedysoft.Pvpc.ConsoleApp;
 
@@ -13,21 +10,11 @@ public sealed class Program
 {
     public static async Task Main(string[] args)
     {
-        HostApplicationBuilder builder = new();
+        HostApplicationBuilder hostApplicationBuilder = new(args);
 
-        Libs.Infrastructure.Dependencies.ConfigureDefaultDependencies(builder, args);
-        Libs.Infrastructure.Dependencies.AddDbCxtContext(builder);
+        _ = hostApplicationBuilder.AddAllMyDependencies();
 
-        _ = builder.Configuration
-            .AddJsonFile($"appsettings.PvpcSettings.json", false, true)
-            .AddJsonFile($"appsettings.TuyaManagerSettings.json", false, true);
-
-        builder.Services.TryAddSingleton(builder.Configuration.GetSection(nameof(Lib.Settings.PvpcSettings)).Get<Lib.Settings.PvpcSettings>()!);
-        builder.Services.TryAddSingleton(builder.Configuration.GetSection(nameof(Lib.Settings.TuyaManagerSettings)).Get<Lib.Settings.TuyaManagerSettings>()!);
-        builder.Services.TryAddSingleton<PvpcCronBackgroundService>();
-        builder.Services.TryAddSingleton<TuyaManagerCronBackgroundService>();
-
-        IHost host = builder.Build();
+        IHost host = hostApplicationBuilder.Build();
 
         ILogger<Program> Logger = host.Services.GetRequiredService<ILogger<Program>>();
 
@@ -45,7 +32,7 @@ public sealed class Program
             //    Logger.LogDebug($"{item.Key}: {item.Value ?? "<<NULL>>"}");
 
             if (System.Diagnostics.Debugger.IsAttached)
-                await Task.Delay(Time.TenSecondsTimeSpan);
+                await Task.Delay(Libs.Utils.Constants.Time.TenSecondsTimeSpan);
 
             // Migrate and seed the database during startup. Must be synchronous.
             using IServiceScope Scope = host.Services.CreateScope();
@@ -57,18 +44,18 @@ public sealed class Program
             if (args?.Length < 1
                 || !DateTime.TryParseExact(
                     args?[0]
-                    , Formats.YearMonthDayFormat
+                    , Libs.Utils.Constants.Formats.YearMonthDayFormat
                     , System.Globalization.CultureInfo.InvariantCulture
                     , System.Globalization.DateTimeStyles.None
                     , out ForDate))
             {
-                Logger.LogInformation($"You can provide the date in {Formats.YearMonthDayFormat} format as an argument");
+                Logger.LogInformation($"You can provide the date in {Libs.Utils.Constants.Formats.YearMonthDayFormat} format as an argument");
                 ForDate = DateTimeOffset.UtcNow.AddDays(1).Date;
             }
 
             using CancellationTokenSource CancelTokenSource = new();
 
-            using (PvpcCronBackgroundService pvpcCronBackgroundService = host.Services.GetRequiredService<PvpcCronBackgroundService>())
+            using (Lib.Services.PvpcCronBackgroundService pvpcCronBackgroundService = host.Services.GetRequiredService<Lib.Services.PvpcCronBackgroundService>())
                 await pvpcCronBackgroundService.GetPvpcFromReeForDateAsync(ForDate, CancelTokenSource.Token);
 
             Logger.LogInformation("End {ApplicationName}", AppName);

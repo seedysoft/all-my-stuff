@@ -1,5 +1,5 @@
 ﻿#pragma warning disable CA1707 // Identifiers should not contain underscores
-using Seedysoft.Libs.Utils.Constants;
+
 using System.ComponentModel;
 
 namespace Seedysoft.Libs.Telegram.Enums;
@@ -20,7 +20,7 @@ public enum BotActionName
     [Description("[email] Se establece el valor proporcionado como email del usuario. Si no se proporciona, se elimina.")]
     email_edit = 120,
 
-    [Description($"[{Formats.YearMonthDayFormat}] Obtiene los PVPC.")]
+    [Description($"[{Utils.Constants.Formats.YearMonthDayFormat}] Obtiene los PVPC.")]
     pvpc_fill = 200,
 
     [Description("Iniciar una conversación de búsqueda de productos.")]

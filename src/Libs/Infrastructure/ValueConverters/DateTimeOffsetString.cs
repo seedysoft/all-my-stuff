@@ -1,6 +1,4 @@
-﻿using Seedysoft.Libs.Utils.Constants;
-
-namespace Seedysoft.Libs.Infrastructure.ValueConverters;
+﻿namespace Seedysoft.Libs.Infrastructure.ValueConverters;
 
 public static class DateTimeOffsetString
 {
@@ -11,8 +9,8 @@ public static class DateTimeOffsetString
         get
         {
             return new Microsoft.EntityFrameworkCore.Storage.ValueConversion.ValueConverter<DateTimeOffset, string>(
-                convertToProviderExpression: dateTimeOffset => dateTimeOffset.ToString(DateTimeOffsetToStringFormat, Formats.ESCultureInfo),
-                convertFromProviderExpression: text => DateTimeOffset.ParseExact(text, DateTimeOffsetToStringFormat, Formats.ESCultureInfo));
+                convertToProviderExpression: dateTimeOffset => dateTimeOffset.ToString(DateTimeOffsetToStringFormat, Utils.Constants.Formats.ESCultureInfo),
+                convertFromProviderExpression: text => DateTimeOffset.ParseExact(text, DateTimeOffsetToStringFormat, Utils.Constants.Formats.ESCultureInfo));
         }
     }
     public static Microsoft.EntityFrameworkCore.Storage.ValueConversion.ValueConverter<DateTimeOffset?, string?> NullableDateTimeOffsetStringValueConverter
@@ -20,8 +18,8 @@ public static class DateTimeOffsetString
         get
         {
             return new Microsoft.EntityFrameworkCore.Storage.ValueConversion.ValueConverter<DateTimeOffset?, string?>(
-                convertToProviderExpression: dateTimeOffset => dateTimeOffset.HasValue ? dateTimeOffset.Value.ToString(DateTimeOffsetToStringFormat, Formats.ESCultureInfo) : default,
-                convertFromProviderExpression: text => string.IsNullOrWhiteSpace(text) ? default : DateTimeOffset.ParseExact(text, DateTimeOffsetToStringFormat, Formats.ESCultureInfo));
+                convertToProviderExpression: dateTimeOffset => dateTimeOffset.HasValue ? dateTimeOffset.Value.ToString(DateTimeOffsetToStringFormat, Utils.Constants.Formats.ESCultureInfo) : default,
+                convertFromProviderExpression: text => string.IsNullOrWhiteSpace(text) ? default : DateTimeOffset.ParseExact(text, DateTimeOffsetToStringFormat, Utils.Constants.Formats.ESCultureInfo));
         }
     }
 }

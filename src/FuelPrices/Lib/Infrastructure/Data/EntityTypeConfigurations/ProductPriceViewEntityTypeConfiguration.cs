@@ -1,12 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Seedysoft.FuelPrices.Lib.Core.Entities;
 
 namespace Seedysoft.FuelPrices.Lib.Infrastructure.Data.EntityTypeConfigurations;
 
-internal sealed class ProductPriceEntityTypeConfiguration : EntityTypeConfigurationBase<ProductPrice>, IEntityTypeConfiguration<ProductPrice>
+internal sealed class ProductPriceEntityTypeConfiguration : EntityTypeConfigurationBase<Core.Entities.ProductPrice>, IEntityTypeConfiguration<Core.Entities.ProductPrice>
 {
-    public override void Configure(EntityTypeBuilder<ProductPrice> builder)
+    public override void Configure(EntityTypeBuilder<Core.Entities.ProductPrice> builder)
     {
         _ = builder
             .Property(x => x.CentimosDeEuro)
@@ -64,6 +63,6 @@ internal sealed class ProductPriceEntityTypeConfiguration : EntityTypeConfigurat
 
         _ = builder
             .HasNoKey()
-            .ToView(nameof(ProductPrice));
+            .ToView(nameof(Core.Entities.ProductPrice));
     }
 }

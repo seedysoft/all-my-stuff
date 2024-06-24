@@ -1,10 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Seedysoft.Libs.Core.Entities;
-using Seedysoft.Libs.Infrastructure.ValueConverters;
 
 namespace Seedysoft.Libs.Infrastructure.EntityTypeConfigurations;
 
-internal abstract class OutboxTableEntityTypeConfigurationT<T> : IEntityTypeConfiguration<T> where T : OutboxBase
+internal abstract class OutboxTableEntityTypeConfigurationT<T> : IEntityTypeConfiguration<T> where T : Core.Entities.OutboxBase
 {
     public void Configure(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder<T> builder)
     {
@@ -27,25 +25,25 @@ internal abstract class OutboxTableEntityTypeConfigurationT<T> : IEntityTypeConf
 
         _ = builder
             .Property(x => x.SentAtDateTimeOffset)
-            .HasConversion(DateTimeOffsetString.NullableDateTimeOffsetStringValueConverter);
+            .HasConversion(ValueConverters.DateTimeOffsetString.NullableDateTimeOffsetStringValueConverter);
     }
 }
 
-internal sealed class OutboxEntityTypeConfiguration : OutboxTableEntityTypeConfigurationT<Outbox>, IEntityTypeConfiguration<Outbox>
+internal sealed class OutboxEntityTypeConfiguration : OutboxTableEntityTypeConfigurationT<Core.Entities.Outbox>, IEntityTypeConfiguration<Core.Entities.Outbox>
 {
-    public new void Configure(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder<Outbox> builder)
+    public new void Configure(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder<Core.Entities.Outbox> builder)
     {
         base.Configure(builder);
 
         _ = builder
-            .ToTable(nameof(Outbox))
+            .ToTable(nameof(Core.Entities.Outbox))
             .HasKey(x => x.OutboxId);
     }
 }
 
-internal sealed class OutboxViewEntityTypeConfiguration : OutboxTableEntityTypeConfigurationT<OutboxView>, IEntityTypeConfiguration<OutboxView>
+internal sealed class OutboxViewEntityTypeConfiguration : OutboxTableEntityTypeConfigurationT<Core.Entities.OutboxView>, IEntityTypeConfiguration<Core.Entities.OutboxView>
 {
-    public new void Configure(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder<OutboxView> builder)
+    public new void Configure(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder<Core.Entities.OutboxView> builder)
     {
         base.Configure(builder);
 
@@ -53,7 +51,7 @@ internal sealed class OutboxViewEntityTypeConfiguration : OutboxTableEntityTypeC
             .Property(x => x.SentAtDateTimeUnix);
 
         _ = builder
-            .ToView(nameof(OutboxView))
+            .ToView(nameof(Core.Entities.OutboxView))
             .HasNoKey();
     }
 }

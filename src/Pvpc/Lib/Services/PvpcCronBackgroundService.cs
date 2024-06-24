@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Seedysoft.Libs.Utils.Constants;
+
 using Seedysoft.Libs.Utils.Extensions;
 using System.Net.Http.Json;
 
@@ -32,7 +32,7 @@ public sealed class PvpcCronBackgroundService(
 
         Logger.LogInformation("Called {ApplicationName} version {Version}", AppName, System.Reflection.Assembly.GetExecutingAssembly().GetName().Version);
 
-        Logger.LogInformation("Obtaining PVPC for the day {ForDate}", forDate.ToString(Formats.YearMonthDayFormat));
+        Logger.LogInformation("Obtaining PVPC for the day {ForDate}", forDate.ToString(Libs.Utils.Constants.Formats.YearMonthDayFormat));
 
         string UrlString = string.Format(Settings.DataUrlTemplate, forDate);
         Logger.LogInformation("From {UrlString}", UrlString);

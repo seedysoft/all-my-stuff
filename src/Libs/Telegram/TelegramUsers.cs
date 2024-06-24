@@ -1,5 +1,4 @@
-﻿using Seedysoft.Libs.Utils.Helpers;
-using Telegram.Bot.Types;
+﻿using Telegram.Bot.Types;
 
 namespace Seedysoft.Libs.Telegram;
 
@@ -11,12 +10,12 @@ public record TelegramUserBase
     public string Id
     {
         get => id;
-        init => id = Crypto.Crypto.DecryptText(value, EnvironmentHelper.GetMasterKey());
+        init => id = Crypto.Crypto.DecryptText(value, Utils.Helpers.EnvironmentHelper.GetMasterKey());
     }
     public string Username
     {
         get => username;
-        init => username = Crypto.Crypto.DecryptText(value, EnvironmentHelper.GetMasterKey());
+        init => username = Crypto.Crypto.DecryptText(value, Utils.Helpers.EnvironmentHelper.GetMasterKey());
     }
 }
 
@@ -26,7 +25,7 @@ public record TelegramBotUser : TelegramUserBase
     public string Token
     {
         get => token;
-        init => token = Crypto.Crypto.DecryptText(value, EnvironmentHelper.GetMasterKey());
+        init => token = Crypto.Crypto.DecryptText(value, Utils.Helpers.EnvironmentHelper.GetMasterKey());
     }
 
     public User? SenderUser { get; protected set; }

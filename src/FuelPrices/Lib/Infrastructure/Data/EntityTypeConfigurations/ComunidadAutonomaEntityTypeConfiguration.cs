@@ -1,12 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Seedysoft.FuelPrices.Lib.Core.Entities;
 
 namespace Seedysoft.FuelPrices.Lib.Infrastructure.Data.EntityTypeConfigurations;
 
-internal sealed class ComunidadAutonomaEntityTypeConfiguration : EntityTypeConfigurationBase<ComunidadAutonoma>, IEntityTypeConfiguration<ComunidadAutonoma>
+internal sealed class ComunidadAutonomaEntityTypeConfiguration : EntityTypeConfigurationBase<Core.Entities.ComunidadAutonoma>, IEntityTypeConfiguration<Core.Entities.ComunidadAutonoma>
 {
-    public override void Configure(EntityTypeBuilder<ComunidadAutonoma> builder)
+    public override void Configure(EntityTypeBuilder<Core.Entities.ComunidadAutonoma> builder)
     {
         base.Configure(builder);
 
@@ -20,7 +19,7 @@ internal sealed class ComunidadAutonomaEntityTypeConfiguration : EntityTypeConfi
             .IsRequired();
 
         _ = builder
-            .ToTable(nameof(ComunidadAutonoma))
+            .ToTable(nameof(Core.Entities.ComunidadAutonoma))
             .HasKey(x => new { x.IdComunidadAutonoma, x.AtDate });
     }
 }

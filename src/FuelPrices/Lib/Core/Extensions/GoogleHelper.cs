@@ -1,6 +1,4 @@
-﻿using Seedysoft.FuelPrices.Lib.Core.JsonObjects.GoogleMaps;
-
-namespace Seedysoft.FuelPrices.Lib.Core.Extensions;
+﻿namespace Seedysoft.FuelPrices.Lib.Core.Extensions;
 
 public sealed class GoogleHelper
 {
@@ -16,7 +14,7 @@ public sealed class GoogleHelper
     /// </summary>
     /// <param name="encodedPoints"></param>
     /// <returns></returns>
-    public static IEnumerable<LocationJson> Decode(string encodedPoints)
+    public static IEnumerable<JsonObjects.GoogleMaps.LocationJson> Decode(string encodedPoints)
     {
         if (string.IsNullOrEmpty(encodedPoints))
             throw new ArgumentNullException(nameof(encodedPoints));
@@ -62,7 +60,7 @@ public sealed class GoogleHelper
 
             CurrentLng += (Sum & 1) == 1 ? ~(Sum >> 1) : Sum >> 1;
 
-            yield return new LocationJson(
+            yield return new JsonObjects.GoogleMaps.LocationJson(
                 lat: Convert.ToDouble(CurrentLat) / GooglePolylineConversionConst,
                 lng: Convert.ToDouble(CurrentLng) / GooglePolylineConversionConst);
         }

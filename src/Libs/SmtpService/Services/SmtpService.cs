@@ -1,13 +1,12 @@
 ﻿using Microsoft.Extensions.Logging;
-using Seedysoft.Libs.SmtpService.Settings;
 
 namespace Seedysoft.Libs.SmtpService.Services;
 
 public sealed class SmtpService(
-    SmtpServiceSettings smtpServiceSettings,
+    Settings.SmtpServiceSettings smtpServiceSettings,
     ILogger<SmtpService> logger)
 {
-    private readonly SmtpServiceSettings SmtpServiceSettings = smtpServiceSettings ?? throw new ArgumentNullException(nameof(smtpServiceSettings));
+    private readonly Settings.SmtpServiceSettings SmtpServiceSettings = smtpServiceSettings ?? throw new ArgumentNullException(nameof(smtpServiceSettings));
     private readonly ILogger<SmtpService> Logger = logger;
 
     public async Task SendMailAsync(
@@ -49,7 +48,7 @@ public sealed class SmtpService(
 
     private async Task SendAsync(
         System.Net.Mail.MailMessage message,
-        SmtpServiceSettings smtpServiceSettings,
+        Settings.SmtpServiceSettings smtpServiceSettings,
         CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(message);

@@ -1,5 +1,4 @@
-﻿using Seedysoft.Libs.TuyaDeviceControl.Exceptions;
-using Seedysoft.Libs.TuyaDeviceControl.Extensions;
+﻿using Seedysoft.Libs.TuyaDeviceControl.Extensions;
 using System.Diagnostics;
 using System.Net.Sockets;
 using System.Security.Cryptography;
@@ -824,7 +823,7 @@ public class TuyaDeviceBase
                 Debug.WriteLine($"{nameof(RecvAll)}(): no data? {Convert.ToHexString(newData)}");
                 // #connection closed?
                 if (--tries == 0)
-                    throw new DecodeException("No data received - connection closed?");
+                    throw new Exceptions.DecodeException("No data received - connection closed?");
 
                 if (SendWait.HasValue)
                     Task.Delay(TimeSpan.FromSeconds(SendWait.Value)).Wait();
@@ -946,7 +945,7 @@ public class TuyaDeviceBase
                 // wait a bit before retrying
                 Task.Delay(TimeSpan.FromSeconds(0.1)).Wait();
             }
-            catch (DecodeException)
+            catch (Exceptions.DecodeException)
             {
                 Debug.WriteLine($"Error decoding received data - read retry {recvRetries}/{maxRecvRetries}");
                 recvRetries += 1;
@@ -1046,7 +1045,7 @@ public class TuyaDeviceBase
         else if (msg.Prefix == ProtocolVersionsAndHeaders.PREFIX_6699_VALUE)
         {
             if (hmacKey == null)
-                throw new TypeException("key must be provided to pack 6699-format messages");
+                throw new Exceptions.TypeException("key must be provided to pack 6699-format messages");
 
             headerFormat = ProtocolVersionsAndHeaders.MESSAGE_HEADER_FMT_6699;
             endFormat = ProtocolVersionsAndHeaders.MESSAGE_END_FMT_6699;
@@ -1057,7 +1056,7 @@ public class TuyaDeviceBase
         }
         else
         {
-            throw new ValueException($"{nameof(PackMessage)}() cannot handle message format {msg.Prefix:X8}");
+            throw new Exceptions.ValueException($"{nameof(PackMessage)}() cannot handle message format {msg.Prefix:X8}");
         }
 
         // #Create full message excluding CRC and suffix
@@ -1121,7 +1120,7 @@ public class TuyaDeviceBase
 
             case ProtocolVersionsAndHeaders.PREFIX_6699_VALUE:
                 if (hmacKey == null)
-                    throw new TypeException("key must be provided to unpack 6699-format messages");
+                    throw new Exceptions.TypeException("key must be provided to unpack 6699-format messages");
                 headerLength = StructConverter.CalcSize(ProtocolVersionsAndHeaders.MESSAGE_HEADER_FMT_6699);
                 endFormat = ProtocolVersionsAndHeaders.MESSAGE_END_FMT_6699;
                 retcodeLength = 0;
@@ -1129,11 +1128,11 @@ public class TuyaDeviceBase
                 break;
 
             default:
-                throw new ValueException($"{nameof(UnpackMessage)}() cannot handle message format '{header.Prefix:X8}'");
+                throw new Exceptions.ValueException($"{nameof(UnpackMessage)}() cannot handle message format '{header.Prefix:X8}'");
         }
 
         if (data.Length < msgLength)
-            throw new DecodeException($"{nameof(UnpackMessage)}(): not enough data to unpack payload! need {headerLength + header.Length} but only have {data.Length}");
+            throw new Exceptions.DecodeException($"{nameof(UnpackMessage)}(): not enough data to unpack payload! need {headerLength + header.Length} but only have {data.Length}");
 
         int endLength = StructConverter.CalcSize(endFormat);
 

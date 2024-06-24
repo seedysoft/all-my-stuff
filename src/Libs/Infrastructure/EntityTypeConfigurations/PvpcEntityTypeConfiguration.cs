@@ -1,30 +1,20 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Seedysoft.Libs.Core.Entities;
-using Seedysoft.Libs.Infrastructure.ValueConverters;
 
 namespace Seedysoft.Libs.Infrastructure.EntityTypeConfigurations;
 
-internal abstract class PvpcEntityTypeConfigurationT<T> : IEntityTypeConfiguration<T> where T : PvpcBase
+internal sealed class PvpcEntityTypeConfiguration : IEntityTypeConfiguration<Core.Entities.Pvpc>
 {
-    public void Configure(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder<T> builder)
+    public void Configure(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder<Core.Entities.Pvpc> builder)
     {
         _ = builder
             .Property(x => x.AtDateTimeOffset)
-            .HasConversion(DateTimeOffsetString.DateTimeOffsetStringValueConverter);
+            .HasConversion(ValueConverters.DateTimeOffsetString.DateTimeOffsetStringValueConverter);
 
         _ = builder
             .Property(x => x.MWhPriceInEuros);
-    }
-}
-
-internal sealed class PvpcEntityTypeConfiguration : PvpcEntityTypeConfigurationT<Pvpc>, IEntityTypeConfiguration<Pvpc>
-{
-    public new void Configure(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder<Pvpc> builder)
-    {
-        base.Configure(builder);
 
         _ = builder
-            .ToTable(nameof(Pvpc))
+            .ToTable(nameof(Core.Entities.Pvpc))
             .HasKey(x => x.AtDateTimeOffset);
     }
 }

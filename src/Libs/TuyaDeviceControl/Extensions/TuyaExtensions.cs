@@ -1,5 +1,4 @@
-﻿using Seedysoft.Libs.TuyaDeviceControl.Exceptions;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 
 namespace Seedysoft.Libs.TuyaDeviceControl.Extensions;
 
@@ -19,7 +18,7 @@ public static class TuyaExtensions
         int headerLength = StructConverter.CalcSize(headerFormat);
 
         if (data.Length < headerLength)
-            throw new DecodeException("Not enough data to unpack header");
+            throw new Exceptions.DecodeException("Not enough data to unpack header");
 
         uint seqno;
         uint cmd;
@@ -51,12 +50,12 @@ public static class TuyaExtensions
         }
         else
         {
-            throw new DecodeException($"Header prefix wrong! {prefix:X8} is not {ProtocolVersionsAndHeaders.SUFFIX_55AA_VALUE:X8} nor {ProtocolVersionsAndHeaders.SUFFIX_6699_VALUE:X8}");
+            throw new Exceptions.DecodeException($"Header prefix wrong! {prefix:X8} is not {ProtocolVersionsAndHeaders.SUFFIX_55AA_VALUE:X8} nor {ProtocolVersionsAndHeaders.SUFFIX_6699_VALUE:X8}");
         }
 
         // #sanity check. currently the max payload length is somewhere around 300 bytes
         return payloadLength > 1_000
-            ? throw new DecodeException($"Header claims the packet size is over 1000 bytes! It is most likely corrupt. Claimed size: {payloadLength} bytes. fmt:{headerFormat} unpacked:{unpacked}")
+            ? throw new Exceptions.DecodeException($"Header claims the packet size is over 1000 bytes! It is most likely corrupt. Claimed size: {payloadLength} bytes. fmt:{headerFormat} unpacked:{unpacked}")
             : new TuyaHeader(prefix, seqno, cmd, payloadLength, totalLength);
     }
 }

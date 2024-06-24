@@ -2,7 +2,6 @@
 using ProjNet;
 using ProjNet.CoordinateSystems;
 using ProjNet.CoordinateSystems.Transformations;
-using Seedysoft.Libs.Utils.Constants;
 
 namespace Seedysoft.Libs.Utils.Extensions;
 
@@ -13,10 +12,10 @@ public static class NetTopologySuiteExtensions
         {
             // Coordinate systems:
 
-            [CoordinateSystemCodes.Wgs84] =
+            [Constants.CoordinateSystemCodes.Wgs84] =
             GeographicCoordinateSystem.WGS84.WKT,
 
-            [CoordinateSystemCodes.Epsg3857] =
+            [Constants.CoordinateSystemCodes.Epsg3857] =
             @"
                     PROJCS[""WGS 84 / Pseudo-Mercator"",
                         GEOGCS[""WGS 84"",

@@ -1,6 +1,4 @@
-﻿using Seedysoft.Libs.Core.Enums;
-
-namespace Seedysoft.Libs.Core.Entities;
+﻿namespace Seedysoft.Libs.Core.Entities;
 
 public abstract class OutboxBase
 {
@@ -8,7 +6,7 @@ public abstract class OutboxBase
 
     public string Payload { get; set; } = default!;
 
-    public SubscriptionName SubscriptionName { get; set; }
+    public Enums.SubscriptionName SubscriptionName { get; set; }
 
     public long? SubscriptionId { get; set; }
 
@@ -18,7 +16,7 @@ public abstract class OutboxBase
 [System.Diagnostics.DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
 public sealed class Outbox : OutboxBase
 {
-    public Outbox(SubscriptionName subscriptionName, string payload)
+    public Outbox(Enums.SubscriptionName subscriptionName, string payload)
     {
         SubscriptionName = subscriptionName;
         Payload = payload;
