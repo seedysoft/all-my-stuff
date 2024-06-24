@@ -2,7 +2,7 @@
 
 namespace Seedysoft.BlazorWebApp.Client.ViewModels;
 
-public record RouteQueryModel
+public record TravelQueryModel
 {
     [Required(AllowEmptyStrings = false)]
     public string Origin { get; set; } = default!;

@@ -1,4 +1,4 @@
-﻿@page "/routesearch"
+﻿@page "/travelsearch"
 
 @using Seedysoft.BlazorWebApp.Client.ViewModels
 @using System.Collections.Immutable;
@@ -8,26 +8,26 @@
 
 <MudGrid Class="d-inline-flex" Justify="Justify.Center">
     <MudItem xs="12">
-        <MudText Align="Align.Center" GutterBottom Typo="Typo.h4">Search routes</MudText>
+        <MudText Align="Align.Center" GutterBottom Typo="Typo.h4">Search directions</MudText>
     </MudItem>
 
     <MudItem xs="12">
-        <EditForm Model="@RouteQuery" OnValidSubmit="OnValidSubmitRoutesAsync">
+        <EditForm Model="@TravelQuery" OnValidSubmit="OnValidSubmitAsync">
             <MudStack Class="d-flex flex-wrap gap-4" Justify="Justify.SpaceEvenly" Row="true">
-                <MudTextField @bind-Value="RouteQuery.Origin" AutoFocus="true" Class="d-flex flex-wrap gap-4" For="@(() => RouteQuery.Origin)" Label="Origin"
+                <MudTextField @bind-Value="TravelQuery.Origin" AutoFocus="true" Class="d-flex flex-wrap gap-4" For="@(() => TravelQuery.Origin)" Label="Origin"
                               Placeholder="Select an origin place" Variant="Variant.Outlined" />
-                <MudTextField @bind-Value="RouteQuery.Destination" Class="d-flex flex-wrap gap-4" For="@(() => RouteQuery.Destination)" Label="Destination"
+                <MudTextField @bind-Value="TravelQuery.Destination" Class="d-flex flex-wrap gap-4" For="@(() => TravelQuery.Destination)" Label="Destination"
                               Placeholder="Select a destination place" Variant="Variant.Outlined" />
-                <MudButton ButtonType="ButtonType.Submit" Class="ml-auto" Disabled="@(IsLoadingRoutes || IsLoadingGasStations)" StartIcon="@Icons.Material.Filled.Search"
+                <MudButton ButtonType="ButtonType.Submit" Class="ml-auto" Disabled="@(IsLoadingDirections || IsLoadingGasStations)" StartIcon="@Icons.Material.Filled.Search"
                            Variant="Variant.Outlined">
-                    @if (IsLoadingRoutes)
+                    @if (IsLoadingDirections)
                     {
                         <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
                         <MudText Class="ms-2">Processing ...</MudText>
                     }
                     else
                     {
-                        <MudText>Find routes</MudText>
+                        <MudText>Find directions</MudText>
                     }
                 </MudButton>
             </MudStack>
@@ -35,8 +35,8 @@
     </MudItem>
 
     <MudItem xs="12">
-        <MudDataGrid @ref="RoutesMudDataGrid" Dense="true" Filterable="true" FilterCaseSensitivity="DataGridFilterCaseSensitivity.CaseInsensitive"
-                     FilterMode="DataGridFilterMode.ColumnFilterMenu" FixedHeader="true" Items="RoutesObtained" Loading="IsLoadingRoutes" RowClassFunc="RoutesMudDataGridRowClassFunc"
+        <MudDataGrid @ref="DirectionsMudDataGrid" Dense="true" Filterable="true" FilterCaseSensitivity="DataGridFilterCaseSensitivity.CaseInsensitive"
+                     FilterMode="DataGridFilterMode.ColumnFilterMenu" FixedHeader="true" Items="DirectionsObtained" Loading="IsLoadingDirections" RowClassFunc="DirectionsMudDataGridRowClassFunc"
                      RowsPerPage="int.MaxValue" ReadOnly="true" SortMode="SortMode.Multiple" Style="min-height: 145px;">
             <Columns>
                 <PropertyColumn Property="x => x.Summary" CellStyle="width: 100%;" />
@@ -69,7 +69,7 @@
                         <MudSelectItem T="IdDescRecord" Value="@item">@item.Desc</MudSelectItem>
                     }
                 </MudSelect>
-                <MudButton Class="ml-auto" Disabled="@(IsLoadingRoutes || IsLoadingGasStations)" OnClick="OnSubmitGasStationsAsync" StartIcon="@Icons.Material.Filled.Search"
+                <MudButton Class="ml-auto" Disabled="@(IsLoadingDirections || IsLoadingGasStations)" OnClick="OnSubmitGasStationsAsync" StartIcon="@Icons.Material.Filled.Search"
                            Variant="Variant.Outlined">
                     @if (IsLoadingGasStations)
                     {

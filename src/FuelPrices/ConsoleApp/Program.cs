@@ -31,9 +31,9 @@ public sealed class Program
 
             Scope.ServiceProvider.GetRequiredService<Lib.Infrastructure.Data.FuelPricesDbContext>().Database.Migrate();
 
-            Lib.Services.ObtainDataCronBackgroundService obtainDataCronBackgroundService = host.Services.GetRequiredService<Lib.Services.ObtainDataCronBackgroundService>();
+            Lib.Services.ObtainFuelPricesService obtainFuelPricesService = host.Services.GetRequiredService<Lib.Services.ObtainFuelPricesService>();
 
-            await obtainDataCronBackgroundService.DoWorkAsync(CancelTokenSource.Token);
+            await obtainFuelPricesService.DoWorkAsync(CancelTokenSource.Token);
         }
         catch (TaskCanceledException e) when (Logger.Handle(e, "Task cancelled.")) { }
         catch (Exception e) when (Logger.Handle(e, "Unhandled exception.")) { }

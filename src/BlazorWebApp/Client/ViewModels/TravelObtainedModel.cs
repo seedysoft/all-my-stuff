@@ -2,7 +2,7 @@
 
 namespace Seedysoft.BlazorWebApp.Client.ViewModels;
 
-public record RouteObtainedModel
+public record TravelObtainedModel
 {
     public string Summary { get; set; } = default!;
 

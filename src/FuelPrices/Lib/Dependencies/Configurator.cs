@@ -22,7 +22,7 @@ internal sealed class Configurator : Libs.Utils.Dependencies.ConfiguratorBase
     {
         _ = hostApplicationBuilder.Services.AddDbContext<Infrastructure.Data.FuelPricesDbContext>((iServiceProvider, dbContextOptionsBuilder) =>
         {
-            string ConnectionStringName = nameof(Lib.Infrastructure.Data.FuelPricesDbContext);
+            string ConnectionStringName = nameof(Infrastructure.Data.FuelPricesDbContext);
             string ConnectionString = hostApplicationBuilder.Configuration.GetConnectionString($"{ConnectionStringName}") ?? throw new KeyNotFoundException($"Connection string '{ConnectionStringName}' not found.");
             //string FullFilePath = Path.GetFullPath(
             //    ConnectionString[Libs.Core.Constants.DatabaseStrings.DataSource.Length..],
@@ -40,8 +40,7 @@ internal sealed class Configurator : Libs.Utils.Dependencies.ConfiguratorBase
 
     protected override void AddMyServices(Microsoft.Extensions.Hosting.IHostApplicationBuilder hostApplicationBuilder)
     {
-        _ = hostApplicationBuilder.Services.AddHttpClient(nameof(FuelPrices.Lib.Core.Settings.Minetur));
-        hostApplicationBuilder.Services.TryAddSingleton<Services.ObtainDataCronBackgroundService>();
-        _ = hostApplicationBuilder.Services.AddHostedService<Services.ObtainDataCronBackgroundService>();
+        _ = hostApplicationBuilder.Services.AddHttpClient(nameof(Core.Settings.Minetur));
+        hostApplicationBuilder.Services.TryAddSingleton<Services.ObtainFuelPricesService>();
     }
 }

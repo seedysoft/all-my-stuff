@@ -5,16 +5,16 @@ using System.Net.Http.Json;
 
 namespace Seedysoft.BlazorWebApp.Client.Pages;
 
-public partial class RouteSearch
+public partial class TravelSearch
 {
     [Inject] private ISnackbar Snackbar { get; set; } = default!;
 
-    [Inject] private ILogger<RouteSearch> Logger { get; set; } = default!;
+    [Inject] private ILogger<TravelSearch> Logger { get; set; } = default!;
 
-    private MudDataGrid<ViewModels.RouteObtainedModel> RoutesMudDataGrid = default!;
+    private MudDataGrid<ViewModels.TravelObtainedModel> DirectionsMudDataGrid = default!;
     private MudForm GasStationMudForm = default!;
 
-    private readonly ViewModels.RouteQueryModel RouteQuery = new()
+    private readonly ViewModels.TravelQueryModel TravelQuery = new()
 #if DEBUG
     {
         Origin = "Brazuelo",
@@ -30,11 +30,11 @@ public partial class RouteSearch
 
     private IImmutableList<ViewModels.IdDescRecord> PetroleumProducts = ImmutableArray<ViewModels.IdDescRecord>.Empty;
 
-    private IImmutableList<ViewModels.RouteObtainedModel> RoutesObtained = ImmutableArray<ViewModels.RouteObtainedModel>.Empty;
+    private IImmutableList<ViewModels.TravelObtainedModel> DirectionsObtained = ImmutableArray<ViewModels.TravelObtainedModel>.Empty;
 
     private IImmutableList<ViewModels.GasStationInfoModel> GasStations = ImmutableArray<ViewModels.GasStationInfoModel>.Empty;
 
-    private bool IsLoadingRoutes;
+    private bool IsLoadingDirections;
     private bool IsLoadingGasStations;
 
     public IEnumerable<ViewModels.IdDescRecord> PetroleumProductsSelected { get; set; } = new HashSet<ViewModels.IdDescRecord>();
@@ -61,25 +61,25 @@ public partial class RouteSearch
         };
     }
 
-    private async Task OnValidSubmitRoutesAsync(Microsoft.AspNetCore.Components.Forms.EditContext context) => await FindRoutesAsync();
+    private async Task OnValidSubmitAsync(Microsoft.AspNetCore.Components.Forms.EditContext context) => await FindDirectionsAsync();
 
-    private async Task FindRoutesAsync()
+    private async Task FindDirectionsAsync()
     {
-        IsLoadingRoutes = true;
+        IsLoadingDirections = true;
 
         try
         {
             GasStations = ImmutableArray<ViewModels.GasStationInfoModel>.Empty;
 
-            string FromUri = $"{NavManager.BaseUri}{ControllerUris.RoutesControllerUri}/ObtainRoutes";
+            string FromUri = $"{NavManager.BaseUri}{ControllerUris.TravelControllerUri}/ObtainDirections";
 
-            using (HttpResponseMessage Response = await Http.PostAsJsonAsync(FromUri, RouteQuery))
-                RoutesObtained = (IImmutableList<ViewModels.RouteObtainedModel>)(await Response.Content.ReadFromJsonAsync<IImmutableList<ViewModels.RouteObtainedModel>>() ?? ImmutableArray<ViewModels.RouteObtainedModel>.Empty);
+            using (HttpResponseMessage Response = await Http.PostAsJsonAsync(FromUri, TravelQuery))
+                DirectionsObtained = await Response.Content.ReadFromJsonAsync<IImmutableList<ViewModels.TravelObtainedModel>>() ?? ImmutableArray<ViewModels.TravelObtainedModel>.Empty;
 
-            switch (RoutesObtained.Count)
+            switch (DirectionsObtained.Count)
             {
                 case 0:
-                    _ = Snackbar.Add("No routes obtained", Severity.Warning);
+                    _ = Snackbar.Add("No directions obtained", Severity.Warning);
                     break;
                 case 1:
                     StateHasChanged();
@@ -87,24 +87,18 @@ public partial class RouteSearch
                     break;
             }
         }
-        catch (Exception e)
-        {
-            Logger.LogError(e, "Unexpected exception");
-        }
-        finally
-        {
-            IsLoadingRoutes = false;
-        }
+        catch (Exception e) { Logger.LogError(e, "Unexpected exception"); }
+        finally { IsLoadingDirections = false; }
     }
 
-    private string RoutesMudDataGridRowClassFunc(ViewModels.RouteObtainedModel element, int rowNumber) =>
-        RoutesMudDataGrid.SelectedItem != null && RoutesMudDataGrid.SelectedItem.Equals(element) ? "selected" : string.Empty;
+    private string DirectionsMudDataGridRowClassFunc(ViewModels.TravelObtainedModel element, int rowNumber) =>
+        DirectionsMudDataGrid.SelectedItem != null && DirectionsMudDataGrid.SelectedItem.Equals(element) ? "selected" : string.Empty;
 
     private async void OnSubmitGasStationsAsync()
     {
-        if (RoutesMudDataGrid.SelectedItem == null)
+        if (DirectionsMudDataGrid.SelectedItem == null)
         {
-            _ = Snackbar.Add("You should select at least one route", Severity.Error);
+            _ = Snackbar.Add("You should select at least one direction", Severity.Error);
             return;
         }
 
@@ -120,12 +114,12 @@ public partial class RouteSearch
 
         try
         {
-            string FromUri = $"{NavManager.BaseUri}{ControllerUris.RoutesControllerUri}/ObtainGasStations";
+            string FromUri = $"{NavManager.BaseUri}{ControllerUris.TravelControllerUri}/ObtainGasStations";
             ViewModels.GasStationQueryModel StationsFilter = new()
             {
                 MaxDistanceInKm = GasStationQuery.MaxDistanceInKm,
                 PetroleumProductsSelectedIds = PetroleumProductsSelected.Select(x => x.Id),
-                Steps = RoutesMudDataGrid.SelectedItem.Steps,
+                Steps = DirectionsMudDataGrid.SelectedItem.Steps,
             };
             using (HttpResponseMessage Response = await Http.PostAsJsonAsync(FromUri, StationsFilter))
                 GasStations = await Response.Content.ReadFromJsonAsync<IImmutableList<ViewModels.GasStationInfoModel>>() ?? ImmutableArray<ViewModels.GasStationInfoModel>.Empty;
@@ -133,10 +127,7 @@ public partial class RouteSearch
             if (!GasStations.Any())
                 _ = Snackbar.Add("No gas stations obtained", Severity.Warning);
         }
-        catch (Exception e)
-        {
-            Logger.LogError(e, "Unexpected exception");
-        }
+        catch (Exception e) { Logger.LogError(e, "Unexpected exception"); }
         finally
         {
             IsLoadingGasStations = false;

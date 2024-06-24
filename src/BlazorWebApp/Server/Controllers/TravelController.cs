@@ -7,14 +7,14 @@ using System.Collections.Immutable;
 
 namespace Seedysoft.BlazorWebApp.Server.Controllers;
 
-[Route(ControllerUris.RoutesControllerUri)]
-public sealed class RoutesController : ApiControllerBase
+[Route(ControllerUris.TravelControllerUri)]
+public sealed class TravelController : ApiControllerBase
 {
-    public RoutesController(ILogger<RoutesController> logger) : base(logger) => Logger = logger;
+    public TravelController(ILogger<TravelController> logger) : base(logger) => Logger = logger;
 
     [HttpPost]
-    public async Task<IImmutableList<Client.ViewModels.RouteObtainedModel>> ObtainRoutesAsync(
-        [AsParameters] Client.ViewModels.RouteQueryModel routeQueryModel,
+    public async Task<IImmutableList<Client.ViewModels.TravelObtainedModel>> ObtainDirectionsAsync(
+        [AsParameters] Client.ViewModels.TravelQueryModel travelQueryModel,
         [FromServices] IHttpClientFactory httpClientFactory,
         [FromServices] FuelPrices.Lib.Core.Settings.SettingsRoot settings)
     {
@@ -26,27 +26,27 @@ public sealed class RoutesController : ApiControllerBase
 #else
             LoadJsonAsync<FuelPrices.Lib.Core.JsonObjects.GoogleMaps.Directions.DistanceApiRootJson>(
                 httpClientFactory,
-                settings.GoogleMapsPlatform.Directions.GetUri(routeQueryModel.Origin, routeQueryModel.Destination, settings.GoogleMapsPlatform.ApiKey));
+                settings.GoogleMapsPlatform.Directions.GetUri(travelQueryModel.Origin, travelQueryModel.Destination, settings.GoogleMapsPlatform.ApiKey));
 #endif
 
         if (DistanceApiResult == null || DistanceApiResult.Status == null)
         {
-            Logger.LogError("La petición de ruta a Google Maps ha devuelto null para '{Origin}' y '{Destination}'.", routeQueryModel.Origin, routeQueryModel.Destination);
+            Logger.LogError("La petición de ruta a Google Maps ha devuelto null para '{Origin}' y '{Destination}'.", travelQueryModel.Origin, travelQueryModel.Destination);
 
-            return ImmutableArray<Client.ViewModels.RouteObtainedModel>.Empty;
+            return ImmutableArray<Client.ViewModels.TravelObtainedModel>.Empty;
         }
 
         if (!(DistanceApiResult.Routes?.Length > 0))
         {
-            Logger.LogError("La petición de ruta a Google Maps no ha devuelto ningún resultado para '{Origin}' y '{Destination}'.", routeQueryModel.Origin, routeQueryModel.Destination);
+            Logger.LogError("La petición de ruta a Google Maps no ha devuelto ningún resultado para '{Origin}' y '{Destination}'.", travelQueryModel.Origin, travelQueryModel.Destination);
 
-            return ImmutableArray<Client.ViewModels.RouteObtainedModel>.Empty;
+            return ImmutableArray<Client.ViewModels.TravelObtainedModel>.Empty;
         }
 
         var ToReturn = (
             from Route in DistanceApiResult.Routes
             from Leg in Route.Legs
-            select new Client.ViewModels.RouteObtainedModel()
+            select new Client.ViewModels.TravelObtainedModel()
             {
                 FromPlace = Leg.StartAddress,
                 ToPlace = Leg.EndAddress,
@@ -93,22 +93,22 @@ public sealed class RoutesController : ApiControllerBase
         if (!Locations.Any())
             return ImmutableArray<Client.ViewModels.GasStationInfoModel>.Empty;
 
-        var RoutePointsImmutable = Locations
-            .Select(x => new Client.ViewModels.RoutePoint()
+        var TravelPointsImmutable = Locations
+            .Select(x => new Client.ViewModels.TravelPoint()
             {
                 PointEpsg3857 = GeomFactEpsg3857
                     .CreateGeometry(GeomFactWgs84
                         .CreatePoint(new Coordinate(x.LngNotNull, x.LatNotNull))
                         .ProjectTo(Libs.Utils.Constants.CoordinateSystemCodes.Epsg3857))
             }).ToImmutableArray();
-        if (!RoutePointsImmutable.Any())
+        if (!TravelPointsImmutable.Any())
             return ImmutableArray<Client.ViewModels.GasStationInfoModel>.Empty;
 
-        List<Geometry> FilteredPoints = new(RoutePointsImmutable.Length) { RoutePointsImmutable.First().PointEpsg3857 };
+        List<Geometry> FilteredPoints = new(TravelPointsImmutable.Length) { TravelPointsImmutable.First().PointEpsg3857 };
         Geometry LastPointAdded = FilteredPoints.First();
-        for (int i = 1; i < RoutePointsImmutable.Length; i++)
+        for (int i = 1; i < TravelPointsImmutable.Length; i++)
         {
-            Geometry PointEpsg3857 = RoutePointsImmutable[i].PointEpsg3857;
+            Geometry PointEpsg3857 = TravelPointsImmutable[i].PointEpsg3857;
 
             if (!PointEpsg3857.IsWithinDistance(LastPointAdded, filter.MaxDistanceInMeters * 0.9))
             {

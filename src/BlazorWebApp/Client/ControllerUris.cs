@@ -8,5 +8,5 @@ public static class ControllerUris
 
     public const string PetroleumProductsControllerUri = $"{BaseApiUri}petroleum-products";
 
-    public const string RoutesControllerUri = $"{BaseApiUri}routes";
+    public const string TravelControllerUri = $"{BaseApiUri}travel";
 }

@@ -8,28 +8,27 @@ using System.Net.Http.Json;
 
 namespace Seedysoft.FuelPrices.Lib.Services;
 
-public sealed class ObtainDataCronBackgroundService : Libs.CronBackgroundService.CronBackgroundService
+public sealed class ObtainFuelPricesService
 {
     private static readonly System.Text.Json.JsonSerializerOptions JsonOptions = new() { };
 
     private readonly IServiceProvider ServiceProvider;
-    private readonly ILogger<ObtainDataCronBackgroundService> Logger;
+    private readonly ILogger<ObtainFuelPricesService> Logger;
     private readonly Core.Settings.SettingsRoot Settings;
     private readonly HttpClient Client = default!;
 
-    public ObtainDataCronBackgroundService(IServiceProvider serviceProvider)
-        : base(serviceProvider.GetRequiredService<IConfiguration>().GetSection(nameof(Core.Settings.SettingsRoot)).Get<Core.Settings.SettingsRoot>()!.ObtainDataSettings)
+    public ObtainFuelPricesService(IServiceProvider serviceProvider)
     {
         ServiceProvider = serviceProvider;
         Settings = serviceProvider.GetRequiredService<IConfiguration>().GetSection(nameof(Core.Settings.SettingsRoot)).Get<Core.Settings.SettingsRoot>()!;
 
-        Logger = ServiceProvider.GetRequiredService<ILogger<ObtainDataCronBackgroundService>>();
+        Logger = ServiceProvider.GetRequiredService<ILogger<ObtainFuelPricesService>>();
 
         Client = ServiceProvider.GetRequiredService<IHttpClientFactory>().CreateClient(nameof(Core.Settings.Minetur));
         Client.BaseAddress = new Uri(Settings.Minetur.Uris.Base);
     }
 
-    public override async Task DoWorkAsync(CancellationToken cancellationToken)
+    public async Task DoWorkAsync(CancellationToken cancellationToken)
     {
         try
         {
