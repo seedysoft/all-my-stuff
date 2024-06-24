@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\FuelPrices\Lib\Seedysoft.FuelPrices.Lib.csproj" />
+    <ProjectReference Include="..\..\Libs\FuelPrices\Seedysoft.Libs.FuelPrices.csproj" />
   </ItemGroup>
 
 </Project>

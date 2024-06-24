@@ -11,10 +11,10 @@ public partial class TravelSearch
 
     [Inject] private ILogger<TravelSearch> Logger { get; set; } = default!;
 
-    private MudDataGrid<ViewModels.TravelObtainedModel> DirectionsMudDataGrid = default!;
+    private MudDataGrid<Libs.FuelPrices.Core.ViewModels.TravelObtainedModel> DirectionsMudDataGrid = default!;
     private MudForm GasStationMudForm = default!;
 
-    private readonly ViewModels.TravelQueryModel TravelQuery = new()
+    private readonly Libs.FuelPrices.Core.ViewModels.TravelQueryModel TravelQuery = new()
 #if DEBUG
     {
         Origin = "Brazuelo",
@@ -22,30 +22,30 @@ public partial class TravelSearch
     }
 #endif
     ;
-    private readonly ViewModels.GasStationQueryModel GasStationQuery = new()
+    private readonly Libs.FuelPrices.Core.ViewModels.GasStationQueryModel GasStationQuery = new()
     {
         MaxDistanceInKm = 5.0M,
     }
     ;
 
-    private IImmutableList<ViewModels.IdDescRecord> PetroleumProducts = ImmutableArray<ViewModels.IdDescRecord>.Empty;
+    private IImmutableList<Libs.FuelPrices.Core.ViewModels.IdDescRecord> PetroleumProducts = ImmutableArray<Libs.FuelPrices.Core.ViewModels.IdDescRecord>.Empty;
 
-    private IImmutableList<ViewModels.TravelObtainedModel> DirectionsObtained = ImmutableArray<ViewModels.TravelObtainedModel>.Empty;
+    private IImmutableList<Libs.FuelPrices.Core.ViewModels.TravelObtainedModel> DirectionsObtained = ImmutableArray<Libs.FuelPrices.Core.ViewModels.TravelObtainedModel>.Empty;
 
-    private IImmutableList<ViewModels.GasStationInfoModel> GasStations = ImmutableArray<ViewModels.GasStationInfoModel>.Empty;
+    private IImmutableList<Libs.FuelPrices.Core.ViewModels.GasStationInfoModel> GasStations = ImmutableArray<Libs.FuelPrices.Core.ViewModels.GasStationInfoModel>.Empty;
 
     private bool IsLoadingDirections;
     private bool IsLoadingGasStations;
 
-    public IEnumerable<ViewModels.IdDescRecord> PetroleumProductsSelected { get; set; } = new HashSet<ViewModels.IdDescRecord>();
-    private ViewModels.IdDescRecord? PetroleumProductsSelectedValue { get; set; }
+    public IEnumerable<Libs.FuelPrices.Core.ViewModels.IdDescRecord> PetroleumProductsSelected { get; set; } = new HashSet<Libs.FuelPrices.Core.ViewModels.IdDescRecord>();
+    private Libs.FuelPrices.Core.ViewModels.IdDescRecord? PetroleumProductsSelectedValue { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
 
         string FromUri = $"{NavManager.BaseUri}{ControllerUris.PetroleumProductsControllerUri}/PetroleumProductsForFilter";
-        PetroleumProducts = await Http.GetFromJsonAsync<IImmutableList<ViewModels.IdDescRecord>>(FromUri) ?? ImmutableArray<ViewModels.IdDescRecord>.Empty;
+        PetroleumProducts = await Http.GetFromJsonAsync<IImmutableList<Libs.FuelPrices.Core.ViewModels.IdDescRecord>>(FromUri) ?? ImmutableArray<Libs.FuelPrices.Core.ViewModels.IdDescRecord>.Empty;
         PetroleumProductsSelected = PetroleumProducts;
     }
 
@@ -69,12 +69,12 @@ public partial class TravelSearch
 
         try
         {
-            GasStations = ImmutableArray<ViewModels.GasStationInfoModel>.Empty;
+            GasStations = ImmutableArray<Libs.FuelPrices.Core.ViewModels.GasStationInfoModel>.Empty;
 
             string FromUri = $"{NavManager.BaseUri}{ControllerUris.TravelControllerUri}/ObtainDirections";
 
             using (HttpResponseMessage Response = await Http.PostAsJsonAsync(FromUri, TravelQuery))
-                DirectionsObtained = await Response.Content.ReadFromJsonAsync<IImmutableList<ViewModels.TravelObtainedModel>>() ?? ImmutableArray<ViewModels.TravelObtainedModel>.Empty;
+                DirectionsObtained = await Response.Content.ReadFromJsonAsync<IImmutableList<Libs.FuelPrices.Core.ViewModels.TravelObtainedModel>>() ?? ImmutableArray<Libs.FuelPrices.Core.ViewModels.TravelObtainedModel>.Empty;
 
             switch (DirectionsObtained.Count)
             {
@@ -91,7 +91,7 @@ public partial class TravelSearch
         finally { IsLoadingDirections = false; }
     }
 
-    private string DirectionsMudDataGridRowClassFunc(ViewModels.TravelObtainedModel element, int rowNumber) =>
+    private string DirectionsMudDataGridRowClassFunc(Libs.FuelPrices.Core.ViewModels.TravelObtainedModel element, int rowNumber) =>
         DirectionsMudDataGrid.SelectedItem != null && DirectionsMudDataGrid.SelectedItem.Equals(element) ? "selected" : string.Empty;
 
     private async void OnSubmitGasStationsAsync()
@@ -115,14 +115,14 @@ public partial class TravelSearch
         try
         {
             string FromUri = $"{NavManager.BaseUri}{ControllerUris.TravelControllerUri}/ObtainGasStations";
-            ViewModels.GasStationQueryModel StationsFilter = new()
+            Libs.FuelPrices.Core.ViewModels.GasStationQueryModel StationsFilter = new()
             {
                 MaxDistanceInKm = GasStationQuery.MaxDistanceInKm,
                 PetroleumProductsSelectedIds = PetroleumProductsSelected.Select(x => x.Id),
                 Steps = DirectionsMudDataGrid.SelectedItem.Steps,
             };
             using (HttpResponseMessage Response = await Http.PostAsJsonAsync(FromUri, StationsFilter))
-                GasStations = await Response.Content.ReadFromJsonAsync<IImmutableList<ViewModels.GasStationInfoModel>>() ?? ImmutableArray<ViewModels.GasStationInfoModel>.Empty;
+                GasStations = await Response.Content.ReadFromJsonAsync<IImmutableList<Libs.FuelPrices.Core.ViewModels.GasStationInfoModel>>() ?? ImmutableArray<Libs.FuelPrices.Core.ViewModels.GasStationInfoModel>.Empty;
 
             if (!GasStations.Any())
                 _ = Snackbar.Add("No gas stations obtained", Severity.Warning);
