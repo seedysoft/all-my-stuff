@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Seedysoft.Libs.FuelPrices.Infrastructure.Data;
 using Seedysoft.Libs.Infrastructure.Extensions;
 
 namespace Seedysoft.Libs.FuelPrices.Dependencies;
@@ -21,9 +20,9 @@ internal sealed class Configurator : Utils.Dependencies.ConfiguratorBase
 
     protected override void AddDbContexts(Microsoft.Extensions.Hosting.IHostApplicationBuilder hostApplicationBuilder)
     {
-        _ = hostApplicationBuilder.Services.AddDbContext<FuelPricesDbContext>((iServiceProvider, dbContextOptionsBuilder) =>
+        _ = hostApplicationBuilder.Services.AddDbContext<Infrastructure.Data.FuelPricesDbContext>((iServiceProvider, dbContextOptionsBuilder) =>
         {
-            string ConnectionStringName = nameof(FuelPricesDbContext);
+            string ConnectionStringName = nameof(Infrastructure.Data.FuelPricesDbContext);
             string ConnectionString = hostApplicationBuilder.Configuration.GetConnectionString($"{ConnectionStringName}") ?? throw new KeyNotFoundException($"Connection string '{ConnectionStringName}' not found.");
             //string FullFilePath = Path.GetFullPath(
             //    ConnectionString[Libs.Core.Constants.DatabaseStrings.DataSource.Length..],

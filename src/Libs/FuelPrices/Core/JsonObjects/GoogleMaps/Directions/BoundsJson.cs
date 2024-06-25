@@ -1,13 +1,10 @@
-﻿using Seedysoft.Libs.FuelPrices.Core.JsonObjects.GoogleMaps;
-using System.Text.Json.Serialization;
-
-namespace Seedysoft.Libs.FuelPrices.Core.JsonObjects.GoogleMaps.Directions;
+﻿namespace Seedysoft.Libs.FuelPrices.Core.JsonObjects.GoogleMaps.Directions;
 
 public record BoundsJson
 {
-    [JsonPropertyName("northeast")]
+    [System.Text.Json.Serialization.JsonPropertyName("northeast")]
     public LocationJson Northeast { get; set; } = default!;
 
-    [JsonPropertyName("southwest")]
+    [System.Text.Json.Serialization.JsonPropertyName("southwest")]
     public LocationJson Southwest { get; set; } = default!;
 }

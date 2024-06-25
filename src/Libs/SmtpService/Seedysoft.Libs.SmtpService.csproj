@@ -13,9 +13,6 @@
     <Version>$(AssemblyVersion)</Version>
   </PropertyGroup>
   <ItemGroup>
-    <None Remove="appsettings.SmtpServiceSettings.json" />
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="appsettings.SmtpServiceSettings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

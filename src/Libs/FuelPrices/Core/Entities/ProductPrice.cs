@@ -1,9 +1,7 @@
-﻿using Seedysoft.Libs.FuelPrices.Core.Entities.Core;
-
-namespace Seedysoft.Libs.FuelPrices.Core.Entities;
+﻿namespace Seedysoft.Libs.FuelPrices.Core.Entities;
 
 [System.Diagnostics.DebuggerDisplay("{" + nameof(GetDebuggerDisplay) + "(),nq}")]
-public sealed class ProductPrice : EntityBase
+public sealed class ProductPrice : Core.EntityBase
 {
     public int CentimosDeEuro { get; set; }
     public decimal Euros => decimal.Divide(CentimosDeEuro, 1_000M);

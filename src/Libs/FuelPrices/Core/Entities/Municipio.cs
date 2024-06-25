@@ -1,9 +1,7 @@
-﻿using Seedysoft.Libs.FuelPrices.Core.Entities.Core;
-
-namespace Seedysoft.Libs.FuelPrices.Core.Entities;
+﻿namespace Seedysoft.Libs.FuelPrices.Core.Entities;
 
 [System.Diagnostics.DebuggerDisplay("{" + nameof(GetDebuggerDisplay) + "(),nq}")]
-public sealed class Municipio : EntityBase
+public sealed class Municipio : Core.EntityBase
 {
     public int IdMunicipio { get; set; }
 

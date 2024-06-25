@@ -1,31 +1,28 @@
-﻿using Seedysoft.Libs.FuelPrices.Core.JsonObjects.GoogleMaps;
-using System.Text.Json.Serialization;
-
-namespace Seedysoft.Libs.FuelPrices.Core.JsonObjects.GoogleMaps.Directions;
+﻿namespace Seedysoft.Libs.FuelPrices.Core.JsonObjects.GoogleMaps.Directions;
 
 public record StepJson
 {
-    [JsonPropertyName("distance")]
+    [System.Text.Json.Serialization.JsonPropertyName("distance")]
     public TextAndValueJson Distance { get; set; } = default!;
 
-    [JsonPropertyName("duration")]
+    [System.Text.Json.Serialization.JsonPropertyName("duration")]
     public TextAndValueJson Duration { get; set; } = default!;
 
-    [JsonPropertyName("end_location")]
+    [System.Text.Json.Serialization.JsonPropertyName("end_location")]
     public LocationJson EndLocation { get; set; } = default!;
 
-    [JsonPropertyName("html_instructions")]
+    [System.Text.Json.Serialization.JsonPropertyName("html_instructions")]
     public string HtmlInstructions { get; set; } = default!;
 
-    [JsonPropertyName("polyline")]
+    [System.Text.Json.Serialization.JsonPropertyName("polyline")]
     public PolylineJson Polyline { get; set; } = default!;
 
-    [JsonPropertyName("start_location")]
+    [System.Text.Json.Serialization.JsonPropertyName("start_location")]
     public LocationJson StartLocation { get; set; } = default!;
 
-    [JsonPropertyName("travel_mode")]
+    [System.Text.Json.Serialization.JsonPropertyName("travel_mode")]
     public string TravelMode { get; set; } = default!;
 
-    [JsonPropertyName("maneuver")]
+    [System.Text.Json.Serialization.JsonPropertyName("maneuver")]
     public string Maneuver { get; set; } = default!;
 }

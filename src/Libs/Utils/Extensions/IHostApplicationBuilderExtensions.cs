@@ -18,9 +18,9 @@ public static class IHostApplicationBuilderExtensions
         _ = hostApplicationBuilder.Configuration
             .AddEnvironmentVariables();
 
-        IEnumerable<System.Reflection.Assembly> referencedAssemblies = GetAllReferencedAssemblies(entryAssembly);
+        IEnumerable<System.Reflection.Assembly> referencedAssemblies = GetAllReferencedAssembliesSorted(entryAssembly);
 
-        IEnumerable<Type> typesToRegister = referencedAssemblies.SelectMany((System.Reflection.Assembly n) => n.GetTypes())
+        Type[] typesToRegister = referencedAssemblies.SelectMany((System.Reflection.Assembly n) => n.GetTypes())
             .Where((Type t) => t is not null && t.IsSubclassOf(typeof(Dependencies.ConfiguratorBase)))
             .ToArray();
 
@@ -30,15 +30,15 @@ public static class IHostApplicationBuilderExtensions
         return hostApplicationBuilder;
     }
 
-    public static IEnumerable<System.Reflection.Assembly> GetAllReferencedAssemblies(System.Reflection.Assembly source)
+    public static IEnumerable<System.Reflection.Assembly> GetAllReferencedAssembliesSorted(System.Reflection.Assembly source)
     {
         var results = new List<System.Reflection.Assembly> { source };
 
-        results.AddRange(source.GetReferencedAssemblies().SelectMany((System.Reflection.AssemblyName name) =>
+        results.InsertRange(0, source.GetReferencedAssemblies().SelectMany((System.Reflection.AssemblyName name) =>
         {
             var loaded = System.Reflection.Assembly.Load(name);
             return loaded.GetTypes().Any((Type t) => t is not null && t.IsSubclassOf(typeof(Dependencies.ConfiguratorBase)))
-                ? GetAllReferencedAssemblies(loaded)
+                ? GetAllReferencedAssembliesSorted(loaded)
                 : Array.Empty<System.Reflection.Assembly>();
         }).Distinct());
 

@@ -11,36 +11,6 @@ public class Program
 
         _ = webApplicationBuilder.AddAllMyDependencies();
 
-        IHost host = webApplicationBuilder.Build();
-
-        if (System.Diagnostics.Debugger.IsAttached)
-        {
-            _ = webApplicationBuilder.Configuration.SetBasePath(
-                Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location)!);
-        }
-
-        // Add services to the container.
-        _ = webApplicationBuilder.Services
-            .AddRazorComponents()
-            .AddInteractiveServerComponents()
-            .AddInteractiveWebAssemblyComponents();
-
-        _ = webApplicationBuilder.Services
-            .AddSystemd()
-
-            .AddMudServices()
-
-            .AddHttpClient() // Needed for server rendering
-
-            .AddControllers()
-        ;
-
-        // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-        _ = webApplicationBuilder.Services
-            .AddEndpointsApiExplorer()
-            .AddOpenApiDocument()
-        ;
-
         WebApplication webApplication = webApplicationBuilder.Build();
 
         // Configure the HTTP request pipeline.

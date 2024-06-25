@@ -1,34 +1,31 @@
-﻿using Seedysoft.Libs.FuelPrices.Core.JsonObjects.GoogleMaps;
-using System.Text.Json.Serialization;
-
-namespace Seedysoft.Libs.FuelPrices.Core.JsonObjects.GoogleMaps.Directions;
+﻿namespace Seedysoft.Libs.FuelPrices.Core.JsonObjects.GoogleMaps.Directions;
 
 public record LegJson
 {
-    [JsonPropertyName("distance")]
+    [System.Text.Json.Serialization.JsonPropertyName("distance")]
     public TextAndValueJson Distance { get; set; } = default!;
 
-    [JsonPropertyName("duration")]
+    [System.Text.Json.Serialization.JsonPropertyName("duration")]
     public TextAndValueJson Duration { get; set; } = default!;
 
-    [JsonPropertyName("end_address")]
+    [System.Text.Json.Serialization.JsonPropertyName("end_address")]
     public string EndAddress { get; set; } = default!;
 
-    [JsonPropertyName("end_location")]
+    [System.Text.Json.Serialization.JsonPropertyName("end_location")]
     public LocationJson EndLocation { get; set; } = default!;
 
-    [JsonPropertyName("start_address")]
+    [System.Text.Json.Serialization.JsonPropertyName("start_address")]
     public string StartAddress { get; set; } = default!;
 
-    [JsonPropertyName("start_location")]
+    [System.Text.Json.Serialization.JsonPropertyName("start_location")]
     public LocationJson StartLocation { get; set; } = default!;
 
-    [JsonPropertyName("steps")]
+    [System.Text.Json.Serialization.JsonPropertyName("steps")]
     public StepJson[] Steps { get; set; } = default!;
 
-    [JsonPropertyName("traffic_speed_entry")]
+    [System.Text.Json.Serialization.JsonPropertyName("traffic_speed_entry")]
     public object[] TrafficSpeedEntry { get; set; } = default!;
 
-    [JsonPropertyName("via_waypoint")]
+    [System.Text.Json.Serialization.JsonPropertyName("via_waypoint")]
     public object[] ViaWaypoint { get; set; } = default!;
 }

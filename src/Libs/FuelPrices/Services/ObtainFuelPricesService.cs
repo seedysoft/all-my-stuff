@@ -3,10 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Seedysoft.Libs.FuelPrices.Core.Entities;
-using Seedysoft.Libs.FuelPrices.Core.JsonObjects.Minetur;
-using Seedysoft.Libs.FuelPrices.Core.Settings;
-using Seedysoft.Libs.FuelPrices.Infrastructure.Data;
 using Seedysoft.Libs.Utils.Extensions;
 using System.Collections.Immutable;
 using System.Net.Http.Json;
@@ -19,20 +15,20 @@ public sealed class ObtainFuelPricesService
 
     private readonly IServiceProvider ServiceProvider;
     private readonly ILogger<ObtainFuelPricesService> Logger;
-    private readonly SettingsRoot Settings;
+    private readonly Core.Settings.SettingsRoot Settings;
     private readonly HttpClient Client = default!;
 
     public ObtainFuelPricesService(IServiceProvider serviceProvider)
     {
         ServiceProvider = serviceProvider;
-        Settings = serviceProvider.GetRequiredService<IConfiguration>().GetSection(nameof(SettingsRoot)).Get<SettingsRoot>()!;
+        Settings = serviceProvider.GetRequiredService<IConfiguration>().GetSection(nameof(Core.Settings.SettingsRoot)).Get<Core.Settings.SettingsRoot>()!;
 
         Logger = ServiceProvider.GetRequiredService<ILogger<ObtainFuelPricesService>>();
 
-        Client = ServiceProvider.GetRequiredService<IHttpClientFactory>().CreateClient(nameof(Minetur));
+        Client = ServiceProvider.GetRequiredService<IHttpClientFactory>().CreateClient(nameof(Core.Settings.Minetur));
         Client.BaseAddress = new Uri(Settings.Minetur.Uris.Base);
 
-        ServiceProvider.GetRequiredService<FuelPricesDbContext>().Database.Migrate();
+        ServiceProvider.GetRequiredService<Infrastructure.Data.FuelPricesDbContext>().Database.Migrate();
     }
 
     public async Task DoWorkAsync(CancellationToken cancellationToken)
@@ -41,7 +37,7 @@ public sealed class ObtainFuelPricesService
         {
             using IServiceScope ServiceScope = ServiceProvider.CreateScope();
 
-            await DeleteAllRecordsAsync(ServiceScope.ServiceProvider.GetRequiredService<FuelPricesDbContext>());
+            await DeleteAllRecordsAsync(ServiceScope.ServiceProvider.GetRequiredService<Infrastructure.Data.FuelPricesDbContext>());
 
             int Today = int.Parse(DateTime.UtcNow.Date.ToString(Utils.Constants.Formats.YearMonthDayFormat));
 
@@ -74,16 +70,16 @@ public sealed class ObtainFuelPricesService
         finally { await Task.CompletedTask; }
     }
 
-    private async Task DeleteAllRecordsAsync(FuelPricesDbContext dbCtx)
+    private async Task DeleteAllRecordsAsync(Infrastructure.Data.FuelPricesDbContext dbCtx)
     {
         try
         {
-            await dbCtx.TruncateAsync<ProductoPetrolifero>();
-            await dbCtx.TruncateAsync<ComunidadAutonoma>();
-            await dbCtx.TruncateAsync<Provincia>();
-            await dbCtx.TruncateAsync<Municipio>();
-            await dbCtx.TruncateAsync<EstacionServicio>();
-            await dbCtx.TruncateAsync<EstacionProductoPrecio>();
+            await dbCtx.TruncateAsync<Core.Entities.ProductoPetrolifero>();
+            await dbCtx.TruncateAsync<Core.Entities.ComunidadAutonoma>();
+            await dbCtx.TruncateAsync<Core.Entities.Provincia>();
+            await dbCtx.TruncateAsync<Core.Entities.Municipio>();
+            await dbCtx.TruncateAsync<Core.Entities.EstacionServicio>();
+            await dbCtx.TruncateAsync<Core.Entities.EstacionProductoPrecio>();
         }
         catch (TaskCanceledException e) when (Logger.Handle(e, "Task cancelled.")) { }
         catch (Exception e) when (Logger.Handle(e, "Unhandled exception.")) { }
@@ -95,22 +91,22 @@ public sealed class ObtainFuelPricesService
 
         try
         {
-            ProductoPetroliferoJson[]? Resultado = await LoadJsonAsync<ProductoPetroliferoJson[]>(
+            Core.JsonObjects.Minetur.ProductoPetroliferoJson[]? Resultado = await LoadJsonAsync<Core.JsonObjects.Minetur.ProductoPetroliferoJson[]>(
                 string.Format(Settings.Minetur.Uris.ListadosBase, OrigenRegistros),
                 cancellationToken);
 
             if (!(Resultado?.Length > 0))
                 return;
 
-            FuelPricesDbContext DbCtx = serviceProvider.GetRequiredService<FuelPricesDbContext>();
+            Infrastructure.Data.FuelPricesDbContext DbCtx = serviceProvider.GetRequiredService<Infrastructure.Data.FuelPricesDbContext>();
 
-            List<ProductoPetrolifero> NewObjects = new(Resultado.Length);
+            List<Core.Entities.ProductoPetrolifero> NewObjects = new(Resultado.Length);
 
             for (int i = 0; i < Resultado.Length; i++)
             {
                 int IdProd = int.Parse(Resultado[i].IDProducto);
 
-                NewObjects.Add(new ProductoPetrolifero()
+                NewObjects.Add(new Core.Entities.ProductoPetrolifero()
                 {
                     IdProducto = IdProd,
                     NombreProducto = Resultado[i].NombreProducto,
@@ -130,22 +126,22 @@ public sealed class ObtainFuelPricesService
 
         try
         {
-            ComunidadAutonomaJson[]? Resultado = await LoadJsonAsync<ComunidadAutonomaJson[]>(
+            Core.JsonObjects.Minetur.ComunidadAutonomaJson[]? Resultado = await LoadJsonAsync<Core.JsonObjects.Minetur.ComunidadAutonomaJson[]>(
                 string.Format(Settings.Minetur.Uris.ListadosBase, OrigenRegistros),
                 cancellationToken);
 
             if (!(Resultado?.Length > 0))
                 return;
 
-            FuelPricesDbContext DbCtx = serviceProvider.GetRequiredService<FuelPricesDbContext>();
+            Infrastructure.Data.FuelPricesDbContext DbCtx = serviceProvider.GetRequiredService<Infrastructure.Data.FuelPricesDbContext>();
 
-            List<ComunidadAutonoma> NewObjects = new(Resultado.Length);
+            List<Core.Entities.ComunidadAutonoma> NewObjects = new(Resultado.Length);
 
             for (int i = 0; i < Resultado.Length; i++)
             {
                 int IdCcaa = int.Parse(Resultado[i].IDCCAA);
 
-                NewObjects.Add(new ComunidadAutonoma()
+                NewObjects.Add(new Core.Entities.ComunidadAutonoma()
                 {
                     IdComunidadAutonoma = IdCcaa,
                     NombreComunidadAutonoma = Resultado[i].CCAA,
@@ -164,16 +160,16 @@ public sealed class ObtainFuelPricesService
 
         try
         {
-            ProvinciaJson[]? Resultado = await LoadJsonAsync<ProvinciaJson[]>(
+            Core.JsonObjects.Minetur.ProvinciaJson[]? Resultado = await LoadJsonAsync<Core.JsonObjects.Minetur.ProvinciaJson[]>(
                 string.Format(Settings.Minetur.Uris.ListadosBase, OrigenRegistros),
                 cancellationToken);
 
             if (!(Resultado?.Length > 0))
                 return;
 
-            FuelPricesDbContext DbCtx = serviceProvider.GetRequiredService<FuelPricesDbContext>();
+            Infrastructure.Data.FuelPricesDbContext DbCtx = serviceProvider.GetRequiredService<Infrastructure.Data.FuelPricesDbContext>();
 
-            List<Provincia> NewObjects = new(Resultado.Length);
+            List<Core.Entities.Provincia> NewObjects = new(Resultado.Length);
 
             DateTimeOffset AhoraUtc = DateTimeOffset.UtcNow;
 
@@ -182,7 +178,7 @@ public sealed class ObtainFuelPricesService
                 int IdProv = int.Parse(Resultado[i].IDPovincia);
                 int IdCcaa = int.Parse(Resultado[i].IDCCAA);
 
-                NewObjects.Add(new Provincia()
+                NewObjects.Add(new Core.Entities.Provincia()
                 {
                     IdProvincia = IdProv,
                     IdComunidadAutonoma = IdCcaa,
@@ -202,16 +198,16 @@ public sealed class ObtainFuelPricesService
 
         try
         {
-            MunicipioJson[]? Resultado = await LoadJsonAsync<MunicipioJson[]>(
+            Core.JsonObjects.Minetur.MunicipioJson[]? Resultado = await LoadJsonAsync<Core.JsonObjects.Minetur.MunicipioJson[]>(
                 string.Format(Settings.Minetur.Uris.ListadosBase, OrigenRegistros),
                 cancellationToken);
 
             if (!(Resultado?.Length > 0))
                 return;
 
-            FuelPricesDbContext DbCtx = serviceProvider.GetRequiredService<FuelPricesDbContext>();
+            Infrastructure.Data.FuelPricesDbContext DbCtx = serviceProvider.GetRequiredService<Infrastructure.Data.FuelPricesDbContext>();
 
-            List<Municipio> NewObjects = new(Resultado.Length);
+            List<Core.Entities.Municipio> NewObjects = new(Resultado.Length);
 
             DateTimeOffset AhoraUtc = DateTimeOffset.UtcNow;
 
@@ -220,7 +216,7 @@ public sealed class ObtainFuelPricesService
                 int IdMun = int.Parse(Resultado[i].IDMunicipio);
                 int IdProv = int.Parse(Resultado[i].IDProvincia);
 
-                NewObjects.Add(new Municipio()
+                NewObjects.Add(new Core.Entities.Municipio()
                 {
                     IdMunicipio = IdMun,
                     IdProvincia = IdProv,
@@ -240,26 +236,26 @@ public sealed class ObtainFuelPricesService
 
         try
         {
-            EstacionesServicioRootJson? Resultado = await LoadJsonAsync<EstacionesServicioRootJson>(
+            Core.JsonObjects.Minetur.EstacionesServicioRootJson? Resultado = await LoadJsonAsync<Core.JsonObjects.Minetur.EstacionesServicioRootJson>(
                 Settings.Minetur.Uris.EstacionesTerrestres,
                 cancellationToken);
 
             if (!(Resultado?.Estaciones.Length > 0))
                 return;
 
-            FuelPricesDbContext DbCtx = serviceProvider.GetRequiredService<FuelPricesDbContext>();
+            Infrastructure.Data.FuelPricesDbContext DbCtx = serviceProvider.GetRequiredService<Infrastructure.Data.FuelPricesDbContext>();
 
-            List<EstacionServicio> NewObjects = new(Resultado.Estaciones.Length);
+            List<Core.Entities.EstacionServicio> NewObjects = new(Resultado.Estaciones.Length);
 
             DateTimeOffset AhoraUtc = DateTimeOffset.UtcNow;
 
             for (int i = 0; i < Resultado.Estaciones.Length; i++)
             {
-                EstacionesServicioJson EstacionServicioJson = Resultado.Estaciones[i];
+                Core.JsonObjects.Minetur.EstacionesServicioJson EstacionServicioJson = Resultado.Estaciones[i];
                 int IdEs = int.Parse(EstacionServicioJson.IDEESS);
                 int IdMunicipio = int.Parse(EstacionServicioJson.IDMunicipio);
 
-                NewObjects.Add(new EstacionServicio()
+                NewObjects.Add(new Core.Entities.EstacionServicio()
                 {
                     IdEstacion = IdEs,
                     CodigoPostal = EstacionServicioJson.CodigoPostal,
@@ -286,7 +282,7 @@ public sealed class ObtainFuelPricesService
 
         try
         {
-            FuelPricesDbContext DbCtx = serviceProvider.GetRequiredService<FuelPricesDbContext>();
+            Infrastructure.Data.FuelPricesDbContext DbCtx = serviceProvider.GetRequiredService<Infrastructure.Data.FuelPricesDbContext>();
 
             int[] ProductoPetroliferoIds = await DbCtx.ProductosPetroliferos
                 .Select(x => x.IdProducto)
@@ -299,22 +295,22 @@ public sealed class ObtainFuelPricesService
             {
                 int ProductoPetroliferoId = ProductoPetroliferoIds[i];
 
-                EstacionServicioProductoRootJson? Resultado = await LoadJsonAsync<EstacionServicioProductoRootJson>(
+                Core.JsonObjects.Minetur.EstacionServicioProductoRootJson? Resultado = await LoadJsonAsync<Core.JsonObjects.Minetur.EstacionServicioProductoRootJson>(
                     string.Concat(Settings.Minetur.Uris.EstacionesTerrestres, string.Format(Settings.Minetur.Uris.EstacionesTerrestresFiltroProducto, ProductoPetroliferoId)),
                     cancellationToken);
 
                 if (!(Resultado?.EstacionServicioProducto.Length > 0))
                     continue;
 
-                List<EstacionProductoPrecio> NewObjects = new(Resultado.EstacionServicioProducto.Length);
+                List<Core.Entities.EstacionProductoPrecio> NewObjects = new(Resultado.EstacionServicioProducto.Length);
 
                 for (int j = 0; j < Resultado.EstacionServicioProducto.Length; j++)
                 {
-                    EstacionServicioProductoJson EstacionServicioProducto = Resultado.EstacionServicioProducto[j];
+                    Core.JsonObjects.Minetur.EstacionServicioProductoJson EstacionServicioProducto = Resultado.EstacionServicioProducto[j];
                     int EstacionServicioId = int.Parse(EstacionServicioProducto.IDEESS);
                     int NuevoPrecio = (int)(decimal.Parse(EstacionServicioProducto.PrecioProducto, Utils.Constants.Formats.ESCultureInfo) * 1_000);
 
-                    NewObjects.Add(new EstacionProductoPrecio()
+                    NewObjects.Add(new Core.Entities.EstacionProductoPrecio()
                     {
                         IdEstacion = EstacionServicioId,
                         IdProducto = ProductoPetroliferoId,
@@ -344,7 +340,7 @@ public sealed class ObtainFuelPricesService
         NetTopologySuite.Geometries.GeometryFactory GeomFactWgs84 = NetTopologySuite.NtsGeometryServices.Instance.CreateGeometryFactory(Libs.Utils.Constants.CoordinateSystemCodes.Wgs84);
         NetTopologySuite.Geometries.GeometryFactory GeomFactEpsg3857 = NetTopologySuite.NtsGeometryServices.Instance.CreateGeometryFactory(Libs.Utils.Constants.CoordinateSystemCodes.Epsg3857);
 
-        FuelPricesDbContext fuelPricesDbContext = ServiceProvider.GetRequiredService<FuelPricesDbContext>();
+        Infrastructure.Data.FuelPricesDbContext fuelPricesDbContext = ServiceProvider.GetRequiredService<Infrastructure.Data.FuelPricesDbContext>();
 
         var AllStations = await fuelPricesDbContext.EstacionesServicio
             .AsNoTracking()
@@ -441,7 +437,7 @@ public sealed class ObtainFuelPricesService
 
     public async Task<IImmutableList<Core.ViewModels.IdDescRecord>> GetPetroleumProductsAsync()
     {
-        FuelPricesDbContext fuelPricesDbContext = ServiceProvider.GetRequiredService<FuelPricesDbContext>();
+        Infrastructure.Data.FuelPricesDbContext fuelPricesDbContext = ServiceProvider.GetRequiredService<Infrastructure.Data.FuelPricesDbContext>();
 
         IQueryable<Core.ViewModels.IdDescRecord> Query =
             from p in fuelPricesDbContext.ProductosPetroliferos
