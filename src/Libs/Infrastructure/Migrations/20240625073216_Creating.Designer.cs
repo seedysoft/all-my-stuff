@@ -11,7 +11,7 @@ using Seedysoft.Libs.Infrastructure.DbContexts;
 namespace Seedysoft.Libs.Infrastructure.Migrations
 {
     [DbContext(typeof(DbCxt))]
-    [Migration("20240624090621_Creating")]
+    [Migration("20240625073216_Creating")]
     partial class Creating
     {
         /// <inheritdoc />

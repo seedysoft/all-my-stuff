@@ -1,4 +1,5 @@
-﻿
+﻿// https://digitaldrummerj.me/categories/#ef-core
+
 //namespace Seedysoft.Libs.FuelPrices.Infrastructure.Migrations.Views;
 
 //public static class ProductPriceView

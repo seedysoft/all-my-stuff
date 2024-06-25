@@ -10,7 +10,7 @@ using Seedysoft.Libs.FuelPrices.Infrastructure.Data;
 namespace Seedysoft.Libs.FuelPrices.Infrastructure.Migrations
 {
     [DbContext(typeof(FuelPricesDbContext))]
-    [Migration("20240624091447_Creating")]
+    [Migration("20240625073541_Creating")]
     partial class Creating
     {
         /// <inheritdoc />
