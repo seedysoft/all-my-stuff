@@ -130,16 +130,29 @@ Description=Long running daemon created from .NET worker template
 After=network.target
 
 [Service]
-SyslogIdentifier='${WORKER_SERVICE_NAME}'
-Restart=always
-RestartSec=20
 Type=notify
+
 User=${WORKER_SERVICE_USER}
 Group=${WORKER_SERVICE_USER}
+
+# will set the Current Working Directory (CWD)
 WorkingDirectory=${WORKER_SERVICE_DIRECTORY}
+
+# systemd will run this executable to start the service
 ExecStart=${WORKER_SERVICE_DIRECTORY}/${EXECUTABLE_FILE_NAME}
+
 TimeoutStopSec=30
+
 EnvironmentFile=/etc/environment
+
+# to query logs using journalctl, set a logical name here  
+SyslogIdentifier='${WORKER_SERVICE_NAME}'
+
+# ensure the service restarts after crashing
+Restart=always
+
+# amount of time to wait before restarting the service
+RestartSec=20
 
 [Install]
 WantedBy=multi-user.target
