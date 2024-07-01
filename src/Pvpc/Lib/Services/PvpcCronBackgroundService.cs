@@ -1,15 +1,16 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-
 using Seedysoft.Libs.Utils.Extensions;
 using System.Net.Http.Json;
 
 namespace Seedysoft.Pvpc.Lib.Services;
 
 public sealed class PvpcCronBackgroundService(
-    Settings.PvpcSettings config
-    , Libs.Infrastructure.DbContexts.DbCxt dbCxt
-    , ILogger<PvpcCronBackgroundService> logger) : Libs.CronBackgroundService.CronBackgroundService(config)
+    Settings.PvpcSettings config, 
+    Libs.Infrastructure.DbContexts.DbCxt dbCxt, 
+    ILogger<PvpcCronBackgroundService> logger, 
+    Microsoft.Extensions.Hosting.IHostApplicationLifetime hostApplicationLifetime)
+    : Libs.CronBackgroundService.CronBackgroundService(config, hostApplicationLifetime)
 {
     // HttpClient is intended to be instantiated once per application, rather than per-use. See Remarks.
     private static readonly HttpClient client = new();
@@ -23,7 +24,9 @@ public sealed class PvpcCronBackgroundService(
     {
         DateTime ForDate = DateTimeOffset.UtcNow.AddDays(1).Date;
 
-        await GetPvpcFromReeForDateAsync(ForDate, stoppingToken);
+        _ = GetPvpcFromReeForDateAsync(ForDate, stoppingToken);
+
+        await Task.CompletedTask;
     }
 
     public async Task GetPvpcFromReeForDateAsync(DateTime forDate, CancellationToken stoppingToken)

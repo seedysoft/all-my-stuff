@@ -1,23 +1,21 @@
-﻿namespace Seedysoft.Libs.CronBackgroundService;
+﻿using Microsoft.Extensions.Hosting;
 
-public abstract class CronBackgroundService : Microsoft.Extensions.Hosting.BackgroundService
+namespace Seedysoft.Libs.CronBackgroundService;
+
+public abstract class CronBackgroundService(ScheduleConfig config, IHostApplicationLifetime hostApplicationLifetime) : BackgroundService
 {
-    protected ScheduleConfig Config { get; init; }
-    protected Cronos.CronExpression Expression { get; init; }
-
-    protected CronBackgroundService(ScheduleConfig config)
-    {
-        Config = config;
-        Expression = Cronos.CronExpression.Parse(Config.CronExpression);
-    }
+    protected ScheduleConfig Config { get; init; } = config;
 
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
+        if (!await WaitForAppStartup(hostApplicationLifetime, cancellationToken))
+            return;
+
         try
         {
             while (!cancellationToken.IsCancellationRequested)
             {
-                DateTimeOffset? NextExecutionAt = Expression.GetNextOccurrence(DateTimeOffset.Now, Config.TimeZoneInfo);
+                DateTimeOffset? NextExecutionAt = Config.GetNextOccurrence(DateTimeOffset.Now);
                 if (NextExecutionAt.HasValue)
                 {
                     TimeSpan DelayUntilNext = NextExecutionAt.Value.Subtract(DateTimeOffset.Now);
@@ -35,6 +33,22 @@ public abstract class CronBackgroundService : Microsoft.Extensions.Hosting.Backg
         }
         catch (TaskCanceledException) { }
         finally { await Task.CompletedTask; }
+    }
+
+    private static async Task<bool> WaitForAppStartup(IHostApplicationLifetime lifetime, CancellationToken cancellationToken)
+    {
+        TaskCompletionSource startedSource = new();
+        TaskCompletionSource cancelledSource = new();
+
+        using CancellationTokenRegistration reg1 = lifetime.ApplicationStarted.Register(startedSource.SetResult);
+        using CancellationTokenRegistration reg2 = cancellationToken.Register(cancelledSource.SetResult);
+
+        Task completedTask = await Task
+            .WhenAny(startedSource.Task, cancelledSource.Task)
+            .ConfigureAwait(false);
+
+        // If the completed tasks was the "app started" task, return true, otherwise false
+        return completedTask == startedSource.Task;
     }
 
     public abstract Task DoWorkAsync(CancellationToken cancellationToken);

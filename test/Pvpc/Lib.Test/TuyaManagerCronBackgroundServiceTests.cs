@@ -1,4 +1,6 @@
-﻿using Xunit;
+﻿using Microsoft.Extensions.Hosting.Internal;
+using Microsoft.Extensions.Logging.Abstractions;
+using Xunit;
 
 namespace Seedysoft.Pvpc.Lib.Test;
 
@@ -22,9 +24,11 @@ public sealed class TuyaManagerCronBackgroundServiceFixture : Libs.Infrastructur
 
         Libs.Infrastructure.DbContexts.DbCxt dbCxt = GetDbCxt();
 
-        Microsoft.Extensions.Logging.ILogger<Services.TuyaManagerCronBackgroundService> logger = new Microsoft.Extensions.Logging.Abstractions.NullLogger<Services.TuyaManagerCronBackgroundService>();
-
-        TuyaManagerService = new(tuyaManagerSettings, dbCxt, logger);
+        TuyaManagerService = new(
+            tuyaManagerSettings
+            , dbCxt
+            , new NullLogger<Services.TuyaManagerCronBackgroundService>()
+            , new ApplicationLifetime(new NullLogger<ApplicationLifetime>()));
     }
 
     public Services.TuyaManagerCronBackgroundService TuyaManagerService { get; }

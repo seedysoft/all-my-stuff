@@ -7,9 +7,11 @@ using System.Diagnostics;
 namespace Seedysoft.Pvpc.Lib.Services;
 
 public sealed class TuyaManagerCronBackgroundService(
-    Settings.TuyaManagerSettings config
-    , Libs.Infrastructure.DbContexts.DbCxt dbCxt
-    , ILogger<TuyaManagerCronBackgroundService> logger) : Libs.CronBackgroundService.CronBackgroundService(config)
+    Settings.TuyaManagerSettings config,
+    Libs.Infrastructure.DbContexts.DbCxt dbCxt,
+    ILogger<TuyaManagerCronBackgroundService> logger,
+    Microsoft.Extensions.Hosting.IHostApplicationLifetime hostApplicationLifetime)
+    : Libs.CronBackgroundService.CronBackgroundService(config, hostApplicationLifetime)
 {
     private readonly Libs.Infrastructure.DbContexts.DbCxt DbCxt = dbCxt;
     private readonly ILogger<TuyaManagerCronBackgroundService> Logger = logger;
@@ -19,9 +21,11 @@ public sealed class TuyaManagerCronBackgroundService(
     public override async Task StartAsync(CancellationToken cancellationToken)
     {
         // Execute on init
-        await DoWorkAsync(cancellationToken);
+        _ = Task.Factory.StartNew(async () => await DoWorkAsync(cancellationToken), cancellationToken);
 
-        await base.StartAsync(cancellationToken);
+        _ = base.StartAsync(cancellationToken);
+
+        await Task.CompletedTask;
     }
 
     public override async Task DoWorkAsync(CancellationToken stoppingToken)

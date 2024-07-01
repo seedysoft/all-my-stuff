@@ -40,7 +40,9 @@ public partial class TelegramHostedService : Microsoft.Extensions.Hosting.IHoste
 
         BotCommand[] Commands = GetMyCommands();
 
-        await StartReceivingAsync(Commands, cancellationToken);
+        _ = StartReceivingAsync(Commands, cancellationToken);
+
+        await Task.CompletedTask;
     }
 
     public async Task StopAsync(CancellationToken cancellationToken)

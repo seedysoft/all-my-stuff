@@ -5,7 +5,8 @@ namespace Seedysoft.Libs.Utils.Extensions;
 
 public static class IHostApplicationBuilderExtensions
 {
-    public static Microsoft.Extensions.Hosting.IHostApplicationBuilder AddAllMyDependencies(this Microsoft.Extensions.Hosting.IHostApplicationBuilder hostApplicationBuilder)
+    public static Microsoft.Extensions.Hosting.IHostApplicationBuilder AddAllMyDependencies(
+        this Microsoft.Extensions.Hosting.IHostApplicationBuilder hostApplicationBuilder)
     {
         System.Reflection.Assembly entryAssembly = System.Reflection.Assembly.GetEntryAssembly()!;
 

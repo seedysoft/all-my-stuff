@@ -413,7 +413,7 @@ public sealed class ObtainFuelPricesService : IDisposable
         }
 
         NearStationIds.Sort();
-        IQueryable<Libs.FuelPrices.Core.Entities.ProductoPetrolifero> TempQuery = fuelPricesDbContext.ProductosPetroliferos.AsNoTracking();
+        IQueryable<Core.Entities.ProductoPetrolifero> TempQuery = fuelPricesDbContext.ProductosPetroliferos.AsNoTracking();
 
         if (filter.PetroleumProductsSelectedIds != null && filter.PetroleumProductsSelectedIds.Any())
             TempQuery = TempQuery.Where(x => filter.PetroleumProductsSelectedIds.Contains(x.IdProducto));

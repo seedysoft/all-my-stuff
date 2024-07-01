@@ -6,35 +6,22 @@ using Seedysoft.Libs.Utils.Extensions;
 
 namespace Seedysoft.WebComparer.Lib.Services;
 
-public sealed class WebComparerHostedService(IServiceProvider serviceProvider, ILogger<WebComparerHostedService> logger)
-    : Microsoft.Extensions.Hosting.IHostedService
+public sealed class WebComparerHostedService(
+    IServiceProvider serviceProvider
+    , ILogger<WebComparerHostedService> logger
+    , Microsoft.Extensions.Hosting.IHostApplicationLifetime hostApplicationLifetime)
+    : Libs.CronBackgroundService.CronBackgroundService(new() { CronExpression = Cronos.CronExpression.Hourly.ToString() }, hostApplicationLifetime)
 {
     private static readonly TimeSpan FiveSecondsTimeSpan = TimeSpan.FromSeconds(5);
     private static readonly CancellationTokenSource cancellationTokenSource = new();
 
-    public async Task StartAsync(CancellationToken cancellationToken)
+    public override async Task DoWorkAsync(CancellationToken cancellationToken)
     {
         logger.LogInformation("Called {ApplicationName} version {Version}", GetType().FullName, System.Reflection.Assembly.GetExecutingAssembly().GetName().Version);
 
-        _ = await Task.Factory.StartNew(() => InfiniteMethodAsync(cancellationToken), cancellationTokenSource.Token);
-    }
-    public async Task StopAsync(CancellationToken cancellationToken)
-    {
-        cancellationTokenSource.Cancel();
-
-        logger.LogInformation("End {ApplicationName}", GetType().FullName);
+        _ = FindDifferencesAsync(cancellationToken);
 
         await Task.CompletedTask;
-    }
-
-    private async Task InfiniteMethodAsync(CancellationToken cancellationToken)
-    {
-        while (!cancellationToken.IsCancellationRequested)
-        {
-            await FindDifferencesAsync(cancellationToken);
-
-            await Task.Delay(TimeSpan.FromHours(1), cancellationToken);
-        }
     }
 
     public async Task FindDifferencesAsync(CancellationToken cancellationToken)
@@ -55,7 +42,8 @@ public sealed class WebComparerHostedService(IServiceProvider serviceProvider, I
 
             for (int i = 0; i < WebDatas.Length; i++)
             {
-                if (cancellationToken.IsCancellationRequested) { break; }
+                if (cancellationToken.IsCancellationRequested)
+                    break;
 
                 Libs.Core.Entities.WebData webData = WebDatas[i];
 
