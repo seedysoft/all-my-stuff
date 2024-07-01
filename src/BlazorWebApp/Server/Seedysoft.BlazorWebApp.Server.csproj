@@ -3,7 +3,9 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <RuntimeIdentifiers>linux-arm64;win-x64</RuntimeIdentifiers>
+    <RuntimeIdentifiers>linux-arm64;linux-x64;win-x64</RuntimeIdentifiers>
+    <UserSecretsId>953853f7-9384-457c-a3c0-3492059196ab</UserSecretsId>
+    <StartupObject>Seedysoft.BlazorWebApp.Server.Program</StartupObject>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Release'">
     <AssemblyVersion>$([System.DateTime]::UtcNow.ToString(yy.MM.dd.HHmm))</AssemblyVersion>
@@ -38,6 +40,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="8.*" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="8.0.6" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Systemd" Version="8.0.0" />
     <PackageReference Include="NSwag.AspNetCore" Version="14.0.8" />
     <PackageReference Include="Serilog.Extensions.Logging" Version="8.0.0" />
@@ -46,7 +49,6 @@
     <PackageReference Include="Serilog.Sinks.File" Version="6.0.0" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Libs\FuelPrices\Seedysoft.Libs.FuelPrices.csproj" />
     <ProjectReference Include="..\..\Libs\Telegram\Seedysoft.Libs.Telegram.csproj" />
     <ProjectReference Include="..\..\Libs\Utils\Seedysoft.Libs.Utils.csproj" />
     <ProjectReference Include="..\..\Outbox\Lib\Seedysoft.Outbox.Lib.csproj" />

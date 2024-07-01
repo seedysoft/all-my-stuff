@@ -1,12 +1,16 @@
-using MudBlazor.Services;
 using Seedysoft.Libs.Utils.Extensions;
 
 namespace Seedysoft.BlazorWebApp.Server;
 
 public class Program
 {
-    public static void Main(string[] args)
+    [STAThread]
+    public static async Task Main(string[] args)
     {
+#if DEBUG
+        // TODO         Use arguments to wait for attach
+        await Task.Delay(TimeSpan.FromSeconds(10));
+#endif
         WebApplicationBuilder webApplicationBuilder = WebApplication.CreateBuilder(args);
 
         _ = webApplicationBuilder.AddAllMyDependencies();
@@ -43,9 +47,6 @@ public class Program
             .AddAdditionalAssemblies(typeof(Client._Imports).Assembly);
 
         _ = webApplication.MapControllers();
-
-        // TODO         Migrate and seed the database during startup. Must be synchronous.
-        //_ = webApplication.MigrateDbContexts();
 
         webApplication.Run();
     }

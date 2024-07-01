@@ -13,7 +13,7 @@ internal sealed class Configurator : Utils.Dependencies.ConfiguratorBase
         string CurrentEnvironmentName = hostApplicationBuilder.Environment.EnvironmentName;
 
         _ = hostApplicationBuilder.Configuration
-            .AddJsonFile($"appsettings.Libs.FuelPrices.ConnectionStrings.{CurrentEnvironmentName}.json", false, true)
+            .AddJsonFile($"appsettings.Libs.FuelPrices.ConnectionStrings.json", false, true)
             .AddJsonFile($"appsettings.Libs.FuelPrices.json", false, true)
             .AddJsonFile($"appsettings.Libs.FuelPrices.{CurrentEnvironmentName}.json", false, true);
     }
@@ -24,13 +24,7 @@ internal sealed class Configurator : Utils.Dependencies.ConfiguratorBase
         {
             string ConnectionStringName = nameof(Infrastructure.Data.FuelPricesDbContext);
             string ConnectionString = hostApplicationBuilder.Configuration.GetConnectionString($"{ConnectionStringName}") ?? throw new KeyNotFoundException($"Connection string '{ConnectionStringName}' not found.");
-            //string FullFilePath = Path.GetFullPath(
-            //    ConnectionString[Libs.Core.Constants.DatabaseStrings.DataSource.Length..],
-            //    System.Reflection.Assembly.GetExecutingAssembly().Location);
-            //if (!File.Exists(FullFilePath))
-            //    throw new FileNotFoundException("Database file not found.", FullFilePath);
-
-            //_ = dbContextOptionsBuilder.UseSqlite($"{Libs.Core.Constants.DatabaseStrings.DataSource}{FullFilePath}");
+   
             _ = dbContextOptionsBuilder.UseSqlite(ConnectionString);
             dbContextOptionsBuilder.ConfigureDebugOptions();
         }
@@ -41,6 +35,9 @@ internal sealed class Configurator : Utils.Dependencies.ConfiguratorBase
     protected override void AddMyServices(Microsoft.Extensions.Hosting.IHostApplicationBuilder hostApplicationBuilder)
     {
         _ = hostApplicationBuilder.Services.AddHttpClient(nameof(Core.Settings.Minetur));
+
+        hostApplicationBuilder.Services.TryAddSingleton(hostApplicationBuilder.Configuration.GetSection(nameof(Core.Settings.SettingsRoot)).Get<Core.Settings.SettingsRoot>()!);
+
         hostApplicationBuilder.Services.TryAddSingleton<Services.ObtainFuelPricesService>();
     }
 }

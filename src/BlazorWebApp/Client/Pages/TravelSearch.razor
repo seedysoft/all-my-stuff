@@ -12,7 +12,7 @@
     </MudItem>
 
     <MudItem xs="12">
-        <EditForm Model="@TravelQuery" OnValidSubmit="OnValidSubmitAsync">
+        <EditForm @ref="TravelQueryEditForm" Model="@TravelQuery" OnValidSubmit="OnValidSubmitAsync">
             <MudStack Class="d-flex flex-wrap gap-4" Justify="Justify.SpaceEvenly" Row="true">
                 <MudTextField @bind-Value="TravelQuery.Origin" AutoFocus="true" Class="d-flex flex-wrap gap-4" For="@(() => TravelQuery.Origin)" Label="Origin"
                               Placeholder="Select an origin place" Variant="Variant.Outlined" />

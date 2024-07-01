@@ -1,4 +1,4 @@
-﻿namespace Seedysoft.BlazorWebApp.Client;
+﻿namespace Seedysoft.BlazorWebApp.Client.Constants;
 
 public static class ControllerUris
 {

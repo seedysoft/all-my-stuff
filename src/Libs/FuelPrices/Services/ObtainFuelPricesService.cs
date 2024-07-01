@@ -9,14 +9,17 @@ using System.Net.Http.Json;
 
 namespace Seedysoft.Libs.FuelPrices.Services;
 
-public sealed class ObtainFuelPricesService
+public sealed class ObtainFuelPricesService : IDisposable
 {
     private static readonly System.Text.Json.JsonSerializerOptions JsonOptions = new() { };
 
     private readonly IServiceProvider ServiceProvider;
     private readonly ILogger<ObtainFuelPricesService> Logger;
     private readonly Core.Settings.SettingsRoot Settings;
-    private readonly HttpClient Client = default!;
+    private readonly HttpClient httpClient = default!;
+
+    private readonly Microsoft.Data.Sqlite.SqliteConnection sqliteConnection;
+    private readonly DbContextOptions<Infrastructure.Data.FuelPricesDbContext> dbContextOptions;
 
     public ObtainFuelPricesService(IServiceProvider serviceProvider)
     {
@@ -25,8 +28,14 @@ public sealed class ObtainFuelPricesService
 
         Logger = ServiceProvider.GetRequiredService<ILogger<ObtainFuelPricesService>>();
 
-        Client = ServiceProvider.GetRequiredService<IHttpClientFactory>().CreateClient(nameof(Core.Settings.Minetur));
-        Client.BaseAddress = new Uri(Settings.Minetur.Uris.Base);
+        httpClient = ServiceProvider.GetRequiredService<IHttpClientFactory>().CreateClient(nameof(Core.Settings.Minetur));
+        httpClient.BaseAddress = new Uri(Settings.Minetur.Uris.Base);
+
+        string ConnectionString = "Data Source=InMemorySample;Mode=Memory;Cache=Shared";
+        sqliteConnection = new(ConnectionString);
+        sqliteConnection.Open();
+
+        dbContextOptions = new DbContextOptionsBuilder<Infrastructure.Data.FuelPricesDbContext>().UseSqlite(sqliteConnection).Options;
 
         ServiceProvider.GetRequiredService<Infrastructure.Data.FuelPricesDbContext>().Database.Migrate();
     }
@@ -327,7 +336,7 @@ public sealed class ObtainFuelPricesService
 
     private async Task<TJson?> LoadJsonAsync<TJson>(string requestUri, CancellationToken cancellationToken)
     {
-        TJson? Resultado = await Client.GetFromJsonAsync<TJson?>(requestUri, JsonOptions, cancellationToken);
+        TJson? Resultado = await httpClient.GetFromJsonAsync<TJson?>(requestUri, JsonOptions, cancellationToken);
 
         if (Resultado == null)
             Logger.Critical($"La petición de '{requestUri}' ha devuelto null.");
@@ -445,5 +454,11 @@ public sealed class ObtainFuelPricesService
             select new Core.ViewModels.IdDescRecord(p.IdProducto, p.NombreProducto);
 
         return ImmutableArray.Create(await Query.ToArrayAsync());
+    }
+
+    public void Dispose()
+    {
+        ((IDisposable)httpClient)?.Dispose();
+        ((IDisposable)sqliteConnection)?.Dispose();
     }
 }

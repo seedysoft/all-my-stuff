@@ -27,8 +27,6 @@ internal sealed class Configurator : Libs.Utils.Dependencies.ConfiguratorBase
 
         _ = hostApplicationBuilder.Services.AddHostedService<WebComparer.Lib.Services.WebComparerHostedService>();
 
-        _ = hostApplicationBuilder.Services.AddHttpClient(nameof(Libs.FuelPrices.Core.Settings.Minetur));
-
         // Add services to the container.
         _ = hostApplicationBuilder.Services
             .AddRazorComponents()

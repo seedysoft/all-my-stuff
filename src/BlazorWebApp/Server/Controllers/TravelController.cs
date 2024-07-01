@@ -1,21 +1,21 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Seedysoft.BlazorWebApp.Client;
 using System.Collections.Immutable;
 
 namespace Seedysoft.BlazorWebApp.Server.Controllers;
 
-[Route(ControllerUris.TravelControllerUri)]
+[Route(Client.Constants.ControllerUris.TravelControllerUri)]
 public sealed class TravelController : ApiControllerBase
 {
     public TravelController(ILogger<TravelController> logger) : base(logger) => Logger = logger;
 
-    [HttpPost]
+    [HttpPost(Client.Constants.TravelController.ObtainDirections)]
     public async Task<IImmutableList<Libs.FuelPrices.Core.ViewModels.TravelObtainedModel>> ObtainDirectionsAsync(
         [AsParameters] Libs.FuelPrices.Core.ViewModels.TravelQueryModel travelQueryModel,
         [FromServices] IHttpClientFactory httpClientFactory,
         [FromServices] Libs.FuelPrices.Core.Settings.SettingsRoot settings)
     {
         Libs.FuelPrices.Core.JsonObjects.GoogleMaps.Directions.DistanceApiRootJson? DistanceApiResult = await
+
 #if false //DEBUG
             System.Text.Json.JsonSerializer.DeserializeAsync<DistanceApiRootJson>(
                 System.IO.File.OpenRead(
@@ -61,7 +61,7 @@ public sealed class TravelController : ApiControllerBase
         return ToReturn;
     }
 
-    [HttpPost]
+    [HttpPost(Client.Constants.TravelController.ObtainGasStations)]
     public async Task<IImmutableList<Libs.FuelPrices.Core.ViewModels.GasStationInfoModel>> ObtainGasStationsAsync(
         [FromBody] Libs.FuelPrices.Core.ViewModels.GasStationQueryModel filter
         , [FromServices] Libs.FuelPrices.Services.ObtainFuelPricesService obtainFuelPricesService)

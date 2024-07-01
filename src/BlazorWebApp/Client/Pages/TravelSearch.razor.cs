@@ -12,6 +12,7 @@ public partial class TravelSearch
     [Inject] private ILogger<TravelSearch> Logger { get; set; } = default!;
 
     private MudDataGrid<Libs.FuelPrices.Core.ViewModels.TravelObtainedModel> DirectionsMudDataGrid = default!;
+    private Microsoft.AspNetCore.Components.Forms.EditForm TravelQueryEditForm = default!;
     private MudForm GasStationMudForm = default!;
 
     private readonly Libs.FuelPrices.Core.ViewModels.TravelQueryModel TravelQuery = new()
@@ -44,7 +45,7 @@ public partial class TravelSearch
     {
         await base.OnInitializedAsync();
 
-        string FromUri = $"{NavManager.BaseUri}{ControllerUris.PetroleumProductsControllerUri}/PetroleumProductsForFilter";
+        string FromUri = $"{NavManager.BaseUri}{Constants.ControllerUris.PetroleumProductsControllerUri}/PetroleumProductsForFilter";
         PetroleumProducts = await Http.GetFromJsonAsync<IImmutableList<Libs.FuelPrices.Core.ViewModels.IdDescRecord>>(FromUri) ?? ImmutableArray<Libs.FuelPrices.Core.ViewModels.IdDescRecord>.Empty;
         PetroleumProductsSelected = PetroleumProducts;
     }
@@ -71,7 +72,7 @@ public partial class TravelSearch
         {
             GasStations = ImmutableArray<Libs.FuelPrices.Core.ViewModels.GasStationInfoModel>.Empty;
 
-            string FromUri = $"{NavManager.BaseUri}{ControllerUris.TravelControllerUri}/ObtainDirections";
+            string FromUri = $"{NavManager.BaseUri}{Constants.ControllerUris.TravelControllerUri}/{Constants.TravelController.ObtainDirections}";
 
             using (HttpResponseMessage Response = await Http.PostAsJsonAsync(FromUri, TravelQuery))
                 DirectionsObtained = await Response.Content.ReadFromJsonAsync<IImmutableList<Libs.FuelPrices.Core.ViewModels.TravelObtainedModel>>() ?? ImmutableArray<Libs.FuelPrices.Core.ViewModels.TravelObtainedModel>.Empty;
@@ -114,7 +115,7 @@ public partial class TravelSearch
 
         try
         {
-            string FromUri = $"{NavManager.BaseUri}{ControllerUris.TravelControllerUri}/ObtainGasStations";
+            string FromUri = $"{NavManager.BaseUri}{Constants.ControllerUris.TravelControllerUri}/{Constants.TravelController.ObtainGasStations}";
             Libs.FuelPrices.Core.ViewModels.GasStationQueryModel StationsFilter = new()
             {
                 MaxDistanceInKm = GasStationQuery.MaxDistanceInKm,

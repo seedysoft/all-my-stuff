@@ -44,12 +44,4 @@ public static class IHostApplicationBuilderExtensions
 
         return results.Distinct();
     }
-
-    //public static WebApplication MigrateDbContexts(this WebApplication webApplication)
-    //{
-    //    webApplication.Services.GetRequiredService<InfrastructureLib.DbContexts.DbCxt>().Database.Migrate();
-    //    webApplication.Services.GetRequiredService<Seedysoft.CarburantesLib.Services.ObtainDataCronBackgroundService>().MigrateDatabases();
-
-    //    return webApplication;
-    //}
 }

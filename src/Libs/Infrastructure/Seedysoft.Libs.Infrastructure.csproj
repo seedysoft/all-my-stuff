@@ -5,7 +5,7 @@
     <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
     <IsPublishable>False</IsPublishable>
-    <RuntimeIdentifiers>linux-arm64;win-x64</RuntimeIdentifiers>
+    <RuntimeIdentifiers>linux-arm64;linux-x64;win-x64</RuntimeIdentifiers>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Release'">
     <AssemblyVersion>$([System.DateTime]::UtcNow.ToString(yy.MM.dd.HHmm))</AssemblyVersion>
@@ -13,26 +13,14 @@
     <Version>$(AssemblyVersion)</Version>
   </PropertyGroup>
   <ItemGroup>
-    <None Remove="appsettings.dbConnectionString.Development.json" />
     <Content Include="appsettings.dbConnectionString.json">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <None Remove="appsettings.dbConnectionString.Production.json" />
-    <None Remove="appsettings.Serilog.Development.json" />
     <Content Include="appsettings.Serilog.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <None Remove="appsettings.Serilog.Production.json" />
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)' == 'Debug'">
-    <Content Include="appsettings.dbConnectionString.Development.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <DependentUpon>appsettings.dbConnectionString.json</DependentUpon>
-    </Content>
-    <None Include="appsettings.dbConnectionString.Production.json">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-      <DependentUpon>appsettings.dbConnectionString.json</DependentUpon>
-    </None>
     <Content Include="appsettings.Serilog.Development.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <DependentUpon>appsettings.Serilog.json</DependentUpon>
@@ -43,14 +31,6 @@
     </None>
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)' == 'Release'">
-    <None Include="appsettings.dbConnectionString.Development.json">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-      <DependentUpon>appsettings.dbConnectionString.json</DependentUpon>
-    </None>
-    <Content Include="appsettings.dbConnectionString.Production.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <DependentUpon>appsettings.dbConnectionString.json</DependentUpon>
-    </Content>
     <None Include="appsettings.Serilog.Development.json">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <DependentUpon>appsettings.Serilog.json</DependentUpon>
@@ -75,12 +55,10 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.6" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="8.0.6" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite.Core" Version="8.0.6" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyModel" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="8.0.0" />
     <PackageReference Include="Serilog.Extensions.Logging" Version="8.0.0" />
     <PackageReference Include="Serilog.Settings.Configuration" Version="8.0.1" />
     <PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" Version="2.1.8" />
@@ -88,5 +66,8 @@
   <ItemGroup>
     <ProjectReference Include="..\Core\Seedysoft.Libs.Core.csproj" />
     <ProjectReference Include="..\Utils\Seedysoft.Libs.Utils.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="Seedysoft.Libs.Infrastructure.Test" />
   </ItemGroup>
 </Project>
