@@ -31,7 +31,7 @@ public sealed class SmtpService(
         };
 
         string[]? PossibleDirections = to?
-            .Replace(",", ";")
+            .Replace(',', ';')
             .Split(";", StringSplitOptions.RemoveEmptyEntries & StringSplitOptions.TrimEntries);
 
         for (int i = 0; i < PossibleDirections?.Length; i++)

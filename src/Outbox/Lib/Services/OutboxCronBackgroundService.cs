@@ -8,11 +8,11 @@ using System.Collections.Immutable;
 namespace Seedysoft.Outbox.Lib.Services;
 
 public sealed class OutboxCronBackgroundService(
-    Libs.Telegram.Settings.TelegramSettings config,
+    Libs.TelegramBot.Settings.TelegramSettings config,
     IServiceProvider serviceProvider,
     ILogger<OutboxCronBackgroundService> logger,
     Microsoft.Extensions.Hosting.IHostApplicationLifetime hostApplicationLifetime)
-    : Libs.CronBackgroundService.CronBackgroundService(config, hostApplicationLifetime)
+    : Libs.BackgroundServices.Cron(config, hostApplicationLifetime)
 {
     private readonly IServiceProvider ServiceProvider = serviceProvider;
     private readonly ILogger<OutboxCronBackgroundService> Logger = logger;
@@ -43,7 +43,7 @@ public sealed class OutboxCronBackgroundService(
                     .ToArrayAsync(stoppingToken);
                 Logger.LogInformation("Obtained {AllSubscribers} subscribers", AllSubscribers.Length);
 
-                Libs.Telegram.Services.TelegramHostedService telegramHostedService = ServiceProvider.GetRequiredService<Libs.Telegram.Services.TelegramHostedService>();
+                Libs.TelegramBot.Services.TelegramHostedService telegramHostedService = ServiceProvider.GetRequiredService<Libs.TelegramBot.Services.TelegramHostedService>();
 
                 for (int i = 0; i < PendingMessages.Length; i++)
                 {
@@ -122,7 +122,7 @@ public sealed class OutboxCronBackgroundService(
                 .Select((x, i) => new
                 {
                     Rango = $"{x.AtDateTimeOffset.Hour:00}+{h + 1:0}",
-                    Media = entities.Skip(i).Take(h + 1).Average(x => x.KWhPriceInEuros)
+                    Media = entities.Skip(i).Take(h + 1).Average(x => x.KWhPriceInEuros),
                 })
                 .OrderBy(x => x.Rango)
                 .ToImmutableArray();

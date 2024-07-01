@@ -6,19 +6,22 @@ using Telegram.Bot.Types.ReplyMarkups;
 #endif
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Seedysoft.Libs.TelegramBot.Constants;
+using Seedysoft.Libs.TelegramBot.Enums;
+using Seedysoft.Libs.TelegramBot.Settings;
 using Seedysoft.Libs.Utils.Extensions;
 using Telegram.Bot;
 using Telegram.Bot.Exceptions;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 
-namespace Seedysoft.Libs.Telegram.Services;
+namespace Seedysoft.Libs.TelegramBot.Services;
 
 public partial class TelegramHostedService : Microsoft.Extensions.Hosting.IHostedService
 {
     private readonly ILogger<TelegramHostedService> Logger;
     private readonly IServiceProvider ServiceProvider;
-    private readonly Settings.TelegramSettings TelegramSettings;
+    private readonly TelegramSettings TelegramSettings;
     private readonly TelegramBotClient LocalTelegramBotClient;
 
     public TelegramHostedService(IServiceProvider serviceProvider)
@@ -26,7 +29,7 @@ public partial class TelegramHostedService : Microsoft.Extensions.Hosting.IHoste
         ServiceProvider = serviceProvider;
         Logger = ServiceProvider.GetRequiredService<ILogger<TelegramHostedService>>();
 
-        TelegramSettings = ServiceProvider.GetRequiredService<Settings.TelegramSettings>();
+        TelegramSettings = ServiceProvider.GetRequiredService<TelegramSettings>();
 
         TelegramBotClientOptions telegramBotClientOptions = new(
             token: $"{TelegramSettings.CurrentBot.Id}:{TelegramSettings.CurrentBot.Token}");
@@ -54,11 +57,11 @@ public partial class TelegramHostedService : Microsoft.Extensions.Hosting.IHoste
 
     private static BotCommand[] GetMyCommands()
     {
-        return Enum.GetValues<Enums.BotActionName>().
+        return Enum.GetValues<BotActionName>().
             Select(x => new BotCommand()
             {
                 Command = x.ToString(),
-                Description = x.GetEnumDescription()
+                Description = x.GetEnumDescription(),
             })
             .ToArray();
     }
@@ -793,7 +796,7 @@ public partial class TelegramHostedService : Microsoft.Extensions.Hosting.IHoste
             Core.Enums.SubscriptionName.webComparer => await MessageSendTextAsync(
                 telegramUserId,
                 pendingMessage.Payload[new Range(0, Math.Min(Utils.Constants.Telegram.MessageLengthLimit, pendingMessage.Payload.Length))],
-                null,
+parseMode: null,
                 stoppingToken),
 
             //Enums.SubscriptionName.amazon => await TelegramService.MessageSendTextAsync(
@@ -810,7 +813,7 @@ public partial class TelegramHostedService : Microsoft.Extensions.Hosting.IHoste
         if (prices == null || prices.Length == 0)
             return "No hay datos";
 
-        DateTime ObtainedDate = prices.First().AtDateTimeOffset.Date;
+        DateTime ObtainedDate = prices[0].AtDateTimeOffset.Date;
 
         int HowMany = Math.Min(6, prices.Length - 1);
         decimal Min = prices.OrderBy(x => x.KWhPriceInEuros).Take(HowMany).Max(x => x.KWhPriceInEuros);
@@ -824,9 +827,9 @@ public partial class TelegramHostedService : Microsoft.Extensions.Hosting.IHoste
         for (int i = 0; i < prices.Length; i++)
         {
             string emoji =
-                prices[i].KWhPriceInEuros >= Max ? Constants.Emojis.RedCircle :
-                prices[i].KWhPriceInEuros <= Min ? Constants.Emojis.GreenCircle :
-                prices[i].KWhPriceInEuros <= Avg ? Constants.Emojis.YellowCircle : Constants.Emojis.OrangeCircle;
+                prices[i].KWhPriceInEuros >= Max ? Emojis.RedCircle :
+                prices[i].KWhPriceInEuros <= Min ? Emojis.GreenCircle :
+                prices[i].KWhPriceInEuros <= Avg ? Emojis.YellowCircle : Emojis.OrangeCircle;
 
             sb = sb.AppendLine($"{prices[i].AtDateTimeOffset.Hour:00}  {emoji}  {prices[i].KWhPriceInEuros.ToString("N5", Utils.Constants.Formats.ESCultureInfo)}");
         }

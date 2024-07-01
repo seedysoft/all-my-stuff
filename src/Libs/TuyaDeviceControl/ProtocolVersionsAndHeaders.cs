@@ -2,7 +2,7 @@
 
 namespace Seedysoft.Libs.TuyaDeviceControl;
 
-internal class ProtocolVersionsAndHeaders
+internal sealed class ProtocolVersionsAndHeaders
 {
     public const string VERSION_31 = "3.1";
     public const string VERSION_32 = "3.2";

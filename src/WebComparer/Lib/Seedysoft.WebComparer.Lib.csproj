@@ -22,8 +22,8 @@
     <PackageReference Include="Selenium.WebDriver" Version="4.22.0" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Libs\BackgroundServices\Seedysoft.Libs.BackgroundServices.csproj" />
     <ProjectReference Include="..\..\Libs\Core\Seedysoft.Libs.Core.csproj" />
-    <ProjectReference Include="..\..\Libs\CronBackgroundService\Seedysoft.Libs.CronBackgroundService.csproj" />
     <ProjectReference Include="..\..\Libs\Infrastructure\Seedysoft.Libs.Infrastructure.csproj" />
     <ProjectReference Include="..\..\Libs\Utils\Seedysoft.Libs.Utils.csproj" />
   </ItemGroup>

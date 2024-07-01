@@ -1,4 +1,4 @@
-﻿namespace Seedysoft.Libs.Telegram.Constants;
+﻿namespace Seedysoft.Libs.TelegramBot.Constants;
 
 /// <summary>
 /// Obtenidos en https://emojis.wiki/

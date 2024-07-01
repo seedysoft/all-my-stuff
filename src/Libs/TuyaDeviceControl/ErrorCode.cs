@@ -18,5 +18,5 @@ public enum ErrorCode : uint
     ERR_CLOUDTOKEN = 911,
     ERR_PARAMS = 912,
     ERR_CLOUD = 913,
-    ERR_KEY_OR_VER = 914
+    ERR_KEY_OR_VER = 914,
 }

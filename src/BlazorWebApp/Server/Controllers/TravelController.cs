@@ -22,8 +22,9 @@ public sealed class TravelController : ApiControllerBase
                     Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Distance.json")));
 #else
             LoadJsonAsync<Libs.FuelPrices.Core.JsonObjects.GoogleMaps.Directions.DistanceApiRootJson>(
-                httpClientFactory,
-                settings.GoogleMapsPlatform.Directions.GetUri(travelQueryModel.Origin, travelQueryModel.Destination, settings.GoogleMapsPlatform.ApiKey));
+                httpClientFactory
+                , settings.GoogleMapsPlatform.Directions.GetUri(travelQueryModel.Origin, travelQueryModel.Destination, settings.GoogleMapsPlatform.ApiKey)
+                , HttpContext.RequestAborted);
 #endif
 
         if (DistanceApiResult == null || DistanceApiResult.Status == null)

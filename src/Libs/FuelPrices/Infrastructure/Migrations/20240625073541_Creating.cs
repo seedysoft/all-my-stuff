@@ -16,7 +16,7 @@ namespace Seedysoft.Libs.FuelPrices.Infrastructure.Migrations
                 {
                     AtDate = table.Column<int>(type: "INTEGER", nullable: false),
                     IdComunidadAutonoma = table.Column<int>(type: "INTEGER", nullable: false),
-                    NombreComunidadAutonoma = table.Column<string>(type: "TEXT", nullable: false)
+                    NombreComunidadAutonoma = table.Column<string>(type: "TEXT", nullable: false),
                 },
                 constraints: table =>
                 {
@@ -30,7 +30,7 @@ namespace Seedysoft.Libs.FuelPrices.Infrastructure.Migrations
                     AtDate = table.Column<int>(type: "INTEGER", nullable: false),
                     IdEstacion = table.Column<int>(type: "INTEGER", nullable: false),
                     IdProducto = table.Column<int>(type: "INTEGER", nullable: false),
-                    CentimosDeEuro = table.Column<int>(type: "INTEGER", nullable: false)
+                    CentimosDeEuro = table.Column<int>(type: "INTEGER", nullable: false),
                 },
                 constraints: table =>
                 {
@@ -51,7 +51,7 @@ namespace Seedysoft.Libs.FuelPrices.Infrastructure.Migrations
                     Localidad = table.Column<string>(type: "TEXT", nullable: false),
                     LongitudWgs84 = table.Column<string>(type: "TEXT", nullable: false),
                     Margen = table.Column<string>(type: "TEXT", nullable: false),
-                    Rotulo = table.Column<string>(type: "TEXT", nullable: false)
+                    Rotulo = table.Column<string>(type: "TEXT", nullable: false),
                 },
                 constraints: table =>
                 {
@@ -65,7 +65,7 @@ namespace Seedysoft.Libs.FuelPrices.Infrastructure.Migrations
                     AtDate = table.Column<int>(type: "INTEGER", nullable: false),
                     IdMunicipio = table.Column<int>(type: "INTEGER", nullable: false),
                     IdProvincia = table.Column<int>(type: "INTEGER", nullable: false),
-                    NombreMunicipio = table.Column<string>(type: "TEXT", nullable: false)
+                    NombreMunicipio = table.Column<string>(type: "TEXT", nullable: false),
                 },
                 constraints: table =>
                 {
@@ -79,7 +79,7 @@ namespace Seedysoft.Libs.FuelPrices.Infrastructure.Migrations
                     AtDate = table.Column<int>(type: "INTEGER", nullable: false),
                     IdProducto = table.Column<int>(type: "INTEGER", nullable: false),
                     NombreProducto = table.Column<string>(type: "TEXT", nullable: false),
-                    NombreProductoAbreviatura = table.Column<string>(type: "TEXT", nullable: false)
+                    NombreProductoAbreviatura = table.Column<string>(type: "TEXT", nullable: false),
                 },
                 constraints: table =>
                 {
@@ -93,7 +93,7 @@ namespace Seedysoft.Libs.FuelPrices.Infrastructure.Migrations
                     AtDate = table.Column<int>(type: "INTEGER", nullable: false),
                     IdProvincia = table.Column<int>(type: "INTEGER", nullable: false),
                     IdComunidadAutonoma = table.Column<int>(type: "INTEGER", nullable: false),
-                    NombreProvincia = table.Column<string>(type: "TEXT", nullable: false)
+                    NombreProvincia = table.Column<string>(type: "TEXT", nullable: false),
                 },
                 constraints: table =>
                 {

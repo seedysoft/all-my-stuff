@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Seedysoft.Libs.TuyaDeviceControl;
 
-internal class AESCipher(byte[] key)
+internal sealed class AESCipher(byte[] key)
 {
     public byte[] Key { get; } = key;
 

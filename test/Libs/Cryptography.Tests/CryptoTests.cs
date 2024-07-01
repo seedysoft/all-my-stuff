@@ -1,6 +1,6 @@
 ﻿using Xunit;
 
-namespace Seedysoft.Libs.Crypto.Tests;
+namespace Seedysoft.Libs.Cryptography.Tests;
 
 public sealed class CryptoTests(CryptoTestsFixture cipherFixture)
     : IClassFixture<CryptoTestsFixture>

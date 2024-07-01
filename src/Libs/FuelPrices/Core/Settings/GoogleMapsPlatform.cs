@@ -77,7 +77,7 @@ public record Places
         return string.Format(
             UriFormat,
             GoogleMapsPlatform.OutputFormatJson,
-            string.Join(",", latitud.Replace(",", "."), longitud.Replace(",", ".")),
+            string.Join(',', latitud.Replace(',', '.'), longitud.Replace(',', '.')),
             apiKey);
     }
 }

@@ -16,53 +16,57 @@ public sealed class GoogleHelper
     /// <returns></returns>
     public static IEnumerable<JsonObjects.GoogleMaps.LocationJson> Decode(string encodedPoints)
     {
-        if (string.IsNullOrEmpty(encodedPoints))
-            throw new ArgumentNullException(nameof(encodedPoints));
+        return string.IsNullOrEmpty(encodedPoints)
+            ? throw new ArgumentNullException(nameof(encodedPoints))
+            : Decode(encodedPoints);
 
-        char[] PolylineChars = encodedPoints.ToCharArray();
-        int PolylineCharsIndex = 0;
-
-        int CurrentLat = 0;
-        int CurrentLng = 0;
-        int Sum;
-        int Shifter;
-        int Next5bits;
-
-        while (PolylineCharsIndex < PolylineChars.Length)
+        static IEnumerable<JsonObjects.GoogleMaps.LocationJson> Decode(string encodedPoints)
         {
-            // calculate next latitude
-            Sum = 0;
-            Shifter = 0;
-            do
+            char[] PolylineChars = encodedPoints.ToCharArray();
+            int PolylineCharsIndex = 0;
+
+            int CurrentLat = 0;
+            int CurrentLng = 0;
+            int Sum;
+            int Shifter;
+            int Next5bits;
+
+            while (PolylineCharsIndex < PolylineChars.Length)
             {
-                Next5bits = PolylineChars[PolylineCharsIndex++] - 63;
-                Sum |= (Next5bits & 31) << Shifter;
-                Shifter += 5;
-            } while (Next5bits >= 32 && PolylineCharsIndex < PolylineChars.Length);
+                // calculate next latitude
+                Sum = 0;
+                Shifter = 0;
+                do
+                {
+                    Next5bits = PolylineChars[PolylineCharsIndex++] - 63;
+                    Sum |= (Next5bits & 31) << Shifter;
+                    Shifter += 5;
+                } while (Next5bits >= 32 && PolylineCharsIndex < PolylineChars.Length);
 
-            if (PolylineCharsIndex >= PolylineChars.Length)
-                break;
+                if (PolylineCharsIndex >= PolylineChars.Length)
+                    break;
 
-            CurrentLat += (Sum & 1) == 1 ? ~(Sum >> 1) : Sum >> 1;
+                CurrentLat += (Sum & 1) == 1 ? ~(Sum >> 1) : Sum >> 1;
 
-            //calculate next longitude
-            Sum = 0;
-            Shifter = 0;
-            do
-            {
-                Next5bits = PolylineChars[PolylineCharsIndex++] - 63;
-                Sum |= (Next5bits & 31) << Shifter;
-                Shifter += 5;
-            } while (Next5bits >= 32 && PolylineCharsIndex < PolylineChars.Length);
+                //calculate next longitude
+                Sum = 0;
+                Shifter = 0;
+                do
+                {
+                    Next5bits = PolylineChars[PolylineCharsIndex++] - 63;
+                    Sum |= (Next5bits & 31) << Shifter;
+                    Shifter += 5;
+                } while (Next5bits >= 32 && PolylineCharsIndex < PolylineChars.Length);
 
-            if (PolylineCharsIndex >= PolylineChars.Length && Next5bits >= 32)
-                break;
+                if (PolylineCharsIndex >= PolylineChars.Length && Next5bits >= 32)
+                    break;
 
-            CurrentLng += (Sum & 1) == 1 ? ~(Sum >> 1) : Sum >> 1;
+                CurrentLng += (Sum & 1) == 1 ? ~(Sum >> 1) : Sum >> 1;
 
-            yield return new JsonObjects.GoogleMaps.LocationJson(
-                lat: Convert.ToDouble(CurrentLat) / GooglePolylineConversionConst,
-                lng: Convert.ToDouble(CurrentLng) / GooglePolylineConversionConst);
+                yield return new JsonObjects.GoogleMaps.LocationJson(
+                    lat: Convert.ToDouble(CurrentLat) / GooglePolylineConversionConst,
+                    lng: Convert.ToDouble(CurrentLng) / GooglePolylineConversionConst);
+            }
         }
     }
 }

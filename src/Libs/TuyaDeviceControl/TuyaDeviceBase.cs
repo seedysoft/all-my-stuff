@@ -142,13 +142,13 @@ public class TuyaDeviceBase
         Debug.WriteLine($"{nameof(GetStatus)} received data={JsonSerializer.Serialize(data)}");
         if (!noWait && data != null && data is Dictionary<string, object> errorJson && errorJson.TryGetValue("err", out object? value))
         {
-            if (value.ToString() == ErrorCode.ERR_DEVTYPE.ToString())
+            if (value.ToString() == nameof(ErrorCode.ERR_DEVTYPE))
             {
                 Debug.WriteLine($"{nameof(GetStatus)}() rebuilding payload for device22");
                 payload = GenerateMessagePayload(TuyaCommandTypes.DP_QUERY);
                 data = SendReceive(payload);
             }
-            else if (value.ToString() == ErrorCode.ERR_PAYLOAD.ToString())
+            else if (value.ToString() == nameof(ErrorCode.ERR_PAYLOAD))
             {
                 Debug.WriteLine($"Status request returned an error, is version {VersionStr} and local key {Convert.ToHexString(LocalKey)} correct?");
             }
@@ -157,8 +157,8 @@ public class TuyaDeviceBase
         return data;
     }
 
-    public object? TurnOn(uint switchNumber = 1, bool noWait = false) => SetStatus(true, switchNumber, noWait);
-    public object? TurnOff(uint switchNumber = 1, bool noWait = false) => SetStatus(false, switchNumber, noWait);
+    public object? TurnOn(uint switchNumber = 1, bool noWait = false) => SetStatus(isOn: true, switchNumber, noWait);
+    public object? TurnOff(uint switchNumber = 1, bool noWait = false) => SetStatus(isOn: false, switchNumber, noWait);
 
     #region Socket
 
@@ -191,7 +191,7 @@ public class TuyaDeviceBase
                 Socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.IP);
                 if (IsSocketNoDelay)
                     // #this.socket.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
-                    Socket.SetSocketOption(SocketOptionLevel.Tcp, SocketOptionName.NoDelay, true);
+                    Socket.SetSocketOption(SocketOptionLevel.Tcp, SocketOptionName.NoDelay, optionValue: true);
                 // #this.socket.settimeout(this.connection_timeout)
                 Socket.ReceiveTimeout = Socket.SendTimeout = (int)TimeSpan.FromSeconds(ConnectionTimeout).TotalMilliseconds;
 
@@ -351,7 +351,7 @@ public class TuyaDeviceBase
     private TuyaMessage? SendReceiveQuick(MessagePayload payload, int recvRetries)
     {
         Debug.WriteLine($"sending payload quick");
-        if (GetSocket(false) != ErrorCode.NoError)
+        if (GetSocket(renew: false) != ErrorCode.NoError)
             return null;
 
         byte[] encodedPayload = EncodeMessage(payload);
@@ -362,7 +362,7 @@ public class TuyaDeviceBase
         }
         catch
         {
-            CheckSocketClose(true);
+            CheckSocketClose(force: true);
             return null;
         }
 
@@ -446,7 +446,7 @@ public class TuyaDeviceBase
                 try
                 {
                     Debug.WriteLine($"decrypting={Convert.ToHexString(payload)}");
-                    payload = cipher.Decrypt(payload, false);
+                    payload = cipher.Decrypt(payload, useBase64: false);
                 }
                 catch
                 {
@@ -548,12 +548,12 @@ public class TuyaDeviceBase
                 return data;
             }
 
-            payload = Cipher.Encrypt(payload, false);
+            payload = Cipher.Encrypt(payload, useBase64: false);
         }
         else if (Version >= 3.2f)
         {
             // expect to connect and then disconnect to set new
-            payload = Cipher.Encrypt(payload, false);
+            payload = Cipher.Encrypt(payload, useBase64: false);
             if (!Constants.HEADER_COMMANDS_WITHOUT_PROTOCOL.Contains(msg.Cmd))
                 // add the 3.x header
                 payload = [.. VersionHeader, .. payload];
@@ -861,11 +861,11 @@ public class TuyaDeviceBase
         while (!success)
         {
             // open up socket if device is available
-            ErrorCode sockResult = GetSocket(false);
+            ErrorCode sockResult = GetSocket(renew: false);
             if (sockResult != ErrorCode.NoError)
             {
                 // unable to get a socket - device likely offline
-                CheckSocketClose(true);
+                CheckSocketClose(force: true);
                 return ErrorJson(sockResult, JsonSerializer.SerializeToUtf8Bytes(payload));
             }
 
@@ -933,7 +933,7 @@ public class TuyaDeviceBase
                 doSend = true;
                 retries += 1;
                 // toss old socket and get new one
-                CheckSocketClose(true);
+                CheckSocketClose(force: true);
                 Debug.WriteLine($"Timeout in {nameof(SendReceive)}() - retry {retries} / {SocketRetryLimit}");
                 // if we exceed the limit of retries then lets get out of here
                 if (retries > SocketRetryLimit)
@@ -958,7 +958,7 @@ public class TuyaDeviceBase
                         return null;
                     }
                     // no valid messages received
-                    CheckSocketClose(true);
+                    CheckSocketClose(force: true);
                     return ErrorJson(ErrorCode.ERR_KEY_OR_VER, JsonSerializer.SerializeToUtf8Bytes(payload));
                 }
             }
@@ -968,7 +968,7 @@ public class TuyaDeviceBase
                 doSend = true;
                 retries += 1;
                 // toss old socket and get new one
-                CheckSocketClose(true);
+                CheckSocketClose(force: true);
                 Debug.WriteLine($"Network connection error in {nameof(SendReceive)}() - retry {retries}/{SocketRetryLimit}");
                 // if we exceed the limit of retries then lets get out of here
                 if (retries > SocketRetryLimit)
@@ -1204,7 +1204,7 @@ public class TuyaDeviceBase
                 }
 
                 retcodeLength = StructConverter.CalcSize(ProtocolVersionsAndHeaders.MESSAGE_RETCODE_FMT);
-                if (noRetcode.HasValue && noRetcode.Value == false)
+                if (noRetcode.HasValue && !noRetcode.Value)
                 {
                     /* do nothing */
                 }

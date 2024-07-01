@@ -11,7 +11,7 @@ public sealed class TuyaManagerCronBackgroundService(
     Libs.Infrastructure.DbContexts.DbCxt dbCxt,
     ILogger<TuyaManagerCronBackgroundService> logger,
     Microsoft.Extensions.Hosting.IHostApplicationLifetime hostApplicationLifetime)
-    : Libs.CronBackgroundService.CronBackgroundService(config, hostApplicationLifetime)
+    : Libs.BackgroundServices.Cron(config, hostApplicationLifetime)
 {
     private readonly Libs.Infrastructure.DbContexts.DbCxt DbCxt = dbCxt;
     private readonly ILogger<TuyaManagerCronBackgroundService> Logger = logger;

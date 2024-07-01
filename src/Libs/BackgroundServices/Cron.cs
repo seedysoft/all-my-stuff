@@ -1,8 +1,8 @@
 ﻿using Microsoft.Extensions.Hosting;
 
-namespace Seedysoft.Libs.CronBackgroundService;
+namespace Seedysoft.Libs.BackgroundServices;
 
-public abstract class CronBackgroundService(ScheduleConfig config, IHostApplicationLifetime hostApplicationLifetime) : BackgroundService
+public abstract class Cron(ScheduleConfig config, IHostApplicationLifetime hostApplicationLifetime) : BackgroundService
 {
     protected ScheduleConfig Config { get; init; } = config;
 
@@ -40,8 +40,8 @@ public abstract class CronBackgroundService(ScheduleConfig config, IHostApplicat
         TaskCompletionSource startedSource = new();
         TaskCompletionSource cancelledSource = new();
 
-        using CancellationTokenRegistration reg1 = lifetime.ApplicationStarted.Register(startedSource.SetResult);
-        using CancellationTokenRegistration reg2 = cancellationToken.Register(cancelledSource.SetResult);
+        await using CancellationTokenRegistration reg1 = lifetime.ApplicationStarted.Register(startedSource.SetResult);
+        await using CancellationTokenRegistration reg2 = cancellationToken.Register(cancelledSource.SetResult);
 
         Task completedTask = await Task
             .WhenAny(startedSource.Task, cancelledSource.Task)

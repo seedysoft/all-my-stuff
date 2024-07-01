@@ -35,9 +35,9 @@ public sealed class Program
                 await Task.Delay(Libs.Utils.Constants.Time.TenSecondsTimeSpan);
 
             // Migrate and seed the database during startup. Must be synchronous.
-            using IServiceScope Scope = host.Services.CreateScope();
+            using IServiceScope Scope = host.Services.CreateAsyncScope();
             {
-                Scope.ServiceProvider.GetRequiredService<Libs.Infrastructure.DbContexts.DbCxt>().Database.Migrate();
+                await Scope.ServiceProvider.GetRequiredService<Libs.Infrastructure.DbContexts.DbCxt>().Database.MigrateAsync();
 
                 using CancellationTokenSource CancelTokenSource = new();
                 {

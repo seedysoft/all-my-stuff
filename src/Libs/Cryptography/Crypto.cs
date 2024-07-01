@@ -1,6 +1,6 @@
 ﻿using System.Security.Cryptography;
 
-namespace Seedysoft.Libs.Crypto;
+namespace Seedysoft.Libs.Cryptography;
 
 public static class Crypto
 {

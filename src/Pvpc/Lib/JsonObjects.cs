@@ -58,5 +58,3 @@ public sealed class Value
     public float? percentage { get; set; }
     public DateTimeOffset? datetime { get; set; }
 }
-#pragma warning restore CA1050 // Declare types in namespaces
-#pragma warning restore IDE1006 // Naming Styles

@@ -18,57 +18,57 @@ public sealed class Constants
                 {
                     "AP_CONFIG", new Dictionary<string, object>
                     {
-                        { "command", new Dictionary<string, object> { { "gwId", string.Empty }, { "devId", string.Empty }, { "uid", string.Empty }, { "t", string.Empty } } }
+                        { "command", new Dictionary<string, object> { { "gwId", string.Empty }, { "devId", string.Empty }, { "uid", string.Empty }, { "t", string.Empty } } },
                     }
                 },
                 {
                     "CONTROL", new Dictionary<string, object>
                     {
-                        { "command", new Dictionary<string, object> { { "devId", string.Empty }, { "uid", string.Empty }, { "t", string.Empty } } }
+                        { "command", new Dictionary<string, object> { { "devId", string.Empty }, { "uid", string.Empty }, { "t", string.Empty } } },
                     }
                 },
                 {
                     "STATUS", new Dictionary<string, object>
                     {
-                        { "command", new Dictionary<string, object> { { "gwId", string.Empty }, { "devId", string.Empty } } }
+                        { "command", new Dictionary<string, object> { { "gwId", string.Empty }, { "devId", string.Empty } } },
                     }
                 },
                 {
                     "HEART_BEAT", new Dictionary<string, object>
                     {
-                        { "command", new Dictionary<string, object> { { "gwId", string.Empty }, { "devId", string.Empty } } }
+                        { "command", new Dictionary<string, object> { { "gwId", string.Empty }, { "devId", string.Empty } } },
                     }
                 },
                 {
                     "DP_QUERY", new Dictionary<string, object>
                     {
-                        { "command", new Dictionary<string, object> { { "gwId", string.Empty }, { "devId", string.Empty }, { "uid", string.Empty }, { "t", string.Empty } } }
+                        { "command", new Dictionary<string, object> { { "gwId", string.Empty }, { "devId", string.Empty }, { "uid", string.Empty }, { "t", string.Empty } } },
                     }
                 },
                 {
                     "CONTROL_NEW", new Dictionary<string, object>
                     {
-                        { "command", new Dictionary<string, object> { { "devId", string.Empty }, { "uid", string.Empty }, { "t", string.Empty } } }
+                        { "command", new Dictionary<string, object> { { "devId", string.Empty }, { "uid", string.Empty }, { "t", string.Empty } } },
                     }
                 },
                 {
                     "DP_QUERY_NEW", new Dictionary<string, object>
                     {
-                        { "command", new Dictionary<string, object> { { "devId", string.Empty }, { "uid", string.Empty }, { "t", string.Empty } } }
+                        { "command", new Dictionary<string, object> { { "devId", string.Empty }, { "uid", string.Empty }, { "t", string.Empty } } },
                     }
                 },
                 {
                     "UPDATEDPS", new Dictionary<string, object>
                     {
-                        { "command", new Dictionary<string, object> { { "dpId", new List<int> { 18, 19, 20 } } } }
+                        { "command", new Dictionary<string, object> { { "dpId", new List<int> { 18, 19, 20 } } } },
                     }
                 },
                 {
                     "LAN_EXT_STREAM", new Dictionary<string, object>
                     {
-                        { "command", new Dictionary<string, object> { { "reqType", string.Empty }, { "data", new Dictionary<string, object>() } } }
+                        { "command", new Dictionary<string, object> { { "reqType", string.Empty }, { "data", new Dictionary<string, object>() } } },
                     }
-                }
+                },
             }
         },
         {
@@ -78,9 +78,9 @@ public sealed class Constants
                     "DP_QUERY", new Dictionary<string, object>
                     {
                         { "command_override", "CONTROL_NEW" },
-                        { "command", new Dictionary<string, object> { { "devId", string.Empty }, { "uid", string.Empty }, { "t", string.Empty } } }
+                        { "command", new Dictionary<string, object> { { "devId", string.Empty }, { "uid", string.Empty }, { "t", string.Empty } } },
                     }
-                }
+                },
             }
         },
         {
@@ -90,28 +90,28 @@ public sealed class Constants
                     "CONTROL", new Dictionary<string, object>
                     {
                         { "command_override", "CONTROL_NEW" },
-                        { "command", new Dictionary<string, object> { { "protocol", 5 }, { "t", "int" }, { "data", new Dictionary<string, object>() } } }
+                        { "command", new Dictionary<string, object> { { "protocol", 5 }, { "t", "int" }, { "data", new Dictionary<string, object>() } } },
                     }
                 },
                 {
                     "CONTROL_NEW", new Dictionary<string, object>
                     {
-                        { "command", new Dictionary<string, object> { { "protocol", 5 }, { "t", "int" }, { "data", new Dictionary<string, object>() } } }
+                        { "command", new Dictionary<string, object> { { "protocol", 5 }, { "t", "int" }, { "data", new Dictionary<string, object>() } } },
                     }
                 },
                 {
                     "DP_QUERY", new Dictionary<string, object>
                     {
                         { "command_override", "DP_QUERY_NEW" },
-                        { "command", new Dictionary<string, object>() }
+                        { "command", new Dictionary<string, object>() },
                     }
                 },
                 {
                     "DP_QUERY_NEW", new Dictionary<string, object>
                     {
-                        { "command", new Dictionary<string, object>() }
+                        { "command", new Dictionary<string, object>() },
                     }
-                }
+                },
             }
         },
         {
@@ -121,30 +121,30 @@ public sealed class Constants
                     "CONTROL", new Dictionary<string, object>
                     {
                         { "command_override", "CONTROL_NEW" },
-                        { "command", new Dictionary<string, object> { { "protocol", 5 }, { "t", "int" }, { "data", new Dictionary<string, object>() } } }
+                        { "command", new Dictionary<string, object> { { "protocol", 5 }, { "t", "int" }, { "data", new Dictionary<string, object>() } } },
                     }
                 },
                 {
                     "CONTROL_NEW", new Dictionary<string, object>
                     {
-                        { "command", new Dictionary<string, object> { { "protocol", 5 }, { "t", "int" }, { "data", new Dictionary<string, object>() } } }
+                        { "command", new Dictionary<string, object> { { "protocol", 5 }, { "t", "int" }, { "data", new Dictionary<string, object>() } } },
                     }
                 },
                 {
                     "DP_QUERY", new Dictionary<string, object>
                     {
                         { "command_override", "DP_QUERY_NEW" },
-                        { "command", new Dictionary<string, object>() }
+                        { "command", new Dictionary<string, object>() },
                     }
                 },
                 {
                     "DP_QUERY_NEW", new Dictionary<string, object>
                     {
-                        { "command", new Dictionary<string, object>() }
+                        { "command", new Dictionary<string, object>() },
                     }
-                }
+                },
             }
-        }
+        },
     };
 
     public static readonly Dictionary<ErrorCode, string> ERROR_CODES = new() {
@@ -163,7 +163,7 @@ public sealed class Constants
         { ErrorCode.ERR_PARAMS,     "Missing Function Parameters"},
         { ErrorCode.ERR_CLOUD,      "Error Response from Tuya Cloud"},
         { ErrorCode.ERR_KEY_OR_VER, "Check device key or version"},
-        { default,                  "Unknown Error"}
+        { default,                  "Unknown Error"},
     };
 
     public static readonly uint[] HEADER_COMMANDS_WITHOUT_PROTOCOL = [
@@ -174,6 +174,6 @@ public sealed class Constants
         (uint)TuyaCommandTypes.SESS_KEY_NEG_START,
         (uint)TuyaCommandTypes.SESS_KEY_NEG_RESP,
         (uint)TuyaCommandTypes.SESS_KEY_NEG_FINISH,
-        (uint)TuyaCommandTypes.LAN_EXT_STREAM
+        (uint)TuyaCommandTypes.LAN_EXT_STREAM,
     ];
 }

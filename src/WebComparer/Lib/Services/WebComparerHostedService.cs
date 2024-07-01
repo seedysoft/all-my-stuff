@@ -10,7 +10,7 @@ public sealed class WebComparerHostedService(
     IServiceProvider serviceProvider
     , ILogger<WebComparerHostedService> logger
     , Microsoft.Extensions.Hosting.IHostApplicationLifetime hostApplicationLifetime)
-    : Libs.CronBackgroundService.CronBackgroundService(new() { CronExpression = Cronos.CronExpression.Hourly.ToString() }, hostApplicationLifetime)
+    : Libs.BackgroundServices.Cron(new() { CronExpression = Cronos.CronExpression.Hourly.ToString() }, hostApplicationLifetime)
 {
     private static readonly TimeSpan FiveSecondsTimeSpan = TimeSpan.FromSeconds(5);
     private static readonly CancellationTokenSource cancellationTokenSource = new();
@@ -78,7 +78,7 @@ public sealed class WebComparerHostedService(
                 Libs.Core.Enums.SubscriptionName.webComparer,
                 $"Ha cambiado '{webData.Hyperlink}'.{Environment.NewLine}{webData.DataToSend}")
             {
-                SubscriptionId = webData.SubscriptionId
+                SubscriptionId = webData.SubscriptionId,
             };
 
             _ = await dbCtx.Outbox.AddAsync(Message, cancellationToken);
@@ -256,7 +256,8 @@ public sealed class WebComparerHostedService(
                         indexToAdd = Math.Min(RealLineIndex + j, DiffModel.Lines.Count - 1);
                         diffPiece = DiffModel.Lines[indexToAdd];
                         _ = DataForMail.TryAdd(indexToAdd, $"{GetChangeTypePreffix(diffPiece.Type)}{diffPiece.Text}");
-                    };
+                    }
+
                     break;
 
                 case DiffPlex.DiffBuilder.Model.ChangeType.Unchanged:

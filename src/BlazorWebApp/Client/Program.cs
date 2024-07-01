@@ -10,7 +10,7 @@ internal class Program
             .AddScoped(sp =>
             new HttpClient
             {
-                BaseAddress = new Uri(webAssemblyHostBuilder.HostEnvironment.BaseAddress)
+                BaseAddress = new Uri(webAssemblyHostBuilder.HostEnvironment.BaseAddress),
             })
 
             .AddMudServices()

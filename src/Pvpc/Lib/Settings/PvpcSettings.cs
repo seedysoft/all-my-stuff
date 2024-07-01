@@ -1,6 +1,6 @@
 ﻿namespace Seedysoft.Pvpc.Lib.Settings;
 
-public record PvpcSettings : Libs.CronBackgroundService.ScheduleConfig
+public record PvpcSettings : Libs.BackgroundServices.ScheduleConfig
 {
     /// <summary>
     /// Uri desde la que se obtendrán los datos. Tiene un elemento de formato para establecer la fecha que buscaremos.

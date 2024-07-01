@@ -13,9 +13,9 @@ internal sealed class Configurator : Utils.Dependencies.ConfiguratorBase
         string CurrentEnvironmentName = hostApplicationBuilder.Environment.EnvironmentName;
 
         _ = hostApplicationBuilder.Configuration
-            .AddJsonFile($"appsettings.Libs.FuelPrices.ConnectionStrings.json", false, true)
-            .AddJsonFile($"appsettings.Libs.FuelPrices.json", false, true)
-            .AddJsonFile($"appsettings.Libs.FuelPrices.{CurrentEnvironmentName}.json", false, true);
+            .AddJsonFile($"appsettings.Libs.FuelPrices.ConnectionStrings.json", optional: false, reloadOnChange: true)
+            .AddJsonFile($"appsettings.Libs.FuelPrices.json", optional: false, reloadOnChange: true)
+            .AddJsonFile($"appsettings.Libs.FuelPrices.{CurrentEnvironmentName}.json", optional: false, reloadOnChange: true);
     }
 
     protected override void AddDbContexts(Microsoft.Extensions.Hosting.IHostApplicationBuilder hostApplicationBuilder)

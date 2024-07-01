@@ -20,7 +20,7 @@ namespace Seedysoft.Libs.TuyaDeviceControl;
 // byte => "B",
 // sbyte => "b",
 
-public class StructConverter
+public static class StructConverter
 {
     private const string BigEndianChar = ">";
     private const string LittleEndianChar = "<";
@@ -119,7 +119,7 @@ public class StructConverter
     {
         // First we parse the format string to make sure it's proper.
         if (fmt.Length < 1)
-            throw new ArgumentException("Format string cannot be empty.");
+            throw new ArgumentException("Format string cannot be empty.", nameof(fmt));
 
         //Debug.WriteLine($"Format string is length {fmt.Length}, {bytes.Length} bytes provided.");
 

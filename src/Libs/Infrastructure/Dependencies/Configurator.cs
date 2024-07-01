@@ -14,9 +14,9 @@ internal sealed class Configurator : Utils.Dependencies.ConfiguratorBase
         string CurrentEnvironmentName = hostApplicationBuilder.Environment.EnvironmentName;
 
         _ = hostApplicationBuilder.Configuration
-            .AddJsonFile($"appsettings.dbConnectionString.json", false, true)
-            .AddJsonFile($"appsettings.Serilog.json", false, true)
-            .AddJsonFile($"appsettings.Serilog.{CurrentEnvironmentName}.json", false, true);
+            .AddJsonFile($"appsettings.dbConnectionString.json", optional: false, reloadOnChange: true)
+            .AddJsonFile($"appsettings.Serilog.json", optional: false, reloadOnChange: true)
+            .AddJsonFile($"appsettings.Serilog.{CurrentEnvironmentName}.json", optional: false, reloadOnChange: true);
     }
 
     protected override void AddDbContexts(IHostApplicationBuilder hostApplicationBuilder)

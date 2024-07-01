@@ -44,7 +44,7 @@ public sealed class ObtainFuelPricesService : IDisposable
     {
         try
         {
-            using IServiceScope ServiceScope = ServiceProvider.CreateScope();
+            using IServiceScope ServiceScope = ServiceProvider.CreateAsyncScope();
 
             await DeleteAllRecordsAsync(ServiceScope.ServiceProvider.GetRequiredService<Infrastructure.Data.FuelPricesDbContext>());
 
@@ -120,7 +120,7 @@ public sealed class ObtainFuelPricesService : IDisposable
                     IdProducto = IdProd,
                     NombreProducto = Resultado[i].NombreProducto,
                     NombreProductoAbreviatura = Resultado[i].NombreProductoAbreviatura,
-                    AtDate = today
+                    AtDate = today,
                 });
             }
 
@@ -154,7 +154,7 @@ public sealed class ObtainFuelPricesService : IDisposable
                 {
                     IdComunidadAutonoma = IdCcaa,
                     NombreComunidadAutonoma = Resultado[i].CCAA,
-                    AtDate = today
+                    AtDate = today,
                 });
             }
 
@@ -192,7 +192,7 @@ public sealed class ObtainFuelPricesService : IDisposable
                     IdProvincia = IdProv,
                     IdComunidadAutonoma = IdCcaa,
                     NombreProvincia = Resultado[i].Provincia,
-                    AtDate = today
+                    AtDate = today,
                 });
             }
 
@@ -230,7 +230,7 @@ public sealed class ObtainFuelPricesService : IDisposable
                     IdMunicipio = IdMun,
                     IdProvincia = IdProv,
                     NombreMunicipio = Resultado[i].Municipio,
-                    AtDate = today
+                    AtDate = today,
                 });
             }
 
@@ -276,7 +276,7 @@ public sealed class ObtainFuelPricesService : IDisposable
                     Localidad = EstacionServicioJson.Localidad,
                     Margen = EstacionServicioJson.Margen,
                     Rotulo = EstacionServicioJson.Rotulo,
-                    AtDate = today
+                    AtDate = today,
                 });
             }
 
@@ -324,7 +324,7 @@ public sealed class ObtainFuelPricesService : IDisposable
                         IdEstacion = EstacionServicioId,
                         IdProducto = ProductoPetroliferoId,
                         CentimosDeEuro = NuevoPrecio,
-                        AtDate = today
+                        AtDate = today,
                     });
                 }
 
@@ -359,7 +359,7 @@ public sealed class ObtainFuelPricesService : IDisposable
                 LocationEpsg3857 = GeomFactEpsg3857
                     .CreateGeometry(GeomFactWgs84
                         .CreatePoint(new NetTopologySuite.Geometries.Coordinate(x.LngNotNull, x.LatNotNull))
-                        .ProjectTo(Libs.Utils.Constants.CoordinateSystemCodes.Epsg3857))
+                        .ProjectTo(Libs.Utils.Constants.CoordinateSystemCodes.Epsg3857)),
             }).ToListAsync();
         if (AllStations.Count == 0)
             return ImmutableArray<Core.ViewModels.GasStationInfoModel>.Empty;
@@ -377,14 +377,14 @@ public sealed class ObtainFuelPricesService : IDisposable
                 PointEpsg3857 = GeomFactEpsg3857
                     .CreateGeometry(GeomFactWgs84
                         .CreatePoint(new NetTopologySuite.Geometries.Coordinate(x.LngNotNull, x.LatNotNull))
-                        .ProjectTo(Libs.Utils.Constants.CoordinateSystemCodes.Epsg3857))
+                        .ProjectTo(Libs.Utils.Constants.CoordinateSystemCodes.Epsg3857)),
             }).ToImmutableArray();
         if (!TravelPointsImmutable.Any())
             return ImmutableArray<Core.ViewModels.GasStationInfoModel>.Empty;
 
         List<NetTopologySuite.Geometries.Geometry> FilteredPoints = new(TravelPointsImmutable.Length) {
-            TravelPointsImmutable.First().PointEpsg3857 };
-        NetTopologySuite.Geometries.Geometry LastPointAdded = FilteredPoints.First();
+            TravelPointsImmutable.First().PointEpsg3857, };
+        NetTopologySuite.Geometries.Geometry LastPointAdded = FilteredPoints[0];
         for (int i = 1; i < TravelPointsImmutable.Length; i++)
         {
             NetTopologySuite.Geometries.Geometry PointEpsg3857 = TravelPointsImmutable[i].PointEpsg3857;

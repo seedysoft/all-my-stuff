@@ -48,8 +48,8 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Pvpc\Lib\Seedysoft.Pvpc.Lib.csproj" />
+    <ProjectReference Include="..\BackgroundServices\Seedysoft.Libs.BackgroundServices.csproj" />
     <ProjectReference Include="..\Core\Seedysoft.Libs.Core.csproj" />
-    <ProjectReference Include="..\CronBackgroundService\Seedysoft.Libs.CronBackgroundService.csproj" />
-    <ProjectReference Include="..\Crypto\Seedysoft.Libs.Crypto.csproj" />
+    <ProjectReference Include="..\Cryptography\Seedysoft.Libs.Cryptography.csproj" />
   </ItemGroup>
 </Project>

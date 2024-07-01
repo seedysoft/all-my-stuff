@@ -1,6 +1,6 @@
 ﻿namespace Seedysoft.Libs.TuyaDeviceControl;
 
-internal class GlobalsNetworkSettings
+internal sealed class GlobalsNetworkSettings
 {
     /// <summary>
     /// How many tries before stopping.

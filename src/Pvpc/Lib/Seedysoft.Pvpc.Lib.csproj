@@ -28,7 +28,7 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.6" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Libs\CronBackgroundService\Seedysoft.Libs.CronBackgroundService.csproj" />
+    <ProjectReference Include="..\..\Libs\BackgroundServices\Seedysoft.Libs.BackgroundServices.csproj" />
     <ProjectReference Include="..\..\Libs\Infrastructure\Seedysoft.Libs.Infrastructure.csproj" />
     <ProjectReference Include="..\..\Libs\TuyaDeviceControl\Seedysoft.Libs.TuyaDeviceControl.csproj" />
     <ProjectReference Include="..\..\Libs\Utils\Seedysoft.Libs.Utils.csproj" />

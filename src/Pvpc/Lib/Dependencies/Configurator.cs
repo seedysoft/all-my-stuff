@@ -9,8 +9,8 @@ internal sealed class Configurator : Libs.Utils.Dependencies.ConfiguratorBase
     protected override void AddJsonFiles(IHostApplicationBuilder hostApplicationBuilder)
     {
         _ = hostApplicationBuilder.Configuration
-            .AddJsonFile($"appsettings.PvpcSettings.json", false, true)
-            .AddJsonFile($"appsettings.TuyaManagerSettings.json", false, true);
+            .AddJsonFile($"appsettings.PvpcSettings.json", optional: false, reloadOnChange: true)
+            .AddJsonFile($"appsettings.TuyaManagerSettings.json", optional: false, reloadOnChange: true);
     }
 
     protected override void AddDbContexts(IHostApplicationBuilder hostApplicationBuilder) { /* No DbContexts */ }

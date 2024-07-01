@@ -7,8 +7,8 @@ internal sealed class Configurator : Libs.Utils.Dependencies.ConfiguratorBase
     protected override void AddJsonFiles(IHostApplicationBuilder hostApplicationBuilder)
     {
         _ = hostApplicationBuilder.Configuration
-            .AddJsonFile($"appsettings.BlazorWebApp.Server.json", false, true)
-            .AddJsonFile($"appsettings.BlazorWebApp.Server.{hostApplicationBuilder.Environment.EnvironmentName}.json", false, true);
+            .AddJsonFile($"appsettings.BlazorWebApp.Server.json", optional: false, reloadOnChange: true)
+            .AddJsonFile($"appsettings.BlazorWebApp.Server.{hostApplicationBuilder.Environment.EnvironmentName}.json", optional: false, reloadOnChange: true);
     }
 
     protected override void AddDbContexts(IHostApplicationBuilder hostApplicationBuilder) { /* No DbContexts */ }
@@ -18,7 +18,7 @@ internal sealed class Configurator : Libs.Utils.Dependencies.ConfiguratorBase
         // Add Todo service for components adopting SSR
         //_ = hostApplicationBuilder.Services.AddScoped<IMovieService, ServerMovieService>();
 
-        _ = hostApplicationBuilder.Services.AddHostedService<Libs.Telegram.Services.TelegramHostedService>();
+        _ = hostApplicationBuilder.Services.AddHostedService<Libs.TelegramBot.Services.TelegramHostedService>();
 
         _ = hostApplicationBuilder.Services.AddHostedService<Outbox.Lib.Services.OutboxCronBackgroundService>();
 

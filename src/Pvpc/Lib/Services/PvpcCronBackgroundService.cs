@@ -10,7 +10,7 @@ public sealed class PvpcCronBackgroundService(
     Libs.Infrastructure.DbContexts.DbCxt dbCxt, 
     ILogger<PvpcCronBackgroundService> logger, 
     Microsoft.Extensions.Hosting.IHostApplicationLifetime hostApplicationLifetime)
-    : Libs.CronBackgroundService.CronBackgroundService(config, hostApplicationLifetime)
+    : Libs.BackgroundServices.Cron(config, hostApplicationLifetime)
 {
     // HttpClient is intended to be instantiated once per application, rather than per-use. See Remarks.
     private static readonly HttpClient client = new();
@@ -107,12 +107,10 @@ public sealed class PvpcCronBackgroundService(
 
             return Prices.Count;
         }
-        else
-        {
-            Logger.LogInformation("No changes");
 
-            return 0;
-        }
+        Logger.LogInformation("No changes");
+
+        return 0;
     }
 
     internal static bool IsTimeToCharge(

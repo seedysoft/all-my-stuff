@@ -2,7 +2,7 @@ using Seedysoft.Libs.Utils.Extensions;
 
 namespace Seedysoft.BlazorWebApp.Server;
 
-public class Program
+public static class Program
 {
     [STAThread]
     public static async Task Main(string[] args)

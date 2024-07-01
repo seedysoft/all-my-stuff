@@ -15,11 +15,11 @@ namespace Seedysoft.Libs.Infrastructure.Migrations
                 columns: table => new
                 {
                     OutboxId = table.Column<long>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
+                        .Annotation("Sqlite:Autoincrement", value: true),
                     Payload = table.Column<string>(type: "TEXT", nullable: false),
                     SubscriptionName = table.Column<string>(type: "TEXT", nullable: false),
                     SubscriptionId = table.Column<long>(type: "INTEGER", nullable: true),
-                    SentAtDateTimeOffset = table.Column<string>(type: "TEXT", nullable: true)
+                    SentAtDateTimeOffset = table.Column<string>(type: "TEXT", nullable: true),
                 },
                 constraints: table =>
                 {
@@ -31,7 +31,7 @@ namespace Seedysoft.Libs.Infrastructure.Migrations
                 columns: table => new
                 {
                     AtDateTimeOffset = table.Column<string>(type: "TEXT", nullable: false),
-                    MWhPriceInEuros = table.Column<decimal>(type: "TEXT", nullable: false)
+                    MWhPriceInEuros = table.Column<decimal>(type: "TEXT", nullable: false),
                 },
                 constraints: table =>
                 {
@@ -43,10 +43,10 @@ namespace Seedysoft.Libs.Infrastructure.Migrations
                 columns: table => new
                 {
                     SubscriberId = table.Column<long>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
+                        .Annotation("Sqlite:Autoincrement", value: true),
                     Firstname = table.Column<string>(type: "TEXT", nullable: false),
                     TelegramUserId = table.Column<long>(type: "INTEGER", nullable: true),
-                    MailAddress = table.Column<string>(type: "TEXT", nullable: true)
+                    MailAddress = table.Column<string>(type: "TEXT", nullable: true),
                 },
                 constraints: table =>
                 {
@@ -58,8 +58,8 @@ namespace Seedysoft.Libs.Infrastructure.Migrations
                 columns: table => new
                 {
                     SubscriptionId = table.Column<long>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    SubscriptionName = table.Column<string>(type: "TEXT", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", value: true),
+                    SubscriptionName = table.Column<string>(type: "TEXT", nullable: false),
                 },
                 constraints: table =>
                 {
@@ -73,7 +73,7 @@ namespace Seedysoft.Libs.Infrastructure.Migrations
                     Id = table.Column<string>(type: "TEXT", nullable: false),
                     Address = table.Column<string>(type: "TEXT", nullable: false),
                     Version = table.Column<float>(type: "REAL", nullable: false),
-                    LocalKey = table.Column<string>(type: "TEXT", nullable: false)
+                    LocalKey = table.Column<string>(type: "TEXT", nullable: false),
                 },
                 constraints: table =>
                 {
@@ -85,7 +85,7 @@ namespace Seedysoft.Libs.Infrastructure.Migrations
                 columns: table => new
                 {
                     SubscriptionId = table.Column<long>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
+                        .Annotation("Sqlite:Autoincrement", value: true),
                     WebUrl = table.Column<string>(type: "TEXT", nullable: false),
                     Description = table.Column<string>(type: "TEXT", nullable: false),
                     CurrentWebContent = table.Column<string>(type: "TEXT", nullable: true),
@@ -94,7 +94,7 @@ namespace Seedysoft.Libs.Infrastructure.Migrations
                     IgnoreChangeWhen = table.Column<string>(type: "TEXT", nullable: true),
                     CssSelector = table.Column<string>(type: "TEXT", nullable: false, defaultValue: "body"),
                     TakeAboveBelowLines = table.Column<long>(type: "INTEGER", nullable: false, defaultValue: 3L),
-                    UseHttpClient = table.Column<bool>(type: "INTEGER", nullable: false, defaultValue: false)
+                    UseHttpClient = table.Column<bool>(type: "INTEGER", nullable: false, defaultValue: false),
                 },
                 constraints: table =>
                 {
@@ -106,7 +106,7 @@ namespace Seedysoft.Libs.Infrastructure.Migrations
                 columns: table => new
                 {
                     SubscriberId = table.Column<long>(type: "INTEGER", nullable: false),
-                    SubscriptionId = table.Column<long>(type: "INTEGER", nullable: false)
+                    SubscriptionId = table.Column<long>(type: "INTEGER", nullable: false),
                 },
                 constraints: table =>
                 {

@@ -1,4 +1,4 @@
-﻿namespace Seedysoft.Libs.CronBackgroundService;
+﻿namespace Seedysoft.Libs.BackgroundServices;
 
 public record ScheduleConfig
 {

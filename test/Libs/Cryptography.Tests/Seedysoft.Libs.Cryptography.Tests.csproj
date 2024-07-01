@@ -20,6 +20,6 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\src\Libs\Crypto\Seedysoft.Libs.Crypto.csproj" />
+    <ProjectReference Include="..\..\..\src\Libs\Cryptography\Seedysoft.Libs.Cryptography.csproj" />
   </ItemGroup>
 </Project>

@@ -2,7 +2,7 @@
 
 using System.ComponentModel;
 
-namespace Seedysoft.Libs.Telegram.Enums;
+namespace Seedysoft.Libs.TelegramBot.Enums;
 
 /// <summary>
 /// Comandos disponibles en el bot.
@@ -34,4 +34,3 @@ public enum BotActionName
     //[System.ComponentModel.Description("")]
     //baja = 500,
 }
-#pragma warning restore CA1707 // Identifiers should not contain underscores
