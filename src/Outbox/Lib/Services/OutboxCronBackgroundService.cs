@@ -8,9 +8,11 @@ using System.Collections.Immutable;
 namespace Seedysoft.Outbox.Lib.Services;
 
 public sealed class OutboxCronBackgroundService(
-    Libs.Telegram.Settings.TelegramSettings config
-    , IServiceProvider serviceProvider
-    , ILogger<OutboxCronBackgroundService> logger) : Libs.CronBackgroundService.CronBackgroundService(config)
+    Libs.Telegram.Settings.TelegramSettings config,
+    IServiceProvider serviceProvider,
+    ILogger<OutboxCronBackgroundService> logger,
+    Microsoft.Extensions.Hosting.IHostApplicationLifetime hostApplicationLifetime)
+    : Libs.CronBackgroundService.CronBackgroundService(config, hostApplicationLifetime)
 {
     private readonly IServiceProvider ServiceProvider = serviceProvider;
     private readonly ILogger<OutboxCronBackgroundService> Logger = logger;

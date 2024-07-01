@@ -1,3 +1,6 @@
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Hosting.Internal;
+using Microsoft.Extensions.Logging.Abstractions;
 using Xunit;
 
 namespace Seedysoft.Pvpc.Lib.Test;
@@ -12,6 +15,7 @@ public sealed class PvpcCronBackgroundServiceTests(PvpcCronBackgroundServiceFixt
     {
         Settings.TuyaManagerSettings tuyaManagerSettings = new()
         {
+            CronExpression = Cronos.CronExpression.Hourly.ToString(),
             AllowChargeWhenKWhPriceInEurosIsBelowThan = decimal.MaxValue,
             ChargingHoursPerDay = 4,
         };
@@ -29,6 +33,7 @@ public sealed class PvpcCronBackgroundServiceTests(PvpcCronBackgroundServiceFixt
     {
         Settings.TuyaManagerSettings tuyaManagerSettings = new()
         {
+            CronExpression = Cronos.CronExpression.Hourly.ToString(),
             AllowChargeWhenKWhPriceInEurosIsBelowThan = decimal.MaxValue,
             ChargingHoursPerDay = 4,
         };
@@ -46,6 +51,7 @@ public sealed class PvpcCronBackgroundServiceTests(PvpcCronBackgroundServiceFixt
     {
         Settings.TuyaManagerSettings tuyaManagerSettings = new()
         {
+            CronExpression = Cronos.CronExpression.Hourly.ToString(),
             AllowChargeWhenKWhPriceInEurosIsBelowThan = PvpcServiceFixture.MinPriceAllowed,
             ChargingHoursPerDay = 4,
         };
@@ -69,11 +75,11 @@ public sealed class PvpcCronBackgroundServiceFixture : Libs.Infrastructure.Test.
             PvpcId = "1001",
         };
 
-        Libs.Infrastructure.DbContexts.DbCxt dbCxt = GetDbCxt();
-
-        Microsoft.Extensions.Logging.Abstractions.NullLogger<Services.PvpcCronBackgroundService> logger = new();
-
-        PvpcService = new(pvpcSettings, dbCxt, logger);
+        PvpcService = new(
+            pvpcSettings
+            , GetDbCxt()
+            , new NullLogger<Services.PvpcCronBackgroundService>()
+            , new ApplicationLifetime(new NullLogger<ApplicationLifetime>()));
 
         TimeToQuery = DateTimeOffset.UtcNow;
         MinPriceAllowed = 0.05M;

@@ -1,4 +1,6 @@
-﻿namespace Seedysoft.BlazorWebApp.Server.Dependencies;
+﻿using MudBlazor.Services;
+
+namespace Seedysoft.BlazorWebApp.Server.Dependencies;
 
 internal sealed class Configurator : Libs.Utils.Dependencies.ConfiguratorBase
 {
@@ -16,28 +18,35 @@ internal sealed class Configurator : Libs.Utils.Dependencies.ConfiguratorBase
         // Add Todo service for components adopting SSR
         //_ = hostApplicationBuilder.Services.AddScoped<IMovieService, ServerMovieService>();
 
-        //        hostApplicationBuilder.Services.TryAddSingleton(hostApplicationBuilder.Configuration.GetSection(nameof(SmtpServiceLib.Settings.SmtpServiceSettings)).Get<SmtpServiceLib.Settings.SmtpServiceSettings>()!);
-        //        hostApplicationBuilder.Services.TryAddTransient<SmtpServiceLib.Services.SmtpService>();
+        _ = hostApplicationBuilder.Services.AddHostedService<Libs.Telegram.Services.TelegramHostedService>();
 
-        //        hostApplicationBuilder.Services.TryAddSingleton(hostApplicationBuilder.Configuration.GetSection(nameof(TelegramLib.Settings.TelegramSettings)).Get<TelegramLib.Settings.TelegramSettings>()!);
-        //        hostApplicationBuilder.Services.TryAddSingleton<TelegramLib.Services.TelegramHostedService>();
-        //        _ = hostApplicationBuilder.Services.AddHostedService<TelegramLib.Services.TelegramHostedService>();
+        _ = hostApplicationBuilder.Services.AddHostedService<Outbox.Lib.Services.OutboxCronBackgroundService>();
 
-        //        _ = hostApplicationBuilder.Services.AddHttpClient(nameof(Carburantes.CoreLib.Settings.Minetur));
-        //        _ = hostApplicationBuilder.Services.AddHostedService<Seedysoft.CarburantesLib.Services.ObtainDataCronBackgroundService>();
+        _ = hostApplicationBuilder.Services.AddHostedService<Pvpc.Lib.Services.PvpcCronBackgroundService>();
+        _ = hostApplicationBuilder.Services.AddHostedService<Pvpc.Lib.Services.TuyaManagerCronBackgroundService>();
 
-        //        hostApplicationBuilder.Services.TryAddSingleton(hostApplicationBuilder.Configuration.GetSection(nameof(PvpcLib.Settings.PvpcSettings)).Get<PvpcLib.Settings.PvpcSettings>()!);
-        //        hostApplicationBuilder.Services.TryAddSingleton(hostApplicationBuilder.Configuration.GetSection(nameof(PvpcLib.Settings.TuyaManagerSettings)).Get<PvpcLib.Settings.TuyaManagerSettings>()!);
-        //        hostApplicationBuilder.Services.TryAddSingleton<PvpcLib.Services.PvpcCronBackgroundService>();
-        //        _ = hostApplicationBuilder.Services.AddHostedService<PvpcLib.Services.PvpcCronBackgroundService>();
-        //        hostApplicationBuilder.Services.TryAddSingleton<PvpcLib.Services.TuyaManagerCronBackgroundService>();
-        //        _ = hostApplicationBuilder.Services.AddHostedService<PvpcLib.Services.TuyaManagerCronBackgroundService>();
+        _ = hostApplicationBuilder.Services.AddHostedService<WebComparer.Lib.Services.WebComparerHostedService>();
 
-        //        _ = hostApplicationBuilder.Services.AddHostedService<OutboxLib.Services.OutboxCronBackgroundService>();
+        // Add services to the container.
+        _ = hostApplicationBuilder.Services
+            .AddRazorComponents()
+            .AddInteractiveServerComponents()
+            .AddInteractiveWebAssemblyComponents();
 
-        //        hostApplicationBuilder.Services.TryAddSingleton<WebComparerLib.Services.WebComparerHostedService>();
-        //        _ = hostApplicationBuilder.Services.AddHostedService<WebComparerLib.Services.WebComparerHostedService>();
+        _ = hostApplicationBuilder.Services
+            .AddSystemd()
 
-        //        return hostApplicationBuilder;
+            .AddMudServices()
+
+            .AddHttpClient() // Needed for server rendering
+
+            .AddControllers()
+        ;
+
+        // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+        _ = hostApplicationBuilder.Services
+            .AddEndpointsApiExplorer()
+            .AddOpenApiDocument()
+        ;
     }
 }

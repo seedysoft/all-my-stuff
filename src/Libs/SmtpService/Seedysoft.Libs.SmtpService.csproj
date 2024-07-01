@@ -5,16 +5,13 @@
     <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
     <IsPublishable>False</IsPublishable>
-    <RuntimeIdentifiers>linux-arm64;win-x64</RuntimeIdentifiers>
+    <RuntimeIdentifiers>linux-arm64;linux-x64;win-x64</RuntimeIdentifiers>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Release'">
     <AssemblyVersion>$([System.DateTime]::UtcNow.ToString(yy.MM.dd.HHmm))</AssemblyVersion>
     <FileVersion>$(AssemblyVersion)</FileVersion>
     <Version>$(AssemblyVersion)</Version>
   </PropertyGroup>
-  <ItemGroup>
-    <None Remove="appsettings.SmtpServiceSettings.json" />
-  </ItemGroup>
   <ItemGroup>
     <Content Include="appsettings.SmtpServiceSettings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

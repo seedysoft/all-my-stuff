@@ -14,7 +14,7 @@ internal sealed class Configurator : Utils.Dependencies.ConfiguratorBase
         string CurrentEnvironmentName = hostApplicationBuilder.Environment.EnvironmentName;
 
         _ = hostApplicationBuilder.Configuration
-            .AddJsonFile($"appsettings.dbConnectionString.{CurrentEnvironmentName}.json", false, true)
+            .AddJsonFile($"appsettings.dbConnectionString.json", false, true)
             .AddJsonFile($"appsettings.Serilog.json", false, true)
             .AddJsonFile($"appsettings.Serilog.{CurrentEnvironmentName}.json", false, true);
     }
@@ -25,7 +25,7 @@ internal sealed class Configurator : Utils.Dependencies.ConfiguratorBase
         {
             string ConnectionStringName = nameof(DbContexts.DbCxt);
             string ConnectionString = hostApplicationBuilder.Configuration.GetConnectionString($"{ConnectionStringName}") ?? throw new KeyNotFoundException($"Connection string '{ConnectionStringName}' not found.");
-            string FullFilePath = Path.GetFullPath(ConnectionString, System.Reflection.Assembly.GetExecutingAssembly().Location);
+            string FullFilePath = Path.GetFullPath(ConnectionString);
             if (!File.Exists(FullFilePath))
                 throw new FileNotFoundException("Database file not found.", FullFilePath);
 
@@ -44,14 +44,10 @@ internal sealed class Configurator : Utils.Dependencies.ConfiguratorBase
             .AddLogging(iLoggingBuilder =>
             {
                 IConfigurationSection configurationSection = hostApplicationBuilder.Configuration.GetRequiredSection("Serilog:WriteTo:1:Args:path");
-                Console.WriteLine("Obtained '{0}' from Serilog:WriteTo:1:Args:path", configurationSection.Value);
 
-                configurationSection.Value = Path.GetFullPath(
-                    configurationSection.Value!.Replace("{ApplicationName}", hostApplicationBuilder.Environment.ApplicationName),
-                    System.Reflection.Assembly.GetExecutingAssembly().Location);
-
-                if (!Path.Exists(Path.GetDirectoryName(configurationSection.Value)))
-                    throw new FileNotFoundException("Log folder not found.", configurationSection.Value);
+                configurationSection.Value = Path.GetFullPath(configurationSection.Value!.Replace(
+                    "{ApplicationName}",
+                    hostApplicationBuilder.Environment.ApplicationName));
 
                 _ = iLoggingBuilder.AddSerilog(new LoggerConfiguration()
                     .ReadFrom.Configuration(hostApplicationBuilder.Configuration)

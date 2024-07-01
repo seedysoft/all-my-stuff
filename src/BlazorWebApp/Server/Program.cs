@@ -1,45 +1,19 @@
-using MudBlazor.Services;
 using Seedysoft.Libs.Utils.Extensions;
 
 namespace Seedysoft.BlazorWebApp.Server;
 
 public class Program
 {
-    public static void Main(string[] args)
+    [STAThread]
+    public static async Task Main(string[] args)
     {
+#if DEBUG
+        // TODO         Use arguments to wait for attach
+        await Task.Delay(TimeSpan.FromSeconds(10));
+#endif
         WebApplicationBuilder webApplicationBuilder = WebApplication.CreateBuilder(args);
 
         _ = webApplicationBuilder.AddAllMyDependencies();
-
-        IHost host = webApplicationBuilder.Build();
-
-        if (System.Diagnostics.Debugger.IsAttached)
-        {
-            _ = webApplicationBuilder.Configuration.SetBasePath(
-                Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location)!);
-        }
-
-        // Add services to the container.
-        _ = webApplicationBuilder.Services
-            .AddRazorComponents()
-            .AddInteractiveServerComponents()
-            .AddInteractiveWebAssemblyComponents();
-
-        _ = webApplicationBuilder.Services
-            .AddSystemd()
-
-            .AddMudServices()
-
-            .AddHttpClient() // Needed for server rendering
-
-            .AddControllers()
-        ;
-
-        // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-        _ = webApplicationBuilder.Services
-            .AddEndpointsApiExplorer()
-            .AddOpenApiDocument()
-        ;
 
         WebApplication webApplication = webApplicationBuilder.Build();
 
@@ -74,9 +48,6 @@ public class Program
 
         _ = webApplication.MapControllers();
 
-        // TODO         Migrate and seed the database during startup. Must be synchronous.
-        //_ = webApplication.MigrateDbContexts();
-
-        webApplication.Run();
+        await webApplication.RunAsync();
     }
 }
