@@ -48,6 +48,6 @@ public class Program
 
         _ = webApplication.MapControllers();
 
-        webApplication.Run();
+        await webApplication.RunAsync();
     }
 }
