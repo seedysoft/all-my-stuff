@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Seedysoft.Libs.Utils.Extensions;
 
@@ -13,15 +12,15 @@ public sealed class Program : Libs.Core.ProgramBase
     {
         await ObtainCommandLineAsync(args);
 
-        HostApplicationBuilder hostApplicationBuilder = new(args);
+        Microsoft.Extensions.Hosting.HostApplicationBuilder hostApplicationBuilder = new(args);
 
         _ = hostApplicationBuilder.AddAllMyDependencies();
 
-        IHost host = hostApplicationBuilder.Build();
+        Microsoft.Extensions.Hosting.IHost host = hostApplicationBuilder.Build();
 
         ILogger<Program> Logger = host.Services.GetRequiredService<ILogger<Program>>();
 
-        string AppName = host.Services.GetRequiredService<IHostEnvironment>().ApplicationName;
+        string AppName = host.Services.GetRequiredService<Microsoft.Extensions.Hosting.IHostEnvironment>().ApplicationName;
 
         Logger.LogInformation("Called {ApplicationName} version {Version}", AppName, System.Reflection.Assembly.GetExecutingAssembly().GetName().Version);
 
