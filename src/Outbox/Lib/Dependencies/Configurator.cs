@@ -1,14 +1,13 @@
 ﻿using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Hosting;
 
 namespace Seedysoft.Outbox.Lib.Dependencies;
 
 internal sealed class Configurator : Libs.Utils.Dependencies.ConfiguratorBase
 {
-    protected override void AddJsonFiles(IHostApplicationBuilder hostApplicationBuilder) { /* No JsonFiles */ }
+    protected override void AddJsonFiles(Microsoft.Extensions.Hosting.IHostApplicationBuilder hostApplicationBuilder) { /* No JsonFiles */ }
 
-    protected override void AddDbContexts(IHostApplicationBuilder hostApplicationBuilder) { /* No DbContexts */ }
+    protected override void AddDbContexts(Microsoft.Extensions.Hosting.IHostApplicationBuilder hostApplicationBuilder) { /* No DbContexts */ }
 
-    protected override void AddMyServices(IHostApplicationBuilder hostApplicationBuilder)
+    protected override void AddMyServices(Microsoft.Extensions.Hosting.IHostApplicationBuilder hostApplicationBuilder)
         => hostApplicationBuilder.Services.TryAddSingleton<Services.OutboxCronBackgroundService>();
 }

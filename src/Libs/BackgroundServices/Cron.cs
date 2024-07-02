@@ -37,7 +37,7 @@ public abstract class Cron(IServiceProvider serviceProvider, IHostApplicationLif
         finally { await Task.CompletedTask; }
     }
 
-    private static async Task<bool> WaitForAppStartup(IHostApplicationLifetime lifetime, CancellationToken cancellationToken)
+    private static async Task<bool> WaitForAppStartup(Microsoft.Extensions.Hosting.IHostApplicationLifetime lifetime, CancellationToken cancellationToken)
     {
         TaskCompletionSource startedSource = new();
         TaskCompletionSource cancelledSource = new();
