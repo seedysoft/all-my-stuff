@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Seedysoft.Libs.Infrastructure.Extensions;
 using Serilog;
 
@@ -9,7 +8,7 @@ namespace Seedysoft.Libs.Infrastructure.Dependencies;
 
 internal sealed class Configurator : Utils.Dependencies.ConfiguratorBase
 {
-    protected override void AddJsonFiles(IHostApplicationBuilder hostApplicationBuilder)
+    protected override void AddJsonFiles(Microsoft.Extensions.Hosting.IHostApplicationBuilder hostApplicationBuilder)
     {
         string CurrentEnvironmentName = hostApplicationBuilder.Environment.EnvironmentName;
 
@@ -19,7 +18,7 @@ internal sealed class Configurator : Utils.Dependencies.ConfiguratorBase
             .AddJsonFile($"appsettings.Serilog.{CurrentEnvironmentName}.json", optional: false, reloadOnChange: true);
     }
 
-    protected override void AddDbContexts(IHostApplicationBuilder hostApplicationBuilder)
+    protected override void AddDbContexts(Microsoft.Extensions.Hosting.IHostApplicationBuilder hostApplicationBuilder)
     {
         _ = hostApplicationBuilder.Services.AddDbContext<DbContexts.DbCxt>(dbContextOptionsBuilder =>
         {
@@ -40,7 +39,7 @@ internal sealed class Configurator : Utils.Dependencies.ConfiguratorBase
         SQLitePCL.Batteries.Init();
     }
 
-    protected override void AddMyServices(IHostApplicationBuilder hostApplicationBuilder)
+    protected override void AddMyServices(Microsoft.Extensions.Hosting.IHostApplicationBuilder hostApplicationBuilder)
     {
         _ = hostApplicationBuilder.Services
             .AddLogging(iLoggingBuilder =>

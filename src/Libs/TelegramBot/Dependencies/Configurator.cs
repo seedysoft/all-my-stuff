@@ -1,12 +1,11 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Hosting;
 
 namespace Seedysoft.Libs.TelegramBot.Dependencies;
 
 internal sealed class Configurator : Utils.Dependencies.ConfiguratorBase
 {
-    protected override void AddJsonFiles(IHostApplicationBuilder hostApplicationBuilder)
+    protected override void AddJsonFiles(Microsoft.Extensions.Hosting.IHostApplicationBuilder hostApplicationBuilder)
     {
         string CurrentEnvironmentName = hostApplicationBuilder.Environment.EnvironmentName;
 
@@ -15,9 +14,9 @@ internal sealed class Configurator : Utils.Dependencies.ConfiguratorBase
             .AddJsonFile($"appsettings.TelegramSettings.{CurrentEnvironmentName}.json", optional: false, reloadOnChange: true);
     }
 
-    protected override void AddDbContexts(IHostApplicationBuilder hostApplicationBuilder) { /* No DbContexts */ }
+    protected override void AddDbContexts(Microsoft.Extensions.Hosting.IHostApplicationBuilder hostApplicationBuilder) { /* No DbContexts */ }
 
-    protected override void AddMyServices(IHostApplicationBuilder hostApplicationBuilder)
+    protected override void AddMyServices(Microsoft.Extensions.Hosting.IHostApplicationBuilder hostApplicationBuilder)
     {
         hostApplicationBuilder.Services.TryAddSingleton(hostApplicationBuilder.Configuration.GetSection(nameof(Settings.TelegramSettings)).Get<Settings.TelegramSettings>()!);
         hostApplicationBuilder.Services.TryAddSingleton<Services.TelegramHostedService>();
