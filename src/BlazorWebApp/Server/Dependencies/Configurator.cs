@@ -4,7 +4,7 @@ namespace Seedysoft.BlazorWebApp.Server.Dependencies;
 
 internal sealed class Configurator : Libs.Utils.Dependencies.ConfiguratorBase
 {
-    protected override void AddJsonFiles(IHostApplicationBuilder hostApplicationBuilder)
+    protected override void AddJsonFiles(Microsoft.Extensions.Hosting.IHostApplicationBuilder hostApplicationBuilder)
     {
         string CurrentEnvironmentName = hostApplicationBuilder.Environment.EnvironmentName;
 
@@ -13,9 +13,9 @@ internal sealed class Configurator : Libs.Utils.Dependencies.ConfiguratorBase
             .AddJsonFile($"appsettings.BlazorWebApp.Server.{CurrentEnvironmentName}.json", optional: false, reloadOnChange: true);
     }
 
-    protected override void AddDbContexts(IHostApplicationBuilder hostApplicationBuilder) { /* No DbContexts */ }
+    protected override void AddDbContexts(Microsoft.Extensions.Hosting.IHostApplicationBuilder hostApplicationBuilder) { /* No DbContexts */ }
 
-    protected override void AddMyServices(IHostApplicationBuilder hostApplicationBuilder)
+    protected override void AddMyServices(Microsoft.Extensions.Hosting.IHostApplicationBuilder hostApplicationBuilder)
     {
         // TODO   Add service for components adopting SSR
         //_ = hostApplicationBuilder.Services.AddScoped<IMovieService, ServerMovieService>();
