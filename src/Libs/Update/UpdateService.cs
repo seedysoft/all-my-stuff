@@ -96,10 +96,14 @@ public class UpdateService : IDisposable
         }
     }
 
-    private string GetUpdaterPath(string tempDirectory) =>
-        variant == Variants.Variant.CoreLinuxArm64
-            ? Path.Combine(tempDirectory, "Seedysoft", "SeedysoftUpdater")
-            : Path.Combine(tempDirectory, "Seedysoft", "SeedysoftUpdater.exe");
+    private string GetUpdaterPath(string tempDirectory)
+    {
+        return variant switch
+        {
+            Variants.Variant.CoreWindows => Path.Combine(tempDirectory, "Seedysoft", "SeedysoftUpdater.exe"),
+            _ => Path.Combine(tempDirectory, "Seedysoft", "SeedysoftUpdater"),
+        };
+    }
 
     //public void CleanupTempDir()
     //{
@@ -190,21 +194,26 @@ public class UpdateService : IDisposable
             gzipStream.Close();
             inStream.Close();
 
-            if (variant == Variants.Variant.CoreLinuxArm64)
+            switch (variant)
             {
-                // When the files get extracted, the execute permission don't get carried across
+                case Variants.Variant.CoreLinuxAmdx64:
+                case Variants.Variant.CoreLinuxArm64:
+                {
+                    // When the files get extracted, the execute permission don't get carried across
 
-                string SeedysoftPath = tempDir + "/Seedysoft/Seedysoft.HomeCloud.Server";
-                MakeFileExecutable(SeedysoftPath);
+                    string SeedysoftPath = tempDir + "/Seedysoft/Seedysoft.HomeCloud.Server";
+                    MakeFileExecutable(SeedysoftPath);
 
-                string SeedysoftUpdaterPath = tempDir + "/Seedysoft/SeedysoftUpdater";
-                MakeFileExecutable(SeedysoftUpdaterPath);
+                    string SeedysoftUpdaterPath = tempDir + "/Seedysoft/SeedysoftUpdater";
+                    MakeFileExecutable(SeedysoftUpdaterPath);
 
-                string SeedysoftSystemdPath = tempDir + "/Seedysoft/create-HomeCloudServer-daemon.sh";
-                MakeFileExecutable(SeedysoftSystemdPath);
+                    string SeedysoftSystemdPath = tempDir + "/Seedysoft/create-HomeCloudServer-daemon.sh";
+                    MakeFileExecutable(SeedysoftSystemdPath);
 
-                string SeedysoftLauncherPath = tempDir + "/Seedysoft/seedysoft_launcher.sh";
-                MakeFileExecutable(SeedysoftLauncherPath);
+                    string SeedysoftLauncherPath = tempDir + "/Seedysoft/seedysoft_launcher.sh";
+                    MakeFileExecutable(SeedysoftLauncherPath);
+                    break;
+                }
             }
         }
         else
