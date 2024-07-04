@@ -18,7 +18,7 @@ internal sealed class Configurator : Libs.Utils.Dependencies.ConfiguratorBase
     {
         hostApplicationBuilder.Services.TryAddSingleton(hostApplicationBuilder.Configuration.GetSection(nameof(Settings.PvpcSettings)).Get<Settings.PvpcSettings>()!);
         hostApplicationBuilder.Services.TryAddSingleton(hostApplicationBuilder.Configuration.GetSection(nameof(Settings.TuyaManagerSettings)).Get<Settings.TuyaManagerSettings>()!);
-        hostApplicationBuilder.Services.TryAddSingleton<Services.PvpcCronBackgroundService>();
-        hostApplicationBuilder.Services.TryAddSingleton<Services.TuyaManagerCronBackgroundService>();
+        hostApplicationBuilder.Services.TryAddSingleton<Services.PvpcBackgroundServiceCron>();
+        hostApplicationBuilder.Services.TryAddSingleton<Services.TuyaManagerBackgroundServiceCron>();
     }
 }

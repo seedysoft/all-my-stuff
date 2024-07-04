@@ -4,10 +4,9 @@ using System.Collections.Immutable;
 namespace Seedysoft.BlazorWebApp.Server.Controllers;
 
 [Route(Client.Constants.ControllerUris.TravelControllerUri)]
-public sealed class TravelController : ApiControllerBase
+public sealed class TravelController(ILogger<TravelController> logger)
+    : ApiControllerBase(logger)
 {
-    public TravelController(ILogger<TravelController> logger) : base(logger) => Logger = logger;
-
     [HttpPost(Client.Constants.TravelController.ObtainDirections)]
     public async Task<IImmutableList<Libs.FuelPrices.Core.ViewModels.TravelObtainedModel>> ObtainDirectionsAsync(
         [AsParameters] Libs.FuelPrices.Core.ViewModels.TravelQueryModel travelQueryModel,

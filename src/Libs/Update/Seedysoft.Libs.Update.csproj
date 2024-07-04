@@ -24,6 +24,7 @@
     <PackageReference Include="System.ServiceProcess.ServiceController" Version="8.0.0" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\BackgroundServices\Seedysoft.Libs.BackgroundServices.csproj" />
     <ProjectReference Include="..\Cryptography\Seedysoft.Libs.Cryptography.csproj" />
     <ProjectReference Include="..\Utils\Seedysoft.Libs.Utils.csproj" />
   </ItemGroup>
