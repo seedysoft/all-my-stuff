@@ -1,21 +1,28 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
 using System.ServiceProcess;
+using Seedysoft.Libs.Utils.Extensions;
 
 namespace Seedysoft.Libs.Update;
 
-public class UpdateService : IDisposable
+public class UpdateService : BackgroundServices.Cron, IDisposable
 {
     private readonly ILogger<UpdateService> logger;
     private readonly Variants.Variant variant;
     private readonly HttpClient client = new();
     private readonly ManualResetEvent locker = new(false);
+    private readonly IServiceProvider serviceProvider;
     private bool disposedValue;
 
-    public UpdateService(ILogger<UpdateService> l)
+    public UpdateService(IServiceProvider serviceProvider) : base(
+        serviceProvider.GetRequiredService<Settings.UpdateSettings>(),
+        serviceProvider.GetRequiredService<Microsoft.Extensions.Hosting.IHostApplicationLifetime>())
     {
-        logger = l;
+        this.serviceProvider = serviceProvider;
+
+        logger = this.serviceProvider.GetRequiredService<ILogger<UpdateService>>();
 
         variant = Variants.GetVariant();
 
@@ -23,24 +30,6 @@ public class UpdateService : IDisposable
         // The update is heavy and can take longer time for slow connections. Fix #12711
         client.Timeout = TimeSpan.FromMinutes(5);
     }
-
-    public void StartUpdateChecker() => Task.Factory.StartNew(UpdateWorkerThreadAsync);
-
-    private async void UpdateWorkerThreadAsync()
-    {
-        int delayHours = 1; // first check after 1 hour (for users not running 24/7)
-        while (true)
-        {
-            _ = System.Diagnostics.Debugger.IsAttached
-                ? locker.WaitOne((int)TimeSpan.FromMinutes(30).TotalMilliseconds)
-                : locker.WaitOne((int)TimeSpan.FromHours(delayHours).TotalMilliseconds);
-            _ = locker.Reset();
-            await CheckForUpdatesAsync();
-            delayHours = 24; // following checks only once/24 hours
-        }
-    }
-
-    private bool AcceptCert(object sender, X509Certificate? certificate, X509Chain? chain, SslPolicyErrors sslPolicyErrors) => true;
 
     private async Task CheckForUpdatesAsync()
     {
@@ -63,7 +52,11 @@ public class UpdateService : IDisposable
             Octokit.GitHubClient gitHubClient = new(Octokit.ProductHeaderValue.Parse(""));
             Octokit.Release latestRelease = await gitHubClient.Repository.Release.GetLatest("", "");
 
-            if (latestRelease.Name != currentVersion)
+            if (latestRelease.Name == currentVersion)
+            {
+                logger.LogInformation("Seedysoft is already updated. Current version: {currentVersion}", currentVersion);
+            }
+            else
             {
                 logger.LogInformation("New release found. Current version: {currentVersion} New version: {latestRelease}", currentVersion, latestRelease.Name);
                 logger.LogInformation("Downloading release {latestRelease} It could take a while...", latestRelease.Name);
@@ -75,25 +68,11 @@ public class UpdateService : IDisposable
                     if (updaterPath != null)
                         StartUpdate(updaterPath, EnvironmentUtil.InstallationPath(), trayIsRunning);
                 }
-                catch (Exception e)
-                {
-                    logger.LogError("Error performing update.\n{e}", e);
-                }
-            }
-            else
-            {
-                logger.LogInformation("Seedysoft is already updated. Current version: {currentVersion}", currentVersion);
+                catch (Exception e) { logger.LogError("Error performing update.\n{e}", e); }
             }
         }
-        catch (Exception e)
-        {
-            logger.LogError("Error checking for updates.\n{e}", e);
-        }
-        finally
-        {
-            if (Environment.OSVersion.Platform == PlatformID.Unix)
-                System.Net.ServicePointManager.ServerCertificateValidationCallback -= AcceptCert;
-        }
+        catch (Exception e) { logger.LogError("Error checking for updates.\n{e}", e); }
+        finally { await Task.CompletedTask; }
     }
 
     private string GetUpdaterPath(string tempDirectory)
@@ -301,6 +280,8 @@ public class UpdateService : IDisposable
         {
             if (disposing)
             {
+                base.Dispose();
+
                 // dispose managed state (managed objects)
                 client?.Dispose();
                 locker?.Dispose();
@@ -319,10 +300,168 @@ public class UpdateService : IDisposable
     //     Dispose(disposing: false);
     // }
 
-    public void Dispose()
+    public override void Dispose()
     {
+        base.Dispose();
+
         // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
         Dispose(disposing: true);
         GC.SuppressFinalize(this);
     }
+
+    public override async Task DoWorkAsync(CancellationToken cancellationToken)
+    {
+        try
+        {
+            using IServiceScope ServiceScope = serviceProvider.CreateAsyncScope();
+
+            Version? currentVersion = EnvironmentUtil.ParseVersion(EnvironmentUtil.Version());
+
+            if (currentVersion == new Version(0, 0, 0))
+            {
+                logger.LogInformation("Skipping checking for new releases because Jackett is runing in IDE.");
+                return;
+            }
+
+            //Rootobject? Response = await client.GetFromJsonAsync<Rootobject>(UrlString, stoppingToken);
+
+            //var response = await client.GetResultAsync(new WebRequest
+            //{
+            //    Url = "https://api.github.com/repos/Jackett/Jackett/releases",
+            //    Encoding = System.Text.Encoding.UTF8,
+            //    EmulateBrowser = false
+            //});
+
+            //if (response.Status != System.Net.HttpStatusCode.OK)
+            //    logger.LogError("Failed to get the release list: {0}", response.Status);
+
+            //var releases = JsonConvert.DeserializeObject<List<Octokit.Release>>(response.ContentString);
+
+            //releases = releases.Where(r => !r.Prerelease).ToList();
+
+            //if (releases.Any())
+            //{
+            //    var latestRelease = releases.OrderByDescending(o => o.Created_at).First();
+            //    var latestVersion = EnvironmentUtil.ParseVersion(latestRelease.Name) ?? throw new Exception("Failed to parse latest version.");
+
+            //    if (latestVersion < currentVersion)
+            //        logger.LogWarning("Downgrade detected. Current version: v{currentVersion} New version: v{1}", currentVersion, latestVersion);
+
+            //    if (latestVersion == currentVersion)
+            //    {
+            //        logger.LogInformation("Jackett is already updated. Current version: v{currentVersion}", currentVersion);
+            //    }
+            //    else
+            //    {
+            //        logger.LogInformation("New release found. Current version: v{currentVersion} New version: v{1}", currentVersion, latestVersion);
+            //        logger.LogInformation("Downloading release v{0} It could take a while...", latestVersion);
+
+            //        try
+            //        {
+            //            var tempDir = await DownloadRelease(latestRelease.Assets, isWindows, latestRelease.Name);
+
+            //            // Copy updater
+            //            string installDir = EnvironmentUtil.InstallationPath();
+            //            string updaterPath = GetUpdaterPath(tempDir);
+
+            //            if (updaterPath != null)
+            //            {
+            //                StartUpdate(updaterPath, installDir, isWindows, serverConfig.RuntimeSettings.NoRestart, trayIsRunning);
+            //            }
+            //        }
+            //        catch (Exception e) when (logger.Handle(e, "Unhandled exception.")) { }
+            //    }
+            //}
+        }
+        catch (TaskCanceledException e) when (logger.Handle(e, "Task cancelled.")) { }
+        catch (Exception e) when (logger.Handle(e, "Unhandled exception.")) { }
+        finally { await Task.CompletedTask; }
+    }
+
+    //private async Task<string?> DownloadRelease(List<Asset> assets, bool isWindows, string version)
+    //{
+    //    var variants = new Variants();
+    //    string artifactFileName = variants.GetArtifactFileName(variant);
+    //    var targetAsset = assets.FirstOrDefault(a => a.Browser_download_url.EndsWith(artifactFileName, StringComparison.OrdinalIgnoreCase) && artifactFileName.Length > 0);
+
+    //    if (targetAsset == null)
+    //    {
+    //        logger.LogError("Failed to find asset to download!");
+    //        return null;
+    //    }
+
+    //    var url = targetAsset.Browser_download_url;
+
+    //    var data = await client.GetResultAsync(SetDownloadHeaders(new WebRequest() { Url = url, EmulateBrowser = true, Type = RequestType.GET }));
+
+    //    while (data.IsRedirect)
+    //    {
+    //        data = await client.GetResultAsync(new WebRequest() { Url = data.RedirectingTo, EmulateBrowser = true, Type = RequestType.GET });
+    //    }
+
+    //    string tempDir = Path.Combine(Path.GetTempPath(), "JackettUpdate-" + version + "-" + DateTime.Now.Ticks);
+
+    //    if (Directory.Exists(tempDir))
+    //        Directory.Delete(tempDir, true);
+
+    //    _ = Directory.CreateDirectory(tempDir);
+
+    //    if (isWindows)
+    //    {
+    //        string zipPath = Path.Combine(tempDir, "Update.zip");
+    //        File.WriteAllBytes(zipPath, data.ContentBytes);
+    //        var fastZip = new ICSharpCode.SharpZipLib.Zip.FastZip();
+    //        fastZip.ExtractZip(zipPath, tempDir, null);
+    //    }
+    //    else
+    //    {
+    //        string gzPath = Path.Combine(tempDir, "Update.tar.gz");
+    //        File.WriteAllBytes(gzPath, data.ContentBytes);
+    //        Stream inStream = File.OpenRead(gzPath);
+    //        Stream gzipStream = new ICSharpCode.SharpZipLib.GZip.GZipInputStream(inStream);
+
+    //        var tarArchive = ICSharpCode.SharpZipLib.Tar.TarArchive.CreateInputTarArchive(gzipStream, null);
+    //        tarArchive.ExtractContents(tempDir);
+    //        tarArchive.Close();
+    //        gzipStream.Close();
+    //        inStream.Close();
+
+    //        switch (variant)
+    //        {
+    //            case Variants.Variant.CoreLinuxAmdx64:
+    //            case Variants.Variant.CoreLinuxArm64:
+    //            {
+    //                // When the files get extracted, the execute permission for jackett and JackettUpdater don't get carried across
+
+    //                string jackettPath = tempDir + "/Jackett/jackett";
+    //                new UnixFileInfo(jackettPath)
+    //                {
+    //                    FileAccessPermissions = FileAccessPermissions.UserReadWriteExecute | FileAccessPermissions.GroupRead | FileAccessPermissions.OtherRead
+    //                };
+
+    //                string jackettUpdaterPath = tempDir + "/Jackett/JackettUpdater";
+    //                new UnixFileInfo(jackettUpdaterPath)
+    //                {
+    //                    FileAccessPermissions = FileAccessPermissions.UserReadWriteExecute | FileAccessPermissions.GroupRead | FileAccessPermissions.OtherRead
+    //                };
+
+    //                string systemdPath = tempDir + "/Jackett/install_service_systemd.sh";
+    //                new UnixFileInfo(systemdPath)
+    //                {
+    //                    FileAccessPermissions = FileAccessPermissions.UserReadWriteExecute | FileAccessPermissions.GroupRead | FileAccessPermissions.OtherRead
+    //                };
+
+    //                string launcherPath = tempDir + "/Jackett/jackett_launcher.sh";
+    //                new UnixFileInfo(launcherPath)
+    //                {
+    //                    FileAccessPermissions = FileAccessPermissions.UserReadWriteExecute | FileAccessPermissions.GroupRead | FileAccessPermissions.OtherRead
+    //                };
+
+    //                break;
+    //            }
+    //        }
+    //    }
+
+    //    return tempDir;
+    //}
 }
