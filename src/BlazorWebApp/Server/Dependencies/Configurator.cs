@@ -17,18 +17,17 @@ internal sealed class Configurator : Libs.Utils.Dependencies.ConfiguratorBase
 
     protected override void AddMyServices(IHostApplicationBuilder hostApplicationBuilder)
     {
-        // Add Todo service for components adopting SSR
+        // TODO   Add service for components adopting SSR
         //_ = hostApplicationBuilder.Services.AddScoped<IMovieService, ServerMovieService>();
 
-        // TODO             Use HostedService
-        _ = hostApplicationBuilder.Services.AddSingleton/*.AddHostedService*/<Libs.Update.UpdateService>();
+        _ = hostApplicationBuilder.Services.AddHostedService<Libs.Update.UpdateService>();
 
         _ = hostApplicationBuilder.Services.AddHostedService<Libs.TelegramBot.Services.TelegramHostedService>();
 
-        _ = hostApplicationBuilder.Services.AddHostedService<Outbox.Lib.Services.OutboxCronBackgroundService>();
+        _ = hostApplicationBuilder.Services.AddHostedService<Outbox.Lib.Services.OutboxBackgroundServiceCron>();
 
-        _ = hostApplicationBuilder.Services.AddHostedService<Pvpc.Lib.Services.PvpcCronBackgroundService>();
-        _ = hostApplicationBuilder.Services.AddHostedService<Pvpc.Lib.Services.TuyaManagerCronBackgroundService>();
+        _ = hostApplicationBuilder.Services.AddHostedService<Pvpc.Lib.Services.PvpcBackgroundServiceCron>();
+        _ = hostApplicationBuilder.Services.AddHostedService<Pvpc.Lib.Services.TuyaManagerBackgroundServiceCron>();
 
         _ = hostApplicationBuilder.Services.AddHostedService<WebComparer.Lib.Services.WebComparerCronBackgroundService>();
 

@@ -8,6 +8,6 @@ internal sealed class Configurator : Libs.Utils.Dependencies.ConfiguratorBase
 
     protected override void AddDbContexts(Microsoft.Extensions.Hosting.IHostApplicationBuilder hostApplicationBuilder) { /* No DbContexts */ }
 
-    protected override void AddMyServices(Microsoft.Extensions.Hosting.IHostApplicationBuilder hostApplicationBuilder)
-        => hostApplicationBuilder.Services.TryAddSingleton<Services.WebComparerCronBackgroundService>();
+    protected override void AddMyServices(Microsoft.Extensions.Hosting.IHostApplicationBuilder hostApplicationBuilder) => 
+        hostApplicationBuilder.Services.TryAddSingleton<Services.WebComparerBackgroundServiceCron>();
 }
