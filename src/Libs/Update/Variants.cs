@@ -16,6 +16,7 @@ public class Variants
     public static Variant GetVariant()
     {
         bool isRunningOnDotNetCore;
+
         try
         {
             isRunningOnDotNetCore = Assembly
