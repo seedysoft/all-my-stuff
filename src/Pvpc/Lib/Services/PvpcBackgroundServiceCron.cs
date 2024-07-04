@@ -8,6 +8,10 @@ namespace Seedysoft.Pvpc.Lib.Services;
 
 public sealed class PvpcBackgroundServiceCron : Libs.BackgroundServices.Cron
 {
+    private readonly ILogger<PvpcBackgroundServiceCron> logger = serviceProvider.GetRequiredService<ILogger<PvpcBackgroundServiceCron>>();
+
+    private readonly Libs.Infrastructure.DbContexts.DbCxt dbCxt = serviceProvider.GetRequiredService<Libs.Infrastructure.DbContexts.DbCxt>();
+
     // HttpClient is intended to be instantiated once per application, rather than per-use. See Remarks.
     private static readonly HttpClient client = new();
 
@@ -37,12 +41,12 @@ public sealed class PvpcBackgroundServiceCron : Libs.BackgroundServices.Cron
     {
         string? AppName = GetType().FullName;
 
-        Logger.LogInformation("Called {ApplicationName} version {Version}", AppName, System.Reflection.Assembly.GetExecutingAssembly().GetName().Version);
+        logger.LogInformation("Called {ApplicationName} version {Version}", AppName, System.Reflection.Assembly.GetExecutingAssembly().GetName().Version);
 
-        Logger.LogInformation("Obtaining PVPC for the day {ForDate}", forDate.ToString(Libs.Utils.Constants.Formats.YearMonthDayFormat));
+        logger.LogInformation("Obtaining PVPC for the day {ForDate}", forDate.ToString(Libs.Utils.Constants.Formats.YearMonthDayFormat));
 
         string UrlString = string.Format(Settings.DataUrlTemplate, forDate);
-        Logger.LogInformation("From {UrlString}", UrlString);
+        logger.LogInformation("From {UrlString}", UrlString);
 
         try
         {
@@ -56,19 +60,19 @@ public sealed class PvpcBackgroundServiceCron : Libs.BackgroundServices.Cron
 
             int? HowManyPricesObtained = await ProcessPricesAsync(NewEntities, stoppingToken);
         }
-        catch (HttpRequestException e) when (System.Net.HttpStatusCode.BadGateway == e.StatusCode && Logger.LogAndHandle(e, "'{WebUrl}' not yet published", UrlString)) { }
-        catch (TaskCanceledException e) when (e.InnerException is TimeoutException && Logger.LogAndHandle(e, "Request to '{WebUrl}' timeout", UrlString)) { }
-        catch (TaskCanceledException e) when (Logger.LogAndHandle(e, "Task request to '{WebUrl}' cancelled", UrlString)) { }
-        catch (Exception e) when (Logger.LogAndHandle(e, "Request to '{WebUrl}' failed", UrlString)) { }
+        catch (HttpRequestException e) when (System.Net.HttpStatusCode.BadGateway == e.StatusCode && logger.LogAndHandle(e, "'{WebUrl}' not yet published", UrlString)) { }
+        catch (TaskCanceledException e) when (e.InnerException is TimeoutException && logger.LogAndHandle(e, "Request to '{WebUrl}' timeout", UrlString)) { }
+        catch (TaskCanceledException e) when (logger.LogAndHandle(e, "Task request to '{WebUrl}' cancelled", UrlString)) { }
+        catch (Exception e) when (logger.LogAndHandle(e, "Request to '{WebUrl}' failed", UrlString)) { }
 
-        Logger.LogInformation("End {ApplicationName}", AppName);
+        logger.LogInformation("End {ApplicationName}", AppName);
     }
 
     private async Task<int?> ProcessPricesAsync(Libs.Core.Entities.Pvpc[]? NewEntities, CancellationToken stoppingToken)
     {
         if (!(NewEntities?.Length > 0))
         {
-            Logger.LogInformation("No entities obtained");
+            logger.LogInformation("No entities obtained");
             return null;
         }
 
@@ -109,12 +113,12 @@ public sealed class PvpcBackgroundServiceCron : Libs.BackgroundServices.Cron
 
             _ = await dbCxt.SaveChangesAsync(stoppingToken);
 
-            Logger.LogInformation("Obtained {NewEntities} entities", NewEntities.Length);
+            logger.LogInformation("Obtained {NewEntities} entities", NewEntities.Length);
 
             return Prices.Count;
         }
 
-        Logger.LogInformation("No changes");
+        logger.LogInformation("No changes");
 
         return 0;
     }
