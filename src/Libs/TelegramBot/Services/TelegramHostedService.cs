@@ -429,7 +429,7 @@ public partial class TelegramHostedService : Core.NonBackgroundServiceBase, IHos
             dateTimeToObtain = DateTime.Now.TimeOfDay > new TimeSpan(20, 30, 00) ? DateTime.Today.AddDays(1) : DateTime.Today;
         }
 
-        await ServiceProvider.GetRequiredService<Pvpc.Lib.Services.PvpcCronBackgroundService>()
+        await ServiceProvider.GetRequiredService<Pvpc.Lib.Services.PvpcBackgroundServiceCron>()
             .GetPvpcFromReeForDateAsync(dateTimeToObtain, cancellationToken);
 
         Core.Entities.Pvpc[]? Prices = await dbCtx.Pvpcs.AsNoTracking()
@@ -808,6 +808,6 @@ public partial class TelegramHostedService : Core.NonBackgroundServiceBase, IHos
         return sb.ToString();
     }
 
-    //private static string MessageGetMarkdownV2TextForPrices(string payload)
-    //   => MessageGetMarkdownV2TextForPrices(System.Text.Json.JsonSerializer.Deserialize<IEnumerable<CoreLib.Entities.Pvpc>>(payload)!);
+    //private static string MessageGetMarkdownV2TextForPrices(string payload) =>
+    //   MessageGetMarkdownV2TextForPrices(System.Text.Json.JsonSerializer.Deserialize<IEnumerable<CoreLib.Entities.Pvpc>>(payload)!);
 }

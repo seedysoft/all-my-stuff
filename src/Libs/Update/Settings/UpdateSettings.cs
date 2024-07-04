@@ -1,6 +1,6 @@
 ﻿namespace Seedysoft.Libs.Update.Settings;
 
-public record UpdateSettings
+public record UpdateSettings : BackgroundServices.ScheduleConfig
 {
     private string githubPat = default!;
     public string GithubPat

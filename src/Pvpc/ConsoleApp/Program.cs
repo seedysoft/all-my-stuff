@@ -53,7 +53,7 @@ public sealed class Program : Libs.Core.ProgramBase
 
             using CancellationTokenSource CancelTokenSource = new();
 
-            using (Lib.Services.PvpcCronBackgroundService pvpcCronBackgroundService = host.Services.GetRequiredService<Lib.Services.PvpcCronBackgroundService>())
+            using (Lib.Services.PvpcBackgroundServiceCron pvpcCronBackgroundService = host.Services.GetRequiredService<Lib.Services.PvpcBackgroundServiceCron>())
                 await pvpcCronBackgroundService.GetPvpcFromReeForDateAsync(ForDate, CancelTokenSource.Token);
 
             Logger.LogInformation("End {ApplicationName}", AppName);

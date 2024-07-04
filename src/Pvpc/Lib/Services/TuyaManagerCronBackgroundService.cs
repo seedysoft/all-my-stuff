@@ -36,7 +36,7 @@ public sealed class TuyaManagerCronBackgroundService : Libs.BackgroundServices.C
     {
         string? AppName = GetType().FullName;
 
-        Logger.LogDebug("Called {ApplicationName} version {Version}", AppName, System.Reflection.Assembly.GetExecutingAssembly().GetName().Version);
+        logger.LogDebug("Called {ApplicationName} version {Version}", AppName, System.Reflection.Assembly.GetExecutingAssembly().GetName().Version);
 
         try
         {
@@ -52,7 +52,7 @@ public sealed class TuyaManagerCronBackgroundService : Libs.BackgroundServices.C
                 .Where(x => x.AtDateTimeOffset < dateToQueryDateTimeOffset.AddDays(1))
                 .ToArrayAsync(cancellationToken: stoppingToken);
 
-            bool IsTimeToCharge = PvpcCronBackgroundService.IsTimeToCharge(PricesForDayPvpcs, timeToCheckDateTimeOffset, Settings);
+            bool IsTimeToCharge = PvpcBackgroundServiceCron.IsTimeToCharge(PricesForDayPvpcs, timeToCheckDateTimeOffset, Settings);
 
             for (int i = 0; i < Devices.Length; i++)
             {
@@ -73,9 +73,9 @@ public sealed class TuyaManagerCronBackgroundService : Libs.BackgroundServices.C
                 }
             }
         }
-        catch (Exception e) when (Logger.LogAndHandle(e, "Unexpected error")) { }
+        catch (Exception e) when (logger.LogAndHandle(e, "Unexpected error")) { }
         finally { await Task.CompletedTask; }
 
-        Logger.LogDebug("End {ApplicationName}", AppName);
+        logger.LogDebug("End {ApplicationName}", AppName);
     }
 }
