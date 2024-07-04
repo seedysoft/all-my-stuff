@@ -1,3 +1,5 @@
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting.Internal;
 using Microsoft.Extensions.Logging.Abstractions;
 using Xunit;
@@ -78,23 +80,13 @@ public sealed class PvpcBackgroundServiceCronFixture : Libs.Infrastructure.Test.
             PvpcId = "1001",
         };
 
-<<<<<<<< HEAD:test/Pvpc/Lib.Test/PvpcBackgroundServiceCronTests.cs
-        IServiceCollection services = new ServiceCollection();
-        _ = services
-            .AddSingleton(pvpcSettings)
-            .AddSingleton(GetDbCxt())
-            .AddSingleton<Microsoft.Extensions.Logging.ILogger<Services.PvpcBackgroundServiceCron>>(new NullLogger<Services.PvpcBackgroundServiceCron>());
-========
         IServiceCollection serviceCollection = new ServiceCollection();
         serviceCollection.TryAddSingleton(pvpcSettings);
         serviceCollection.TryAddSingleton(GetDbCxt());
-        serviceCollection.TryAddSingleton<Microsoft.Extensions.Logging.ILogger<Services.PvpcBackgroundServiceCron>>(new NullLogger<Services.PvpcBackgroundServiceCron>());
-        serviceCollection.TryAddSingleton<Microsoft.Extensions.Hosting.IHostApplicationLifetime>(new ApplicationLifetime(new NullLogger<ApplicationLifetime>()));
->>>>>>>> 0c2ffd3 (Try to reference Octokit project to see where is the fail):test/Pvpc/Lib.Test/PvpcBackgroundServiceCronTest.cs
+        serviceCollection.TryAddSingleton(new NullLogger<Services.PvpcBackgroundServiceCron>());
+        serviceCollection.TryAddSingleton(new ApplicationLifetime(new NullLogger<ApplicationLifetime>()));
 
-        PvpcService = new(
-            services.BuildServiceProvider(),
-            new ApplicationLifetime(new NullLogger<ApplicationLifetime>()));
+        PvpcService = new(serviceCollection.BuildServiceProvider());
 
         TimeToQuery = DateTimeOffset.UtcNow;
         MinPriceAllowed = 0.05M;
