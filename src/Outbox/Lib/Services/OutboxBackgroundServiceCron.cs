@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Seedysoft.Libs.Utils.Extensions;
 using System.Collections.Immutable;
+// TODO Remove Immutable
 
 namespace Seedysoft.Outbox.Lib.Services;
 
@@ -24,29 +25,29 @@ public sealed class OutboxCronBackgroundService : Libs.BackgroundServices.Cron
     {
         string? AppName = GetType().FullName;
 
-        Logger.LogInformation("Called {ApplicationName} version {Version}", AppName, System.Reflection.Assembly.GetExecutingAssembly().GetName().Version);
+        logger.LogInformation("Called {ApplicationName} version {Version}", AppName, System.Reflection.Assembly.GetExecutingAssembly().GetName().Version);
 
         try
         {
-            Libs.Infrastructure.DbContexts.DbCxt dbCtx = ServiceProvider.GetRequiredService<Libs.Infrastructure.DbContexts.DbCxt>();
+            Libs.Infrastructure.DbContexts.DbCxt dbCtx = serviceProvider.GetRequiredService<Libs.Infrastructure.DbContexts.DbCxt>();
 
             Libs.Core.Entities.Outbox[] PendingMessages = await dbCtx.Outbox.Where(x => x.SentAtDateTimeOffset == null).ToArrayAsync(stoppingToken);
 
             if (PendingMessages.Length == 0)
             {
-                Logger.LogInformation("NO pending messages");
+                logger.LogInformation("NO pending messages");
             }
             else
             {
-                Logger.LogInformation("Obtained {PendingMessages} pending messages", PendingMessages.Length);
+                logger.LogInformation("Obtained {PendingMessages} pending messages", PendingMessages.Length);
 
                 Libs.Core.Entities.Subscriber[]? AllSubscribers = await dbCtx.Subscribers
                     .Include(x => x.Subscriptions)
                     .AsNoTracking()
                     .ToArrayAsync(stoppingToken);
-                Logger.LogInformation("Obtained {AllSubscribers} subscribers", AllSubscribers.Length);
+                logger.LogInformation("Obtained {AllSubscribers} subscribers", AllSubscribers.Length);
 
-                Libs.TelegramBot.Services.TelegramHostedService telegramHostedService = ServiceProvider.GetRequiredService<Libs.TelegramBot.Services.TelegramHostedService>();
+                Libs.TelegramBot.Services.TelegramHostedService telegramHostedService = serviceProvider.GetRequiredService<Libs.TelegramBot.Services.TelegramHostedService>();
 
                 for (int i = 0; i < PendingMessages.Length; i++)
                 {
@@ -77,7 +78,7 @@ public sealed class OutboxCronBackgroundService : Libs.BackgroundServices.Cron
                                 _ => throw new ApplicationException($"Unexpected SubscriptionName: '{PendingMessage.SubscriptionName}'"),
                             };
 
-                            await ServiceProvider.GetRequiredService<Libs.SmtpService.Services.SmtpService>().SendMailAsync(
+                            await serviceProvider.GetRequiredService<Libs.SmtpService.Services.SmtpService>().SendMailAsync(
                                 subscriber.MailAddress,
                                 PendingMessage.SubscriptionName.ToString(),
                                 Message,
@@ -95,12 +96,12 @@ public sealed class OutboxCronBackgroundService : Libs.BackgroundServices.Cron
             const int KeepDays = 20;
             DateTimeOffset dateTimeOffset = DateTimeOffset.Now.AddDays(-KeepDays);
             await dbCtx.BulkDeleteAsync(dbCtx.Outbox.Where(x => x.SentAtDateTimeOffset < dateTimeOffset), cancellationToken: stoppingToken);
-            Logger.LogDebug("Removed {Entities} old entities", await dbCtx.SaveChangesAsync(stoppingToken));
+            logger.LogDebug("Removed {Entities} old entities", await dbCtx.SaveChangesAsync(stoppingToken));
         }
-        catch (Exception e) when (Logger.LogAndHandle(e, "Unexpected error")) { }
+        catch (Exception e) when (logger.LogAndHandle(e, "Unexpected error")) { }
         finally { await Task.CompletedTask; }
 
-        Logger.LogInformation("End {ApplicationName}", AppName);
+        logger.LogInformation("End {ApplicationName}", AppName);
     }
 
     private static string GetHtmlBodyMail(string payload)
