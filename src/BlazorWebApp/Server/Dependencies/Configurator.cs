@@ -20,7 +20,7 @@ internal sealed class Configurator : Libs.Utils.Dependencies.ConfiguratorBase
         // TODO   Add service for components adopting SSR
         //_ = hostApplicationBuilder.Services.AddScoped<IMovieService, ServerMovieService>();
 
-        _ = hostApplicationBuilder.Services.AddHostedService<Libs.Update.UpdateService>();
+        _ = hostApplicationBuilder.Services.AddHostedService<Libs.Update.Services.UpdateBackgroundServiceCron>();
 
         _ = hostApplicationBuilder.Services.AddHostedService<Libs.TelegramBot.Services.TelegramHostedService>();
 
