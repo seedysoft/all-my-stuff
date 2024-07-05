@@ -85,6 +85,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{
 		.github\workflows\Publish.yml = .github\workflows\Publish.yml
 	EndProjectSection
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Seedysoft.Libs.Update.Test", "test\Libs\Update.Test\Seedysoft.Libs.Update.Test.csproj", "{FD502E47-FEFC-4BBA-90BB-348EF0A625EC}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Octokit", "..\..\octokit\octokit.net\Octokit\Octokit.csproj", "{44220FBA-6DE7-4150-9276-4E14D1A1479D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
