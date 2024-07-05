@@ -2,23 +2,15 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting.Internal;
 using Microsoft.Extensions.Logging.Abstractions;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
-namespace Seedysoft.Pvpc.Lib.Tests;
+namespace Seedysoft.Pvpc.Lib.Test;
 
-[TestClass]
-public sealed class PvpcCronBackgroundServiceTests : Libs.Infrastructure.Tests.TestClassBase
-{
-    private static Services.PvpcCronBackgroundService PvpcService = default!;
-    private static Libs.Core.Entities.Pvpc[] Prices = default!;
-    private static DateTimeOffset TimeToQuery = default!;
-    private static decimal MinPriceAllowed = default!;
-
-    [ClassInitialize]
-    public static new void ClassInitialize(TestContext testContext)
+<<<<<<<< HEAD:test/Pvpc/Lib.Test/PvpcBackgroundServiceCronTests.cs
 public sealed class PvpcBackgroundServiceCronTests(PvpcBackgroundServiceCronFixture pvpcServiceFixture)
-
+========
 public sealed class PvpcBackgroundServiceCronTest(PvpcBackgroundServiceCronFixture pvpcServiceFixture)
+>>>>>>>> 0c2ffd3 (Try to reference Octokit project to see where is the fail):test/Pvpc/Lib.Test/PvpcBackgroundServiceCronTest.cs
     : IClassFixture<PvpcBackgroundServiceCronFixture>
 {
     public PvpcBackgroundServiceCronFixture PvpcServiceFixture { get; } = pvpcServiceFixture;
@@ -80,7 +72,6 @@ public sealed class PvpcBackgroundServiceCronTest(PvpcBackgroundServiceCronFixtu
 public sealed class PvpcBackgroundServiceCronFixture : Libs.Infrastructure.Test.BaseFixture
 {
     public PvpcBackgroundServiceCronFixture()
->>>>>>>> b3361a4 (Fix main rebase):test/Pvpc/Lib.Tests/PvpcBackgroundServiceCronTests.cs
     {
         Settings.PvpcSettings pvpcSettings = new()
         {
@@ -89,17 +80,19 @@ public sealed class PvpcBackgroundServiceCronFixture : Libs.Infrastructure.Test.
             PvpcId = "1001",
         };
 
+<<<<<<<< HEAD:test/Pvpc/Lib.Test/PvpcBackgroundServiceCronTests.cs
         IServiceCollection services = new ServiceCollection();
         _ = services
             .AddSingleton(pvpcSettings)
             .AddSingleton(GetDbCxt())
             .AddSingleton<Microsoft.Extensions.Logging.ILogger<Services.PvpcBackgroundServiceCron>>(new NullLogger<Services.PvpcBackgroundServiceCron>());
-
+========
         IServiceCollection serviceCollection = new ServiceCollection();
         serviceCollection.TryAddSingleton(pvpcSettings);
         serviceCollection.TryAddSingleton(GetDbCxt());
         serviceCollection.TryAddSingleton<Microsoft.Extensions.Logging.ILogger<Services.PvpcBackgroundServiceCron>>(new NullLogger<Services.PvpcBackgroundServiceCron>());
         serviceCollection.TryAddSingleton<Microsoft.Extensions.Hosting.IHostApplicationLifetime>(new ApplicationLifetime(new NullLogger<ApplicationLifetime>()));
+>>>>>>>> 0c2ffd3 (Try to reference Octokit project to see where is the fail):test/Pvpc/Lib.Test/PvpcBackgroundServiceCronTest.cs
 
         PvpcService = new(
             services.BuildServiceProvider(),
@@ -115,59 +108,14 @@ public sealed class PvpcBackgroundServiceCronFixture : Libs.Infrastructure.Test.
         Prices.Last(x => x.AtDateTimeOffset <= TimeToQuery).MWhPriceInEuros = 49M; // 0.049 KWhPriceInEuros
     }
 
-    [ClassCleanup]
-    public static new void ClassCleanup() => PvpcService?.Dispose();
+    public Services.PvpcBackgroundServiceCron PvpcService { get; }
+    public Libs.Core.Entities.Pvpc[] Prices { get; }
+    public DateTimeOffset TimeToQuery { get; }
+    public decimal MinPriceAllowed { get; }
 
-    [TestMethod]
-    public void IsTimeToChargeNoPricesTest()
+    public override void Dispose()
     {
-        Settings.TuyaManagerSettings tuyaManagerSettings = new()
-        {
-            CronExpression = Cronos.CronExpression.Hourly.ToString(),
-            AllowChargeWhenKWhPriceInEurosIsBelowThan = decimal.MaxValue,
-            ChargingHoursPerDay = 4,
-        };
-
-        bool res = Services.PvpcCronBackgroundService.IsTimeToCharge(
-            [],
-            TimeToQuery,
-            tuyaManagerSettings);
-
-        Assert.IsFalse(res);
-    }
-
-    [TestMethod]
-    public void IsTimeToChargeAllowBelowDecimalMaxValueTest()
-    {
-        Settings.TuyaManagerSettings tuyaManagerSettings = new()
-        {
-            CronExpression = Cronos.CronExpression.Hourly.ToString(),
-            AllowChargeWhenKWhPriceInEurosIsBelowThan = decimal.MaxValue,
-            ChargingHoursPerDay = 4,
-        };
-
-        bool res = Services.PvpcCronBackgroundService.IsTimeToCharge(
-            Prices,
-            TimeToQuery,
-            tuyaManagerSettings);
-
-        Assert.IsTrue(res);
-    }
-
-    [TestMethod]
-    public void IsTimeToChargeIfAnyPriceBelowTest()
-    {
-        Settings.TuyaManagerSettings tuyaManagerSettings = new()
-        {
-            CronExpression = Cronos.CronExpression.Hourly.ToString(),
-            AllowChargeWhenKWhPriceInEurosIsBelowThan = MinPriceAllowed,
-            ChargingHoursPerDay = 4,
-        };
-        bool res = Services.PvpcCronBackgroundService.IsTimeToCharge(
-            Prices,
-            TimeToQuery,
-            tuyaManagerSettings);
-
-        Assert.AreEqual(res, Prices.Any(x => x.KWhPriceInEuros <= MinPriceAllowed));
+        PvpcService?.Dispose();
+        base.Dispose();
     }
 }

@@ -56,13 +56,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Seedysoft.BlazorWebApp.Clie
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Seedysoft.BlazorWebApp.Server", "src\BlazorWebApp\Server\Seedysoft.BlazorWebApp.Server.csproj", "{7330CF79-2BF4-4D53-9D22-21042281891C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Seedysoft.Libs.Core.Tests", "test\Libs\Core.Tests\Seedysoft.Libs.Core.Tests.csproj", "{9FCDE68A-2CEE-4A2C-93DF-04928A78A7BC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Seedysoft.Libs.Core.Test", "test\Libs\Core.Tests\Seedysoft.Libs.Core.Test.csproj", "{9FCDE68A-2CEE-4A2C-93DF-04928A78A7BC}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Seedysoft.Libs.FuelPrices", "src\Libs\FuelPrices\Seedysoft.Libs.FuelPrices.csproj", "{7543792A-762F-4AE2-B37F-816F9D023AE2}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Seedysoft.Libs.Cryptography", "src\Libs\Cryptography\Seedysoft.Libs.Cryptography.csproj", "{91BBB425-F8FA-4477-B1E2-9F56222C2405}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Seedysoft.Libs.Cryptography.Tests", "test\Libs\Cryptography.Tests\Seedysoft.Libs.Cryptography.Tests.csproj", "{9A25AD59-8CEF-44EB-B702-11169A87E76B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Seedysoft.Libs.Cryptography.Test", "test\Libs\Cryptography.Tests\Seedysoft.Libs.Cryptography.Test.csproj", "{9A25AD59-8CEF-44EB-B702-11169A87E76B}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Seedysoft.Libs.BackgroundServices", "src\Libs\BackgroundServices\Seedysoft.Libs.BackgroundServices.csproj", "{E9470628-052C-4E2A-9855-78D9AB0F2A19}"
 EndProject
