@@ -3,6 +3,7 @@
 public record UpdateSettings : BackgroundServices.ScheduleConfig
 {
     private string githubPat = default!;
+ 
     public string GithubPat
     {
         get => githubPat;
