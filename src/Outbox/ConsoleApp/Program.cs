@@ -39,8 +39,8 @@ public sealed class Program : Libs.Core.ProgramBase
 
             using CancellationTokenSource CancelTokenSource = new();
 
-            using (Lib.Services.OutboxBackgroundServiceCron outboxCronBackgroundService = host.Services.GetRequiredService<Lib.Services.OutboxBackgroundServiceCron>())
-                await outboxCronBackgroundService.DoWorkAsync(CancelTokenSource.Token);
+            using (Lib.Services.OutboxBackgroundServiceCron outboxBackgroundServiceCron = host.Services.GetRequiredService<Lib.Services.OutboxBackgroundServiceCron>())
+                await outboxBackgroundServiceCron.DoWorkAsync(CancelTokenSource.Token);
 
             Logger.LogInformation("End {ApplicationName}", AppName);
         }
