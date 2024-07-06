@@ -23,9 +23,10 @@ public sealed class TuyaManagerBackgroundServiceCronFixture : Libs.Infrastructur
         serviceCollection.TryAddSingleton(new Settings.TuyaManagerSettings() { CronExpression = "* * 30 2 *", /* At every minute on day-of-month 30 in February. */         });
         serviceCollection.TryAddSingleton(GetDbCxt());
         serviceCollection.TryAddSingleton<Microsoft.Extensions.Logging.ILogger<Services.TuyaManagerBackgroundServiceCron>>(new NullLogger<Services.TuyaManagerBackgroundServiceCron>());
-        serviceCollection.TryAddSingleton<Microsoft.Extensions.Hosting.IHostApplicationLifetime>(new ApplicationLifetime(new NullLogger<ApplicationLifetime>()));
-
-        TuyaManagerService = new(serviceCollection.BuildServiceProvider());
+        
+        TuyaManagerService = new(
+            serviceCollection.BuildServiceProvider(),
+            new ApplicationLifetime(new NullLogger<ApplicationLifetime>()));
     }
 
     public Services.TuyaManagerBackgroundServiceCron TuyaManagerService { get; }
