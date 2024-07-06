@@ -36,15 +36,13 @@ public sealed class Program : Libs.Core.ProgramBase
 
             // Migrate and seed the database during startup. Must be synchronous.
             using IServiceScope Scope = host.Services.CreateAsyncScope();
+            await Scope.ServiceProvider.GetRequiredService<Libs.Infrastructure.DbContexts.DbCxt>().Database.MigrateAsync();
+
+            using CancellationTokenSource CancelTokenSource = new();
             {
-                await Scope.ServiceProvider.GetRequiredService<Libs.Infrastructure.DbContexts.DbCxt>().Database.MigrateAsync();
+                Lib.Services.WebComparerCronBackgroundService webComparerHostedService = host.Services.GetRequiredService<Lib.Services.WebComparerCronBackgroundService>();
 
-                using CancellationTokenSource CancelTokenSource = new();
-                {
-                    Lib.Services.WebComparerCronBackgroundService webComparerHostedService = host.Services.GetRequiredService<Lib.Services.WebComparerCronBackgroundService>();
-
-                    await webComparerHostedService.FindDifferencesAsync(CancelTokenSource.Token);
-                }
+                await webComparerHostedService.FindDifferencesAsync(CancelTokenSource.Token);
             }
 
             Logger.LogInformation("End {ApplicationName}", AppName);

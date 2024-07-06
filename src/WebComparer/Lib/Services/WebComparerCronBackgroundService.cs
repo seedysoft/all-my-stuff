@@ -32,10 +32,10 @@ public sealed class WebComparerCronBackgroundService : Libs.BackgroundServices.C
 
     public async Task FindDifferencesAsync(CancellationToken cancellationToken)
     {
-        Libs.Infrastructure.DbContexts.DbCxt dbCtx = ServiceProvider.GetRequiredService<Libs.Infrastructure.DbContexts.DbCxt>();
-
         try
         {
+            Libs.Infrastructure.DbContexts.DbCxt dbCtx = ServiceProvider.GetRequiredService<Libs.Infrastructure.DbContexts.DbCxt>();
+
             IQueryable<Libs.Core.Entities.WebData> WebDatasWithSubscribers =
                 from w in dbCtx.WebDatas
                 join s in dbCtx.Subscriptions on w.SubscriptionId equals s.SubscriptionId
