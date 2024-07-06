@@ -8,15 +8,15 @@ using System.Collections.Immutable;
 
 namespace Seedysoft.Outbox.Lib.Services;
 
-public sealed class OutboxCronBackgroundService : Libs.BackgroundServices.Cron
+public sealed class OutboxBackgroundServiceCron : Libs.BackgroundServices.Cron
 {
-    private readonly ILogger<OutboxCronBackgroundService> Logger;
+    private readonly ILogger<OutboxBackgroundServiceCron> Logger;
 
-    public OutboxCronBackgroundService(
+    public OutboxBackgroundServiceCron(
         IServiceProvider serviceProvider,
         Microsoft.Extensions.Hosting.IHostApplicationLifetime hostApplicationLifetime) : base(serviceProvider, hostApplicationLifetime)
     {
-        Logger = ServiceProvider.GetRequiredService<ILogger<OutboxCronBackgroundService>>();
+        Logger = ServiceProvider.GetRequiredService<ILogger<OutboxBackgroundServiceCron>>();
 
         Config = new Libs.BackgroundServices.ScheduleConfig() { CronExpression = "*/4 * * * *" /*At every 4th minute*/  };
     }
@@ -25,29 +25,29 @@ public sealed class OutboxCronBackgroundService : Libs.BackgroundServices.Cron
     {
         string? AppName = GetType().FullName;
 
-        logger.LogInformation("Called {ApplicationName} version {Version}", AppName, System.Reflection.Assembly.GetExecutingAssembly().GetName().Version);
+        Logger.LogInformation("Called {ApplicationName} version {Version}", AppName, System.Reflection.Assembly.GetExecutingAssembly().GetName().Version);
 
         try
         {
-            Libs.Infrastructure.DbContexts.DbCxt dbCtx = serviceProvider.GetRequiredService<Libs.Infrastructure.DbContexts.DbCxt>();
+            Libs.Infrastructure.DbContexts.DbCxt dbCtx = ServiceProvider.GetRequiredService<Libs.Infrastructure.DbContexts.DbCxt>();
 
             Libs.Core.Entities.Outbox[] PendingMessages = await dbCtx.Outbox.Where(x => x.SentAtDateTimeOffset == null).ToArrayAsync(stoppingToken);
 
             if (PendingMessages.Length == 0)
             {
-                logger.LogInformation("NO pending messages");
+                Logger.LogInformation("NO pending messages");
             }
             else
             {
-                logger.LogInformation("Obtained {PendingMessages} pending messages", PendingMessages.Length);
+                Logger.LogInformation("Obtained {PendingMessages} pending messages", PendingMessages.Length);
 
                 Libs.Core.Entities.Subscriber[]? AllSubscribers = await dbCtx.Subscribers
                     .Include(x => x.Subscriptions)
                     .AsNoTracking()
                     .ToArrayAsync(stoppingToken);
-                logger.LogInformation("Obtained {AllSubscribers} subscribers", AllSubscribers.Length);
+                Logger.LogInformation("Obtained {AllSubscribers} subscribers", AllSubscribers.Length);
 
-                Libs.TelegramBot.Services.TelegramHostedService telegramHostedService = serviceProvider.GetRequiredService<Libs.TelegramBot.Services.TelegramHostedService>();
+                Libs.TelegramBot.Services.TelegramHostedService telegramHostedService = ServiceProvider.GetRequiredService<Libs.TelegramBot.Services.TelegramHostedService>();
 
                 for (int i = 0; i < PendingMessages.Length; i++)
                 {
@@ -78,7 +78,7 @@ public sealed class OutboxCronBackgroundService : Libs.BackgroundServices.Cron
                                 _ => throw new ApplicationException($"Unexpected SubscriptionName: '{PendingMessage.SubscriptionName}'"),
                             };
 
-                            await serviceProvider.GetRequiredService<Libs.SmtpService.Services.SmtpService>().SendMailAsync(
+                            await ServiceProvider.GetRequiredService<Libs.SmtpService.Services.SmtpService>().SendMailAsync(
                                 subscriber.MailAddress,
                                 PendingMessage.SubscriptionName.ToString(),
                                 Message,
@@ -96,12 +96,12 @@ public sealed class OutboxCronBackgroundService : Libs.BackgroundServices.Cron
             const int KeepDays = 20;
             DateTimeOffset dateTimeOffset = DateTimeOffset.Now.AddDays(-KeepDays);
             await dbCtx.BulkDeleteAsync(dbCtx.Outbox.Where(x => x.SentAtDateTimeOffset < dateTimeOffset), cancellationToken: stoppingToken);
-            logger.LogDebug("Removed {Entities} old entities", await dbCtx.SaveChangesAsync(stoppingToken));
+            Logger.LogDebug("Removed {Entities} old entities", await dbCtx.SaveChangesAsync(stoppingToken));
         }
-        catch (Exception e) when (logger.LogAndHandle(e, "Unexpected error")) { }
+        catch (Exception e) when (Logger.LogAndHandle(e, "Unexpected error")) { }
         finally { await Task.CompletedTask; }
 
-        logger.LogInformation("End {ApplicationName}", AppName);
+        Logger.LogInformation("End {ApplicationName}", AppName);
     }
 
     private static string GetHtmlBodyMail(string payload)
