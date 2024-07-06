@@ -6,22 +6,18 @@ using System.Net.Http.Json;
 
 namespace Seedysoft.Pvpc.Lib.Services;
 
-public sealed class PvpcCronBackgroundService : Libs.BackgroundServices.Cron
+public sealed class PvpcBackgroundServiceCron : Libs.BackgroundServices.Cron
 {
-    private readonly ILogger<PvpcBackgroundServiceCron> logger = serviceProvider.GetRequiredService<ILogger<PvpcBackgroundServiceCron>>();
-
-    private readonly Libs.Infrastructure.DbContexts.DbCxt dbCxt = serviceProvider.GetRequiredService<Libs.Infrastructure.DbContexts.DbCxt>();
-
     // HttpClient is intended to be instantiated once per application, rather than per-use. See Remarks.
     private static readonly HttpClient client = new();
 
-    private readonly ILogger<PvpcCronBackgroundService> Logger;
+    private readonly ILogger<PvpcBackgroundServiceCron> Logger;
 
-    public PvpcCronBackgroundService(
+    public PvpcBackgroundServiceCron(
         IServiceProvider serviceProvider,
         Microsoft.Extensions.Hosting.IHostApplicationLifetime hostApplicationLifetime) : base(serviceProvider, hostApplicationLifetime)
     {
-        Logger = ServiceProvider.GetRequiredService<ILogger<PvpcCronBackgroundService>>();
+        Logger = ServiceProvider.GetRequiredService<ILogger<PvpcBackgroundServiceCron>>();
 
         Config = ServiceProvider.GetRequiredService<Settings.PvpcSettings>();
     }
@@ -41,12 +37,12 @@ public sealed class PvpcCronBackgroundService : Libs.BackgroundServices.Cron
     {
         string? AppName = GetType().FullName;
 
-        logger.LogInformation("Called {ApplicationName} version {Version}", AppName, System.Reflection.Assembly.GetExecutingAssembly().GetName().Version);
+        Logger.LogInformation("Called {ApplicationName} version {Version}", AppName, System.Reflection.Assembly.GetExecutingAssembly().GetName().Version);
 
-        logger.LogInformation("Obtaining PVPC for the day {ForDate}", forDate.ToString(Libs.Utils.Constants.Formats.YearMonthDayFormat));
+        Logger.LogInformation("Obtaining PVPC for the day {ForDate}", forDate.ToString(Libs.Utils.Constants.Formats.YearMonthDayFormat));
 
         string UrlString = string.Format(Settings.DataUrlTemplate, forDate);
-        logger.LogInformation("From {UrlString}", UrlString);
+        Logger.LogInformation("From {UrlString}", UrlString);
 
         try
         {
@@ -60,19 +56,19 @@ public sealed class PvpcCronBackgroundService : Libs.BackgroundServices.Cron
 
             int? HowManyPricesObtained = await ProcessPricesAsync(NewEntities, stoppingToken);
         }
-        catch (HttpRequestException e) when (System.Net.HttpStatusCode.BadGateway == e.StatusCode && logger.LogAndHandle(e, "'{WebUrl}' not yet published", UrlString)) { }
-        catch (TaskCanceledException e) when (e.InnerException is TimeoutException && logger.LogAndHandle(e, "Request to '{WebUrl}' timeout", UrlString)) { }
-        catch (TaskCanceledException e) when (logger.LogAndHandle(e, "Task request to '{WebUrl}' cancelled", UrlString)) { }
-        catch (Exception e) when (logger.LogAndHandle(e, "Request to '{WebUrl}' failed", UrlString)) { }
+        catch (HttpRequestException e) when (System.Net.HttpStatusCode.BadGateway == e.StatusCode && Logger.LogAndHandle(e, "'{WebUrl}' not yet published", UrlString)) { }
+        catch (TaskCanceledException e) when (e.InnerException is TimeoutException && Logger.LogAndHandle(e, "Request to '{WebUrl}' timeout", UrlString)) { }
+        catch (TaskCanceledException e) when (Logger.LogAndHandle(e, "Task request to '{WebUrl}' cancelled", UrlString)) { }
+        catch (Exception e) when (Logger.LogAndHandle(e, "Request to '{WebUrl}' failed", UrlString)) { }
 
-        logger.LogInformation("End {ApplicationName}", AppName);
+        Logger.LogInformation("End {ApplicationName}", AppName);
     }
 
     private async Task<int?> ProcessPricesAsync(Libs.Core.Entities.Pvpc[]? NewEntities, CancellationToken stoppingToken)
     {
         if (!(NewEntities?.Length > 0))
         {
-            logger.LogInformation("No entities obtained");
+            Logger.LogInformation("No entities obtained");
             return null;
         }
 
@@ -113,12 +109,12 @@ public sealed class PvpcCronBackgroundService : Libs.BackgroundServices.Cron
 
             _ = await dbCxt.SaveChangesAsync(stoppingToken);
 
-            logger.LogInformation("Obtained {NewEntities} entities", NewEntities.Length);
+            Logger.LogInformation("Obtained {NewEntities} entities", NewEntities.Length);
 
             return Prices.Count;
         }
 
-        logger.LogInformation("No changes");
+        Logger.LogInformation("No changes");
 
         return 0;
     }
