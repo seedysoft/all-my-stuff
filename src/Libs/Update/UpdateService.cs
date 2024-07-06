@@ -17,7 +17,7 @@ public class UpdateService : BackgroundServices.Cron, IDisposable
     private bool disposedValue;
 
     public UpdateService(IServiceProvider serviceProvider) : base(
-        serviceProvider.GetRequiredService<Settings.UpdateSettings>(),
+        serviceProvider,
         serviceProvider.GetRequiredService<Microsoft.Extensions.Hosting.IHostApplicationLifetime>())
     {
         this.serviceProvider = serviceProvider;

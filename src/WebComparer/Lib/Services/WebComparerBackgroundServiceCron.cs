@@ -6,26 +6,17 @@ using Seedysoft.Libs.Utils.Extensions;
 
 namespace Seedysoft.WebComparer.Lib.Services;
 
-<<<<<<<< HEAD:src/WebComparer/Lib/Services/WebComparerCronBackgroundService.cs
-public sealed class WebComparerCronBackgroundService : Libs.BackgroundServices.Cron
-========
-public sealed class WebComparerBackgroundServiceCron(IServiceProvider serviceProvider)
-    : Libs.BackgroundServices.Cron(
-        new() { CronExpression = Cronos.CronExpression.Hourly.ToString() },
-        serviceProvider.GetRequiredService<Microsoft.Extensions.Hosting.IHostApplicationLifetime>())
->>>>>>>> 802790d (Closes #47):src/WebComparer/Lib/Services/WebComparerBackgroundServiceCron.cs
+public sealed class WebComparerBackgroundServiceCron : Libs.BackgroundServices.Cron
 {
-    private readonly ILogger<WebComparerBackgroundServiceCron> logger = serviceProvider.GetRequiredService<ILogger<WebComparerBackgroundServiceCron>>();
-
     private static readonly TimeSpan FiveSecondsTimeSpan = TimeSpan.FromSeconds(5);
     private static readonly CancellationTokenSource cancellationTokenSource = new();
-    private readonly ILogger<WebComparerCronBackgroundService> Logger;
+    private readonly ILogger<WebComparerBackgroundServiceCron> Logger;
 
-    public WebComparerCronBackgroundService(
+    public WebComparerBackgroundServiceCron(
         IServiceProvider serviceProvider,
         Microsoft.Extensions.Hosting.IHostApplicationLifetime hostApplicationLifetime) : base(serviceProvider, hostApplicationLifetime)
     {
-        Logger = ServiceProvider.GetRequiredService<ILogger<WebComparerCronBackgroundService>>();
+        Logger = ServiceProvider.GetRequiredService<ILogger<WebComparerBackgroundServiceCron>>();
 
         Config = new Libs.BackgroundServices.ScheduleConfig() { CronExpression = "7 * * * *" /*At every 7th minute*/ };
     }

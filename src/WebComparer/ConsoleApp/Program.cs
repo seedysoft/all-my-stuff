@@ -39,7 +39,7 @@ public sealed class Program : Libs.Core.ProgramBase
 
             using CancellationTokenSource CancelTokenSource = new();
             {
-                Lib.Services.WebComparerCronBackgroundService webComparerHostedService = host.Services.GetRequiredService<Lib.Services.WebComparerCronBackgroundService>();
+                Lib.Services.WebComparerBackgroundServiceCron webComparerHostedService = host.Services.GetRequiredService<Lib.Services.WebComparerBackgroundServiceCron>();
 
                 await webComparerHostedService.FindDifferencesAsync(CancelTokenSource.Token);
             }
