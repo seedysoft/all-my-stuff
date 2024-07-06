@@ -26,6 +26,8 @@ internal sealed class Configurator : Utils.Dependencies.ConfiguratorBase
             string ConnectionStringName = nameof(DbContexts.DbCxt);
             string ConnectionString = hostApplicationBuilder.Configuration.GetConnectionString($"{ConnectionStringName}") ?? throw new KeyNotFoundException($"Connection string '{ConnectionStringName}' not found.");
             string FullFilePath = Path.GetFullPath(ConnectionString);
+            while (!File.Exists(FullFilePath))
+                FullFilePath = Path.GetFullPath(ConnectionString = ConnectionString.Insert(0, "../"));
             if (!File.Exists(FullFilePath))
                 throw new FileNotFoundException("Database file not found.", FullFilePath);
 

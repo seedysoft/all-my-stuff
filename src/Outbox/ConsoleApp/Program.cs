@@ -6,10 +6,13 @@ using Seedysoft.Libs.Utils.Extensions;
 
 namespace Seedysoft.Outbox.ConsoleApp;
 
-public sealed class Program
+public sealed class Program : Libs.Core.ProgramBase
 {
+    [STAThread]
     public static async Task Main(string[] args)
     {
+        await ObtainCommandLineAsync(args);
+
         HostApplicationBuilder hostApplicationBuilder = new(args);
 
         _ = hostApplicationBuilder.AddAllMyDependencies();
@@ -30,9 +33,6 @@ public sealed class Program
             //IEnumerable<KeyValuePair<string, string?>> Config = host.Services.GetRequiredService<IConfiguration>().AsEnumerable();
             //foreach (KeyValuePair<string, string?> item in Config)
             //    Logger.LogDebug($"{item.Key}: {item.Value ?? "<<NULL>>"}");
-
-            if (System.Diagnostics.Debugger.IsAttached)
-                await Task.Delay(Libs.Utils.Constants.Time.TenSecondsTimeSpan);
 
             // Migrate and seed the database during startup. Must be synchronous.
             using IServiceScope Scope = host.Services.CreateAsyncScope();

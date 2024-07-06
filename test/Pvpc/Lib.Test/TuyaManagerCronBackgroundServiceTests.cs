@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Hosting.Internal;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting.Internal;
 using Microsoft.Extensions.Logging.Abstractions;
 using Xunit;
 
@@ -22,13 +23,15 @@ public sealed class TuyaManagerCronBackgroundServiceFixture : Libs.Infrastructur
             CronExpression = "* * 30 2 *", // At every minute on day-of-month 30 in February.
         };
 
-        Libs.Infrastructure.DbContexts.DbCxt dbCxt = GetDbCxt();
+        IServiceCollection services = new ServiceCollection();
+        _ = services
+            .AddSingleton<Libs.BackgroundServices.ScheduleConfig>(tuyaManagerSettings)
+            .AddSingleton(GetDbCxt())
+            .AddSingleton<Microsoft.Extensions.Logging.ILogger<Services.TuyaManagerCronBackgroundService>>(new NullLogger<Services.TuyaManagerCronBackgroundService>());
 
         TuyaManagerService = new(
-            tuyaManagerSettings
-            , dbCxt
-            , new NullLogger<Services.TuyaManagerCronBackgroundService>()
-            , new ApplicationLifetime(new NullLogger<ApplicationLifetime>()));
+            services.BuildServiceProvider(),
+            new ApplicationLifetime(new NullLogger<ApplicationLifetime>()));
     }
 
     public Services.TuyaManagerCronBackgroundService TuyaManagerService { get; }

@@ -346,8 +346,8 @@ public sealed class ObtainFuelPricesService : IDisposable
 
     public async Task<IImmutableList<Core.ViewModels.GasStationInfoModel>> ObtainDataAsync(Core.ViewModels.GasStationQueryModel filter)
     {
-        NetTopologySuite.Geometries.GeometryFactory GeomFactWgs84 = NetTopologySuite.NtsGeometryServices.Instance.CreateGeometryFactory(Libs.Utils.Constants.CoordinateSystemCodes.Wgs84);
-        NetTopologySuite.Geometries.GeometryFactory GeomFactEpsg3857 = NetTopologySuite.NtsGeometryServices.Instance.CreateGeometryFactory(Libs.Utils.Constants.CoordinateSystemCodes.Epsg3857);
+        NetTopologySuite.Geometries.GeometryFactory GeomFactWgs84 = NetTopologySuite.NtsGeometryServices.Instance.CreateGeometryFactory(Utils.Constants.CoordinateSystemCodes.Wgs84);
+        NetTopologySuite.Geometries.GeometryFactory GeomFactEpsg3857 = NetTopologySuite.NtsGeometryServices.Instance.CreateGeometryFactory(Utils.Constants.CoordinateSystemCodes.Epsg3857);
 
         Infrastructure.Data.FuelPricesDbContext fuelPricesDbContext = ServiceProvider.GetRequiredService<Infrastructure.Data.FuelPricesDbContext>();
 
@@ -359,7 +359,7 @@ public sealed class ObtainFuelPricesService : IDisposable
                 LocationEpsg3857 = GeomFactEpsg3857
                     .CreateGeometry(GeomFactWgs84
                         .CreatePoint(new NetTopologySuite.Geometries.Coordinate(x.LngNotNull, x.LatNotNull))
-                        .ProjectTo(Libs.Utils.Constants.CoordinateSystemCodes.Epsg3857)),
+                        .ProjectTo(Utils.Constants.CoordinateSystemCodes.Epsg3857)),
             }).ToListAsync();
         if (AllStations.Count == 0)
             return ImmutableArray<Core.ViewModels.GasStationInfoModel>.Empty;
@@ -377,7 +377,7 @@ public sealed class ObtainFuelPricesService : IDisposable
                 PointEpsg3857 = GeomFactEpsg3857
                     .CreateGeometry(GeomFactWgs84
                         .CreatePoint(new NetTopologySuite.Geometries.Coordinate(x.LngNotNull, x.LatNotNull))
-                        .ProjectTo(Libs.Utils.Constants.CoordinateSystemCodes.Epsg3857)),
+                        .ProjectTo(Utils.Constants.CoordinateSystemCodes.Epsg3857)),
             }).ToImmutableArray();
         if (!TravelPointsImmutable.Any())
             return ImmutableArray<Core.ViewModels.GasStationInfoModel>.Empty;

@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Seedysoft.Libs.Utils.Extensions;
 using Seedysoft.Pvpc.Lib.Extensions;
@@ -6,15 +7,18 @@ using System.Diagnostics;
 
 namespace Seedysoft.Pvpc.Lib.Services;
 
-public sealed class TuyaManagerCronBackgroundService(
-    Settings.TuyaManagerSettings config,
-    Libs.Infrastructure.DbContexts.DbCxt dbCxt,
-    ILogger<TuyaManagerCronBackgroundService> logger,
-    Microsoft.Extensions.Hosting.IHostApplicationLifetime hostApplicationLifetime)
-    : Libs.BackgroundServices.Cron(config, hostApplicationLifetime)
+public sealed class TuyaManagerCronBackgroundService : Libs.BackgroundServices.Cron
 {
-    private readonly Libs.Infrastructure.DbContexts.DbCxt DbCxt = dbCxt;
-    private readonly ILogger<TuyaManagerCronBackgroundService> Logger = logger;
+    private readonly ILogger<TuyaManagerCronBackgroundService> Logger;
+
+    public TuyaManagerCronBackgroundService(
+        IServiceProvider serviceProvider,
+        Microsoft.Extensions.Hosting.IHostApplicationLifetime hostApplicationLifetime) : base(serviceProvider, hostApplicationLifetime)
+    {
+        Logger = ServiceProvider.GetRequiredService<ILogger<TuyaManagerCronBackgroundService>>();
+
+        Config = ServiceProvider.GetRequiredService<Settings.TuyaManagerSettings>();
+    }
 
     private Settings.TuyaManagerSettings Settings => (Settings.TuyaManagerSettings)Config;
 
@@ -36,12 +40,14 @@ public sealed class TuyaManagerCronBackgroundService(
 
         try
         {
-            Libs.Core.Entities.TuyaDevice[] Devices = await DbCxt.TuyaDevices.AsNoTracking().ToArrayAsync(cancellationToken: stoppingToken);
+            Libs.Infrastructure.DbContexts.DbCxt dbCxt = ServiceProvider.GetRequiredService<Libs.Infrastructure.DbContexts.DbCxt>();
+
+            Libs.Core.Entities.TuyaDevice[] Devices = await dbCxt.TuyaDevices.AsNoTracking().ToArrayAsync(cancellationToken: stoppingToken);
 
             DateTimeOffset timeToCheckDateTimeOffset = DateTimeOffset.Now;
             DateTimeOffset dateToQueryDateTimeOffset = timeToCheckDateTimeOffset.Subtract(timeToCheckDateTimeOffset.TimeOfDay);
 
-            Libs.Core.Entities.Pvpc[] PricesForDayPvpcs = await DbCxt.Pvpcs.AsNoTracking()
+            Libs.Core.Entities.Pvpc[] PricesForDayPvpcs = await dbCxt.Pvpcs.AsNoTracking()
                 .Where(x => x.AtDateTimeOffset >= dateToQueryDateTimeOffset)
                 .Where(x => x.AtDateTimeOffset < dateToQueryDateTimeOffset.AddDays(1))
                 .ToArrayAsync(cancellationToken: stoppingToken);

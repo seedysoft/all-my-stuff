@@ -5,6 +5,7 @@ using Telegram.Bot.Types.InlineQueryResults;
 using Telegram.Bot.Types.ReplyMarkups;
 #endif
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Seedysoft.Libs.TelegramBot.Constants;
 using Seedysoft.Libs.TelegramBot.Enums;
@@ -17,16 +18,14 @@ using Telegram.Bot.Types.Enums;
 
 namespace Seedysoft.Libs.TelegramBot.Services;
 
-public partial class TelegramHostedService : Microsoft.Extensions.Hosting.IHostedService
+public partial class TelegramHostedService : Core.NonBackgroundServiceBase, IHostedService
 {
     private readonly ILogger<TelegramHostedService> Logger;
-    private readonly IServiceProvider ServiceProvider;
     private readonly TelegramSettings TelegramSettings;
     private readonly TelegramBotClient LocalTelegramBotClient;
 
-    public TelegramHostedService(IServiceProvider serviceProvider)
+    public TelegramHostedService(IServiceProvider serviceProvider) : base(serviceProvider)
     {
-        ServiceProvider = serviceProvider;
         Logger = ServiceProvider.GetRequiredService<ILogger<TelegramHostedService>>();
 
         TelegramSettings = ServiceProvider.GetRequiredService<TelegramSettings>();

@@ -2,8 +2,8 @@
   "profiles": {
     "PvpcConsoleApp": {
       "commandName": "Project",
+      "commandLineArgs": "-d 10",
       "environmentVariables": {
-        "environment": "Development",
         "DOTNET_ENVIRONMENT": "Development"
       }
     }

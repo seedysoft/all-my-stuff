@@ -64,10 +64,9 @@ public sealed class TravelController : ApiControllerBase
 
     [HttpPost(Client.Constants.TravelController.ObtainGasStations)]
     public async Task<IImmutableList<Libs.FuelPrices.Core.ViewModels.GasStationInfoModel>> ObtainGasStationsAsync(
-        [FromBody] Libs.FuelPrices.Core.ViewModels.GasStationQueryModel filter
-        , [FromServices] Libs.FuelPrices.Services.ObtainFuelPricesService obtainFuelPricesService)
-        =>
-        await obtainFuelPricesService.ObtainDataAsync(filter);
+        [FromBody] Libs.FuelPrices.Core.ViewModels.GasStationQueryModel filter,
+        [FromServices] Libs.FuelPrices.Services.ObtainFuelPricesService obtainFuelPricesService)
+        => await obtainFuelPricesService.ObtainDataAsync(filter);
 
     private async Task<TJson?> LoadJsonAsync<TJson>(
         IHttpClientFactory httpClientFactory

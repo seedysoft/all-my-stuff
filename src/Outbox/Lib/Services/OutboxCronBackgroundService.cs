@@ -7,15 +7,18 @@ using System.Collections.Immutable;
 
 namespace Seedysoft.Outbox.Lib.Services;
 
-public sealed class OutboxCronBackgroundService(
-    Libs.TelegramBot.Settings.TelegramSettings config,
-    IServiceProvider serviceProvider,
-    ILogger<OutboxCronBackgroundService> logger,
-    Microsoft.Extensions.Hosting.IHostApplicationLifetime hostApplicationLifetime)
-    : Libs.BackgroundServices.Cron(config, hostApplicationLifetime)
+public sealed class OutboxCronBackgroundService : Libs.BackgroundServices.Cron
 {
-    private readonly IServiceProvider ServiceProvider = serviceProvider;
-    private readonly ILogger<OutboxCronBackgroundService> Logger = logger;
+    private readonly ILogger<OutboxCronBackgroundService> Logger;
+
+    public OutboxCronBackgroundService(
+        IServiceProvider serviceProvider,
+        Microsoft.Extensions.Hosting.IHostApplicationLifetime hostApplicationLifetime) : base(serviceProvider, hostApplicationLifetime)
+    {
+        Logger = ServiceProvider.GetRequiredService<ILogger<OutboxCronBackgroundService>>();
+
+        Config = new Libs.BackgroundServices.ScheduleConfig() { CronExpression = "*/4 * * * *" /*At every 4th minute*/  };
+    }
 
     public override async Task DoWorkAsync(CancellationToken stoppingToken)
     {

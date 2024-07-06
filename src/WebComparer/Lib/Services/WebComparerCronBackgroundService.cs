@@ -6,18 +6,24 @@ using Seedysoft.Libs.Utils.Extensions;
 
 namespace Seedysoft.WebComparer.Lib.Services;
 
-public sealed class WebComparerHostedService(
-    IServiceProvider serviceProvider
-    , ILogger<WebComparerHostedService> logger
-    , Microsoft.Extensions.Hosting.IHostApplicationLifetime hostApplicationLifetime)
-    : Libs.BackgroundServices.Cron(new() { CronExpression = Cronos.CronExpression.Hourly.ToString() }, hostApplicationLifetime)
+public sealed class WebComparerCronBackgroundService : Libs.BackgroundServices.Cron
 {
     private static readonly TimeSpan FiveSecondsTimeSpan = TimeSpan.FromSeconds(5);
     private static readonly CancellationTokenSource cancellationTokenSource = new();
+    private readonly ILogger<WebComparerCronBackgroundService> Logger;
+
+    public WebComparerCronBackgroundService(
+        IServiceProvider serviceProvider,
+        Microsoft.Extensions.Hosting.IHostApplicationLifetime hostApplicationLifetime) : base(serviceProvider, hostApplicationLifetime)
+    {
+        Logger = ServiceProvider.GetRequiredService<ILogger<WebComparerCronBackgroundService>>();
+
+        Config = new Libs.BackgroundServices.ScheduleConfig() { CronExpression = "7 * * * *" /*At every 7th minute*/ };
+    }
 
     public override async Task DoWorkAsync(CancellationToken cancellationToken)
     {
-        logger.LogInformation("Called {ApplicationName} version {Version}", GetType().FullName, System.Reflection.Assembly.GetExecutingAssembly().GetName().Version);
+        Logger.LogInformation("Called {ApplicationName} version {Version}", GetType().FullName, System.Reflection.Assembly.GetExecutingAssembly().GetName().Version);
 
         _ = FindDifferencesAsync(cancellationToken);
 
@@ -26,10 +32,10 @@ public sealed class WebComparerHostedService(
 
     public async Task FindDifferencesAsync(CancellationToken cancellationToken)
     {
-        Libs.Infrastructure.DbContexts.DbCxt dbCtx = serviceProvider.GetRequiredService<Libs.Infrastructure.DbContexts.DbCxt>();
-
         try
         {
+            Libs.Infrastructure.DbContexts.DbCxt dbCtx = ServiceProvider.GetRequiredService<Libs.Infrastructure.DbContexts.DbCxt>();
+
             IQueryable<Libs.Core.Entities.WebData> WebDatasWithSubscribers =
                 from w in dbCtx.WebDatas
                 join s in dbCtx.Subscriptions on w.SubscriptionId equals s.SubscriptionId
@@ -38,7 +44,7 @@ public sealed class WebComparerHostedService(
             Libs.Core.Entities.WebData[] WebDatas = await WebDatasWithSubscribers
                 .Distinct()
                 .ToArrayAsync(cancellationToken);
-            logger.LogInformation("Obtained {WebDatas} URLs to check", WebDatas.Length);
+            Logger.LogInformation("Obtained {WebDatas} URLs to check", WebDatas.Length);
 
             for (int i = 0; i < WebDatas.Length; i++)
             {
@@ -54,12 +60,12 @@ public sealed class WebComparerHostedService(
                     if (!System.Diagnostics.Debugger.IsAttached)
                         await Task.Delay(FiveSecondsTimeSpan, cancellationToken);
                 }
-                catch (TaskCanceledException e) when (e.InnerException is TimeoutException && logger.LogAndHandle(e.InnerException, "Request to '{WebUrl}' timeout", webData.WebUrl)) { continue; }
-                catch (TaskCanceledException e) when (logger.LogAndHandle(e, "Task request to '{WebUrl}' cancelled", webData.WebUrl)) { continue; }
-                catch (Exception e) when (logger.LogAndHandle(e, "Request to '{WebUrl}' failed", webData.WebUrl)) { continue; }
+                catch (TaskCanceledException e) when (e.InnerException is TimeoutException && Logger.LogAndHandle(e.InnerException, "Request to '{WebUrl}' timeout", webData.WebUrl)) { continue; }
+                catch (TaskCanceledException e) when (Logger.LogAndHandle(e, "Task request to '{WebUrl}' cancelled", webData.WebUrl)) { continue; }
+                catch (Exception e) when (Logger.LogAndHandle(e, "Request to '{WebUrl}' failed", webData.WebUrl)) { continue; }
             }
         }
-        catch (Exception e) when (logger.LogAndHandle(e, "Unexpected error")) { }
+        catch (Exception e) when (Logger.LogAndHandle(e, "Unexpected error")) { }
         finally { await Task.CompletedTask; }
     }
 
@@ -118,7 +124,7 @@ public sealed class WebComparerHostedService(
                     WebDriver.Quit();
                 }
             }
-            catch (Exception e) when (logger.LogAndHandle(e, "GetContent failed with ChromeDriver for '{WebUrl}'", webData.WebUrl))
+            catch (Exception e) when (Logger.LogAndHandle(e, "GetContent failed with ChromeDriver for '{WebUrl}'", webData.WebUrl))
             {
                 Content = default!;
             }
@@ -195,7 +201,7 @@ public sealed class WebComparerHostedService(
 
                 RetryCount = 0;
             }
-            catch (Exception e) when (logger.LogAndHandle(e, "{TryToPerformWebDriverActions} failed", nameof(TryPerformWebDriverActions))) { RetryCount--; }
+            catch (Exception e) when (Logger.LogAndHandle(e, "{TryToPerformWebDriverActions} failed", nameof(TryPerformWebDriverActions))) { RetryCount--; }
         }
         while (RetryCount > 0);
     }

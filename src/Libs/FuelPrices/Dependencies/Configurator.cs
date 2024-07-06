@@ -24,7 +24,7 @@ internal sealed class Configurator : Utils.Dependencies.ConfiguratorBase
         {
             string ConnectionStringName = nameof(Infrastructure.Data.FuelPricesDbContext);
             string ConnectionString = hostApplicationBuilder.Configuration.GetConnectionString($"{ConnectionStringName}") ?? throw new KeyNotFoundException($"Connection string '{ConnectionStringName}' not found.");
-   
+
             _ = dbContextOptionsBuilder.UseSqlite(ConnectionString);
             dbContextOptionsBuilder.ConfigureDebugOptions();
         }

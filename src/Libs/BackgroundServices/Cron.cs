@@ -1,10 +1,12 @@
-﻿using Microsoft.Extensions.Hosting;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 namespace Seedysoft.Libs.BackgroundServices;
 
-public abstract class Cron(ScheduleConfig config, IHostApplicationLifetime hostApplicationLifetime) : BackgroundService
+public abstract class Cron(IServiceProvider serviceProvider, IHostApplicationLifetime hostApplicationLifetime) : BackgroundService
 {
-    protected ScheduleConfig Config { get; init; } = config;
+    protected IServiceProvider ServiceProvider { get; init; } = serviceProvider;
+    protected ScheduleConfig Config { get; init; } = default!;
 
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {

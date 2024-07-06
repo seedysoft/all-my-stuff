@@ -6,9 +6,11 @@ internal sealed class Configurator : Libs.Utils.Dependencies.ConfiguratorBase
 {
     protected override void AddJsonFiles(IHostApplicationBuilder hostApplicationBuilder)
     {
+        string CurrentEnvironmentName = hostApplicationBuilder.Environment.EnvironmentName;
+
         _ = hostApplicationBuilder.Configuration
             .AddJsonFile($"appsettings.BlazorWebApp.Server.json", optional: false, reloadOnChange: true)
-            .AddJsonFile($"appsettings.BlazorWebApp.Server.{hostApplicationBuilder.Environment.EnvironmentName}.json", optional: false, reloadOnChange: true);
+            .AddJsonFile($"appsettings.BlazorWebApp.Server.{CurrentEnvironmentName}.json", optional: false, reloadOnChange: true);
     }
 
     protected override void AddDbContexts(IHostApplicationBuilder hostApplicationBuilder) { /* No DbContexts */ }
@@ -25,7 +27,7 @@ internal sealed class Configurator : Libs.Utils.Dependencies.ConfiguratorBase
         _ = hostApplicationBuilder.Services.AddHostedService<Pvpc.Lib.Services.PvpcCronBackgroundService>();
         _ = hostApplicationBuilder.Services.AddHostedService<Pvpc.Lib.Services.TuyaManagerCronBackgroundService>();
 
-        _ = hostApplicationBuilder.Services.AddHostedService<WebComparer.Lib.Services.WebComparerHostedService>();
+        _ = hostApplicationBuilder.Services.AddHostedService<WebComparer.Lib.Services.WebComparerCronBackgroundService>();
 
         // Add services to the container.
         _ = hostApplicationBuilder.Services

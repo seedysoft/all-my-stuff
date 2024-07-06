@@ -6,10 +6,13 @@ using Seedysoft.Libs.Utils.Extensions;
 
 namespace Seedysoft.WebComparer.ConsoleApp;
 
-public sealed class Program
+public sealed class Program : Libs.Core.ProgramBase
 {
+    [STAThread]
     public static async Task Main(string[] args)
     {
+        await ObtainCommandLineAsync(args);
+
         HostApplicationBuilder hostApplicationBuilder = new(args);
 
         _ = hostApplicationBuilder.AddAllMyDependencies();
@@ -31,20 +34,15 @@ public sealed class Program
             //foreach (KeyValuePair<string, string?> item in Config)
             //    Logger.LogDebug($"{item.Key}: {item.Value ?? "<<NULL>>"}");
 
-            if (System.Diagnostics.Debugger.IsAttached)
-                await Task.Delay(Libs.Utils.Constants.Time.TenSecondsTimeSpan);
-
             // Migrate and seed the database during startup. Must be synchronous.
             using IServiceScope Scope = host.Services.CreateAsyncScope();
+            await Scope.ServiceProvider.GetRequiredService<Libs.Infrastructure.DbContexts.DbCxt>().Database.MigrateAsync();
+
+            using CancellationTokenSource CancelTokenSource = new();
             {
-                await Scope.ServiceProvider.GetRequiredService<Libs.Infrastructure.DbContexts.DbCxt>().Database.MigrateAsync();
+                Lib.Services.WebComparerCronBackgroundService webComparerHostedService = host.Services.GetRequiredService<Lib.Services.WebComparerCronBackgroundService>();
 
-                using CancellationTokenSource CancelTokenSource = new();
-                {
-                    Lib.Services.WebComparerHostedService webComparerHostedService = host.Services.GetRequiredService<Lib.Services.WebComparerHostedService>();
-
-                    await webComparerHostedService.FindDifferencesAsync(CancelTokenSource.Token);
-                }
+                await webComparerHostedService.FindDifferencesAsync(CancelTokenSource.Token);
             }
 
             Logger.LogInformation("End {ApplicationName}", AppName);

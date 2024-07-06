@@ -2,9 +2,9 @@
   "profiles": {
     "WebComparerConsoleApp": {
       "commandName": "Project",
+      "commandLineArgs": "-d 10",
       "environmentVariables": {
-        "DOTNET_ENVIRONMENT": "Development",
-        "environment": "Development"
+        "DOTNET_ENVIRONMENT": "Development"
       }
     }
   }

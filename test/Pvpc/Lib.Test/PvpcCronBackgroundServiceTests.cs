@@ -1,4 +1,4 @@
-using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting.Internal;
 using Microsoft.Extensions.Logging.Abstractions;
 using Xunit;
@@ -75,11 +75,15 @@ public sealed class PvpcCronBackgroundServiceFixture : Libs.Infrastructure.Test.
             PvpcId = "1001",
         };
 
+        IServiceCollection services = new ServiceCollection();
+        _ = services
+            .AddSingleton<Libs.BackgroundServices.ScheduleConfig>(pvpcSettings)
+            .AddSingleton(GetDbCxt())
+            .AddSingleton<Microsoft.Extensions.Logging.ILogger<Services.PvpcCronBackgroundService>>(new NullLogger<Services.PvpcCronBackgroundService>());
+
         PvpcService = new(
-            pvpcSettings
-            , GetDbCxt()
-            , new NullLogger<Services.PvpcCronBackgroundService>()
-            , new ApplicationLifetime(new NullLogger<ApplicationLifetime>()));
+            services.BuildServiceProvider(),
+            new ApplicationLifetime(new NullLogger<ApplicationLifetime>()));
 
         TimeToQuery = DateTimeOffset.UtcNow;
         MinPriceAllowed = 0.05M;

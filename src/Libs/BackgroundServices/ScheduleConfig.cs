@@ -8,6 +8,10 @@ public record ScheduleConfig
 
     public TimeSpan DelayBetweenExecutionsTimeSpan { get; init; } = TimeSpan.FromSeconds(0.1);
 
-    public DateTimeOffset? GetNextOccurrence(DateTimeOffset from) =>
-        Cronos.CronExpression.Parse(CronExpression).GetNextOccurrence(from, TimeZoneInfo);
+    public DateTimeOffset? GetNextOccurrence(DateTimeOffset from)
+    {
+        return string.IsNullOrEmpty(CronExpression) || !Cronos.CronExpression.TryParse(CronExpression, out Cronos.CronExpression? cronExpression)
+            ? null
+            : cronExpression.GetNextOccurrence(from, TimeZoneInfo);
+    }
 }
