@@ -31,9 +31,6 @@ public sealed class Program
             //foreach (KeyValuePair<string, string?> item in Config)
             //    Logger.LogDebug($"{item.Key}: {item.Value ?? "<<NULL>>"}");
 
-            if (System.Diagnostics.Debugger.IsAttached)
-                await Task.Delay(Libs.Utils.Constants.Time.TenSecondsTimeSpan);
-
             // Migrate and seed the database during startup. Must be synchronous.
             using IServiceScope Scope = host.Services.CreateAsyncScope();
             {
