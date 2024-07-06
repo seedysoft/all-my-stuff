@@ -16,7 +16,11 @@ public sealed class PvpcCronBackgroundService : Libs.BackgroundServices.Cron
     public PvpcCronBackgroundService(
         IServiceProvider serviceProvider,
         Microsoft.Extensions.Hosting.IHostApplicationLifetime hostApplicationLifetime) : base(serviceProvider, hostApplicationLifetime)
-        => Logger = ServiceProvider.GetRequiredService<ILogger<PvpcCronBackgroundService>>();
+    {
+        Logger = ServiceProvider.GetRequiredService<ILogger<PvpcCronBackgroundService>>();
+
+        Config = ServiceProvider.GetRequiredService<Settings.PvpcSettings>();
+    }
 
     private Settings.PvpcSettings Settings => (Settings.PvpcSettings)Config;
 

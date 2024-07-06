@@ -14,7 +14,11 @@ public sealed class OutboxCronBackgroundService : Libs.BackgroundServices.Cron
     public OutboxCronBackgroundService(
         IServiceProvider serviceProvider,
         Microsoft.Extensions.Hosting.IHostApplicationLifetime hostApplicationLifetime) : base(serviceProvider, hostApplicationLifetime)
-        => Logger = ServiceProvider.GetRequiredService<ILogger<OutboxCronBackgroundService>>();
+    {
+        Logger = ServiceProvider.GetRequiredService<ILogger<OutboxCronBackgroundService>>();
+
+        Config = new Libs.BackgroundServices.ScheduleConfig() { CronExpression = "*/4 * * * *" /*At every 4th minute*/  };
+    }
 
     public override async Task DoWorkAsync(CancellationToken stoppingToken)
     {

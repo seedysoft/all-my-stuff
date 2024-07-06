@@ -14,7 +14,11 @@ public sealed class TuyaManagerCronBackgroundService : Libs.BackgroundServices.C
     public TuyaManagerCronBackgroundService(
         IServiceProvider serviceProvider,
         Microsoft.Extensions.Hosting.IHostApplicationLifetime hostApplicationLifetime) : base(serviceProvider, hostApplicationLifetime)
-        => Logger = ServiceProvider.GetRequiredService<ILogger<TuyaManagerCronBackgroundService>>();
+    {
+        Logger = ServiceProvider.GetRequiredService<ILogger<TuyaManagerCronBackgroundService>>();
+
+        Config = ServiceProvider.GetRequiredService<Settings.TuyaManagerSettings>();
+    }
 
     private Settings.TuyaManagerSettings Settings => (Settings.TuyaManagerSettings)Config;
 

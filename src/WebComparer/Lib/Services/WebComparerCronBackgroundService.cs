@@ -17,7 +17,8 @@ public sealed class WebComparerCronBackgroundService : Libs.BackgroundServices.C
         Microsoft.Extensions.Hosting.IHostApplicationLifetime hostApplicationLifetime) : base(serviceProvider, hostApplicationLifetime)
     {
         Logger = ServiceProvider.GetRequiredService<ILogger<WebComparerCronBackgroundService>>();
-        Config = new Libs.BackgroundServices.ScheduleConfig() { CronExpression = Cronos.CronExpression.Hourly.ToString() };
+
+        Config = new Libs.BackgroundServices.ScheduleConfig() { CronExpression = "7 * * * *" /*At every 7th minute*/ };
     }
 
     public override async Task DoWorkAsync(CancellationToken cancellationToken)
