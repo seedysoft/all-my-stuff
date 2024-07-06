@@ -36,7 +36,7 @@ public sealed class TuyaManagerBackgroundServiceCron : Libs.BackgroundServices.C
     {
         string? AppName = GetType().FullName;
 
-        logger.LogDebug("Called {ApplicationName} version {Version}", AppName, System.Reflection.Assembly.GetExecutingAssembly().GetName().Version);
+        Logger.LogDebug("Called {ApplicationName} version {Version}", AppName, System.Reflection.Assembly.GetExecutingAssembly().GetName().Version);
 
         try
         {
@@ -73,9 +73,9 @@ public sealed class TuyaManagerBackgroundServiceCron : Libs.BackgroundServices.C
                 }
             }
         }
-        catch (Exception e) when (logger.LogAndHandle(e, "Unexpected error")) { }
+        catch (Exception e) when (Logger.LogAndHandle(e, "Unexpected error")) { }
         finally { await Task.CompletedTask; }
 
-        logger.LogDebug("End {ApplicationName}", AppName);
+        Logger.LogDebug("End {ApplicationName}", AppName);
     }
 }
