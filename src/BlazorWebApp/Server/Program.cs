@@ -13,6 +13,8 @@ public class Program : Libs.Core.ProgramBase
 
         _ = webApplicationBuilder.AddAllMyDependencies();
 
+        _ = webApplicationBuilder.Configuration.AddInMemoryCollection(Libs.Core.Models.Config.RuntimeSettings.GetValues(Settings));
+
         WebApplication webApplication = webApplicationBuilder.Build();
 
         // Configure the HTTP request pipeline.
@@ -34,10 +36,8 @@ public class Program : Libs.Core.ProgramBase
 
         _ = webApplication
             .UseHttpsRedirection()
-
             .UseStaticFiles()
-            .UseAntiforgery()
-        ;
+            .UseAntiforgery();
 
         _ = webApplication.MapRazorComponents<Components.App>()
             .AddInteractiveServerRenderMode()

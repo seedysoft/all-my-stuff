@@ -1,22 +1,22 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Seedysoft.Libs.Utils.Extensions;
 using System.Net.Http.Json;
 
 namespace Seedysoft.Pvpc.Lib.Services;
 
-public sealed class PvpcCronBackgroundService(
-    Settings.PvpcSettings config, 
-    Libs.Infrastructure.DbContexts.DbCxt dbCxt, 
-    ILogger<PvpcCronBackgroundService> logger, 
-    Microsoft.Extensions.Hosting.IHostApplicationLifetime hostApplicationLifetime)
-    : Libs.BackgroundServices.Cron(config, hostApplicationLifetime)
+public sealed class PvpcCronBackgroundService : Libs.BackgroundServices.Cron
 {
     // HttpClient is intended to be instantiated once per application, rather than per-use. See Remarks.
     private static readonly HttpClient client = new();
 
-    private readonly Libs.Infrastructure.DbContexts.DbCxt DbCxt = dbCxt;
-    private readonly ILogger<PvpcCronBackgroundService> Logger = logger;
+    private readonly ILogger<PvpcCronBackgroundService> Logger;
+
+    public PvpcCronBackgroundService(
+        IServiceProvider serviceProvider,
+        Microsoft.Extensions.Hosting.IHostApplicationLifetime hostApplicationLifetime) : base(serviceProvider, hostApplicationLifetime)
+        => Logger = ServiceProvider.GetRequiredService<ILogger<PvpcCronBackgroundService>>();
 
     private Settings.PvpcSettings Settings => (Settings.PvpcSettings)Config;
 
@@ -68,9 +68,11 @@ public sealed class PvpcCronBackgroundService(
             return null;
         }
 
+        Libs.Infrastructure.DbContexts.DbCxt dbCxt = ServiceProvider.GetRequiredService<Libs.Infrastructure.DbContexts.DbCxt>();
+
         DateTimeOffset MinDateTimeOffset = NewEntities.Min(x => x.AtDateTimeOffset);
         DateTimeOffset MaxDateTimeOffset = NewEntities.Max(x => x.AtDateTimeOffset);
-        Libs.Core.Entities.Pvpc[] ExistingPvpcs = await DbCxt.Pvpcs
+        Libs.Core.Entities.Pvpc[] ExistingPvpcs = await dbCxt.Pvpcs
             .Where(p => p.AtDateTimeOffset >= MinDateTimeOffset && p.AtDateTimeOffset <= MaxDateTimeOffset)
             .ToArrayAsync(stoppingToken);
 
@@ -83,25 +85,25 @@ public sealed class PvpcCronBackgroundService(
             if (ExistingEntity == null)
             {
                 Prices.Add(NewEntity);
-                _ = DbCxt.Pvpcs.Add(NewEntity);
+                _ = dbCxt.Pvpcs.Add(NewEntity);
             }
             else
             {
                 Prices.Add(ExistingEntity);
                 ExistingEntity.MWhPriceInEuros = NewEntity.MWhPriceInEuros;
-                if (DbCxt.Entry(ExistingEntity).State == EntityState.Modified)
-                    _ = DbCxt.Update(ExistingEntity);
+                if (dbCxt.Entry(ExistingEntity).State == EntityState.Modified)
+                    _ = dbCxt.Update(ExistingEntity);
             }
         }
 
-        if (DbCxt.ChangeTracker.HasChanges())
+        if (dbCxt.ChangeTracker.HasChanges())
         {
             Libs.Core.Entities.Outbox OutboxMessage = new(
                 Libs.Core.Enums.SubscriptionName.electricidad,
                 System.Text.Json.JsonSerializer.Serialize(Prices.Cast<Libs.Core.Entities.Pvpc>().ToArray()));
-            _ = await DbCxt.Outbox.AddAsync(OutboxMessage, stoppingToken);
+            _ = await dbCxt.Outbox.AddAsync(OutboxMessage, stoppingToken);
 
-            _ = await DbCxt.SaveChangesAsync(stoppingToken);
+            _ = await dbCxt.SaveChangesAsync(stoppingToken);
 
             Logger.LogInformation("Obtained {NewEntities} entities", NewEntities.Length);
 

@@ -27,7 +27,7 @@ internal sealed class Configurator : Libs.Utils.Dependencies.ConfiguratorBase
         _ = hostApplicationBuilder.Services.AddHostedService<Pvpc.Lib.Services.PvpcCronBackgroundService>();
         _ = hostApplicationBuilder.Services.AddHostedService<Pvpc.Lib.Services.TuyaManagerCronBackgroundService>();
 
-        _ = hostApplicationBuilder.Services.AddHostedService<WebComparer.Lib.Services.WebComparerHostedService>();
+        _ = hostApplicationBuilder.Services.AddHostedService<WebComparer.Lib.Services.WebComparerCronBackgroundService>();
 
         // Add services to the container.
         _ = hostApplicationBuilder.Services

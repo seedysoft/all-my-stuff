@@ -12,6 +12,5 @@ public sealed class PetroleumProductsController : ApiControllerBase
     [Route("[action]")]
     public async Task<IImmutableList<Libs.FuelPrices.Core.ViewModels.IdDescRecord>> PetroleumProductsForFilterAsync(
         [FromServices] Libs.FuelPrices.Services.ObtainFuelPricesService obtainFuelPricesService)
-        =>
-        await obtainFuelPricesService.GetPetroleumProductsAsync();
+        => await obtainFuelPricesService.GetPetroleumProductsAsync();
 }
