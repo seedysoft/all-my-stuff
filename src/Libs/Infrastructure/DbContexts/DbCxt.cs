@@ -16,8 +16,10 @@ public sealed partial class DbCxt : DbContext
 
         if (!optionsBuilder.IsConfigured)
         {
-            string DatabasePath = "../../../../databases/db.sqlite3";
+            string DatabasePath = "../databases/db.sqlite3";
             string FullFilePath = Path.GetFullPath(DatabasePath);
+            while (!File.Exists(FullFilePath))
+                FullFilePath = Path.GetFullPath(DatabasePath = DatabasePath.Insert(0, "../"));
             if (!File.Exists(FullFilePath))
                 throw new FileNotFoundException("Database file not found.", FullFilePath);
 
