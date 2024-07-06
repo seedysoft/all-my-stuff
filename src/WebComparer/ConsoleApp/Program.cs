@@ -6,10 +6,13 @@ using Seedysoft.Libs.Utils.Extensions;
 
 namespace Seedysoft.WebComparer.ConsoleApp;
 
-public sealed class Program
+public sealed class Program : Libs.Core.ProgramBase
 {
+    [STAThread]
     public static async Task Main(string[] args)
     {
+        await ObtainCommandLineAsync(args);
+
         HostApplicationBuilder hostApplicationBuilder = new(args);
 
         _ = hostApplicationBuilder.AddAllMyDependencies();

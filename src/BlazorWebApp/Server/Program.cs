@@ -2,15 +2,13 @@ using Seedysoft.Libs.Utils.Extensions;
 
 namespace Seedysoft.BlazorWebApp.Server;
 
-public static class Program
+public class Program : Libs.Core.ProgramBase
 {
     [STAThread]
     public static async Task Main(string[] args)
     {
-#if DEBUG
-        // TODO         Use arguments to wait for attach
-        await Task.Delay(TimeSpan.FromSeconds(10));
-#endif
+        await ObtainCommandLineAsync(args);
+
         WebApplicationBuilder webApplicationBuilder = WebApplication.CreateBuilder(args);
 
         _ = webApplicationBuilder.AddAllMyDependencies();
