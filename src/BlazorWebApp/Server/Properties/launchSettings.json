@@ -2,6 +2,7 @@
   "profiles": {
     "http": {
       "commandName": "Project",
+      "commandLineArgs": "-d 5",
       "launchBrowser": true,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
@@ -12,6 +13,7 @@
     },
     "https": {
       "commandName": "Project",
+      "commandLineArgs": "-d 5",
       "launchBrowser": true,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
@@ -22,6 +24,7 @@
     },
     "IIS Express": {
       "commandName": "IISExpress",
+      "commandLineArgs": "-d 5",
       "launchBrowser": true,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
@@ -30,6 +33,7 @@
     },
     "WSL": {
       "commandName": "WSL2",
+      "commandLineArgs": "\"{OutDir}Seedysoft.BlazorWebApp.Server.dll\" -d 5",
       "launchBrowser": true,
       "launchUrl": "https://localhost:7028",
       "environmentVariables": {
