@@ -44,7 +44,7 @@
                 <PropertyColumn Property="x => x.DistanceText" CellStyle="text-align: right !important; white-space: nowrap; width: 1%;" Title="Distance" />
                 <TemplateColumn CellStyle="text-align: center !important; white-space: nowrap; width: 1%;" Filterable="false" Sortable="false">
                     <CellTemplate>
-                        <MudIconButton Href="@context!.Item!.GoogleMapsUri" Icon="@Icons.Material.Sharp.Map" Target="_blank" Title="Show map"></MudIconButton>
+                        <MudIconButton Href="@context!.Item!.GoogleMapsUri" Icon="@Icons.Material.Sharp.Map" Target="_blank" title="Show map"></MudIconButton>
                     </CellTemplate>
                 </TemplateColumn>
             </Columns>
@@ -97,7 +97,7 @@
                 <PropertyColumn Property="x => x.Provincia" CellStyle="white-space: nowrap; width: 1%;" Title="Province" />
                 <TemplateColumn CellStyle="text-align: center !important; width: 1%;" Filterable="false" Sortable="false">
                     <CellTemplate>
-                        <MudIconButton Href="@context!.Item!.GoogleMapsUri" Icon="@Icons.Material.Sharp.Map" Target="_blank" Title="Show location"></MudIconButton>
+                        <MudIconButton Href="@context!.Item!.GoogleMapsUri" Icon="@Icons.Material.Sharp.Map" Target="_blank" title="Show location"></MudIconButton>
                     </CellTemplate>
                 </TemplateColumn>
             </Columns>
