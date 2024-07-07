@@ -75,8 +75,8 @@ public class UpdateBackgroundServiceCron : BackgroundServices.Cron, IDisposable
     //    {
     //        return variant switch
     //        {
-    //            Variants.Variant.CoreWindows => Path.Combine(tempDirectory, "Seedysoft", "SeedysoftUpdater.exe"),
-    //            _ => Path.Combine(tempDirectory, "Seedysoft", "SeedysoftUpdater"),
+    //            Variants.Variant.CoreWindows => Path.Combine(tempDirectory, nameof(Seedysoft), "SeedysoftUpdater.exe"),
+    //            _ => Path.Combine(tempDirectory, nameof(Seedysoft), "SeedysoftUpdater"),
     //        };
     //    }
 
@@ -381,8 +381,7 @@ public class UpdateBackgroundServiceCron : BackgroundServices.Cron, IDisposable
             Credentials = new Octokit.Credentials(serviceProvider.GetRequiredService<Settings.UpdateSettings>().GithubPat)
         };
 
-        //return (await gitHubClient.Repository.Content.GetAllContents(nameof(Seedysoft), "all-my-stuff")).Any();
-        return (await gitHubClient.User.Get(nameof(Seedysoft))).Id != 0;
+        return (await gitHubClient.Repository.Release.GetAll(nameof(Seedysoft), "all-my-stuff")).Any();
     }
 
     //private async Task<string?> DownloadRelease(List<Asset> assets, bool isWindows, string version)
