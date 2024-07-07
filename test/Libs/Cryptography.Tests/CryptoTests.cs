@@ -1,35 +1,24 @@
-﻿using Xunit;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Seedysoft.Libs.Cryptography.Tests;
 
-public sealed class CryptoTests(CryptoTestsFixture cipherFixture)
-    : IClassFixture<CryptoTestsFixture>
+[TestClass]
+public sealed class CryptoTests
 {
-    public CryptoTestsFixture CipherFixture { get; } = cipherFixture;
-
-    [Fact]
+    [TestMethod]
     public void EncryptThenDecryptTest()
-    {
-        string encryptedBytes = Crypto.EncryptText(CipherFixture.TextToEncrypt, CipherFixture.Key);
-        System.Diagnostics.Debug.WriteLine(encryptedBytes);
-
-        string decryptedText = Crypto.DecryptText(encryptedBytes, CipherFixture.Key);
-        System.Diagnostics.Debug.WriteLine(decryptedText);
-
-        Assert.Equal(CipherFixture.TextToEncrypt, decryptedText);
-    }
-}
-
-public sealed class CryptoTestsFixture
-{
-    public string TextToEncrypt { get; }
-    public string Key { get; }
-
-    public CryptoTestsFixture()
     {
         const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
-        TextToEncrypt = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam nulla tellus, elementum sit amet nunc.";
-        Key = System.Security.Cryptography.RandomNumberGenerator.GetString(chars, 32);
+        string TextToEncrypt = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam nulla tellus, elementum sit amet nunc.";
+        string Key = System.Security.Cryptography.RandomNumberGenerator.GetString(chars, 32);
+
+        string encryptedBytes = Crypto.EncryptText(TextToEncrypt, Key);
+        System.Diagnostics.Debug.WriteLine(encryptedBytes);
+
+        string decryptedText = Crypto.DecryptText(encryptedBytes, Key);
+        System.Diagnostics.Debug.WriteLine(decryptedText);
+
+        Assert.AreEqual(TextToEncrypt, decryptedText);
     }
 }

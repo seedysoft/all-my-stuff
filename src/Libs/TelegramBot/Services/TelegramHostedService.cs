@@ -7,9 +7,6 @@ using Telegram.Bot.Types.ReplyMarkups;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Seedysoft.Libs.TelegramBot.Constants;
-using Seedysoft.Libs.TelegramBot.Enums;
-using Seedysoft.Libs.TelegramBot.Settings;
 using Seedysoft.Libs.Utils.Extensions;
 using Telegram.Bot;
 using Telegram.Bot.Exceptions;
@@ -21,14 +18,14 @@ namespace Seedysoft.Libs.TelegramBot.Services;
 public partial class TelegramHostedService : Core.NonBackgroundServiceBase, IHostedService
 {
     private readonly ILogger<TelegramHostedService> Logger;
-    private readonly TelegramSettings TelegramSettings;
+    private readonly Settings.TelegramSettings TelegramSettings;
     private readonly TelegramBotClient LocalTelegramBotClient;
 
     public TelegramHostedService(IServiceProvider serviceProvider) : base(serviceProvider)
     {
         Logger = ServiceProvider.GetRequiredService<ILogger<TelegramHostedService>>();
 
-        TelegramSettings = ServiceProvider.GetRequiredService<TelegramSettings>();
+        TelegramSettings = ServiceProvider.GetRequiredService<Settings.TelegramSettings>();
 
         TelegramBotClientOptions telegramBotClientOptions = new(
             token: $"{TelegramSettings.CurrentBot.Id}:{TelegramSettings.CurrentBot.Token}");
@@ -56,7 +53,7 @@ public partial class TelegramHostedService : Core.NonBackgroundServiceBase, IHos
 
     private static BotCommand[] GetMyCommands()
     {
-        return Enum.GetValues<BotActionName>().
+        return Enum.GetValues<Enums.BotActionName>().
             Select(x => new BotCommand()
             {
                 Command = x.ToString(),
@@ -826,9 +823,9 @@ parseMode: null,
         for (int i = 0; i < prices.Length; i++)
         {
             string emoji =
-                prices[i].KWhPriceInEuros >= Max ? Emojis.RedCircle :
-                prices[i].KWhPriceInEuros <= Min ? Emojis.GreenCircle :
-                prices[i].KWhPriceInEuros <= Avg ? Emojis.YellowCircle : Emojis.OrangeCircle;
+                prices[i].KWhPriceInEuros >= Max ? Constants.Emojis.RedCircle :
+                prices[i].KWhPriceInEuros <= Min ? Constants.Emojis.GreenCircle :
+                prices[i].KWhPriceInEuros <= Avg ? Constants.Emojis.YellowCircle : Constants.Emojis.OrangeCircle;
 
             sb = sb.AppendLine($"{prices[i].AtDateTimeOffset.Hour:00}  {emoji}  {prices[i].KWhPriceInEuros.ToString("N5", Utils.Constants.Formats.ESCultureInfo)}");
         }

@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
-using Seedysoft.Libs.TelegramBot.Settings;
 
 namespace Seedysoft.Libs.TelegramBot.Dependencies;
 
@@ -20,7 +19,7 @@ internal sealed class Configurator : Utils.Dependencies.ConfiguratorBase
 
     protected override void AddMyServices(IHostApplicationBuilder hostApplicationBuilder)
     {
-        hostApplicationBuilder.Services.TryAddSingleton(hostApplicationBuilder.Configuration.GetSection(nameof(TelegramSettings)).Get<TelegramSettings>()!);
+        hostApplicationBuilder.Services.TryAddSingleton(hostApplicationBuilder.Configuration.GetSection(nameof(Settings.TelegramSettings)).Get<Settings.TelegramSettings>()!);
         hostApplicationBuilder.Services.TryAddSingleton<Services.TelegramHostedService>();
     }
 }

@@ -68,6 +68,6 @@
     <ProjectReference Include="..\Utils\Seedysoft.Libs.Utils.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <InternalsVisibleTo Include="Seedysoft.Libs.Infrastructure.Test" />
+    <InternalsVisibleTo Include="Seedysoft.Libs.Infrastructure.Tests" />
   </ItemGroup>
 </Project>

@@ -1,12 +1,10 @@
-﻿using Seedysoft.Libs.TelegramBot.Enums;
+﻿namespace Seedysoft.Libs.TelegramBot;
 
-namespace Seedysoft.Libs.TelegramBot;
-
-internal sealed class CallbackData(BotActionName botActionName)
+internal sealed class CallbackData(Enums.BotActionName botActionName)
 {
     private const char Separator = '~';
 
-    public BotActionName BotActionName { get; init; } = botActionName;
+    public Enums.BotActionName BotActionName { get; init; } = botActionName;
 
     public override string ToString() => string.Join(Separator, (int)BotActionName);
 
@@ -17,6 +15,6 @@ internal sealed class CallbackData(BotActionName botActionName)
 
         string[] Data = text.Split(Separator);
 
-        return new((BotActionName)int.Parse(Data[0]));
+        return new((Enums.BotActionName)int.Parse(Data[0]));
     }
 }
