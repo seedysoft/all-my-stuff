@@ -1,6 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Seedysoft.Libs.Cryptography.Test;
+namespace Seedysoft.Libs.Cryptography.Tests;
 
 [TestClass]
 public sealed class CryptoTests

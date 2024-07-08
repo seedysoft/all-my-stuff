@@ -29,6 +29,6 @@
     <ProjectReference Include="..\Utils\Seedysoft.Libs.Utils.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <InternalsVisibleTo Include="Seedysoft.Libs.Update.Test" />
+    <InternalsVisibleTo Include="Seedysoft.Libs.Update.Tests" />
   </ItemGroup>
 </Project>
