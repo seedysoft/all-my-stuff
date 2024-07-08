@@ -8,6 +8,6 @@
     <RuntimeIdentifiers>linux-arm64;linux-x64;win-x64</RuntimeIdentifiers>
   </PropertyGroup>
   <ItemGroup>
-    <InternalsVisibleTo Include="Seedysoft.Libs.Crypto.Test" />
+    <InternalsVisibleTo Include="Seedysoft.Libs.Crypto.Tests" />
   </ItemGroup>
 </Project>

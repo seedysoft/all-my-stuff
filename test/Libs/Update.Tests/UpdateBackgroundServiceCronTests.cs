@@ -1,57 +1,17 @@
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting.Internal;
 using Microsoft.Extensions.Logging.Abstractions;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Seedysoft.Libs.Update.Test;
+namespace Seedysoft.Libs.Update.Tests;
 
-public sealed class UpdateBackgroundServiceCronTest(UpdateBackgroundServiceCronFixture updateServiceFixture)
-    : IClassFixture<UpdateBackgroundServiceCronFixture>
+[TestClass]
+public sealed class UpdateBackgroundServiceCronTest : Infrastructure.Tests.TestClassBase
 {
-    public UpdateBackgroundServiceCronFixture UpdateServiceFixture { get; } = updateServiceFixture;
+    private static Services.UpdateBackgroundServiceCron UpdateService = default!;
 
-    [Fact]
-    public async Task IsConnectionTest() => Assert.True(await UpdateServiceFixture.UpdateService.ConnectAsync());
-
-    //[Fact]
-    //public void IsTimeToChargeAllowBelowDecimalMaxValue()
-    //{
-    //    Settings.TuyaManagerSettings tuyaManagerSettings = new()
-    //    {
-    //        CronExpression = Cronos.CronExpression.Hourly.ToString(),
-    //        AllowChargeWhenKWhPriceInEurosIsBelowThan = decimal.MaxValue,
-    //        ChargingHoursPerDay = 4,
-    //    };
-
-    //    bool res = Services.UpdateBackgroundServiceCron.IsTimeToCharge(
-    //        UpdateServiceFixture.Prices,
-    //        UpdateServiceFixture.TimeToQuery,
-    //        tuyaManagerSettings);
-
-    //    Assert.True(res);
-    //}
-
-    //[Fact]
-    //public void IsTimeToChargeIfAnyPriceBelow()
-    //{
-    //    Settings.TuyaManagerSettings tuyaManagerSettings = new()
-    //    {
-    //        CronExpression = Cronos.CronExpression.Hourly.ToString(),
-    //        AllowChargeWhenKWhPriceInEurosIsBelowThan = UpdateServiceFixture.MinPriceAllowed,
-    //        ChargingHoursPerDay = 4,
-    //    };
-    //    bool res = Services.UpdateBackgroundServiceCron.IsTimeToCharge(
-    //        UpdateServiceFixture.Prices,
-    //        UpdateServiceFixture.TimeToQuery,
-    //        tuyaManagerSettings);
-
-    //    Assert.Equal(res, UpdateServiceFixture.Prices.Any(x => x.KWhPriceInEuros <= UpdateServiceFixture.MinPriceAllowed));
-    //}
-}
-
-public sealed class UpdateBackgroundServiceCronFixture : Infrastructure.Test.BaseFixture
-{
-    public UpdateBackgroundServiceCronFixture() : base()
+    [ClassInitialize]
+    public static new void ClassInitialize(TestContext testContext)
     {
         Microsoft.Extensions.Hosting.HostApplicationBuilder hostApplicationBuilder =
             Microsoft.Extensions.Hosting.Host.CreateEmptyApplicationBuilder(null);
@@ -67,11 +27,9 @@ public sealed class UpdateBackgroundServiceCronFixture : Infrastructure.Test.Bas
         UpdateService = new(host.Services);
     }
 
-    public Services.UpdateBackgroundServiceCron UpdateService { get; }
+    [ClassCleanup]
+    public static new void ClassCleanup() => UpdateService?.Dispose();
 
-    public override void Dispose()
-    {
-        UpdateService?.Dispose();
-        base.Dispose();
-    }
+    [TestMethod]
+    public async Task IsConnectionTest() => Assert.IsTrue(await UpdateService.ConnectAsync());
 }
