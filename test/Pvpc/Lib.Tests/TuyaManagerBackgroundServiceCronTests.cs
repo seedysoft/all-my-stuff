@@ -1,22 +1,16 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting.Internal;
 using Microsoft.Extensions.Logging.Abstractions;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Seedysoft.Pvpc.Lib.Test;
+namespace Seedysoft.Pvpc.Lib.Tests;
 
-public sealed class TuyaManagerBackgroundServiceCronTests(TuyaManagerBackgroundServiceCronFixture tuyaServiceFixture)
-    : IClassFixture<TuyaManagerBackgroundServiceCronFixture>
+public sealed class TuyaManagerBackgroundServiceCronTests : Libs.Infrastructure.Tests.TestClassBase
 {
-    public TuyaManagerBackgroundServiceCronFixture TuyaServiceFixture { get; } = tuyaServiceFixture;
+    private static Services.TuyaManagerBackgroundServiceCron TuyaManagerService = default!;
 
-    [Fact]
-    public async Task DoWorkAsyncTest() => await TuyaServiceFixture.TuyaManagerService.DoWorkAsync(default);
-}
-
-public sealed class TuyaManagerBackgroundServiceCronFixture : Libs.Infrastructure.Test.BaseFixture
-{
-    public TuyaManagerBackgroundServiceCronFixture()
+    [ClassInitialize]
+    public static new void ClassInitialize(TestContext testContext)
     {
         Settings.TuyaManagerSettings tuyaManagerSettings = new()
         {
@@ -34,11 +28,9 @@ public sealed class TuyaManagerBackgroundServiceCronFixture : Libs.Infrastructur
             new ApplicationLifetime(new NullLogger<ApplicationLifetime>()));
     }
 
-    public Services.TuyaManagerBackgroundServiceCron TuyaManagerService { get; }
+    [ClassCleanup]
+    public static new void ClassCleanup() => TuyaManagerService?.Dispose();
 
-    public override void Dispose()
-    {
-        TuyaManagerService.Dispose();
-        base.Dispose();
-    }
+    [TestMethod]
+    public async Task DoWorkAsyncTest() => await TuyaManagerService.DoWorkAsync(default);
 }
