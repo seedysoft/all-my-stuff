@@ -34,6 +34,6 @@
     <ProjectReference Include="..\..\Libs\Utils\Seedysoft.Libs.Utils.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <InternalsVisibleTo Include="Seedysoft.Pvpc.Lib.Tests" />
+    <InternalsVisibleTo Include="$(AssemblyName).Tests" />
   </ItemGroup>
 </Project>

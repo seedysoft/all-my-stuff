@@ -13,10 +13,10 @@
     <Version>$(AssemblyVersion)</Version>
   </PropertyGroup>
   <ItemGroup>
-    <InternalsVisibleTo Include="Seedysoft.Libs.Core.Tests" />
-  </ItemGroup>
-  <ItemGroup>
     <PackageReference Include="CommandLineParser" Version="2.9.1" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="8.0.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="$(AssemblyName).Tests" />
   </ItemGroup>
 </Project>
