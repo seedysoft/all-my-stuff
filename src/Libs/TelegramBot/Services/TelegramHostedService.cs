@@ -1,9 +1,7 @@
-﻿#if !SKIP_DEBUG_TELEGRAM
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Telegram.Bot.Polling;
 using Telegram.Bot.Types.InlineQueryResults;
 using Telegram.Bot.Types.ReplyMarkups;
-#endif
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -66,47 +64,6 @@ public partial class TelegramHostedService : Core.NonBackgroundServiceBase, IHos
         IEnumerable<BotCommand>? myCommands
         , CancellationToken stoppingToken)
     {
-#if SKIP_DEBUG_TELEGRAM
-        Logger.ToString();
-
-        await Task.CompletedTask;
-    }
-
-    private async Task<Message> MessageSendTextAsync(
-        long to
-        , string text
-        , ParseMode? parseMode
-        , CancellationToken cancellationToken)
-    {
-        if (System.Diagnostics.Debugger.IsAttached)
-            to = long.Parse(TelegramSettings.Users.UserTest.Id);
-        ChatId ToChatId = new(to);
-
-        text = text[..Math.Min(text.Length, Utils.Constants.Telegram.MessageLengthLimit)];
-
-        try
-        {
-            return await LocalTelegramBotClient.SendTextMessageAsync(
-                chatId: ToChatId,
-                text: text,
-                parseMode: parseMode ?? (text.ContainsHtml() ? ParseMode.Html : null),
-                cancellationToken: cancellationToken);
-        }
-        catch (ApiRequestException e) when (e.Message?.StartsWith("Bad Request: can't parse entities:", StringComparison.InvariantCultureIgnoreCase) ?? false)
-        {
-            // Sample:
-            //  "Telegram.Bot.Exceptions.ApiRequestException: Bad Request: can't parse entities: Unexpected end tag at byte offset 4120"
-            //  +  Descargar Modelo 790
-            //  =  Ver más
-            //  =  </form>
-            // Retry without HTML
-            return await LocalTelegramBotClient.SendTextMessageAsync(
-                chatId: ToChatId,
-                text: text,
-                cancellationToken: cancellationToken);
-        }
-    }
-#else
         TelegramSettings.CurrentBot.SetMe(await LocalTelegramBotClient.GetMeAsync(stoppingToken));
 
         if (myCommands != null)
@@ -633,7 +590,7 @@ public partial class TelegramHostedService : Core.NonBackgroundServiceBase, IHos
     {
         Logger.LogInformation("{Text}", message.Text);
 
-        await Task.Delay(Utils.Constants.Time.OneTenthOfSecondTimeSpan, cancellationToken);
+        await Task.Delay(TimeSpan.FromSeconds(0.1), cancellationToken);
     }
 
     private async Task ChatActionSendAsync(
@@ -774,7 +731,6 @@ public partial class TelegramHostedService : Core.NonBackgroundServiceBase, IHos
 
     //    _ = await electricidadDbContext.SaveChangesAsync(cancellationToken);
     //}
-#endif
 
     public async Task SendMessageToSubscriberAsync(
         Core.Entities.Outbox pendingMessage

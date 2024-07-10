@@ -12,9 +12,6 @@
     <FileVersion>$(AssemblyVersion)</FileVersion>
     <Version>$(AssemblyVersion)</Version>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DefineConstants>$(DefineConstants);SKIP_DEBUG_TELEGRAM</DefineConstants>
-  </PropertyGroup>
   <ItemGroup>
     <None Remove="appsettings.TelegramSettings.Development.json" />
     <Content Include="appsettings.TelegramSettings.json">
