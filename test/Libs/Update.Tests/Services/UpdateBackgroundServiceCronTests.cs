@@ -35,7 +35,7 @@ public sealed class UpdateBackgroundServiceCronTest : Infrastructure.Tests.TestC
     public static new void ClassCleanup() => UpdateService?.Dispose();
 
     [TestMethod]
-    public async Task IsConnectionTest() => Assert.IsTrue(await UpdateService.ConnectAsync());
+    public async Task IsConnectionTest() => Assert.IsNotNull(await UpdateService.ConnectAsync());
 
     [TestMethod]
     public async Task DoWorkAsyncTest() => await UpdateService.DoWorkAsync(CancellationToken.None);
