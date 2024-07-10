@@ -44,7 +44,7 @@ public static partial class EnvironmentUtil
     [System.Text.RegularExpressions.GeneratedRegex(@"v(?<major>\d+)\.(?<minor>\d+)\.(?<build>\d+)", System.Text.RegularExpressions.RegexOptions.Compiled)]
     private static partial System.Text.RegularExpressions.Regex ReleaseVersionRegex();
 
-    //    public static bool IsWindows => Environment.OSVersion.Platform == PlatformID.Win32NT;
+    public static bool IsWindows => Environment.OSVersion.Platform == PlatformID.Win32NT;
 
     //    public static bool IsDebug =>
     //#if DEBUG
