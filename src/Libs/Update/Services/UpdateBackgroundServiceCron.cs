@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Seedysoft.Libs.Utils.Extensions;
-using System.ServiceProcess;
 
 namespace Seedysoft.Libs.Update.Services;
 
@@ -9,7 +8,7 @@ public class UpdateBackgroundServiceCron : BackgroundServices.Cron, IDisposable
 {
     private readonly ILogger<UpdateBackgroundServiceCron> logger;
     private readonly Variants.Variant variant;
-    private readonly HttpClient client = new();
+    private readonly HttpClient httpClient = new();
     private readonly ManualResetEvent locker = new(false);
     private readonly IServiceProvider serviceProvider;
     private bool disposedValue;
@@ -26,7 +25,7 @@ public class UpdateBackgroundServiceCron : BackgroundServices.Cron, IDisposable
 
         // Increase the HTTP client timeout just for update download (not other requests)
         // The update is heavy and can take longer time for slow connections. Fix #12711
-        client.Timeout = TimeSpan.FromMinutes(5);
+        httpClient.Timeout = TimeSpan.FromMinutes(5);
     }
 
     //    private async Task CheckForUpdatesAsync()
@@ -279,7 +278,7 @@ public class UpdateBackgroundServiceCron : BackgroundServices.Cron, IDisposable
                 base.Dispose();
 
                 // dispose managed state (managed objects)
-                client?.Dispose();
+                httpClient?.Dispose();
                 locker?.Dispose();
             }
 
@@ -319,155 +318,147 @@ public class UpdateBackgroundServiceCron : BackgroundServices.Cron, IDisposable
 
             using IServiceScope ServiceScope = serviceProvider.CreateAsyncScope();
 
-            //Rootobject? Response = await client.GetFromJsonAsync<Rootobject>(UrlString, stoppingToken);
+            Octokit.GitHubClient gitHubClient = new(new Octokit.ProductHeaderValue(Core.Constants.Github.RepositoryName))
+            {
+                Credentials = new Octokit.Credentials(serviceProvider.GetRequiredService<Settings.UpdateSettings>().GithubPat)
+            };
 
-            //var response = await client.GetResultAsync(new WebRequest
-            //{
-            //    Url = "https://api.github.com/repos/Jackett/Jackett/releases",
-            //    Encoding = System.Text.Encoding.UTF8,
-            //    EmulateBrowser = false
-            //});
+            //Octokit.ApiOptions options = new() {  };
+            Octokit.Release? latestRelease = (await gitHubClient.Repository.Release.GetAll(Core.Constants.Github.OwnerName, Core.Constants.Github.RepositoryName/*, options*/))
+                .Where(x => x.Draft == false && x.Prerelease == false)
+                .OrderByDescending(x => x.PublishedAt)
+                .FirstOrDefault();
 
-            //if (response.Status != System.Net.HttpStatusCode.OK)
-            //    logger.LogError("Failed to get the release list: {0}", response.Status);
+            if (latestRelease == null)
+            {
+                logger.LogInformation("No release obtained");
+                return;
+            }
 
-            //var releases = JsonConvert.DeserializeObject<List<Octokit.Release>>(response.ContentString);
+            Version latestVersion = EnvironmentUtil.ParseVersion(latestRelease.Name)
+                ?? throw new Exception("Failed to parse latest version.");
 
-            //releases = releases.Where(r => !r.Prerelease).ToList();
+            if (latestVersion < currentVersion)
+                logger.LogWarning("Downgrade detected. Current version: v{currentVersion} New version: v{latestVersion}", currentVersion, latestVersion);
 
-            //if (releases.Any())
-            //{
-            //    var latestRelease = releases.OrderByDescending(o => o.Created_at).First();
-            //    var latestVersion = EnvironmentUtil.ParseVersion(latestRelease.Name) ?? throw new Exception("Failed to parse latest version.");
+            if (latestVersion == currentVersion)
+            {
+                logger.LogInformation("Jackett is already updated. Current version: v{currentVersion}", currentVersion);
+                return;
+            }
 
-            //    if (latestVersion < currentVersion)
-            //        logger.LogWarning("Downgrade detected. Current version: v{currentVersion} New version: v{1}", currentVersion, latestVersion);
+            logger.LogInformation("New release found. Current version: v{currentVersion} New version: v{latestVersion}", currentVersion, latestVersion);
+            logger.LogInformation("Downloading release v{latestVersion} It could take a while...", latestVersion);
 
-            //    if (latestVersion == currentVersion)
-            //    {
-            //        logger.LogInformation("Jackett is already updated. Current version: v{currentVersion}", currentVersion);
-            //    }
-            //    else
-            //    {
-            //        logger.LogInformation("New release found. Current version: v{currentVersion} New version: v{1}", currentVersion, latestVersion);
-            //        logger.LogInformation("Downloading release v{0} It could take a while...", latestVersion);
+            IReadOnlyList<Octokit.ReleaseAsset> releaseAssets = await gitHubClient.Repository.Release
+                .GetAllAssets(Core.Constants.Github.OwnerName, Core.Constants.Github.RepositoryName, latestRelease.Id);
 
-            //        try
-            //        {
-            //            var tempDir = await DownloadRelease(latestRelease.Assets, isWindows, latestRelease.Name);
+            try
+            {
+                string? tempDir = await DownloadReleaseAsset(releaseAssets, EnvironmentUtil.IsWindows, latestRelease.Name);
 
-            //            // Copy updater
-            //            string installDir = EnvironmentUtil.InstallationPath();
-            //            string updaterPath = GetUpdaterPath(tempDir);
+                //// Copy updater
+                //string installDir = EnvironmentUtil.InstallationPath();
+                //string updaterPath = GetUpdaterPath(tempDir);
 
-            //            if (updaterPath != null)
-            //            {
-            //                StartUpdate(updaterPath, installDir, isWindows, serverConfig.RuntimeSettings.NoRestart, trayIsRunning);
-            //            }
-            //        }
-            //        catch (Exception e) when (logger.Handle(e, "Unhandled exception.")) { }
-            //    }
-            //}
+                //if (updaterPath != null)
+                //    StartUpdate(updaterPath, installDir, EnvironmentUtil.IsWindows, serverConfig.RuntimeSettings.NoRestart, trayIsRunning);
+            }
+            catch (Exception e) when (logger.Handle(e, "Unhandled exception.")) { }
         }
         catch (TaskCanceledException e) when (logger.Handle(e, "Task cancelled.")) { }
         catch (Exception e) when (logger.Handle(e, "Unhandled exception.")) { }
         finally { await Task.CompletedTask; }
     }
 
-    public async Task<bool> ConnectAsync()
+    protected internal async Task<bool> ConnectAsync()
     {
-        Octokit.GitHubClient gitHubClient = new(new Octokit.ProductHeaderValue("all-my-stuff"))
+        Octokit.GitHubClient gitHubClient = new(new Octokit.ProductHeaderValue(Core.Constants.Github.RepositoryName))
         {
             Credentials = new Octokit.Credentials(serviceProvider.GetRequiredService<Settings.UpdateSettings>().GithubPat)
         };
 
-        return (await gitHubClient.Repository.Release.GetAll(nameof(Seedysoft), "all-my-stuff")).Any();
+        return (await gitHubClient.Repository.Release.GetAll(Core.Constants.Github.OwnerName, Core.Constants.Github.RepositoryName)).Any();
     }
 
-    //private async Task<string?> DownloadRelease(List<Asset> assets, bool isWindows, string version)
-    //{
-    //    var variants = new Variants();
-    //    string artifactFileName = variants.GetArtifactFileName(variant);
-    //    var targetAsset = assets.FirstOrDefault(a => a.Browser_download_url.EndsWith(artifactFileName, StringComparison.OrdinalIgnoreCase) && artifactFileName.Length > 0);
+    private async Task<string?> DownloadReleaseAsset(IReadOnlyList<Octokit.ReleaseAsset> releaseAssets, bool isWindows, string version)
+    {
+        string tempDir = Path.Combine(Path.GetTempPath(), $"Update-{version}-{DateTime.Now.Ticks}");
 
-    //    if (targetAsset == null)
-    //    {
-    //        logger.LogError("Failed to find asset to download!");
-    //        return null;
-    //    }
+        if (Directory.Exists(tempDir))
+            Directory.Delete(tempDir, true);
 
-    //    var url = targetAsset.Browser_download_url;
+        _ = Directory.CreateDirectory(tempDir);
 
-    //    var data = await client.GetResultAsync(SetDownloadHeaders(new WebRequest() { Url = url, EmulateBrowser = true, Type = RequestType.GET }));
+        IList<Octokit.ReleaseAsset> releaseAssetList = (isWindows
+            ? releaseAssets.Where(x => x.Url.EndsWith(".zip"))
+            : releaseAssets.Where(x => x.Url.EndsWith(".tar.gz"))
+            ).ToArray();
 
-    //    while (data.IsRedirect)
-    //    {
-    //        data = await client.GetResultAsync(new WebRequest() { Url = data.RedirectingTo, EmulateBrowser = true, Type = RequestType.GET });
-    //    }
+        for (int i = 0; i < releaseAssetList.Count; i++)
+        {
+            Octokit.ReleaseAsset asset = releaseAssetList[i];
 
-    //    string tempDir = Path.Combine(Path.GetTempPath(), "JackettUpdate-" + version + "-" + DateTime.Now.Ticks);
+            string localFilename = isWindows 
+                ? Path.Combine(tempDir, "Update.zip") 
+                : Path.Combine(tempDir, "Update.tar.gz");
 
-    //    if (Directory.Exists(tempDir))
-    //        Directory.Delete(tempDir, true);
+            HttpResponseMessage httpResult = await httpClient.GetAsync(asset.Url);
+            using Stream resultStream = await httpResult.Content.ReadAsStreamAsync();
+            using FileStream fileStream = File.Create(localFilename);
+            await resultStream.CopyToAsync(fileStream);
 
-    //    _ = Directory.CreateDirectory(tempDir);
+            if (isWindows)
+            {
+                new ICSharpCode.SharpZipLib.Zip.FastZip().ExtractZip(localFilename, tempDir, null);
+            }
+            else
+            {
+                ICSharpCode.SharpZipLib.GZip.GZipInputStream gzipStream = new(File.OpenRead(localFilename));
 
-    //    if (isWindows)
-    //    {
-    //        string zipPath = Path.Combine(tempDir, "Update.zip");
-    //        File.WriteAllBytes(zipPath, data.ContentBytes);
-    //        var fastZip = new ICSharpCode.SharpZipLib.Zip.FastZip();
-    //        fastZip.ExtractZip(zipPath, tempDir, null);
-    //    }
-    //    else
-    //    {
-    //        string gzPath = Path.Combine(tempDir, "Update.tar.gz");
-    //        File.WriteAllBytes(gzPath, data.ContentBytes);
-    //        Stream inStream = File.OpenRead(gzPath);
-    //        Stream gzipStream = new ICSharpCode.SharpZipLib.GZip.GZipInputStream(inStream);
+                var tarArchive = ICSharpCode.SharpZipLib.Tar.TarArchive.CreateInputTarArchive(gzipStream, null);
+                tarArchive.ExtractContents(tempDir);
+                tarArchive.Close();
+                gzipStream.Close();
+                File.OpenRead(localFilename).Close();
 
-    //        var tarArchive = ICSharpCode.SharpZipLib.Tar.TarArchive.CreateInputTarArchive(gzipStream, null);
-    //        tarArchive.ExtractContents(tempDir);
-    //        tarArchive.Close();
-    //        gzipStream.Close();
-    //        inStream.Close();
+                //switch (variant)
+                //{
+                //    case Variants.Variant.CoreLinuxAmdx64:
+                //    case Variants.Variant.CoreLinuxArm64:
+                //    {
+                //        // When the files get extracted, the execute permission for jackett and JackettUpdater don't get carried across
 
-    //        switch (variant)
-    //        {
-    //            case Variants.Variant.CoreLinuxAmdx64:
-    //            case Variants.Variant.CoreLinuxArm64:
-    //            {
-    //                // When the files get extracted, the execute permission for jackett and JackettUpdater don't get carried across
+                //        string jackettPath = tempDir + "/Jackett/jackett";
+                //        new UnixFileInfo(jackettPath)
+                //        {
+                //            FileAccessPermissions = FileAccessPermissions.UserReadWriteExecute | FileAccessPermissions.GroupRead | FileAccessPermissions.OtherRead
+                //        };
 
-    //                string jackettPath = tempDir + "/Jackett/jackett";
-    //                new UnixFileInfo(jackettPath)
-    //                {
-    //                    FileAccessPermissions = FileAccessPermissions.UserReadWriteExecute | FileAccessPermissions.GroupRead | FileAccessPermissions.OtherRead
-    //                };
+                //        string jackettUpdaterPath = tempDir + "/Jackett/JackettUpdater";
+                //        new UnixFileInfo(jackettUpdaterPath)
+                //        {
+                //            FileAccessPermissions = FileAccessPermissions.UserReadWriteExecute | FileAccessPermissions.GroupRead | FileAccessPermissions.OtherRead
+                //        };
 
-    //                string jackettUpdaterPath = tempDir + "/Jackett/JackettUpdater";
-    //                new UnixFileInfo(jackettUpdaterPath)
-    //                {
-    //                    FileAccessPermissions = FileAccessPermissions.UserReadWriteExecute | FileAccessPermissions.GroupRead | FileAccessPermissions.OtherRead
-    //                };
+                //        string systemdPath = tempDir + "/Jackett/install_service_systemd.sh";
+                //        new UnixFileInfo(systemdPath)
+                //        {
+                //            FileAccessPermissions = FileAccessPermissions.UserReadWriteExecute | FileAccessPermissions.GroupRead | FileAccessPermissions.OtherRead
+                //        };
 
-    //                string systemdPath = tempDir + "/Jackett/install_service_systemd.sh";
-    //                new UnixFileInfo(systemdPath)
-    //                {
-    //                    FileAccessPermissions = FileAccessPermissions.UserReadWriteExecute | FileAccessPermissions.GroupRead | FileAccessPermissions.OtherRead
-    //                };
+                //        string launcherPath = tempDir + "/Jackett/jackett_launcher.sh";
+                //        new UnixFileInfo(launcherPath)
+                //        {
+                //            FileAccessPermissions = FileAccessPermissions.UserReadWriteExecute | FileAccessPermissions.GroupRead | FileAccessPermissions.OtherRead
+                //        };
 
-    //                string launcherPath = tempDir + "/Jackett/jackett_launcher.sh";
-    //                new UnixFileInfo(launcherPath)
-    //                {
-    //                    FileAccessPermissions = FileAccessPermissions.UserReadWriteExecute | FileAccessPermissions.GroupRead | FileAccessPermissions.OtherRead
-    //                };
+                //        break;
+                //    }
+                //}
+            }
+        }
 
-    //                break;
-    //            }
-    //        }
-    //    }
-
-    //    return tempDir;
-    //}
+        return tempDir;
+    }
 }
