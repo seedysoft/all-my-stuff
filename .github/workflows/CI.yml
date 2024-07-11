@@ -32,4 +32,4 @@ jobs:
         run: dotnet build Seedysoft.Tests.sln -c Release -v n
 
       - name: Test
-        run: dotnet test Seedysoft.Tests.sln -c Release -v n
+        run: dotnet test Seedysoft.Tests.sln -c Release --no-build -v n
