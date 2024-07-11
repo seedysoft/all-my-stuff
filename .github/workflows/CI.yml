@@ -7,7 +7,7 @@ defaults:
     shell: bash
 
 permissions:
-  contents: write
+  contents: read
 
 on:
   pull_request:
@@ -19,26 +19,18 @@ on:
 jobs:
   build-and-test:
     name: Build and test
-    runs-on: [ubuntu-latest]
-
+    runs-on: [ ubuntu-latest ]
+    
     steps:
-      - name: Checkout Code
-        id: checkout-code
-        uses: actions/checkout@main
-        with:
-          fetch-depth: 0
-
-      - name: Setup .NET
-        id: setup-dotnet
+      - uses: actions/checkout@main
+      - name: Setup dotnet
         uses: actions/setup-dotnet@main
         with:
-          dotnet-version: 8.0.x
-
-      - name: Restore dependencies
-        run: dotnet restore Seedysoft.Tests.sln -v n
+          cache: true
+          dotnet-version: 8
 
       - name: Build
-        run: dotnet build Seedysoft.Tests.sln -c Release --no-restore -v n
+        run: dotnet build Seedysoft.Tests.sln -c Release -v n
 
       - name: Test
         run: dotnet test Seedysoft.Tests.sln -c Release -v n
