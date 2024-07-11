@@ -12,6 +12,9 @@
     <FileVersion>$(AssemblyVersion)</FileVersion>
     <Version>$(AssemblyVersion)</Version>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(RuntimeIdentifier)' == 'linux-arm64'">
+    <WasmBuildNative>true</WasmBuildNative>
+  </PropertyGroup>
   <ItemGroup Condition="'$(Configuration)' == 'Debug'">
     <Content Remove="appsettings.BlazorWebApp.Server.Production.json" />
     <None Include="appsettings.BlazorWebApp.Server.Production.json" />
