@@ -1,11 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
     <RuntimeIdentifiers>linux-arm64;linux-x64;win-x64</RuntimeIdentifiers>
-    <UserSecretsId>953853f7-9384-457c-a3c0-3492059196ab</UserSecretsId>
     <StartupObject>Seedysoft.BlazorWebApp.Server.Program</StartupObject>
+    <TargetFramework>net8.0</TargetFramework>
+    <UserSecretsId>953853f7-9384-457c-a3c0-3492059196ab</UserSecretsId>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Release'">
     <AssemblyVersion>$([System.DateTime]::UtcNow.ToString(yy.MM.dd.HHmm))</AssemblyVersion>
