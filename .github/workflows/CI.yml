@@ -26,14 +26,10 @@ jobs:
       - name: Setup dotnet
         uses: actions/setup-dotnet@main
         with:
-          cache: true
           dotnet-version: 8
 
-      - name: Restore dependencies
-        run: dotnet restore Seedysoft.Tests.sln --locked-mode -v n
-
       - name: Build
-        run: dotnet build Seedysoft.Tests.sln -c Release --no-restore -v n
+        run: dotnet build Seedysoft.Tests.sln -c Release -v n
 
       - name: Test
         run: dotnet test Seedysoft.Tests.sln -c Release -v n
