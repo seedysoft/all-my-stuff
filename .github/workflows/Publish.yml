@@ -48,32 +48,26 @@ jobs:
         id: publish
         if: steps.build.outcome == 'success'
         run: |
-          publishFolder="./pub/${{ matrix.runtime }}"
-          echo "$publishFolder"
-          mkdir -p $publishFolder
-          dotnet publish ./src/BlazorWebApp/Server/Seedysoft.BlazorWebApp.Server.csproj -c Release --nologo -o "$publishFolder" -p:PublishTrimmed=false -r "${{ matrix.runtime }}" --sc -v m
-          echo "pubFolder=$publishFolder" >> $GITHUB_OUTPUT
+          mkdir -p "./pub/${{ matrix.runtime }}"
+          dotnet publish ./src/BlazorWebApp/Server/Seedysoft.BlazorWebApp.Server.csproj -c Release --nologo -o "./pub/${{ matrix.runtime }}" -p:PublishTrimmed=false -r "${{ matrix.runtime }}" --sc -v m
+          echo "pubFolder=./pub/${{ matrix.runtime }}" >> $GITHUB_OUTPUT
       - name: Pack
         id: pack
         if: steps.publish.outcome == 'success'
         run: |
           if [[ "${{ matrix.os }}" == "windows-latest" ]]; then
-              packFileName="${{ steps.publish.output.pubFolder }}.${{ github.ref_name }}.zip"
-              echo "$packFileName"
-              7z a -r -tzip $packFileName "./pub/${{ matrix.runtime }}" *
-              echo "archive=$packFileName" >> $GITHUB_OUTPUT
+              7z a -r -tzip "${{ steps.publish.output.pubFolder }}.${{ github.ref_name }}.zip" "./pub/${{ matrix.runtime }}" *
+              echo "packFile=${{ steps.publish.output.pubFolder }}.${{ github.ref_name }}.zip" >> $GITHUB_OUTPUT
           else
-              packFileName="${{ steps.publish.output.pubFolder }}.${{ github.ref_name }}.tar.gz"
-              echo "$packFileName"
-              tar czf $packFileName "${{ github.workspace }}/pub/${{ matrix.runtime }}"
-              echo "archive=$packFileName >> $GITHUB_OUTPUT
+              tar czf "${{ steps.publish.output.pubFolder }}.${{ github.ref_name }}.tar.gz" "${{ github.workspace }}/pub/${{ matrix.runtime }}"
+              echo "packFile=${{ steps.publish.output.pubFolder }}.${{ github.ref_name }}.tar.gz" >> $GITHUB_OUTPUT
           fi
       - name: Upload published app as artifact
         if: steps.pack.outcome == 'success'
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ steps.pack.output.archive }}
-          path: ${{ steps.pack.output.archive }}
+          name: ${{ steps.pack.output.packFile }}
+          path: ${{ steps.pack.output.packFile }}
           compression-level: 0
           if-no-files-found: error # `warn` or `ignore` are also available, defaults to `warn`
           
