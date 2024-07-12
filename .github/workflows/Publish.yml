@@ -49,11 +49,13 @@ jobs:
         if: steps.build.outcome == 'success'
         run: |
           mkdir -p "./pub/${{ matrix.runtime }}"
-          dotnet publish ./src/BlazorWebApp/Server/Seedysoft.BlazorWebApp.Server.csproj -c Release --no-build --nologo -o "./pub/${{ matrix.runtime }}" -p:PublishTrimmed=false -r "${{ matrix.runtime }}" --sc -v m
+          dotnet publish ./src/BlazorWebApp/Server/Seedysoft.BlazorWebApp.Server.csproj -c Release --no-restore --nologo -o "./pub/${{ matrix.runtime }}" -p:PublishTrimmed=false -r "${{ matrix.runtime }}" --sc -v m
           echo "pubFolder=./pub/${{ matrix.runtime }}" >> $GITHUB_OUTPUT
+          echo "$GITHUB_OUTPUT"
+          echo ${{ steps.publish.output.pubFolder }}
       - name: Pack
         id: pack
-        if: steps.publish.outcome == 'success'
+        if: steps.publish.outcome == 'success'          
         run: |
           if [[ "${{ matrix.os }}" == "windows-latest" ]]; then
               7z a -r -tzip "${{ steps.publish.output.pubFolder }}.${{ github.ref_name }}.zip" "./pub/${{ matrix.runtime }}" *
