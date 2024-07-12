@@ -32,39 +32,44 @@ jobs:
       - name: Build
         run: dotnet build Seedysoft.Tests.sln -c Release --nologo -v n
       - name: Publish
+        id: publish-linux
         run: |
           mkdir -p "./pub/${{ matrix.runtime }}"
-          dotnet publish ./src/BlazorWebApp/Server/Seedysoft.BlazorWebApp.Server.csproj -c Release --nologo -o "./pub/${{ matrix.runtime }}" -p:PublishTrimmed=false -r "${{ matrix.runtime }}" --sc -v n
+          echo ${{ github.workspace }}
+          dotnet publish ./src/BlazorWebApp/Server/Seedysoft.BlazorWebApp.Server.csproj -c Release --nologo --no-restore -o "./pub/${{ matrix.runtime }}" -p:PublishTrimmed=false -r "${{ matrix.runtime }}" --sc -v n
       - name: Pack
-        if: success()
-        run: tar -czvf "${{ matrix.runtime }}.${{ github.ref_name }}.tar.gz"
-        working-directory: "./pub/${{ matrix.runtime }}"
+        if: steps.publish-linux.outcome == 'success'
+        run: |
+          echo ${{ github.workspace }}
+          tar czf "${{ github.workspace }}/pub/${{ matrix.runtime }}.${{ github.ref_name }}.tar.gz" "./pub/${{ matrix.runtime }}"
 
-  windows:
-    name: Publish on windows
-    runs-on: [ windows-latest ]
-    strategy:
-      matrix:
-        runtime: [ 'win-x64' ]
-    steps:
-      - uses: actions/checkout@main
-      - name: Setup dotnet
-        uses: actions/setup-dotnet@main
-        with:
-          dotnet-version: 8
-      - name: Build
-        run: dotnet build Seedysoft.Tests.sln -c Release --nologo -v n
-      - name: Publish
-        run: |
-          mkdir -p "./pub/${{ matrix.runtime }}"
-          dotnet publish ./src/BlazorWebApp/Server/Seedysoft.BlazorWebApp.Server.csproj -c Release --nologo -o "./pub/${{ matrix.runtime }}" -p:PublishTrimmed=false -r "${{ matrix.runtime }}" --sc -v n
-      - name: Pack
-        if: success()
-        run: 7z a -r -tzip "${{ matrix.runtime }}.${{ github.ref_name }}.zip" "D:/a/all-my-stuff/all-my-stuff/src/BlazorWebApp/Server/bin/Release/net8.0/${{ matrix.runtime }}/publish/" *
+  # windows:
+  #   name: Publish on windows
+  #   runs-on: [ windows-latest ]
+  #   strategy:
+  #     matrix:
+  #       runtime: [ 'win-x64' ]
+  #   steps:
+  #     - uses: actions/checkout@main
+  #     - name: Setup dotnet
+  #       uses: actions/setup-dotnet@main
+  #       with:
+  #         dotnet-version: 8
+  #     - name: Build
+  #       run: dotnet build Seedysoft.Tests.sln -c Release --nologo -v n
+  #     - name: Publish
+  #       id: publish-windows
+  #       run: |
+  #         mkdir -p "./pub/${{ matrix.runtime }}"
+  #         dotnet publish ./src/BlazorWebApp/Server/Seedysoft.BlazorWebApp.Server.csproj -c Release --nologo --no-restore -o "./pub/${{ matrix.runtime }}" -p:PublishTrimmed=false -r "${{ matrix.runtime }}" --sc -v n
+  #     - name: Pack
+  #       if: steps.publish-windows.outcome == 'success'
+  #       run: 7z a -r -tzip "./pub/${{ matrix.runtime }}.${{ github.ref_name }}.zip" "./pub/${{ matrix.runtime }}" *
 
   release:
     name: Create a release
-    needs: [ linux, windows ]
+    # needs: [ linux, windows ]
+    needs: [ linux ]
     runs-on: [ ubuntu-latest ]
     steps:        
       - name: Make Release
@@ -75,5 +80,5 @@ jobs:
           fail_on_unmatched_files: false
           generate_release_notes: true
           files: |
-            "*${{ github.ref_name }}.tar.gz"
-            "*${{ github.ref_name }}.zip"
+            "./pub/*${{ github.ref_name }}.tar.gz"
+            "./pub/*${{ github.ref_name }}.zip"
