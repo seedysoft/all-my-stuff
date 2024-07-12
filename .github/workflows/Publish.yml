@@ -16,8 +16,8 @@ on:
   workflow_dispatch:
   
 jobs:
-  publish-and-pack:
-    name: Publish
+  publish_and_pack:
+    name: Publish and pack
     strategy:
       matrix:
         # runtime: [ linux-arm64, linux-x64, win-x64 ]
@@ -49,7 +49,7 @@ jobs:
         if: steps.build.outcome == 'success'
         run: |
           mkdir -p "./pub/${{ matrix.runtime }}"
-          dotnet publish ./src/BlazorWebApp/Server/Seedysoft.BlazorWebApp.Server.csproj -c Release --nologo -o "./pub/${{ matrix.runtime }}" -p:PublishTrimmed=false -r "${{ matrix.runtime }}" --sc -v m
+          dotnet publish ./src/BlazorWebApp/Server/Seedysoft.BlazorWebApp.Server.csproj -c Release --no-build --nologo -o "./pub/${{ matrix.runtime }}" -p:PublishTrimmed=false -r "${{ matrix.runtime }}" --sc -v m
           echo "pubFolder=./pub/${{ matrix.runtime }}" >> $GITHUB_OUTPUT
       - name: Pack
         id: pack
@@ -62,6 +62,8 @@ jobs:
               tar czf "${{ steps.publish.output.pubFolder }}.${{ github.ref_name }}.tar.gz" "${{ github.workspace }}/pub/${{ matrix.runtime }}"
               echo "packFile=${{ steps.publish.output.pubFolder }}.${{ github.ref_name }}.tar.gz" >> $GITHUB_OUTPUT
           fi
+          echo $packFile
+          echo $GITHUB_OUTPUT
       - name: Upload published app as artifact
         if: steps.pack.outcome == 'success'
         uses: actions/upload-artifact@v4
@@ -73,7 +75,7 @@ jobs:
           
   release:
     name: Create a release
-    needs: publish-and-pack
+    needs: publish_and_pack
     runs-on: ubuntu-latest
     steps:
       - run: mkdir -p ./pub/
