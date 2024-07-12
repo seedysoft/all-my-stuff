@@ -64,7 +64,11 @@ jobs:
     name: Create a release
     needs: [ publish-and-pack ]
     runs-on: [ ubuntu-latest ]
-    steps:        
+    steps:
+      - name: Show current directory
+        run: pwd
+      - name: List files
+        run: ls -la
       - name: Make Release
         uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/tags/')
