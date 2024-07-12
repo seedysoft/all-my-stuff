@@ -63,7 +63,7 @@ jobs:
 
   release:
     name: Create a release
-    needs: [ linux-publish-runtimes, windows-publish-runtimes ]
+    needs: [ linux, windows ]
     runs-on: [ ubuntu-latest ]
     steps:        
       - name: Make Release
