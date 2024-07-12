@@ -21,16 +21,16 @@ jobs:
     strategy:
       matrix:
         # runtime: [ linux-arm64, linux-x64, win-x64 ]
-        runtime: [ linux-arm64, linux-x64 ]
+        runtime: [ linux-x64 ]
         include:
-          - runtime: 'linux-arm64'
-            extension: '.tar.gz'
+          # - runtime: "linux-arm64"
+          #   extension: ".tar.gz"
+          #   os: ubuntu-latest
+          - runtime: "linux-x64"
+            extension: ".tar.gz"
             os: ubuntu-latest
-          - runtime: 'linux-x64'
-            extension: '.tar.gz'
-            os: ubuntu-latest
-          # - runtime: 'win-x64'
-          #   extension: '.zip'
+          # - runtime: "win-x64"
+          #   extension: ".zip"
           #   os: windows-latest
     
     runs-on: ${{ matrix.os }}
@@ -46,21 +46,24 @@ jobs:
       - name: Publish
         id: publish
         run: |
-          mkdir -p './pub/${{ matrix.runtime }}'
-          dotnet publish ./src/BlazorWebApp/Server/Seedysoft.BlazorWebApp.Server.csproj -c Release --nologo --no-restore -o "./pub/${{ matrix.runtime }}" -p:PublishTrimmed=false -r "${{ matrix.runtime }}" --sc -v m
+          publishFolder="./pub/${{ matrix.runtime }}"
+          echo "publishFolder"
+          mkdir -p $publishFolder
+          dotnet publish ./src/BlazorWebApp/Server/Seedysoft.BlazorWebApp.Server.csproj -c Release --nologo --no-restore -o $publishFolder -p:PublishTrimmed=false -r "${{ matrix.runtime }}" --sc -v m
+          echo "pubFolder=$publishFolder" >> $GITHUB_OUTPUT
       - name: Pack
         id: pack
         if: steps.publish.outcome == 'success'
         run: |
-          if [[ '${{ matrix.os }}' == 'windows-latest' ]]; then
-              packFileName='./pub/${{ matrix.runtime }}.${{ github.ref_name }}.zip'
+          if [[ "${{ matrix.os }}" == "windows-latest" ]]; then
+              packFileName="${{ steps.publish.output.pubFolder }}.${{ github.ref_name }}.zip"
               echo "$packFileName"
               7z a -r -tzip $packFileName "./pub/${{ matrix.runtime }}" *
               echo "archive=$packFileName" >> $GITHUB_OUTPUT
           else
-              packFileName='${{ github.workspace }}/pub/${{ matrix.runtime }}.${{ github.ref_name }}.tar.gz'
+              packFileName="$${{ steps.publish.output.pubFolder }}.${{ github.ref_name }}.tar.gz"
               echo "$packFileName"
-              tar czf packFileName "${{ github.workspace }}/pub/${{ matrix.runtime }}"
+              tar czf $packFileName "${{ github.workspace }}/pub/${{ matrix.runtime }}"
               echo "archive=$packFileName >> $GITHUB_OUTPUT
           fi
       - name: Upload published app as artifact
@@ -70,7 +73,7 @@ jobs:
           name: ${{ steps.pack.output.archive }}
           path: ${{ steps.pack.output.archive }}
           compression-level: 0
-          if-no-files-found: error # 'warn' or 'ignore' are also available, defaults to `warn`
+          if-no-files-found: error # `warn` or `ignore` are also available, defaults to `warn`
           
   release:
     name: Create a release
