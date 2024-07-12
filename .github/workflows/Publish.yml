@@ -7,42 +7,66 @@ defaults:
     shell: bash
 
 permissions:
-  contents: write
+  contents: read
 
 on:
   push:
     tags:
       - '**'
-
+  workflow_dispatch:
+  
 jobs:
-  publish-and-release:
-    name: Publish and release
-    runs-on: [ubuntu-latest]
 
+  linux:
+    name: Publish on linux
+    runs-on: [ ubuntu-latest ]
+    strategy:
+      matrix:
+        runtime: [ 'linux-arm64', 'linux-x64' ]
     steps:
-      - name: Checkout Code
-        id: checkout-code
-        uses: actions/checkout@main
-        with:
-          fetch-depth: 0
-
-      - name: Setup .NET
-        id: setup-dotnet
+      - uses: actions/checkout@main
+      - name: Setup dotnet
         uses: actions/setup-dotnet@main
         with:
-          dotnet-version: 8.0.x
-
+          dotnet-version: 8
+      - name: Build
+        run: dotnet build Seedysoft.Tests.sln -c Release --nologo -r "${{ matrix.runtime }}" -v n
       - name: Publish runtimes
-        id: publish-runtimes
+        id: linux-publish-runtimes
         run: |
           # Publish
-          dotnet publish ./src/BlazorWebApp/Server/Seedysoft.BlazorWebApp.Server.csproj -c Release -p:PublishTrimmed=false --sc -v n
+          dotnet publish ./src/BlazorWebApp/Server/Seedysoft.BlazorWebApp.Server.csproj -c Release --nologo -p:PublishTrimmed=false -r "${{ matrix.runtime }}" --sc -v n
           # Pack files
-          tar czvf "${{ github.ref_name }}.tar.gz" "./src/BlazorWebApp/Server/bin/Release/net8.0/linux-x64/publish/"
-          # 7z a -tzip "${{ github.ref_name }}.zip" "./src/BlazorWebApp/Server/bin/Release/net8.0/win-x64/publish/*"
+          tar czvf "${{ matrix.runtime }}.${{ github.ref_name }}.tar.gz" -C "./src/BlazorWebApp/Server/bin/Release/net8.0/${{ matrix.runtime }}/publish/" *
 
+  windows:
+    name: Publish on windows
+    runs-on: [ windows-latest ]
+    strategy:
+      matrix:
+        runtime: [ 'win-x64' ]
+    steps:
+      - uses: actions/checkout@main
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@main
+        with:
+          dotnet-version: 8
+      - name: Build
+        run: dotnet build Seedysoft.Tests.sln -c Release --nologo -r "${{ matrix.runtime }}" -v n
+      - name: Publish runtimes
+        id: windows-publish-runtimes
+        run: |
+          # Publish
+          dotnet publish ./src/BlazorWebApp/Server/Seedysoft.BlazorWebApp.Server.csproj -c Release --nologo -p:PublishTrimmed=false -r "${{ matrix.runtime }}" --sc -v n
+          # Pack files
+          7z a -tzip "${{ matrix.runtime }}.${{ github.ref_name }}.zip" -C "./src/BlazorWebApp/Server/bin/Release/net8.0/${{ matrix.runtime }}/publish/" *
+
+  release:
+    name: Create a release
+    needs: [ linux-publish-runtimes, windows-publish-runtimes ]
+    runs-on: [ ubuntu-latest ]
+    steps:        
       - name: Make Release
-        id: make-release
         uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/tags/')
         with:
@@ -50,5 +74,5 @@ jobs:
           fail_on_unmatched_files: false
           generate_release_notes: true
           files: |
-            ${{ github.ref_name }}.tar.gz
-            ${{ github.ref_name }}.zip
+            "*${{ github.ref_name }}.tar.gz"
+            "*${{ github.ref_name }}.zip"
