@@ -16,13 +16,24 @@ on:
   workflow_dispatch:
   
 jobs:
-
-  linux:
-    name: Publish on linux
-    runs-on: [ ubuntu-latest ]
+  publish-and-pack:
+    name: Publish
     strategy:
       matrix:
-        runtime: [ 'linux-arm64', 'linux-x64' ]
+        os: [ windows-latest, ubuntu-latest ]
+        include:
+          - os: windows-latest
+            extension: ".zip"
+            runtime: "win-x64"
+          - os: ubuntu-latest
+            extension: ".tar.gz"
+            runtime: "linux-x64"
+          - os: ubuntu-latest
+            extension: ".tar.gz"
+            runtime: "linux-arm64"
+    
+    runs-on: ${{ matrix.os }}
+    
     steps:
       - uses: actions/checkout@main
       - name: Setup dotnet
@@ -32,44 +43,24 @@ jobs:
       - name: Build
         run: dotnet build Seedysoft.Tests.sln -c Release --nologo -v m
       - name: Publish
-        id: publish-linux
+        id: publish
         run: |
           mkdir -p "./pub/${{ matrix.runtime }}"
-          echo ${{ github.workspace }}
           dotnet publish ./src/BlazorWebApp/Server/Seedysoft.BlazorWebApp.Server.csproj -c Release --nologo --no-restore -o "./pub/${{ matrix.runtime }}" -p:PublishTrimmed=false -r "${{ matrix.runtime }}" --sc -v m
-      - name: Pack
-        if: steps.publish-linux.outcome == 'success'
+      - name: Package (Linux)
+        if: steps.publish.outcome == 'success' && matrix.os == 'ubuntu-latest'
         run: |
-          echo ${{ github.workspace }}
-          tar czf "${{ github.workspace }}/pub/${{ matrix.runtime }}.${{ github.ref_name }}.tar.gz" "./pub/${{ matrix.runtime }}"
-
-  # windows:
-  #   name: Publish on windows
-  #   runs-on: [ windows-latest ]
-  #   strategy:
-  #     matrix:
-  #       runtime: [ 'win-x64' ]
-  #   steps:
-  #     - uses: actions/checkout@main
-  #     - name: Setup dotnet
-  #       uses: actions/setup-dotnet@main
-  #       with:
-  #         dotnet-version: 8
-  #     - name: Build
-  #       run: dotnet build Seedysoft.Tests.sln -c Release --nologo -v m
-  #     - name: Publish
-  #       id: publish-windows
-  #       run: |
-  #         mkdir -p "./pub/${{ matrix.runtime }}"
-  #         dotnet publish ./src/BlazorWebApp/Server/Seedysoft.BlazorWebApp.Server.csproj -c Release --nologo --no-restore -o "./pub/${{ matrix.runtime }}" -p:PublishTrimmed=false -r "${{ matrix.runtime }}" --sc -v m
-  #     - name: Pack
-  #       if: steps.publish-windows.outcome == 'success'
-  #       run: 7z a -r -tzip "./pub/${{ matrix.runtime }}.${{ github.ref_name }}.zip" "./pub/${{ matrix.runtime }}" *
-
+          cd ./src/${{env.PROJECT_NAME}}/bin/publish/
+          tar czf "${{ github.workspace }}/pub/${{ matrix.runtime }}.${{ github.ref_name }}.tar.gz" "${{ github.workspace }}/pub/${{ matrix.runtime }}"
+      - name: Package (Windows)
+        if: steps.publish.outcome == 'success' && matrix.os == 'windows-latest'
+        run:  |
+          mkdir -p "./pub/${{ matrix.runtime }}"
+          7z a -r -tzip "./pub/${{ matrix.runtime }}.${{ github.ref_name }}.zip" "./pub/${{ matrix.runtime }}" *
+          
   release:
     name: Create a release
-    # needs: [ linux, windows ]
-    needs: [ linux ]
+    needs: [ publish-and-pack ]
     runs-on: [ ubuntu-latest ]
     steps:        
       - name: Make Release
@@ -80,5 +71,5 @@ jobs:
           fail_on_unmatched_files: true
           generate_release_notes: true
           files: |
-            ./pub/*${{ github.ref_name }}.tar.gz
-            ./pub/*${{ github.ref_name }}.zip
+            ${{ github.workspace }}/pub/*.tar.gz
+            ${{ github.workspace }}/pub/*.zip
