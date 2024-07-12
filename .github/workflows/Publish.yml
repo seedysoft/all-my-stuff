@@ -31,13 +31,11 @@ jobs:
           dotnet-version: 8
       - name: Build
         run: dotnet build Seedysoft.Tests.sln -c Release --nologo -v n
-      - name: Publish runtimes
-        id: linux-publish-runtimes
-        run: |
-          # Publish
-          dotnet publish ./src/BlazorWebApp/Server/Seedysoft.BlazorWebApp.Server.csproj -c Release --nologo -p:PublishTrimmed=false -r "${{ matrix.runtime }}" --sc -v n
-          # Pack files
-          tar czvf "${{ matrix.runtime }}.${{ github.ref_name }}.tar.gz" -C "./src/BlazorWebApp/Server/bin/Release/net8.0/${{ matrix.runtime }}/publish/" *
+      - name: Publish
+        run: dotnet publish ./src/BlazorWebApp/Server/Seedysoft.BlazorWebApp.Server.csproj -c Release --nologo -p:PublishTrimmed=false -r "${{ matrix.runtime }}" --sc -v n
+      - name: Pack
+        if: success()
+        run: tar czvf "${{ matrix.runtime }}.${{ github.ref_name }}.tar.gz" -C "./src/BlazorWebApp/Server/bin/Release/net8.0/${{ matrix.runtime }}/publish/" *
 
   windows:
     name: Publish on windows
@@ -53,13 +51,11 @@ jobs:
           dotnet-version: 8
       - name: Build
         run: dotnet build Seedysoft.Tests.sln -c Release --nologo -v n
-      - name: Publish runtimes
-        id: windows-publish-runtimes
-        run: |
-          # Publish
-          dotnet publish ./src/BlazorWebApp/Server/Seedysoft.BlazorWebApp.Server.csproj -c Release --nologo -p:PublishTrimmed=false -r "${{ matrix.runtime }}" --sc -v n
-          # Pack files
-          7z a -tzip "${{ matrix.runtime }}.${{ github.ref_name }}.zip" -C "./src/BlazorWebApp/Server/bin/Release/net8.0/${{ matrix.runtime }}/publish/" *
+      - name: Publish
+        run: dotnet publish ./src/BlazorWebApp/Server/Seedysoft.BlazorWebApp.Server.csproj -c Release --nologo -p:PublishTrimmed=false -r "${{ matrix.runtime }}" --sc -v n
+      - name: Pack
+        if: success()
+        run: 7z a -r -tzip "${{ matrix.runtime }}.${{ github.ref_name }}.zip" "D:/a/all-my-stuff/all-my-stuff/src/BlazorWebApp/Server/bin/Release/net8.0/${{ matrix.runtime }}/publish/" *
 
   release:
     name: Create a release
