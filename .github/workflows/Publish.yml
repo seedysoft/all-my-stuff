@@ -20,17 +20,17 @@ jobs:
     name: Publish
     strategy:
       matrix:
-        os: [ windows-latest, ubuntu-latest ]
+        runtime: [ linux-arm64, linux-x64, win-x64 ]
         include:
-          - os: windows-latest
+          - runtime: "linux-arm64"
+            extension: ".tar.gz"
+            os: ubuntu-latest
+          - runtime: "linux-x64"
+            extension: ".tar.gz"
+            os: ubuntu-latest
+          - runtime: "win-x64"
             extension: ".zip"
-            runtime: "win-x64"
-          - os: ubuntu-latest
-            extension: ".tar.gz"
-            runtime: "linux-x64"
-          - os: ubuntu-latest
-            extension: ".tar.gz"
-            runtime: "linux-arm64"
+            os: windows-latest
     
     runs-on: ${{ matrix.os }}
     
