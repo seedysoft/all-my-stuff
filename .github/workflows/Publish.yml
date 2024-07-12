@@ -17,7 +17,7 @@ on:
   
 jobs:
   publish-and-pack:
-    name: Publish and Pack
+    name: Publish
     strategy:
       matrix:
         # runtime: [ linux-arm64, linux-x64, win-x64 ]
@@ -59,7 +59,7 @@ jobs:
               7z a -r -tzip $packFileName "./pub/${{ matrix.runtime }}" *
               echo "archive=$packFileName" >> $GITHUB_OUTPUT
           else
-              packFileName="${{ steps.publish.output.pubFolder }}.${{ github.ref_name }}.tar.gz"
+              packFileName="$${{ steps.publish.output.pubFolder }}.${{ github.ref_name }}.tar.gz"
               echo "$packFileName"
               tar czf $packFileName "${{ github.workspace }}/pub/${{ matrix.runtime }}"
               echo "archive=$packFileName >> $GITHUB_OUTPUT
