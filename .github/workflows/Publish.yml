@@ -20,7 +20,8 @@ jobs:
     name: Publish
     strategy:
       matrix:
-        runtime: [ linux-arm64, linux-x64, win-x64 ]
+        # runtime: [ linux-arm64, linux-x64, win-x64 ]
+        runtime: [ linux-arm64, linux-x64 ]
         include:
           - runtime: "linux-arm64"
             extension: ".tar.gz"
@@ -28,9 +29,9 @@ jobs:
           - runtime: "linux-x64"
             extension: ".tar.gz"
             os: ubuntu-latest
-          - runtime: "win-x64"
-            extension: ".zip"
-            os: windows-latest
+          # - runtime: "win-x64"
+          #   extension: ".zip"
+          #   os: windows-latest
     
     runs-on: ${{ matrix.os }}
     
@@ -49,7 +50,12 @@ jobs:
           dotnet publish ./src/BlazorWebApp/Server/Seedysoft.BlazorWebApp.Server.csproj -c Release --nologo --no-restore -o "./pub/${{ matrix.runtime }}" -p:PublishTrimmed=false -r "${{ matrix.runtime }}" --sc -v m
       - name: Package (Linux)
         if: steps.publish.outcome == 'success' && matrix.os == 'ubuntu-latest'
-        run: tar czf "${{ github.workspace }}/pub/${{ matrix.runtime }}.${{ github.ref_name }}.tar.gz" "${{ github.workspace }}/pub/${{ matrix.runtime }}"
+        run: |
+          echo "${{ github.workspace }}/pub/${{ matrix.runtime }}.${{ github.ref_name }}.tar.gz"
+          echo "${{ github.workspace }}/pub/${{ matrix.runtime }}"
+          echo "./pub/${{ matrix.runtime }}.${{ github.ref_name }}.tar.gz"
+          echo "./pub/${{ matrix.runtime }}"
+          tar czf "${{ github.workspace }}/pub/${{ matrix.runtime }}.${{ github.ref_name }}.tar.gz" "${{ github.workspace }}/pub/${{ matrix.runtime }}"
       - name: Package (Windows)
         if: steps.publish.outcome == 'success' && matrix.os == 'windows-latest'
         run: 7z a -r -tzip "./pub/${{ matrix.runtime }}.${{ github.ref_name }}.zip" "./pub/${{ matrix.runtime }}" *
