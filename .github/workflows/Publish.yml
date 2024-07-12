@@ -77,8 +77,8 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
         with:
           name: Release ${{ github.ref_name }}
-          fail_on_unmatched_files: false
+          fail_on_unmatched_files: true
           generate_release_notes: true
           files: |
-            "./pub/*${{ github.ref_name }}.tar.gz"
-            "./pub/*${{ github.ref_name }}.zip"
+            ./pub/*${{ github.ref_name }}.tar.gz
+            ./pub/*${{ github.ref_name }}.zip
