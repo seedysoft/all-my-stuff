@@ -33,7 +33,7 @@ jobs:
         run: dotnet build Seedysoft.Tests.sln -c Release --nologo -v n
       - name: Publish
         run: |
-          mkdir -P "./pub/${{ matrix.runtime }}"
+          mkdir -p "./pub/${{ matrix.runtime }}"
           dotnet publish ./src/BlazorWebApp/Server/Seedysoft.BlazorWebApp.Server.csproj -c Release --nologo -o "./pub/${{ matrix.runtime }}" -p:PublishTrimmed=false -r "${{ matrix.runtime }}" --sc -v n
       - name: Pack
         if: success()
@@ -56,7 +56,7 @@ jobs:
         run: dotnet build Seedysoft.Tests.sln -c Release --nologo -v n
       - name: Publish
         run: |
-          mkdir -P "./pub/${{ matrix.runtime }}"
+          mkdir -p "./pub/${{ matrix.runtime }}"
           dotnet publish ./src/BlazorWebApp/Server/Seedysoft.BlazorWebApp.Server.csproj -c Release --nologo -o "./pub/${{ matrix.runtime }}" -p:PublishTrimmed=false -r "${{ matrix.runtime }}" --sc -v n
       - name: Pack
         if: success()

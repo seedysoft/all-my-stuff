@@ -12,8 +12,8 @@ permissions:
 on:
   pull_request:
   push:
-    branches:
-      - '**'
+    branches-ignore:
+      - 'feat/fix-github-actions'
   workflow_dispatch:
 
 jobs:
