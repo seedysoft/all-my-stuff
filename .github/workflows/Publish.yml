@@ -32,10 +32,13 @@ jobs:
       - name: Build
         run: dotnet build Seedysoft.Tests.sln -c Release --nologo -v n
       - name: Publish
-        run: dotnet publish ./src/BlazorWebApp/Server/Seedysoft.BlazorWebApp.Server.csproj -c Release --nologo -p:PublishTrimmed=false -r "${{ matrix.runtime }}" --sc -v n
+        run: |
+          mkdir -P "./pub/${{ matrix.runtime }}"
+          dotnet publish ./src/BlazorWebApp/Server/Seedysoft.BlazorWebApp.Server.csproj -c Release --nologo -o "./pub/${{ matrix.runtime }}" -p:PublishTrimmed=false -r "${{ matrix.runtime }}" --sc -v n
       - name: Pack
         if: success()
-        run: tar czvf "${{ matrix.runtime }}.${{ github.ref_name }}.tar.gz" -C "./src/BlazorWebApp/Server/bin/Release/net8.0/${{ matrix.runtime }}/publish/" *
+        run: tar -czvf "${{ matrix.runtime }}.${{ github.ref_name }}.tar.gz"
+        working-directory: "./pub/${{ matrix.runtime }}"
 
   windows:
     name: Publish on windows
@@ -52,7 +55,9 @@ jobs:
       - name: Build
         run: dotnet build Seedysoft.Tests.sln -c Release --nologo -v n
       - name: Publish
-        run: dotnet publish ./src/BlazorWebApp/Server/Seedysoft.BlazorWebApp.Server.csproj -c Release --nologo -p:PublishTrimmed=false -r "${{ matrix.runtime }}" --sc -v n
+        run: |
+          mkdir -P "./pub/${{ matrix.runtime }}"
+          dotnet publish ./src/BlazorWebApp/Server/Seedysoft.BlazorWebApp.Server.csproj -c Release --nologo -o "./pub/${{ matrix.runtime }}" -p:PublishTrimmed=false -r "${{ matrix.runtime }}" --sc -v n
       - name: Pack
         if: success()
         run: 7z a -r -tzip "${{ matrix.runtime }}.${{ github.ref_name }}.zip" "D:/a/all-my-stuff/all-my-stuff/src/BlazorWebApp/Server/bin/Release/net8.0/${{ matrix.runtime }}/publish/" *
