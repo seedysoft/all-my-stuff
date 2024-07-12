@@ -49,9 +49,9 @@ jobs:
         if: steps.build.outcome == 'success'
         run: |
           publishFolder="./pub/${{ matrix.runtime }}"
-          echo "publishFolder"
+          echo "$publishFolder"
           mkdir -p $publishFolder
-          dotnet publish ./src/BlazorWebApp/Server/Seedysoft.BlazorWebApp.Server.csproj -c Release --nologo -o $publishFolder -p:PublishTrimmed=false -r "${{ matrix.runtime }}" --sc -v m
+          dotnet publish ./src/BlazorWebApp/Server/Seedysoft.BlazorWebApp.Server.csproj -c Release --nologo -o "$publishFolder" -p:PublishTrimmed=false -r "${{ matrix.runtime }}" --sc -v m
           echo "pubFolder=$publishFolder" >> $GITHUB_OUTPUT
       - name: Pack
         id: pack
