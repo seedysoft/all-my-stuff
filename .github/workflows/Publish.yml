@@ -49,14 +49,10 @@ jobs:
           dotnet publish ./src/BlazorWebApp/Server/Seedysoft.BlazorWebApp.Server.csproj -c Release --nologo --no-restore -o "./pub/${{ matrix.runtime }}" -p:PublishTrimmed=false -r "${{ matrix.runtime }}" --sc -v m
       - name: Package (Linux)
         if: steps.publish.outcome == 'success' && matrix.os == 'ubuntu-latest'
-        run: |
-          cd ./src/${{env.PROJECT_NAME}}/bin/publish/
-          tar czf "${{ github.workspace }}/pub/${{ matrix.runtime }}.${{ github.ref_name }}.tar.gz" "${{ github.workspace }}/pub/${{ matrix.runtime }}"
+        run: tar czf "${{ github.workspace }}/pub/${{ matrix.runtime }}.${{ github.ref_name }}.tar.gz" "${{ github.workspace }}/pub/${{ matrix.runtime }}"
       - name: Package (Windows)
         if: steps.publish.outcome == 'success' && matrix.os == 'windows-latest'
-        run:  |
-          mkdir -p "./pub/${{ matrix.runtime }}"
-          7z a -r -tzip "./pub/${{ matrix.runtime }}.${{ github.ref_name }}.zip" "./pub/${{ matrix.runtime }}" *
+        run: 7z a -r -tzip "./pub/${{ matrix.runtime }}.${{ github.ref_name }}.zip" "./pub/${{ matrix.runtime }}" *
           
   release:
     name: Create a release
