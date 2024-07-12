@@ -73,5 +73,5 @@ jobs:
           fail_on_unmatched_files: true
           generate_release_notes: true
           files: |
-            ${{ github.workspace }}/pub/*.tar.gz
-            ${{ github.workspace }}/pub/*.zip
+            ${{ github.workspace }}/pub/**.tar.gz
+            ${{ github.workspace }}/pub/**.zip
