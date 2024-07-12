@@ -30,7 +30,7 @@ jobs:
         with:
           dotnet-version: 8
       - name: Build
-        run: dotnet build Seedysoft.Tests.sln -a "${{ matrix.runtime }}" -c Release --nologo -v n
+        run: dotnet build Seedysoft.Tests.sln -c Release --nologo -v n
       - name: Publish runtimes
         id: linux-publish-runtimes
         run: |
@@ -52,7 +52,7 @@ jobs:
         with:
           dotnet-version: 8
       - name: Build
-        run: dotnet build Seedysoft.Tests.sln -a "${{ matrix.runtime }}" -c Release --nologo -v n
+        run: dotnet build Seedysoft.Tests.sln -c Release --nologo -v n
       - name: Publish runtimes
         id: windows-publish-runtimes
         run: |
