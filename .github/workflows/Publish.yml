@@ -31,11 +31,18 @@ jobs:
           - runtime: "win-x64"
             extension: ".zip"
             os: windows-latest
+        project: [
+          ./src/Outbox/ConsoleApp/Seedysoft.Outbox.ConsoleApp.csproj
+          ./src/Pvpc/ConsoleApp/Seedysoft.Pvpc.ConsoleApp.csproj
+          ./src/WebComparer/ConsoleApp/Seedysoft.WebComparer.ConsoleApp.csproj
+          ./src/BlazorWebApp/Server/Seedysoft.BlazorWebApp.Server.csproj
+        ]
     
     runs-on: ${{ matrix.os }}
     
     steps:
-      - uses: actions/checkout@main
+      - name: Checkout Repository
+        uses: actions/checkout@main
       - name: Setup dotnet
         uses: actions/setup-dotnet@main
         with:
@@ -48,7 +55,7 @@ jobs:
         if: steps.build.outcome == 'success'
         run: |
           mkdir -p "./pub/${{ matrix.runtime }}"
-          dotnet publish ./src/BlazorWebApp/Server/Seedysoft.BlazorWebApp.Server.csproj -c Release --no-restore --nologo -o "./pub/${{ matrix.runtime }}" -p:PublishTrimmed=false -r "${{ matrix.runtime }}" --sc -v m
+          dotnet publish ${{ matrix.project }} -c Release --no-restore --nologo -o "./pub/${{ matrix.runtime }}" -p:PublishTrimmed=false -r "${{ matrix.runtime }}" --sc -v m
       - name: Pack
         id: pack
         if: steps.publish.outcome == 'success'          
@@ -60,7 +67,7 @@ jobs:
           fi
       - name: Upload published app as artifact
         if: steps.pack.outcome == 'success'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@main
         with:
           name: '${{ matrix.runtime }}'
           path: './pub/*'
@@ -73,15 +80,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@main
       - name: Make download folder
         run: mkdir -p ./pub/
       - name: Download published app as artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@main
         with:
           path: ./pub
       - name: Make Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@main
         if: startsWith(github.ref, 'refs/tags/')
         with:
           name: Release ${{ github.ref_name }}
