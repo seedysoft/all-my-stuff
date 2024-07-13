@@ -18,21 +18,19 @@ on:
 jobs:
   publish_and_pack:
     name: Publish and pack
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: true
       matrix:
-        project: [
-          ./src/Outbox/ConsoleApp/Seedysoft.Outbox.ConsoleApp.csproj
-          ./src/Pvpc/ConsoleApp/Seedysoft.Pvpc.ConsoleApp.csproj
-          ./src/WebComparer/ConsoleApp/Seedysoft.WebComparer.ConsoleApp.csproj
-          ./src/BlazorWebApp/Server/Seedysoft.BlazorWebApp.Server.csproj
-        ]
-        runtime: [ 
-          linux-arm64, 
-          linux-x64, 
-          win-x64 
-        ]
-    runs-on: ubuntu-latest
+        project:
+          - ./src/Outbox/ConsoleApp/Seedysoft.Outbox.ConsoleApp.csproj
+          - ./src/Pvpc/ConsoleApp/Seedysoft.Pvpc.ConsoleApp.csproj
+          - ./src/WebComparer/ConsoleApp/Seedysoft.WebComparer.ConsoleApp.csproj
+          - ./src/BlazorWebApp/Server/Seedysoft.BlazorWebApp.Server.csproj
+        runtime: 
+          - linux-arm64, 
+          - linux-x64, 
+          - win-x64 
     steps:
       - name: Checkout Repository
         uses: actions/checkout@main
