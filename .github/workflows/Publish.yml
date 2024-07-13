@@ -28,8 +28,8 @@ jobs:
           - ./src/WebComparer/ConsoleApp/Seedysoft.WebComparer.ConsoleApp.csproj
           - ./src/BlazorWebApp/Server/Seedysoft.BlazorWebApp.Server.csproj
         runtime: 
-          - linux-arm64, 
-          - linux-x64, 
+          - linux-arm64 
+          - linux-x64
           - win-x64 
     steps:
       - name: Checkout Repository
