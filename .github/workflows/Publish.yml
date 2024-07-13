@@ -50,24 +50,31 @@ jobs:
         run: |
           mkdir -p "./pub/${{ matrix.runtime }}"
           dotnet publish ./src/BlazorWebApp/Server/Seedysoft.BlazorWebApp.Server.csproj -c Release --no-restore --nologo -o "./pub/${{ matrix.runtime }}" -p:PublishTrimmed=false -r "${{ matrix.runtime }}" --sc -v m
-          echo "pubFolder=./pub/${{ matrix.runtime }}" >> $GITHUB_OUTPUT
       - name: Pack
         id: pack
         if: steps.publish.outcome == 'success'          
         run: |
           if [[ "${{ matrix.os }}" == "windows-latest" ]]; then
-              7z a -r -tzip "${{ steps.publish.output.pubFolder }}.${{ github.ref_name }}.zip" "./pub/${{ matrix.runtime }}" *
-              echo "packFile=${{ steps.publish.output.pubFolder }}.${{ github.ref_name }}.zip" >> $GITHUB_OUTPUT
+              7z a -r -tzip "./pub/${{ matrix.runtime }}.${{ github.ref_name }}.zip" "./pub/${{ matrix.runtime }}" *
           else
-              tar czf "${{ steps.publish.output.pubFolder }}.${{ github.ref_name }}.tar.gz" -C "${{ github.workspace }}/pub/${{ matrix.runtime }}" .
-              echo "packFile=${{ steps.publish.output.pubFolder }}.${{ github.ref_name }}.tar.gz" >> $GITHUB_OUTPUT
+              tar czf "./pub/${{ matrix.runtime }}.${{ github.ref_name }}.tar.gz" -C "./pub/${{ matrix.runtime }}/" .
           fi
       - name: Upload published app as artifact
         if: steps.pack.outcome == 'success'
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ steps.pack.output.packFile }}
-          path: ${{ steps.pack.output.packFile }}
+          name: |
+            if [[ "${{ matrix.os }}" == "windows-latest" ]]; then
+                "./pub/${{ matrix.runtime }}.${{ github.ref_name }}.zip"
+            else
+                "./pub/${{ matrix.runtime }}.${{ github.ref_name }}.tar.gz"
+            fi
+          path: |
+            if [[ "${{ matrix.os }}" == "windows-latest" ]]; then
+                "./pub/${{ matrix.runtime }}.${{ github.ref_name }}.zip"
+            else
+                "./pub/${{ matrix.runtime }}.${{ github.ref_name }}.tar.gz"
+            fi
           compression-level: 0
           if-no-files-found: error # `warn` or `ignore` are also available, defaults to `warn`
           
@@ -88,4 +95,4 @@ jobs:
           name: Release ${{ github.ref_name }}
           fail_on_unmatched_files: true
           generate_release_notes: true
-          files: pub/*
+          files: ./pub/*
