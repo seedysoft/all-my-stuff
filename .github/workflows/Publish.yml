@@ -35,19 +35,19 @@ jobs:
           dotnet-version: 8
       - name: Make publish folder "./${{ matrix.runtime.name }}/"
         run: mkdir -p "./${{ matrix.runtime.name }}/"
-      - name: Build Outbox and publish w/runtime ${{ matrix.runtime.name }}
+      - name: Build Outbox
         run: |
           dotnet build "./src/Outbox/ConsoleApp/Seedysoft.Outbox.ConsoleApp.csproj" -c Release --nologo -v m
           dotnet publish "./src/Outbox/ConsoleApp/Seedysoft.Outbox.ConsoleApp.csproj" -o "./${{ matrix.runtime.name }}/" -r "${{ matrix.runtime.name }}" -c Release --no-restore --nologo -p:PublishTrimmed=false --sc -v m
-      - name: Build Pvpc and publish w/runtime ${{ matrix.runtime.name }}
+      - name: Build Pvpc
         run: |
           dotnet build "./src/Pvpc/ConsoleApp/Seedysoft.Pvpc.ConsoleApp.csproj" -c Release --nologo -v m
           dotnet publish "./src/Pvpc/ConsoleApp/Seedysoft.Pvpc.ConsoleApp.csproj" -o "./${{ matrix.runtime.name }}/" -r "${{ matrix.runtime.name }}" -c Release --no-restore --nologo -p:PublishTrimmed=false --sc -v m
-      - name: Build WebComparer and publish w/runtime ${{ matrix.runtime.name }}
+      - name: Build WebComparer
         run: |
           dotnet build "./src/WebComparer/ConsoleApp/Seedysoft.WebComparer.ConsoleApp.csproj" -c Release --nologo -v m
           dotnet publish "./src/WebComparer/ConsoleApp/Seedysoft.WebComparer.ConsoleApp.csproj" -o "./${{ matrix.runtime.name }}/" -r "${{ matrix.runtime.name }}" -c Release --no-restore --nologo -p:PublishTrimmed=false --sc -v m
-      - name: Build BlazorWebApp and publish w/runtime ${{ matrix.runtime.name }}
+      - name: Build BlazorWebApp
         run: |
           dotnet build "./src/BlazorWebApp/Server/Seedysoft.BlazorWebApp.Server.csproj" -c Release --nologo -v m
           dotnet publish "./src/BlazorWebApp/Server/Seedysoft.BlazorWebApp.Server.csproj" -o "./${{ matrix.runtime.name }}/" -r "${{ matrix.runtime.name }}" -c Release --no-restore --nologo -p:PublishTrimmed=false --sc -v m
