@@ -20,18 +20,17 @@ jobs:
     name: Publish and pack
     strategy:
       matrix:
-        # runtime: [ linux-arm64, linux-x64, win-x64 ]
-        runtime: [ linux-x64 ]
+        runtime: [ linux-arm64, linux-x64, win-x64 ]
         include:
-          # - runtime: "linux-arm64"
-          #   extension: ".tar.gz"
-          #   os: ubuntu-latest
+          - runtime: "linux-arm64"
+            extension: ".tar.gz"
+            os: ubuntu-latest
           - runtime: "linux-x64"
             extension: ".tar.gz"
             os: ubuntu-latest
-          # - runtime: "win-x64"
-          #   extension: ".zip"
-          #   os: windows-latest
+          - runtime: "win-x64"
+            extension: ".zip"
+            os: windows-latest
     
     runs-on: ${{ matrix.os }}
     
@@ -73,23 +72,20 @@ jobs:
     needs: publish_and_pack
     runs-on: ubuntu-latest
     steps:
-      - run: ls -laR
       - name: Checkout Repository
         uses: actions/checkout@v4
-      - run: ls -laR
-      - run: mkdir -p ./pub/
-      - run: ls -laR
+      - name: Make download folder
+        run: mkdir -p ./pub/
       - name: Download published app as artifact
         uses: actions/download-artifact@v4
         with:
           path: ./pub
-      - run: ls -laR
       - name: Make Release
         uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/tags/')
         with:
           name: Release ${{ github.ref_name }}
-          fail_on_unmatched_files: false
+          fail_on_unmatched_files: true
           generate_release_notes: true
           files: |
             ./pub/*/*.tar.gz
