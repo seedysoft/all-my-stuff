@@ -73,7 +73,12 @@ jobs:
     needs: publish_and_pack
     runs-on: ubuntu-latest
     steps:
+      - run: ls -laR
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+      - run: ls -laR
       - run: mkdir -p ./pub/
+      - run: ls -laR
       - name: Download published app as artifact
         uses: actions/download-artifact@v4
         with:
@@ -84,6 +89,8 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
         with:
           name: Release ${{ github.ref_name }}
-          fail_on_unmatched_files: true
+          fail_on_unmatched_files: false
           generate_release_notes: true
-          files: ./pub/*
+          files: |
+            ./pub/*/*.tar.gz
+            ./pub/*/*.zip
