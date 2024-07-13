@@ -22,11 +22,6 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        project:
-          - {name: Outbox,       path: Outbox/ConsoleApp/Seedysoft.Outbox.ConsoleApp.csproj}
-          - {name: Pvpc,         path: Pvpc/ConsoleApp/Seedysoft.Pvpc.ConsoleApp.csproj}
-          - {name: WebComparer,  path: WebComparer/ConsoleApp/Seedysoft.WebComparer.ConsoleApp.csproj}
-          - {name: BlazorWebApp, path: BlazorWebApp/Server/Seedysoft.BlazorWebApp.Server.csproj}
         runtime:
           - {name: linux-arm64, os: ubuntu-latest}
           - {name: linux-x64,   os: ubuntu-latest}
@@ -38,28 +33,32 @@ jobs:
         uses: actions/setup-dotnet@main
         with:
           dotnet-version: 8
-      - name: Build ${{ matrix.project.name }}
-        id: build
-        run: dotnet build "./src/${{ matrix.project.path }}" -c Release --nologo -v m
-      - name: Publish ${{ matrix.project.name }} w/runtime ${{ matrix.runtime.name }}
-        id: publish
-        if: steps.build.outcome == 'success'
+      - name: Make publish folder "./${{ matrix.runtime.name }}/"
+        run: mkdir -p "./${{ matrix.runtime.name }}/"
+      - name: Build ${{ matrix.project.name }} and publish w/runtime ${{ matrix.runtime.name }}
+        strategy:
+          fail-fast: true
+          matrix:
+            project:
+              - {name: Outbox,       path: Outbox/ConsoleApp/Seedysoft.Outbox.ConsoleApp.csproj}
+              - {name: Pvpc,         path: Pvpc/ConsoleApp/Seedysoft.Pvpc.ConsoleApp.csproj}
+              - {name: WebComparer,  path: WebComparer/ConsoleApp/Seedysoft.WebComparer.ConsoleApp.csproj}
+              - {name: BlazorWebApp, path: BlazorWebApp/Server/Seedysoft.BlazorWebApp.Server.csproj}
         run: |
-          mkdir -p "./${{ matrix.project.name }}_${{ matrix.runtime.name }}/"
-          dotnet publish "./src/${{ matrix.project.path }}" -o "./${{ matrix.project.name }}_${{ matrix.runtime.name }}/" -r "${{ matrix.runtime.name }}" -c Release -p:PublishTrimmed=false --no-restore --nologo --sc -v m
-      - name: Pack to ${{ matrix.project.name }}.${{ matrix.runtime.name }}.${{ github.ref_name }}.7z
+          dotnet build "./src/${{ matrix.project.path }}" -c Release --nologo -v m
+          dotnet publish "./src/${{ matrix.project.path }}" -o "./${{ matrix.runtime.name }}/" -r "${{ matrix.runtime.name }}" -c Release --no-restore --nologo -p:PublishTrimmed=false --sc -v m
+      - name: Pack to ${{ matrix.runtime.name }}.${{ github.ref_name }}.7z
         id: pack
-        if: steps.publish.outcome == 'success'
         run: |
-          cd ${{ matrix.project.name }}_${{ matrix.runtime.name }}/
-          7z a -r -t7z "../${{ matrix.project.name }}.${{ matrix.runtime.name }}.${{ github.ref_name }}.7z" *
+          cd ${{ matrix.runtime.name }}/
+          7z a -r -t7z "../${{ matrix.runtime.name }}.${{ github.ref_name }}.7z" *
           cd ..
-      - name: Upload artifact ${{ matrix.project.name }}.${{ matrix.runtime.name }}.${{ github.ref_name }}.7z
+      - name: Upload artifact ${{ matrix.runtime.name }}.${{ github.ref_name }}.7z
         if: steps.pack.outcome == 'success'
         uses: actions/upload-artifact@main
         with:
-          name: ${{ matrix.project.name }}.${{ matrix.runtime.name }}.${{ github.ref_name }}.7z
-          path: ${{ matrix.project.name }}.${{ matrix.runtime.name }}.${{ github.ref_name }}.7z
+          name: ${{ matrix.runtime.name }}.${{ github.ref_name }}.7z
+          path: ${{ matrix.runtime.name }}.${{ github.ref_name }}.7z
           compression-level: 0
           if-no-files-found: error # `warn` or `ignore` are also available, defaults to `warn`
     
