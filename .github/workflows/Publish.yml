@@ -41,29 +41,22 @@ jobs:
       - name: Build ${{ matrix.project.name }}
         id: build
         run: dotnet build "./src/${{ matrix.project.path }}" -c Release --nologo -v m
-      - name: Publish ${{ matrix.project.name }} w/ runtime ${{ matrix.runtime.name }}
+      - name: Publish ${{ matrix.project.name }} w/runtime ${{ matrix.runtime.name }}
         id: publish
         if: steps.build.outcome == 'success'
         run: |
-          mkdir -p "./pub/${{ matrix.runtime.name }}"
-          dotnet publish "./src/${{ matrix.project.path }}" -o "./pub/${{ matrix.runtime.name }}" -r "${{ matrix.runtime.name }}" -c Release -p:PublishTrimmed=false --no-restore --nologo --sc -v m
-      - name: Pack
+          mkdir -p "./${{ matrix.project.name }}.${{ matrix.runtime.name }}"
+          dotnet publish "./src/${{ matrix.project.path }}" -o "./${{ matrix.project.name }}.${{ matrix.runtime.name }}" -r "${{ matrix.runtime.name }}" -c Release -p:PublishTrimmed=false --no-restore --nologo --sc -v m
+      - name: Pack to ${{ matrix.project.name }}.${{ matrix.runtime.name }}.${{ github.ref_name }}.7z
         id: pack
         if: steps.publish.outcome == 'success'
-        run: |
-          if [[ "${{ matrix.runtime.name }}" == "win-x64" ]]; then
-            7z a -r -tzip "./pub/${{ matrix.runtime.name }}.${{ github.ref_name }}.zip" "./pub/${{ matrix.runtime.name }}" *
-          else
-            tar czf "./pub/${{ matrix.runtime.name }}.${{ github.ref_name }}.tar.gz" -C "./pub/${{ matrix.runtime.name }}/" .
-          fi
-      - name: Upload published app as artifact
+        run: 7z a -r -t7z "./${{ matrix.project.name }}.${{ matrix.runtime.name }}.${{ github.ref_name }}.7z" "./${{ matrix.project.name }}.${{ matrix.runtime.name }}" *
+      - name: Upload artifact ${{ matrix.project.name }}.${{ matrix.runtime.name }}.${{ github.ref_name }}.7z
         if: steps.pack.outcome == 'success'
         uses: actions/upload-artifact@main
         with:
-          name: '${{ matrix.project.name }}_${{ matrix.runtime.name }}'
-          path: |
-            ./pub/*.tar.gz
-            ./pub/*.zip
+          name: ${{ matrix.project.name }}.${{ matrix.runtime.name }}.${{ github.ref_name }}.7z
+          path: ${{ matrix.project.name }}.${{ matrix.runtime.name }}.${{ github.ref_name }}.7z
           compression-level: 0
           if-no-files-found: error # `warn` or `ignore` are also available, defaults to `warn`
     
@@ -75,11 +68,11 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@main
       - name: Make download folder
-        run: mkdir -p ./pub/
+        run: mkdir -p ./artifacts/
       - name: Download published app as artifact
         uses: actions/download-artifact@main
         with:
-          path: ./pub
+          path: ./artifacts
       - name: Make Release
         uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/tags/')
@@ -87,6 +80,4 @@ jobs:
           name: Release ${{ github.ref_name }}
           fail_on_unmatched_files: true
           generate_release_notes: true
-          files: |
-            ./pub/*/*.tar.gz
-            ./pub/*/*.zip
+          files: ./artifacts/*/*.7z
