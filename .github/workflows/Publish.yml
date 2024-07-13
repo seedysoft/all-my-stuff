@@ -6,63 +6,61 @@ defaults:
   run:
     shell: bash
 
-permissions:
-  contents: write
-
 on:
   push:
     tags:
       - '**'
   workflow_dispatch:
+
+permissions:
+  contents: write
   
 jobs:
   publish_and_pack:
     name: Publish and pack
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.runtime.os }}
     strategy:
       fail-fast: true
       matrix:
         project:
-          - ./src/Outbox/ConsoleApp/Seedysoft.Outbox.ConsoleApp.csproj
-          - ./src/Pvpc/ConsoleApp/Seedysoft.Pvpc.ConsoleApp.csproj
-          - ./src/WebComparer/ConsoleApp/Seedysoft.WebComparer.ConsoleApp.csproj
-          - ./src/BlazorWebApp/Server/Seedysoft.BlazorWebApp.Server.csproj
-        runtime: 
-          - linux-arm64 
-          - linux-x64
-          - win-x64 
+          - {name: Outbox,       path: Outbox/ConsoleApp/Seedysoft.Outbox.ConsoleApp.csproj}
+          - {name: Pvpc,         path: Pvpc/ConsoleApp/Seedysoft.Pvpc.ConsoleApp.csproj}
+          - {name: WebComparer,  path: WebComparer/ConsoleApp/Seedysoft.WebComparer.ConsoleApp.csproj}
+          - {name: BlazorWebApp, path: BlazorWebApp/Server/Seedysoft.BlazorWebApp.Server.csproj}
+        runtime:
+          - {name: linux-arm64, os: ubuntu-latest}
+          - {name: linux-x64,   os: ubuntu-latest}
+          - {name: win-x64,     os: windows-latest}
     steps:
       - name: Checkout Repository
         uses: actions/checkout@main
-      - name: Show data
-        run: echo "p=${{ matrix.project }} r=${{ matrix.runtime }}"
       - name: Setup dotnet
         uses: actions/setup-dotnet@main
         with:
           dotnet-version: 8
-      - name: Build
+      - name: Build ${{ matrix.project.name }}
         id: build
-        run: dotnet build ${{ matrix.project }} -c Release --nologo -v m
-      - name: Publish
+        run: dotnet build "./src/${{ matrix.project.path }}" -c Release --nologo -v m
+      - name: Publish ${{ matrix.project.name }} w/ runtime ${{ matrix.runtime.name }}
         id: publish
         if: steps.build.outcome == 'success'
         run: |
-          mkdir -p "./pub/${{ matrix.runtime }}"
-          dotnet publish ${{ matrix.project }} -c Release --no-restore --nologo -o "./pub/${{ matrix.runtime }}" -p:PublishTrimmed=false -r "${{ matrix.runtime }}" --sc -v m
+          mkdir -p "./pub/${{ matrix.runtime.name }}"
+          dotnet publish "./src/${{ matrix.project.path }}" -o "./pub/${{ matrix.runtime.name }}" -r "${{ matrix.runtime.name }}" -c Release -p:PublishTrimmed=false --no-restore --nologo --sc -v m
       - name: Pack
         id: pack
         if: steps.publish.outcome == 'success'
         run: |
-          if [[ "${{ matrix.runtime }}" == "win-x64" ]]; then
-            7z a -r -tzip "./pub/${{ matrix.runtime }}.${{ github.ref_name }}.zip" "./pub/${{ matrix.runtime }}" *
+          if [[ "${{ matrix.runtime.name }}" == "win-x64" ]]; then
+            7z a -r -tzip "./pub/${{ matrix.runtime.name }}.${{ github.ref_name }}.zip" "./pub/${{ matrix.runtime.name }}" *
           else
-            tar czf "./pub/${{ matrix.runtime }}.${{ github.ref_name }}.tar.gz" -C "./pub/${{ matrix.runtime }}/" .
+            tar czf "./pub/${{ matrix.runtime.name }}.${{ github.ref_name }}.tar.gz" -C "./pub/${{ matrix.runtime.name }}/" .
           fi
       - name: Upload published app as artifact
         if: steps.pack.outcome == 'success'
         uses: actions/upload-artifact@main
         with:
-          name: '${{ matrix.runtime }}'
+          name: '${{ matrix.project.name }}_${{ matrix.runtime.name }}'
           path: './pub/*'
           compression-level: 0
           if-no-files-found: error # `warn` or `ignore` are also available, defaults to `warn`
