@@ -6,49 +6,84 @@ defaults:
   run:
     shell: bash
 
-permissions:
-  contents: write
-
 on:
   push:
     tags:
       - '**'
+  workflow_dispatch:
 
+permissions:
+  contents: write
+  
 jobs:
-  publish-and-release:
-    name: Publish and release
-    runs-on: [ubuntu-latest]
-
+  publish_and_pack:
+    name: Publish and pack
+    runs-on: ${{ matrix.runtime.os }}
+    strategy:
+      fail-fast: true
+      matrix:
+        runtime:
+          - {name: linux-arm64, os: ubuntu-latest}
+          - {name: linux-x64,   os: ubuntu-latest}
+          - {name: win-x64,     os: windows-latest}
     steps:
-      - name: Checkout Code
-        id: checkout-code
+      - name: Checkout Repository
         uses: actions/checkout@main
-        with:
-          fetch-depth: 0
-
-      - name: Setup .NET
-        id: setup-dotnet
+      - name: Setup dotnet
         uses: actions/setup-dotnet@main
         with:
-          dotnet-version: 8.0.x
-
-      - name: Publish runtimes
-        id: publish-runtimes
+          dotnet-version: 8
+      - name: Make publish folder "./${{ matrix.runtime.name }}/"
+        run: mkdir -p "./${{ matrix.runtime.name }}/"
+      - name: Build Outbox
         run: |
-          # Publish
-          dotnet publish ./src/BlazorWebApp/Server/Seedysoft.BlazorWebApp.Server.csproj -c Release -p:PublishTrimmed=false --sc -v n
-          # Pack files
-          tar czvf "${{ github.ref_name }}.tar.gz" "./src/BlazorWebApp/Server/bin/Release/net8.0/linux-x64/publish/"
-          # 7z a -tzip "${{ github.ref_name }}.zip" "./src/BlazorWebApp/Server/bin/Release/net8.0/win-x64/publish/*"
-
+          dotnet build "./src/Outbox/ConsoleApp/Seedysoft.Outbox.ConsoleApp.csproj" -c Release --nologo -v m
+          dotnet publish "./src/Outbox/ConsoleApp/Seedysoft.Outbox.ConsoleApp.csproj" -o "./${{ matrix.runtime.name }}/" -r "${{ matrix.runtime.name }}" -c Release --no-restore --nologo -p:PublishTrimmed=false --sc -v m
+      - name: Build Pvpc
+        run: |
+          dotnet build "./src/Pvpc/ConsoleApp/Seedysoft.Pvpc.ConsoleApp.csproj" -c Release --nologo -v m
+          dotnet publish "./src/Pvpc/ConsoleApp/Seedysoft.Pvpc.ConsoleApp.csproj" -o "./${{ matrix.runtime.name }}/" -r "${{ matrix.runtime.name }}" -c Release --no-restore --nologo -p:PublishTrimmed=false --sc -v m
+      - name: Build WebComparer
+        run: |
+          dotnet build "./src/WebComparer/ConsoleApp/Seedysoft.WebComparer.ConsoleApp.csproj" -c Release --nologo -v m
+          dotnet publish "./src/WebComparer/ConsoleApp/Seedysoft.WebComparer.ConsoleApp.csproj" -o "./${{ matrix.runtime.name }}/" -r "${{ matrix.runtime.name }}" -c Release --no-restore --nologo -p:PublishTrimmed=false --sc -v m
+      - name: Build BlazorWebApp
+        run: |
+          dotnet build "./src/BlazorWebApp/Server/Seedysoft.BlazorWebApp.Server.csproj" -c Release --nologo -v m
+          dotnet publish "./src/BlazorWebApp/Server/Seedysoft.BlazorWebApp.Server.csproj" -o "./${{ matrix.runtime.name }}/" -r "${{ matrix.runtime.name }}" -c Release --no-restore --nologo -p:PublishTrimmed=false --sc -v m
+      - name: Pack to ${{ matrix.runtime.name }}.${{ github.ref_name }}.7z
+        id: pack
+        run: |
+          cd ${{ matrix.runtime.name }}/
+          7z a -r -t7z "../${{ matrix.runtime.name }}.${{ github.ref_name }}.7z" *
+          cd ..
+      - name: Upload artifact ${{ matrix.runtime.name }}.${{ github.ref_name }}.7z
+        if: steps.pack.outcome == 'success'
+        uses: actions/upload-artifact@main
+        with:
+          name: ${{ matrix.runtime.name }}.${{ github.ref_name }}.7z
+          path: ${{ matrix.runtime.name }}.${{ github.ref_name }}.7z
+          compression-level: 0
+          if-no-files-found: error # `warn` or `ignore` are also available, defaults to `warn`
+    
+  release:
+    name: Create a release
+    needs: publish_and_pack
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@main
+      - name: Make download folder
+        run: mkdir -p ./artifacts/
+      - name: Download published app as artifact
+        uses: actions/download-artifact@main
+        with:
+          path: ./artifacts
       - name: Make Release
-        id: make-release
         uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/tags/')
         with:
           name: Release ${{ github.ref_name }}
-          fail_on_unmatched_files: false
+          fail_on_unmatched_files: true
           generate_release_notes: true
-          files: |
-            ${{ github.ref_name }}.tar.gz
-            ${{ github.ref_name }}.zip
+          files: ./artifacts/*/*.7z
