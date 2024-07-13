@@ -45,12 +45,12 @@ jobs:
         id: publish
         if: steps.build.outcome == 'success'
         run: |
-          mkdir -p "./${{ matrix.project.name }}.${{ matrix.runtime.name }}/"
-          dotnet publish "./src/${{ matrix.project.path }}" -o "./${{ matrix.project.name }}.${{ matrix.runtime.name }}/" -r "${{ matrix.runtime.name }}" -c Release -p:PublishTrimmed=false --no-restore --nologo --sc -v m
+          mkdir -p "./${{ matrix.project.name }}_${{ matrix.runtime.name }}/"
+          dotnet publish "./src/${{ matrix.project.path }}" -o "./${{ matrix.project.name }}_${{ matrix.runtime.name }}/" -r "${{ matrix.runtime.name }}" -c Release -p:PublishTrimmed=false --no-restore --nologo --sc -v m
       - name: Pack to ${{ matrix.project.name }}.${{ matrix.runtime.name }}.${{ github.ref_name }}.7z
         id: pack
         if: steps.publish.outcome == 'success'
-        run: 7z a -r -t7z "./${{ matrix.project.name }}.${{ matrix.runtime.name }}.${{ github.ref_name }}.7z" "./${{ matrix.project.name }}.${{ matrix.runtime.name }}/" *
+        run: 7z a -r -t7z "./${{ matrix.project.name }}.${{ matrix.runtime.name }}.${{ github.ref_name }}.7z" "./${{ matrix.project.name }}_${{ matrix.runtime.name }}/" *
       - name: Upload artifact ${{ matrix.project.name }}.${{ matrix.runtime.name }}.${{ github.ref_name }}.7z
         if: steps.pack.outcome == 'success'
         uses: actions/upload-artifact@main
