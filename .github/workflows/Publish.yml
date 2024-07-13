@@ -61,7 +61,9 @@ jobs:
         uses: actions/upload-artifact@main
         with:
           name: '${{ matrix.project.name }}_${{ matrix.runtime.name }}'
-          path: './pub/*'
+          path: |
+            ./pub/*.tar.gz
+            ./pub/*.zip
           compression-level: 0
           if-no-files-found: error # `warn` or `ignore` are also available, defaults to `warn`
     
@@ -79,7 +81,7 @@ jobs:
         with:
           path: ./pub
       - name: Make Release
-        uses: softprops/action-gh-release@main
+        uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/tags/')
         with:
           name: Release ${{ github.ref_name }}
