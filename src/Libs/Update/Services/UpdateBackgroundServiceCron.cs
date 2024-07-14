@@ -69,7 +69,6 @@ public class UpdateBackgroundServiceCron : BackgroundServices.Cron, IDisposable
         try
         {
             Version? currentVersion = EnvironmentUtil.ParseVersion(EnvironmentUtil.Version());
-
             if (currentVersion == new Version(0, 0, 0))
             {
                 logger.LogInformation("Skipping checking for new releases because is runing in IDE.");
@@ -83,13 +82,8 @@ public class UpdateBackgroundServiceCron : BackgroundServices.Cron, IDisposable
                 return;
             }
 
-            //ApiOptions apiOptions = new() { PageCount = 1, PageSize = 10, StartPage = 1 };
             Release? latestRelease =
-                (await gitHubClient.Repository.Release.GetAll(Core.Constants.Github.OwnerName, Core.Constants.Github.RepositoryName/*, apiOptions*/))
-                .Where(x => x.Draft == false && x.Prerelease == false)
-                .OrderByDescending(x => x.PublishedAt)
-                .FirstOrDefault();
-
+                await gitHubClient.Repository.Release.GetLatest(Core.Constants.Github.OwnerName, Core.Constants.Github.RepositoryName);
             if (latestRelease == null)
             {
                 logger.LogInformation("No release obtained");
@@ -102,14 +96,12 @@ public class UpdateBackgroundServiceCron : BackgroundServices.Cron, IDisposable
                 logger.LogInformation("Failed to parse latest version.");
                 return;
             }
-
-            if (latestVersion < currentVersion)
+            else if (latestVersion < currentVersion)
             {
                 logger.LogWarning("Downgrade detected. Current version: v{currentVersion} New version: v{latestVersion}", currentVersion, latestVersion);
                 return;
             }
-
-            if (latestVersion == currentVersion)
+            else if (latestVersion == currentVersion)
             {
                 logger.LogInformation("Jackett is already updated. Current version: v{currentVersion}", currentVersion);
                 return;
@@ -151,22 +143,44 @@ public class UpdateBackgroundServiceCron : BackgroundServices.Cron, IDisposable
             : null;
     }
 
-    private async Task<string?> DownloadReleaseAsset(GitHubClient gitHubClient, IReadOnlyList<ReleaseAsset> releaseAssets, string version)
+    private async Task<string?> DownloadReleaseAsset(GitHubClient gitHubClient, IEnumerable<ReleaseAsset> releaseAssets, string version)
     {
-        string tempDir = Path.Combine(Path.GetTempPath(), $"Update-{version}-{DateTime.Now.Ticks}");
+        string architecture = System.Runtime.InteropServices.RuntimeInformation.OSArchitecture.ToString().ToLowerInvariant();
+        releaseAssets = releaseAssets.Where(x => x.Name.Contains(architecture, StringComparison.InvariantCultureIgnoreCase));
+        if (!releaseAssets.Any())
+        {
+            logger.LogInformation("Unsopported architecture: {Architecture}", System.Runtime.InteropServices.RuntimeInformation.OSArchitecture);
+            return await Task.FromResult<string?>(null);
+        }
 
+        string platform;
+        string extractorFileName;
+        if (EnvironmentUtil.IsWindows)
+        {
+            extractorFileName = @"C:\Program Files\7-Zip\7z.exe";
+            platform = "win";
+        }
+        else
+        {
+            extractorFileName = "7zr";
+            platform = "linux";
+        }
+
+        releaseAssets = releaseAssets.Where(x => x.Name.StartsWith(platform, StringComparison.InvariantCultureIgnoreCase));
+
+        string tempDir = Path.Combine(Path.GetTempPath(), $"Update-{version}-{DateTime.Now.Ticks}");
         if (Directory.Exists(tempDir))
             Directory.Delete(tempDir, true);
+        tempDir = Directory.CreateDirectory(tempDir).FullName;
+        tempDir = @"C:\Users\alfon\AppData\Local\Temp\Update-Release v1.1.1.6-638565582644439810";
 
-        _ = Directory.CreateDirectory(tempDir);
-
-        string extension = EnvironmentUtil.IsWindows ? ".zip" : ".tar.gz";
-
-        for (int i = 0; i < releaseAssets.Where(x => x.BrowserDownloadUrl.EndsWith(extension)).Count(); i++)
+        for (int i = 0; i < (releaseAssets.TryGetNonEnumeratedCount(out int assetsCount) ? assetsCount : releaseAssets.Count()); i++)
         {
-            ReleaseAsset asset = releaseAssets[i];
+            ReleaseAsset asset = releaseAssets.ElementAt(i);
 
             string localFilename = Path.Combine(tempDir, asset.Name);
+            if (File.Exists(localFilename))
+                continue;
 
             using HttpClient client = new() { Timeout = TimeSpan.FromMinutes(5) };
             {
@@ -175,7 +189,8 @@ public class UpdateBackgroundServiceCron : BackgroundServices.Cron, IDisposable
                 client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("token", token);
                 client.DefaultRequestHeaders.UserAgent.ParseAdd(Core.Constants.Github.RepositoryName);
 
-                using HttpResponseMessage response = await client.GetAsync($"https://api.github.com/repos/{Core.Constants.Github.OwnerName}/{Core.Constants.Github.RepositoryName}/releases/assets/{asset.Id}");
+                using HttpResponseMessage response = await
+                    client.GetAsync($"https://api.github.com/repos/{Core.Constants.Github.OwnerName}/{Core.Constants.Github.RepositoryName}/releases/assets/{asset.Id}");
                 {
                     if (!response.IsSuccessStatusCode)
                     {
@@ -192,22 +207,52 @@ public class UpdateBackgroundServiceCron : BackgroundServices.Cron, IDisposable
                 }
             }
 
-            if (EnvironmentUtil.IsWindows)
-            {
-                new ICSharpCode.SharpZipLib.Zip.FastZip().ExtractZip(localFilename, tempDir, null);
-            }
-            else
-            {
-                ICSharpCode.SharpZipLib.GZip.GZipInputStream gzipStream = new(File.OpenRead(localFilename));
-
-                var tarArchive = ICSharpCode.SharpZipLib.Tar.TarArchive.CreateInputTarArchive(gzipStream, null);
-                tarArchive.ExtractContents(tempDir);
-                tarArchive.Close();
-                gzipStream.Close();
-                File.OpenRead(localFilename).Close();
-            }
+            ExtractFile(extractorFileName, localFilename, tempDir);
         }
 
         return tempDir;
+    }
+
+    public void ExtractFile(string extractorFileName, string sourceFileName, string destinationFolder)
+    {
+        try
+        {
+            System.Diagnostics.ProcessStartInfo processStartInfo = new()
+            {
+                Arguments = $"x -bsp1 \"{sourceFileName}\" -o\"{destinationFolder}\"",
+                CreateNoWindow = true,
+                ErrorDialog = false,
+                FileName = extractorFileName,
+                //RedirectStandardError = true,
+                //RedirectStandardInput = true,
+                //RedirectStandardOutput = true,
+                UseShellExecute = false,
+                WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden,
+            };
+            using System.Diagnostics.Process process = new()
+            {
+                EnableRaisingEvents = true,
+                StartInfo = processStartInfo,
+            };
+            {
+                process.ErrorDataReceived += (sender, e)
+                    => logger.LogError("Received error from {extractorFileName}: {data}", extractorFileName, e.Data);
+                process.OutputDataReceived += (sender, e)
+                    => logger.LogInformation("Received info from {extractorFileName}: {data}", extractorFileName, e.Data);
+
+                bool x = process.Start();
+                if (!x)
+                {
+                    logger.LogWarning("Cannot start process {extractorFileName}.", extractorFileName);
+                    return;
+                }
+
+                process.WaitForExit();
+            }
+        }
+        catch (Exception e)
+        {
+            logger.LogError(e, "Error extracting file {source} to {destination}", sourceFileName, destinationFolder);
+        }
     }
 }
