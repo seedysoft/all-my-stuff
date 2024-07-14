@@ -8,7 +8,6 @@ namespace Seedysoft.Libs.Update.Services;
 public class UpdateBackgroundServiceCron : BackgroundServices.Cron, IDisposable
 {
     private readonly ILogger<UpdateBackgroundServiceCron> logger;
-    private readonly Variants.Variant variant;
     private readonly HttpClient httpClient = new();
     private readonly ManualResetEvent locker = new(false);
     private readonly IServiceProvider serviceProvider;
@@ -21,8 +20,6 @@ public class UpdateBackgroundServiceCron : BackgroundServices.Cron, IDisposable
         this.serviceProvider = serviceProvider;
 
         logger = serviceProvider.GetRequiredService<ILogger<UpdateBackgroundServiceCron>>();
-
-        variant = Variants.GetVariant();
 
         // Increase the HTTP client timeout just for update download (not other requests)
         // The update is heavy and can take longer time for slow connections. Fix #12711
