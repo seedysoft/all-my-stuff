@@ -223,9 +223,9 @@ public class UpdateBackgroundServiceCron : BackgroundServices.Cron, IDisposable
                 CreateNoWindow = true,
                 ErrorDialog = false,
                 FileName = extractorFileName,
-                //RedirectStandardError = true,
-                //RedirectStandardInput = true,
-                //RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                RedirectStandardInput = true,
+                RedirectStandardOutput = true,
                 UseShellExecute = false,
                 WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden,
             };
