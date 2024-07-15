@@ -16,7 +16,7 @@
     <PackageReference Include="MSTest" Version="3.4.3" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\src\Libs\Update\Seedysoft.Libs.Update.csproj" />
-    <ProjectReference Include="..\Infrastructure.Tests\Seedysoft.Libs.Infrastructure.Tests.csproj" />
+    <ProjectReference Include="..\..\..\src\Update\Lib\Seedysoft.Update.Lib.csproj" />
+    <ProjectReference Include="..\..\Libs\Infrastructure.Tests\Seedysoft.Libs.Infrastructure.Tests.csproj" />
   </ItemGroup>
 </Project>

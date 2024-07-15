@@ -420,7 +420,7 @@ public partial class TelegramHostedService : Core.NonBackgroundServiceBase, IHos
         string[]? data = message.Text!.Split(' ');
         if (data.Length < 2 || !DateTime.TryParseExact(
             data[1],
-            Libs.Utils.Constants.Formats.YearMonthDayFormat,
+            Utils.Constants.Formats.YearMonthDayFormat,
             System.Globalization.CultureInfo.InvariantCulture,
             System.Globalization.DateTimeStyles.None,
             out DateTime dateTimeToObtain))

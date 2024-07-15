@@ -1,16 +1,15 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Seedysoft.Libs.Utils.Extensions;
 
-namespace Seedysoft.WebComparer.ConsoleApp;
+namespace Seedysoft.Update.ConsoleApp;
 
 public sealed class Program : Libs.Core.ProgramBase
 {
     [STAThread]
     public static async Task Main(string[] args)
     {
-        _ = await ObtainCommandLineAsync<Libs.Core.Models.Config.ConsoleOptions>(args);
+        Lib.Settings.ConsoleOptions consoleOptions = await ObtainCommandLineAsync<Lib.Settings.ConsoleOptions>(args);
 
         Microsoft.Extensions.Hosting.HostApplicationBuilder hostApplicationBuilder = new(args);
 
@@ -26,6 +25,8 @@ public sealed class Program : Libs.Core.ProgramBase
 
         try
         {
+            // TODO: move to base classes
+
             //System.Collections.IDictionary? EnvVariables = Environment.GetEnvironmentVariables();
             //foreach (object? item in EnvVariables.Keys)
             //    Logger.LogDebug($"{item}: {EnvVariables[item]}");
@@ -35,18 +36,17 @@ public sealed class Program : Libs.Core.ProgramBase
 
             // Migrate and seed the database during startup. Must be synchronous.
             using IServiceScope Scope = host.Services.CreateAsyncScope();
-            await Scope.ServiceProvider.GetRequiredService<Libs.Infrastructure.DbContexts.DbCxt>().Database.MigrateAsync();
 
             using CancellationTokenSource CancelTokenSource = new();
-            {
-                Lib.Services.WebComparerBackgroundServiceCron webComparerHostedService = host.Services.GetRequiredService<Lib.Services.WebComparerBackgroundServiceCron>();
 
-                await webComparerHostedService.FindDifferencesAsync(CancelTokenSource.Token);
-            }
+            // TODO                 copy from  consoleOptions.UpdateFilesFolder to asdfasdfasdf
+
+            using (Lib.Services.UpdateBackgroundServiceCron updateBackgroundServiceCron = host.Services.GetRequiredService<Lib.Services.UpdateBackgroundServiceCron>())
+                await updateBackgroundServiceCron.DoWorkAsync(CancelTokenSource.Token);
 
             Logger.LogInformation("End {ApplicationName}", AppName);
         }
-        catch (TaskCanceledException) { /* ignored */ }
+        catch (TaskCanceledException) { /* ignored */  }
         catch (Exception e) { Logger.LogError(e, "Unexpected Error"); }
         finally { await Task.CompletedTask; }
 

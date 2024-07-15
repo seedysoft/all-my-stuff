@@ -1,15 +1,19 @@
-﻿namespace Seedysoft.Libs.Update;
+﻿using System.Text.RegularExpressions;
+
+namespace Seedysoft.Libs.Update;
 
 public static partial class EnvironmentUtil
 {
-    private static readonly System.Text.RegularExpressions.Regex _VersionRegex = ReleaseVersionRegex();
+    [GeneratedRegex(@"v(?<major>\d+)\.(?<minor>\d+)\.(?<build>\d+)", RegexOptions.Compiled)]
+    private static partial Regex ReleaseVersionRegex();
+    private static readonly Regex _VersionRegex = ReleaseVersionRegex();
 
     public static Version? ParseVersion(string version)
     {
         if (string.IsNullOrWhiteSpace(version))
             return null;
 
-        System.Text.RegularExpressions.Match parsed = _VersionRegex.Match(version);
+        Match parsed = _VersionRegex.Match(version);
 
         int major;
         int minor;
@@ -41,8 +45,8 @@ public static partial class EnvironmentUtil
     public static string InstallationPath() => Path.GetDirectoryName(ExecutablePath())!;
 
     public static string ExecutablePath() => System.Reflection.Assembly.GetEntryAssembly()?.Location!;
-    [System.Text.RegularExpressions.GeneratedRegex(@"v(?<major>\d+)\.(?<minor>\d+)\.(?<build>\d+)", System.Text.RegularExpressions.RegexOptions.Compiled)]
-    private static partial System.Text.RegularExpressions.Regex ReleaseVersionRegex();
+    
+    public static string GetUpdaterFileName() => $"{nameof(Seedysoft)}.{nameof(Update)}.ConsoleApp{(IsWindows ? ".exe" : string.Empty)}";
 
     public static bool IsWindows => Environment.OSVersion.Platform == PlatformID.Win32NT;
 
