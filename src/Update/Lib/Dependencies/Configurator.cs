@@ -11,6 +11,9 @@ internal sealed class Configurator : Libs.Utils.Dependencies.ConfiguratorBase
 
     protected override void AddDbContexts(Microsoft.Extensions.Hosting.IHostApplicationBuilder hostApplicationBuilder) { /* No DbContexts */ }
 
-    protected override void AddMyServices(Microsoft.Extensions.Hosting.IHostApplicationBuilder hostApplicationBuilder) =>
+    protected override void AddMyServices(Microsoft.Extensions.Hosting.IHostApplicationBuilder hostApplicationBuilder)
+    {
         hostApplicationBuilder.Services.TryAddSingleton(hostApplicationBuilder.Configuration.GetSection(nameof(UpdateSettings)).Get<UpdateSettings>()!);
+        hostApplicationBuilder.Services.TryAddSingleton<Services.UpdateBackgroundServiceCron>();
+    }
 }
