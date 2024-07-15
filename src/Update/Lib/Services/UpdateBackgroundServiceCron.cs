@@ -1,30 +1,20 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Octokit;
+using Seedysoft.Libs.Update;
 using Seedysoft.Libs.Utils.Extensions;
+using Seedysoft.Update.Lib.Settings;
 
-namespace Seedysoft.Libs.Update.Services;
+namespace Seedysoft.Update.Lib.Services;
 
-public class UpdateBackgroundServiceCron : BackgroundServices.Cron, IDisposable
+public class UpdateBackgroundServiceCron(IServiceProvider serviceProvider) : Libs.BackgroundServices.Cron(
+    serviceProvider,
+    serviceProvider.GetRequiredService<Microsoft.Extensions.Hosting.IHostApplicationLifetime>()), IDisposable
 {
-    private readonly ILogger<UpdateBackgroundServiceCron> logger;
-    private readonly HttpClient httpClient = new();
+    private readonly ILogger<UpdateBackgroundServiceCron> logger = serviceProvider.GetRequiredService<ILogger<UpdateBackgroundServiceCron>>();
     private readonly ManualResetEvent locker = new(false);
-    private readonly IServiceProvider serviceProvider;
+    private readonly IServiceProvider serviceProvider = serviceProvider;
     private bool disposedValue;
-
-    public UpdateBackgroundServiceCron(IServiceProvider serviceProvider) : base(
-        serviceProvider,
-        serviceProvider.GetRequiredService<Microsoft.Extensions.Hosting.IHostApplicationLifetime>())
-    {
-        this.serviceProvider = serviceProvider;
-
-        logger = serviceProvider.GetRequiredService<ILogger<UpdateBackgroundServiceCron>>();
-
-        // Increase the HTTP client timeout just for update download (not other requests)
-        // The update is heavy and can take longer time for slow connections. Fix #12711
-        httpClient.Timeout = TimeSpan.FromMinutes(5);
-    }
 
     protected virtual void Dispose(bool disposing)
     {
@@ -35,7 +25,6 @@ public class UpdateBackgroundServiceCron : BackgroundServices.Cron, IDisposable
                 base.Dispose();
 
                 // dispose managed state (managed objects)
-                httpClient?.Dispose();
                 locker?.Dispose();
             }
 
@@ -44,14 +33,12 @@ public class UpdateBackgroundServiceCron : BackgroundServices.Cron, IDisposable
             disposedValue = true;
         }
     }
-
     // // override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
     // ~UpdateService()
     // {
     //     // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
     //     Dispose(disposing: false);
     // }
-
     public override void Dispose()
     {
         base.Dispose();
@@ -80,7 +67,7 @@ public class UpdateBackgroundServiceCron : BackgroundServices.Cron, IDisposable
             }
 
             Release? latestRelease =
-                await gitHubClient.Repository.Release.GetLatest(Core.Constants.Github.OwnerName, Core.Constants.Github.RepositoryName);
+                await gitHubClient.Repository.Release.GetLatest(Libs.Core.Constants.Github.OwnerName, Libs.Core.Constants.Github.RepositoryName);
             if (latestRelease == null)
             {
                 logger.LogInformation("No release obtained");
@@ -108,18 +95,14 @@ public class UpdateBackgroundServiceCron : BackgroundServices.Cron, IDisposable
             logger.LogInformation("Downloading release v{latestVersion} It could take a while...", latestVersion);
 
             IReadOnlyList<ReleaseAsset> releaseAssets = await gitHubClient.Repository.Release
-                .GetAllAssets(Core.Constants.Github.OwnerName, Core.Constants.Github.RepositoryName, latestRelease.Id);
+                .GetAllAssets(Libs.Core.Constants.Github.OwnerName, Libs.Core.Constants.Github.RepositoryName, latestRelease.Id);
 
             try
             {
                 string? tempDir = await DownloadReleaseAsset(gitHubClient, releaseAssets, latestRelease.Name);
 
-                //// Copy updater
-                //string installDir = EnvironmentUtil.InstallationPath();
-                //string updaterPath = GetUpdaterPath(tempDir);
-
-                //if (updaterPath != null)
-                //    StartUpdate(updaterPath, installDir, EnvironmentUtil.IsWindows, serverConfig.RuntimeSettings.NoRestart, trayIsRunning);
+                if (tempDir != null)
+                    StartUpdate(tempDir);
             }
             catch (Exception e) when (logger.Handle(e, "Unhandled exception.")) { }
         }
@@ -128,14 +111,46 @@ public class UpdateBackgroundServiceCron : BackgroundServices.Cron, IDisposable
         finally { await Task.CompletedTask; }
     }
 
+    private void StartUpdate(string updateFolder)
+    {
+        string UpdaterFullPath = Path.Combine(EnvironmentUtil.InstallationPath(), EnvironmentUtil.GetUpdaterFileName());
+
+        try
+        {
+            System.Diagnostics.ProcessStartInfo processStartInfo = new()
+            {
+                Arguments = $"-{nameof(ConsoleOptions.UpdateFilesFolder)} \"{updateFolder}\"",
+                CreateNoWindow = true,
+                ErrorDialog = false,
+                FileName = UpdaterFullPath,
+                RedirectStandardError = true,
+                RedirectStandardInput = true,
+                RedirectStandardOutput = true,
+                UseShellExecute = false,
+                WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden,
+            };
+            using System.Diagnostics.Process process = new() { StartInfo = processStartInfo, };
+            {
+                if (!process.Start())
+                {
+                    logger.LogWarning("Cannot start process {UpdaterFullPath}.", UpdaterFullPath);
+                    return;
+                }
+            }
+
+            Environment.Exit(0);
+        }
+        catch (Exception e) { logger.LogError(e, "Error updating {UpdaterFullPath}.", UpdaterFullPath); }
+    }
+
     protected internal async Task<GitHubClient?> ConnectAsync()
     {
-        GitHubClient gitHubClient = new(new ProductHeaderValue(Core.Constants.Github.RepositoryName))
+        GitHubClient gitHubClient = new(new ProductHeaderValue(Libs.Core.Constants.Github.RepositoryName))
         {
-            Credentials = new Credentials(serviceProvider.GetRequiredService<Settings.UpdateSettings>().GithubPat)
+            Credentials = new Credentials(serviceProvider.GetRequiredService<UpdateSettings>().GithubPat)
         };
 
-        return (await gitHubClient.Repository.Release.GetAll(Core.Constants.Github.OwnerName, Core.Constants.Github.RepositoryName)).Any()
+        return (await gitHubClient.Repository.Release.GetAll(Libs.Core.Constants.Github.OwnerName, Libs.Core.Constants.Github.RepositoryName)).Any()
             ? gitHubClient
             : null;
     }
@@ -184,10 +199,10 @@ public class UpdateBackgroundServiceCron : BackgroundServices.Cron, IDisposable
                 string token = gitHubClient.Connection.Credentials.GetToken();
                 client.DefaultRequestHeaders.Accept.ParseAdd("application/octet-stream");
                 client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("token", token);
-                client.DefaultRequestHeaders.UserAgent.ParseAdd(Core.Constants.Github.RepositoryName);
+                client.DefaultRequestHeaders.UserAgent.ParseAdd(Libs.Core.Constants.Github.RepositoryName);
 
                 using HttpResponseMessage response = await
-                    client.GetAsync($"https://api.github.com/repos/{Core.Constants.Github.OwnerName}/{Core.Constants.Github.RepositoryName}/releases/assets/{asset.Id}");
+                    client.GetAsync($"https://api.github.com/repos/{Libs.Core.Constants.Github.OwnerName}/{Libs.Core.Constants.Github.RepositoryName}/releases/assets/{asset.Id}");
                 {
                     if (!response.IsSuccessStatusCode)
                     {
@@ -204,13 +219,14 @@ public class UpdateBackgroundServiceCron : BackgroundServices.Cron, IDisposable
                 }
             }
 
-            ExtractFile(extractorFileName, localFilename, tempDir);
+            if (!ExtractFile(extractorFileName, localFilename, tempDir))
+                return null;
         }
 
         return tempDir;
     }
 
-    public void ExtractFile(string extractorFileName, string sourceFileName, string destinationFolder)
+    protected internal bool ExtractFile(string extractorFileName, string sourceFileName, string destinationFolder)
     {
         try
         {
@@ -237,19 +253,22 @@ public class UpdateBackgroundServiceCron : BackgroundServices.Cron, IDisposable
                 process.OutputDataReceived += (sender, e)
                     => logger.LogInformation("Received info from {extractorFileName}: {data}", extractorFileName, e.Data);
 
-                bool x = process.Start();
-                if (!x)
+                if (!process.Start())
                 {
                     logger.LogWarning("Cannot start process {extractorFileName}.", extractorFileName);
-                    return;
+                    return false;
                 }
 
                 process.WaitForExit();
+
+                return true;
             }
         }
         catch (Exception e)
         {
             logger.LogError(e, "Error extracting file {source} to {destination}", sourceFileName, destinationFolder);
         }
+
+        return false;
     }
 }

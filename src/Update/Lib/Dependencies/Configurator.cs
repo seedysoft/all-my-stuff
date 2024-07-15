@@ -1,15 +1,16 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Seedysoft.Update.Lib.Settings;
 
-namespace Seedysoft.Libs.Update.Dependencies;
+namespace Seedysoft.Update.Lib.Dependencies;
 
-internal sealed class Configurator : Utils.Dependencies.ConfiguratorBase
+internal sealed class Configurator : Libs.Utils.Dependencies.ConfiguratorBase
 {
     protected override void AddJsonFiles(Microsoft.Extensions.Hosting.IHostApplicationBuilder hostApplicationBuilder) =>
-        _ = hostApplicationBuilder.Configuration.AddJsonFile($"appsettings.UpdateSettings.json", optional: false, reloadOnChange: true);
+        _ = hostApplicationBuilder.Configuration.AddJsonFile($"appsettings.{nameof(UpdateSettings)}.json", optional: false, reloadOnChange: true);
 
     protected override void AddDbContexts(Microsoft.Extensions.Hosting.IHostApplicationBuilder hostApplicationBuilder) { /* No DbContexts */ }
 
     protected override void AddMyServices(Microsoft.Extensions.Hosting.IHostApplicationBuilder hostApplicationBuilder) =>
-        hostApplicationBuilder.Services.TryAddSingleton(hostApplicationBuilder.Configuration.GetSection(nameof(Settings.UpdateSettings)).Get<Settings.UpdateSettings>()!);
+        hostApplicationBuilder.Services.TryAddSingleton(hostApplicationBuilder.Configuration.GetSection(nameof(UpdateSettings)).Get<UpdateSettings>()!);
 }

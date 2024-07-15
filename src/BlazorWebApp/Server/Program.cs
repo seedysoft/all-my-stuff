@@ -9,7 +9,7 @@ public class Program : Libs.Core.ProgramBase
     [STAThread]
     public static async Task Main(string[] args)
     {
-        await ObtainCommandLineAsync(args);
+        _ = await ObtainCommandLineAsync<Libs.Core.Models.Config.ConsoleOptions>(args);
 
         WebApplicationBuilder webApplicationBuilder = WebApplication.CreateBuilder(args);
 

@@ -6,10 +6,10 @@ public class ProgramBase
 {
     public static Models.Config.RuntimeSettings Settings { get; set; } = default!;
 
-    public static async Task ObtainCommandLineAsync(string[] args)
+    public static async Task<T> ObtainCommandLineAsync<T>(string[] args) where T : Models.Config.ConsoleOptions
     {
         Parser commandLineParser = new(settings => settings.CaseSensitive = false);
-        ParserResult<Models.Config.ConsoleOptions> parserResult = commandLineParser.ParseArguments<Models.Config.ConsoleOptions>(args);
+        ParserResult<T> parserResult = commandLineParser.ParseArguments<T>(args);
 
         _ = parserResult.WithNotParsed(errors =>
         {
@@ -38,5 +38,7 @@ public class ProgramBase
 
         Console.Write("\rStarting ...              ");
         Console.WriteLine(string.Empty);
+
+        return parserResult.Value;
     }
 }
