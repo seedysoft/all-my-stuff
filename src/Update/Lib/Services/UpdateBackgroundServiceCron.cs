@@ -1,58 +1,31 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Octokit;
-using Seedysoft.Libs.Update;
 using Seedysoft.Libs.Utils.Extensions;
-using Seedysoft.Update.Lib.Settings;
 
 namespace Seedysoft.Update.Lib.Services;
 
-public class UpdateBackgroundServiceCron(IServiceProvider serviceProvider) : Libs.BackgroundServices.Cron(
-    serviceProvider,
-    serviceProvider.GetRequiredService<Microsoft.Extensions.Hosting.IHostApplicationLifetime>()), IDisposable
+public class UpdateBackgroundServiceCron : Libs.BackgroundServices.Cron
 {
-    private readonly ILogger<UpdateBackgroundServiceCron> logger = serviceProvider.GetRequiredService<ILogger<UpdateBackgroundServiceCron>>();
-    private readonly ManualResetEvent locker = new(false);
-    private readonly IServiceProvider serviceProvider = serviceProvider;
-    private bool disposedValue;
+    private readonly ILogger<UpdateBackgroundServiceCron> logger;
+    private readonly IServiceProvider serviceProvider;
 
-    protected virtual void Dispose(bool disposing)
+    public UpdateBackgroundServiceCron(IServiceProvider serviceProvider) : base(
+        serviceProvider,
+        serviceProvider.GetRequiredService<Microsoft.Extensions.Hosting.IHostApplicationLifetime>())
     {
-        if (!disposedValue)
-        {
-            if (disposing)
-            {
-                base.Dispose();
+        this.serviceProvider = serviceProvider;
 
-                // dispose managed state (managed objects)
-                locker?.Dispose();
-            }
+        logger = serviceProvider.GetRequiredService<ILogger<UpdateBackgroundServiceCron>>();
 
-            // free unmanaged resources (unmanaged objects) and override finalizer
-            // set large fields to null
-            disposedValue = true;
-        }
-    }
-    // // override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
-    // ~UpdateService()
-    // {
-    //     // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-    //     Dispose(disposing: false);
-    // }
-    public override void Dispose()
-    {
-        base.Dispose();
-
-        // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-        Dispose(disposing: true);
-        GC.SuppressFinalize(this);
+        Config = ServiceProvider.GetRequiredService<Settings.UpdateSettings>();
     }
 
     public override async Task DoWorkAsync(CancellationToken cancellationToken)
     {
         try
         {
-            Version? currentVersion = EnvironmentUtil.ParseVersion(EnvironmentUtil.Version());
+            Version? currentVersion = Libs.Update.EnvironmentUtil.ParseVersion(Libs.Update.EnvironmentUtil.Version());
             if (currentVersion == new Version(0, 0, 0))
             {
                 logger.LogInformation("Skipping checking for new releases because is runing in IDE.");
@@ -74,7 +47,7 @@ public class UpdateBackgroundServiceCron(IServiceProvider serviceProvider) : Lib
                 return;
             }
 
-            Version? latestVersion = EnvironmentUtil.ParseVersion(latestRelease.Name);
+            Version? latestVersion = Libs.Update.EnvironmentUtil.ParseVersion(latestRelease.Name);
             if (latestVersion == null)
             {
                 logger.LogInformation("Failed to parse latest version.");
@@ -112,14 +85,14 @@ public class UpdateBackgroundServiceCron(IServiceProvider serviceProvider) : Lib
 
     private void StartUpdater(string directory)
     {
-        string UpdaterFullPath = Path.Combine(directory, EnvironmentUtil.GetUpdaterFileName());
+        string UpdaterFullPath = Path.Combine(directory, Libs.Update.EnvironmentUtil.GetUpdaterFileName());
         if (!File.Exists(UpdaterFullPath))
         {
             logger.LogError("Updater file {UpdaterFullPath} does NOT found.", UpdaterFullPath);
             return;
         }
 
-        UpdateConsoleOptions upd = UpdateConsoleOptions.Default;
+        Settings.UpdateConsoleOptions upd = Settings.UpdateConsoleOptions.Default;
         upd.LaunchDebugger = true;
         System.Diagnostics.ProcessStartInfo processStartInfo = new()
         {
@@ -148,7 +121,7 @@ public class UpdateBackgroundServiceCron(IServiceProvider serviceProvider) : Lib
     {
         GitHubClient gitHubClient = new(new ProductHeaderValue(Libs.Core.Constants.Github.RepositoryName))
         {
-            Credentials = new Credentials(serviceProvider.GetRequiredService<UpdateSettings>().GithubPat)
+            Credentials = new Credentials(serviceProvider.GetRequiredService<Settings.UpdateSettings>().GithubPat)
         };
 
         return (await gitHubClient.Repository.Release.GetAll(Libs.Core.Constants.Github.OwnerName, Libs.Core.Constants.Github.RepositoryName)).Any()
@@ -168,7 +141,7 @@ public class UpdateBackgroundServiceCron(IServiceProvider serviceProvider) : Lib
 
         string platform;
         string extractorFileName;
-        if (EnvironmentUtil.IsWindows)
+        if (Libs.Update.EnvironmentUtil.IsWindows)
         {
             extractorFileName = @"C:\Program Files\7-Zip\7z.exe";
             platform = "win";
@@ -259,7 +232,7 @@ public class UpdateBackgroundServiceCron(IServiceProvider serviceProvider) : Lib
 
     public async Task CopyUpdatesAsync(string destinationDirectory, CancellationToken cancellationToken)
     {
-        string[] allFileNames = Directory.GetFiles(EnvironmentUtil.ExecutablePath(), "*.*", SearchOption.AllDirectories);
+        string[] allFileNames = Directory.GetFiles(Libs.Update.EnvironmentUtil.ExecutablePath(), "*.*", SearchOption.AllDirectories);
         logger.LogInformation("{Length} update files found", allFileNames.Length);
 
         try
