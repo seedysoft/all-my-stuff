@@ -7,11 +7,6 @@
     <UserSecretsId>953853f7-9384-457c-a3c0-3492059196ab</UserSecretsId>
     <StartupObject>Seedysoft.BlazorWebApp.Server.Program</StartupObject>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
-    <AssemblyVersion>$([System.DateTime]::UtcNow.ToString(yy.MM.dd.HHmm))</AssemblyVersion>
-    <FileVersion>$(AssemblyVersion)</FileVersion>
-    <Version>$(AssemblyVersion)</Version>
-  </PropertyGroup>
   <ItemGroup Condition="'$(Configuration)' == 'Debug'">
     <Content Remove="appsettings.BlazorWebApp.Server.Production.json" />
     <None Include="appsettings.BlazorWebApp.Server.Production.json" />

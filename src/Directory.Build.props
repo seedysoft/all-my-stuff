@@ -1,0 +1,20 @@
+<Project>
+  <!-- Common to all Seedysoft Projects -->
+  <PropertyGroup>
+    <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
+    <!-- Specifies whether it's one of our own libraries -->
+    <SeedysoftProject>false</SeedysoftProject>
+    <SeedysoftProject Condition="$(MSBuildProjectName.StartsWith('Seedysoft'))">true</SeedysoftProject>
+  </PropertyGroup>
+
+  <!-- Set the Product and Version info for our own projects -->
+  <PropertyGroup Condition="'$(SeedysoftProject)' == 'true'">
+    <PathMap>$(MSBuildProjectDirectory)=./$(MSBuildProjectName)/</PathMap>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <AssemblyVersion>$([System.DateTime]::UtcNow.ToString(yy.MMdd.HHmm))</AssemblyVersion>
+    <FileVersion>$(AssemblyVersion)</FileVersion>
+    <Version>$(AssemblyVersion)</Version>
+  </PropertyGroup>
+</Project>
