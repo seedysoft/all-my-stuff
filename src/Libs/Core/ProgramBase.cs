@@ -20,15 +20,10 @@ public class ProgramBase
             Environment.Exit(1);
         });
 
-        Models.Config.ConsoleOptions consoleOptions = new();
-        _ = parserResult.WithParsed(options =>
-        {
-            //if (string.IsNullOrEmpty(options.Client))
-            //    options.Client = DotNetCoreUtil.IsRunningOnDotNetCore ? "httpclient2" : "httpclient";
+        _ = parserResult.WithParsed(parsedValues => Settings = parsedValues.ToRunTimeSettings());
 
-            Settings = options.ToRunTimeSettings();
-            consoleOptions = options;
-        });
+        if (Settings.LaunchDebugger)
+            _ = System.Diagnostics.Debugger.Launch();
 
         for (int i = Settings.SecondsToDelayWebApplicationStart; i > 0; --i)
         {

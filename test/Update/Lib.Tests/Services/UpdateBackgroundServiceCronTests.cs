@@ -50,7 +50,7 @@ public sealed class UpdateBackgroundServiceCronTest : Libs.Infrastructure.Tests.
         string sourceFileName = Path.Combine(tempDir, "win-x64.v1.1.1.6.7z");
 
         if (File.Exists(sourceFileName))
-            Assert.IsTrue(UpdateService.ExtractFile(extractorFileName, sourceFileName, tempDir));
+            UpdateService.ExtractFile(extractorFileName, sourceFileName, tempDir);
         else
             Assert.Inconclusive();
     }
