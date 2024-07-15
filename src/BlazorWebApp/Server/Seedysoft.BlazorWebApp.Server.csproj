@@ -49,9 +49,9 @@
     <PackageReference Include="Serilog.Sinks.File" Version="6.0.0" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Libs\Update\Seedysoft.Libs.Update.csproj" />
     <ProjectReference Include="..\..\Libs\Utils\Seedysoft.Libs.Utils.csproj" />
     <ProjectReference Include="..\..\Outbox\Lib\Seedysoft.Outbox.Lib.csproj" />
+    <ProjectReference Include="..\..\Update\Lib\Seedysoft.Update.Lib.csproj" />
     <ProjectReference Include="..\..\WebComparer\Lib\Seedysoft.WebComparer.Lib.csproj" />
     <ProjectReference Include="..\Client\Seedysoft.BlazorWebApp.Client.csproj" />
   </ItemGroup>

@@ -41,9 +41,6 @@ public class ConsoleOptions
     //[CommandLine.Option('n', "IgnoreSslErrors", HelpText = "[true/false] Ignores invalid SSL certificates")]
     //public bool? IgnoreSslErrors { get; set; }
 
-    //[CommandLine.Option('d', "DataFolder", HelpText = "Specify the location of the data folder (Must be admin on Windows) eg. --DataFolder=\"D:\\Your Data\\Jackett\\\". Don't use this on Unix (mono) systems. On Unix just adjust the HOME directory of the user to the datadir or set the XDG_CONFIG_HOME environment variable.")]
-    //public string? DataFolder { get; set; }
-
     //[CommandLine.Option("NoRestart", HelpText = "Don't restart after update")]
     //public bool NoRestart { get; set; }
 

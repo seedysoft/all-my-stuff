@@ -10,7 +10,7 @@ public sealed class Program : Libs.Core.ProgramBase
     [STAThread]
     public static async Task Main(string[] args)
     {
-        await ObtainCommandLineAsync(args);
+        _ = await ObtainCommandLineAsync<Libs.Core.Models.Config.ConsoleOptions>(args);
 
         Microsoft.Extensions.Hosting.HostApplicationBuilder hostApplicationBuilder = new(args);
 

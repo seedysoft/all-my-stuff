@@ -23,12 +23,12 @@
     <PackageReference Include="System.ServiceProcess.ServiceController" Version="8.0.0" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\BackgroundServices\Seedysoft.Libs.BackgroundServices.csproj" />
-    <ProjectReference Include="..\Core\Seedysoft.Libs.Core.csproj" />
-    <ProjectReference Include="..\Cryptography\Seedysoft.Libs.Cryptography.csproj" />
-    <ProjectReference Include="..\Utils\Seedysoft.Libs.Utils.csproj" />
+    <InternalsVisibleTo Include="$(AssemblyName).Tests" />
   </ItemGroup>
   <ItemGroup>
-    <InternalsVisibleTo Include="$(AssemblyName).Tests" />
+    <ProjectReference Include="..\..\Libs\BackgroundServices\Seedysoft.Libs.BackgroundServices.csproj" />
+    <ProjectReference Include="..\..\Libs\Core\Seedysoft.Libs.Core.csproj" />
+    <ProjectReference Include="..\..\Libs\Cryptography\Seedysoft.Libs.Cryptography.csproj" />
+    <ProjectReference Include="..\..\Libs\Utils\Seedysoft.Libs.Utils.csproj" />
   </ItemGroup>
 </Project>
