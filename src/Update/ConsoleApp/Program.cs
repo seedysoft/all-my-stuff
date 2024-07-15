@@ -9,7 +9,7 @@ public sealed class Program : Libs.Core.ProgramBase
     [STAThread]
     public static async Task Main(string[] args)
     {
-        Lib.Settings.ConsoleOptions consoleOptions = await ObtainCommandLineAsync<Lib.Settings.ConsoleOptions>(args);
+        Lib.Settings.UpdateConsoleOptions updateConsoleOptions = await ObtainCommandLineAsync<Lib.Settings.UpdateConsoleOptions>(args);
 
         Microsoft.Extensions.Hosting.HostApplicationBuilder hostApplicationBuilder = new(args);
 
@@ -39,10 +39,8 @@ public sealed class Program : Libs.Core.ProgramBase
 
             using CancellationTokenSource CancelTokenSource = new();
 
-            // TODO                 copy from  consoleOptions.UpdateFilesFolder to asdfasdfasdf
-
             using (Lib.Services.UpdateBackgroundServiceCron updateBackgroundServiceCron = host.Services.GetRequiredService<Lib.Services.UpdateBackgroundServiceCron>())
-                await updateBackgroundServiceCron.DoWorkAsync(CancelTokenSource.Token);
+                await updateBackgroundServiceCron.CopyUpdatesAsync(updateConsoleOptions.InstallDirectory, CancelTokenSource.Token);
 
             Logger.LogInformation("End {ApplicationName}", AppName);
         }

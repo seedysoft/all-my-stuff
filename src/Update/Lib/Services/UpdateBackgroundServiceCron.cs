@@ -100,9 +100,8 @@ public class UpdateBackgroundServiceCron(IServiceProvider serviceProvider) : Lib
             try
             {
                 string? tempDir = await DownloadReleaseAsset(gitHubClient, releaseAssets, latestRelease.Name);
-
                 if (tempDir != null)
-                    StartUpdate(tempDir);
+                    StartUpdater(tempDir);
             }
             catch (Exception e) when (logger.Handle(e, "Unhandled exception.")) { }
         }
@@ -111,36 +110,38 @@ public class UpdateBackgroundServiceCron(IServiceProvider serviceProvider) : Lib
         finally { await Task.CompletedTask; }
     }
 
-    private void StartUpdate(string updateFolder)
+    private void StartUpdater(string directory)
     {
-        string UpdaterFullPath = Path.Combine(EnvironmentUtil.InstallationPath(), EnvironmentUtil.GetUpdaterFileName());
-
-        try
+        string UpdaterFullPath = Path.Combine(directory, EnvironmentUtil.GetUpdaterFileName());
+        if (!File.Exists(UpdaterFullPath))
         {
-            System.Diagnostics.ProcessStartInfo processStartInfo = new()
-            {
-                Arguments = $"-{nameof(ConsoleOptions.UpdateFilesFolder)} \"{updateFolder}\"",
-                CreateNoWindow = true,
-                ErrorDialog = false,
-                FileName = UpdaterFullPath,
-                RedirectStandardError = true,
-                RedirectStandardInput = true,
-                RedirectStandardOutput = true,
-                UseShellExecute = false,
-                WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden,
-            };
-            using System.Diagnostics.Process process = new() { StartInfo = processStartInfo, };
-            {
-                if (!process.Start())
-                {
-                    logger.LogWarning("Cannot start process {UpdaterFullPath}.", UpdaterFullPath);
-                    return;
-                }
-            }
-
-            Environment.Exit(0);
+            logger.LogError("Updater file {UpdaterFullPath} does NOT found.", UpdaterFullPath);
+            return;
         }
-        catch (Exception e) { logger.LogError(e, "Error updating {UpdaterFullPath}.", UpdaterFullPath); }
+
+        UpdateConsoleOptions upd = UpdateConsoleOptions.Default;
+        upd.LaunchDebugger = true;
+        System.Diagnostics.ProcessStartInfo processStartInfo = new()
+        {
+            Arguments = upd.ToString(),
+            CreateNoWindow = true,
+            ErrorDialog = false,
+            FileName = UpdaterFullPath,
+            //RedirectStandardError = true,
+            //RedirectStandardInput = true,
+            //RedirectStandardOutput = true,
+            UseShellExecute = false,
+            WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden,
+        };
+
+        System.Diagnostics.Process process = new() { StartInfo = processStartInfo, };
+        if (!process.Start())
+        {
+            logger.LogWarning("Cannot start process {UpdaterFullPath}.", UpdaterFullPath);
+            return;
+        }
+
+        Environment.Exit(0);
     }
 
     protected internal async Task<GitHubClient?> ConnectAsync()
@@ -161,8 +162,8 @@ public class UpdateBackgroundServiceCron(IServiceProvider serviceProvider) : Lib
         releaseAssets = releaseAssets.Where(x => x.Name.Contains(architecture, StringComparison.InvariantCultureIgnoreCase));
         if (!releaseAssets.Any())
         {
-            logger.LogInformation("Unsopported architecture: {Architecture}", System.Runtime.InteropServices.RuntimeInformation.OSArchitecture);
-            return await Task.FromResult<string?>(null);
+            logger.LogInformation("Unsopported architecture: {Architecture}.", System.Runtime.InteropServices.RuntimeInformation.OSArchitecture);
+            return null;
         }
 
         string platform;
@@ -180,33 +181,32 @@ public class UpdateBackgroundServiceCron(IServiceProvider serviceProvider) : Lib
 
         releaseAssets = releaseAssets.Where(x => x.Name.StartsWith(platform, StringComparison.InvariantCultureIgnoreCase));
 
-        string tempDir = Path.Combine(Path.GetTempPath(), $"Update-{version}-{DateTime.Now.Ticks}");
-        if (Directory.Exists(tempDir))
-            Directory.Delete(tempDir, true);
-        tempDir = Directory.CreateDirectory(tempDir).FullName;
-        tempDir = @"C:\Users\alfon\AppData\Local\Temp\Update-Release v1.1.1.6-638565582644439810";
+        string destinationDirectory = Path.Combine(Path.GetTempPath(), $"Update-{version}-{DateTime.Now.Ticks}");
+        if (Directory.Exists(destinationDirectory))
+            Directory.Delete(destinationDirectory, true);
+        destinationDirectory = Directory.CreateDirectory(destinationDirectory).FullName;
 
         for (int i = 0; i < (releaseAssets.TryGetNonEnumeratedCount(out int assetsCount) ? assetsCount : releaseAssets.Count()); i++)
         {
-            ReleaseAsset asset = releaseAssets.ElementAt(i);
+            ReleaseAsset releaseAsset = releaseAssets.ElementAt(i);
 
-            string localFilename = Path.Combine(tempDir, asset.Name);
+            string localFilename = Path.Combine(destinationDirectory, releaseAsset.Name);
             if (File.Exists(localFilename))
                 continue;
 
-            using HttpClient client = new() { Timeout = TimeSpan.FromMinutes(5) };
+            using HttpClient httpClient = new() { Timeout = TimeSpan.FromMinutes(5) };
             {
                 string token = gitHubClient.Connection.Credentials.GetToken();
-                client.DefaultRequestHeaders.Accept.ParseAdd("application/octet-stream");
-                client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("token", token);
-                client.DefaultRequestHeaders.UserAgent.ParseAdd(Libs.Core.Constants.Github.RepositoryName);
+                httpClient.DefaultRequestHeaders.Accept.ParseAdd("application/octet-stream");
+                httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("token", token);
+                httpClient.DefaultRequestHeaders.UserAgent.ParseAdd(Libs.Core.Constants.Github.RepositoryName);
 
-                using HttpResponseMessage response = await
-                    client.GetAsync($"https://api.github.com/repos/{Libs.Core.Constants.Github.OwnerName}/{Libs.Core.Constants.Github.RepositoryName}/releases/assets/{asset.Id}");
+                using HttpResponseMessage response = await httpClient
+                    .GetAsync($"{gitHubClient.BaseAddress}repos/{Libs.Core.Constants.Github.OwnerName}/{Libs.Core.Constants.Github.RepositoryName}/releases/assets/{releaseAsset.Id}");
                 {
                     if (!response.IsSuccessStatusCode)
                     {
-                        logger.LogInformation("Cannot download release {asset}. Received code {StatusCode} with response {response}", asset, response.StatusCode, response);
+                        logger.LogInformation("Cannot download release {asset}. Received code {StatusCode} with response {response}", releaseAsset, response.StatusCode, response);
                         continue;
                     }
 
@@ -219,56 +219,113 @@ public class UpdateBackgroundServiceCron(IServiceProvider serviceProvider) : Lib
                 }
             }
 
-            if (!ExtractFile(extractorFileName, localFilename, tempDir))
-                return null;
+            ExtractFile(extractorFileName, localFilename, destinationDirectory);
         }
 
-        return tempDir;
+        return destinationDirectory;
     }
 
-    protected internal bool ExtractFile(string extractorFileName, string sourceFileName, string destinationFolder)
+    protected internal void ExtractFile(string extractorFileName, string sourceFileName, string destinationDirectory)
     {
+        System.Diagnostics.ProcessStartInfo processStartInfo = new()
+        {
+            Arguments = $"x -bsp1 \"{sourceFileName}\" -o\"{destinationDirectory}\"",
+            CreateNoWindow = true,
+            ErrorDialog = false,
+            FileName = extractorFileName,
+            RedirectStandardError = true,
+            RedirectStandardInput = true,
+            RedirectStandardOutput = true,
+            UseShellExecute = false,
+            WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden,
+        };
+        using System.Diagnostics.Process process = new()
+        {
+            EnableRaisingEvents = true,
+            StartInfo = processStartInfo,
+        };
+        {
+            process.ErrorDataReceived += (sender, e)
+                => logger.LogError("Received error from {extractorFileName}: {data}", extractorFileName, e.Data);
+            process.OutputDataReceived += (sender, e)
+                => logger.LogInformation("Received info from {extractorFileName}: {data}", extractorFileName, e.Data);
+
+            if (process.Start())
+                process.WaitForExit();
+            else
+                logger.LogWarning("Cannot start process {extractorFileName}.", extractorFileName);
+        }
+    }
+
+    public async Task CopyUpdatesAsync(string destinationDirectory, CancellationToken cancellationToken)
+    {
+        string[] allFileNames = Directory.GetFiles(EnvironmentUtil.ExecutablePath(), "*.*", SearchOption.AllDirectories);
+        logger.LogInformation("{Length} update files found", allFileNames.Length);
+
         try
         {
-            System.Diagnostics.ProcessStartInfo processStartInfo = new()
+            for (int i = 0; i < allFileNames.Length; i++)
             {
-                Arguments = $"x -bsp1 \"{sourceFileName}\" -o\"{destinationFolder}\"",
-                CreateNoWindow = true,
-                ErrorDialog = false,
-                FileName = extractorFileName,
-                RedirectStandardError = true,
-                RedirectStandardInput = true,
-                RedirectStandardOutput = true,
-                UseShellExecute = false,
-                WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden,
-            };
-            using System.Diagnostics.Process process = new()
-            {
-                EnableRaisingEvents = true,
-                StartInfo = processStartInfo,
-            };
-            {
-                process.ErrorDataReceived += (sender, e)
-                    => logger.LogError("Received error from {extractorFileName}: {data}", extractorFileName, e.Data);
-                process.OutputDataReceived += (sender, e)
-                    => logger.LogInformation("Received info from {extractorFileName}: {data}", extractorFileName, e.Data);
+                if (cancellationToken.IsCancellationRequested)
+                    break;
 
-                if (!process.Start())
-                {
-                    logger.LogWarning("Cannot start process {extractorFileName}.", extractorFileName);
-                    return false;
-                }
+                string fileName = Path.GetFileName(allFileNames[i]).ToLowerInvariant();
 
-                process.WaitForExit();
+                if (fileName.EndsWith(".7z"))
+                    continue;
 
-                return true;
+                await CopyUpdateFileAsync(destinationDirectory, fileName, destinationDirectory, cancellationToken);
             }
         }
-        catch (Exception e)
-        {
-            logger.LogError(e, "Error extracting file {source} to {destination}", sourceFileName, destinationFolder);
-        }
+        catch (Exception e) { logger.LogError(e, "Error copying update files to {destination}", destinationDirectory); }
+    }
 
-        return false;
+    private async Task CopyUpdateFileAsync(string destinationDirectory, string fullSourceFilePath, string sourceDirectory, CancellationToken cancellationToken)
+    {
+        string fileName = Path.GetFileName(fullSourceFilePath);
+        string fullDestinationFilePath = Path.Combine(destinationDirectory, fullSourceFilePath[sourceDirectory.Length..]);
+        string fileDestinationDirectory = Path.GetDirectoryName(fullDestinationFilePath)!;
+
+        logger.LogInformation("Attempting to copy {fileName} from source: {fullSourceFilePath} to destination: {fullDestinationFilePath}", fileName, fullSourceFilePath, fullDestinationFilePath);
+
+        for (int i = 0; i < 2; i++)
+        {
+            if (cancellationToken.IsCancellationRequested)
+                break;
+
+            try
+            {
+                if (!Directory.Exists(fileDestinationDirectory))
+                {
+                    logger.LogInformation("Creating directory {fileDestinationDirectory}", fileDestinationDirectory);
+                    _ = Directory.CreateDirectory(fileDestinationDirectory);
+                }
+
+                File.Copy(fullSourceFilePath, fullDestinationFilePath, i > 0);
+                logger.LogInformation("Copied {fileName}", fileName);
+
+                break;
+            }
+            catch (Exception e) { logger.LogError(e, "Error copying update files to {destination}", destinationDirectory); }
+
+            logger.LogInformation("The first attempt copying file: {fileName} failed. Retrying and will delete old file first.", fileName);
+
+            try
+            {
+                if (File.Exists(fullDestinationFilePath))
+                {
+                    logger.LogInformation("{fullDestinationFilePath} was found.", fullDestinationFilePath);
+                    await Task.Delay(TimeSpan.FromSeconds(1), cancellationToken);
+                    File.Delete(fullDestinationFilePath);
+                    logger.LogInformation("Deleted {fullDestinationFilePath}.", fullDestinationFilePath);
+                    await Task.Delay(TimeSpan.FromSeconds(1), cancellationToken);
+                }
+                else
+                {
+                    logger.LogInformation("{fullDestinationFilePath} was NOT found", fullDestinationFilePath);
+                }
+            }
+            catch (Exception e) { logger.LogError(e, "Error deleting {fullDestinationFilePath}.", fullDestinationFilePath); }
+        }
     }
 }

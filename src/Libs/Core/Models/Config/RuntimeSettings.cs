@@ -1,10 +1,10 @@
 namespace Seedysoft.Libs.Core.Models.Config;
 
-public class RuntimeSettings
+public record RuntimeSettings
 {
-    public short SecondsToDelayWebApplicationStart { get; set; }
+    public ushort SecondsToDelayWebApplicationStart { get; set; }
 
-    //public bool TracingEnabled { get; set; }
+    public bool LaunchDebugger { get; set; }
 
     //public bool LogRequests { get; set; }
 
@@ -38,6 +38,6 @@ public class RuntimeSettings
         return obj
             .GetType()
             .GetProperties()
-            .ToDictionary(p => "RuntimeSettings:" + p.Name, p => p.GetValue(obj)?.ToString());
+            .ToDictionary(p => $"{nameof(RuntimeSettings)}:" + p.Name, p => p.GetValue(obj)?.ToString());
     }
 }
