@@ -63,20 +63,18 @@ jobs:
       - name: Show the next version
         run: |
           echo ${{ steps.get-version.outputs.version }}
-          echo $version
-      - name: Pack to ${{ matrix.runtime.name }}.$version.7z
+      - name: Pack to ${{ matrix.runtime.name }}.${{ steps.get-version.outputs.version }}.7z
         id: pack
         run: |
-          echo $version
           cd ${{ matrix.runtime.name }}/
-          7z a -r -t7z "../${{ matrix.runtime.name }}.$version.7z" *
+          7z a -r -t7z "../${{ matrix.runtime.name }}.${{ steps.get-version.outputs.version }}.7z" *
           cd ..
-      - name: Upload artifact ${{ matrix.runtime.name }}.$version.7z
+      - name: Upload artifact ${{ matrix.runtime.name }}.${{ steps.get-version.outputs.version }}.7z
         if: steps.pack.outcome == 'success'
         uses: actions/upload-artifact@main
         with:
-          name: ${{ matrix.runtime.name }}.$version.7z
-          path: ${{ matrix.runtime.name }}.$version.7z
+          name: ${{ matrix.runtime.name }}.${{ steps.get-version.outputs.version }}.7z
+          path: ${{ matrix.runtime.name }}.${{ steps.get-version.outputs.version }}.7z
           compression-level: 0
           if-no-files-found: error # `warn` or `ignore` are also available, defaults to `warn`
           
