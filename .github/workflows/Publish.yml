@@ -53,7 +53,7 @@ jobs:
           dotnet publish "./src/BlazorWebApp/Server/Seedysoft.BlazorWebApp.Server.csproj" -o "./${{ matrix.runtime.name }}/" -r "${{ matrix.runtime.name }}" -c Release --no-restore --nologo -p:PublishTrimmed=false --sc -v m
       - name: Get Version from Project File
         id: get-version
-        run: echo "version=$(grep -m 1 '"Seedysoft.Libs.BackgroundServices/' Seedysoft.BlazorWebApp.Server.deps.json | grep -E '[[:digit:]]{2}\.[[:digit:]]{1,4}\.[[:digit:]]{1,4}')" >> $GITHUB_OUTPUT
+        run: echo "version=$(grep -m 1 '"Seedysoft.Libs.BackgroundServices/' ./${{ matrix.runtime.name }}/Seedysoft.BlazorWebApp.Server.deps.json | grep -E '[[:digit:]]{2}\.[[:digit:]]{1,4}\.[[:digit:]]{1,4}')" >> $GITHUB_OUTPUT
       - name: Show the next version
         run: |
           echo ${{ steps.get-version.outputs.version }}
