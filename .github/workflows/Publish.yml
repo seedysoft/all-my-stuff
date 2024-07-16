@@ -16,57 +16,47 @@ permissions:
   contents: write
   
 jobs:
-  build:
-    runs-on: ubuntu-latest
+  publish_and_pack:
+    name: Publish and pack
+    runs-on: ${{ matrix.runtime.os }}
+    strategy:
+      fail-fast: true
+      matrix:
+        runtime:
+          - {name: linux-arm64, os: ubuntu-latest}
+          - {name: linux-x64,   os: ubuntu-latest}
+          - {name: win-x64,     os: windows-latest}
     steps:
-      - uses: actions/checkout@main
-      - name: Bump version and push tag
-        id: tag_version
-        uses: mathieudutour/github-tag-action@v6.2
+      - name: Checkout Repository
+        uses: actions/checkout@main
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@main
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          dotnet-version: 8
+      - name: Make publish folder "./${{ matrix.runtime.name }}/"
+        run: mkdir -p "./${{ matrix.runtime.name }}/"
+      - name: Build Outbox
+        run: |
+          dotnet build "./src/Outbox/ConsoleApp/Seedysoft.Outbox.ConsoleApp.csproj" -c Release --nologo -v m
+          dotnet publish "./src/Outbox/ConsoleApp/Seedysoft.Outbox.ConsoleApp.csproj" -o "./${{ matrix.runtime.name }}/" -r "${{ matrix.runtime.name }}" -c Release --no-restore --nologo -p:PublishTrimmed=false --sc -v m
+      - name: Build Pvpc
+        run: |
+          dotnet build "./src/Pvpc/ConsoleApp/Seedysoft.Pvpc.ConsoleApp.csproj" -c Release --nologo -v m
+          dotnet publish "./src/Pvpc/ConsoleApp/Seedysoft.Pvpc.ConsoleApp.csproj" -o "./${{ matrix.runtime.name }}/" -r "${{ matrix.runtime.name }}" -c Release --no-restore --nologo -p:PublishTrimmed=false --sc -v m
+      - name: Build WebComparer
+        run: |
+          dotnet build "./src/WebComparer/ConsoleApp/Seedysoft.WebComparer.ConsoleApp.csproj" -c Release --nologo -v m
+          dotnet publish "./src/WebComparer/ConsoleApp/Seedysoft.WebComparer.ConsoleApp.csproj" -o "./${{ matrix.runtime.name }}/" -r "${{ matrix.runtime.name }}" -c Release --no-restore --nologo -p:PublishTrimmed=false --sc -v m
+      - name: Build BlazorWebApp
+        run: |
+          dotnet build "./src/BlazorWebApp/Server/Seedysoft.BlazorWebApp.Server.csproj" -c Release --nologo -v m
+          dotnet publish "./src/BlazorWebApp/Server/Seedysoft.BlazorWebApp.Server.csproj" -o "./${{ matrix.runtime.name }}/" -r "${{ matrix.runtime.name }}" -c Release --no-restore --nologo -p:PublishTrimmed=false --sc -v m
+      - name: Get Version from Project File
+        id: get-version
+        run: echo "version=$(grep -m 1 '"Seedysoft.Libs.BackgroundServices/' Seedysoft.BlazorWebApp.Server.deps.json | grep -E '[[:digit:]]{2}\.[[:digit:]]{1,4}\.[[:digit:]]{1,4}')" >> $GITHUB_OUTPUT
       - name: Show the next version
         run: |
-          echo ${{ steps.tag_version.outputs.new_tag }}
-          echo ${{ steps.tag_version.outputs.changelog }}
-  # publish_and_pack:
-  #   name: Publish and pack
-  #   runs-on: ${{ matrix.runtime.os }}
-  #   strategy:
-  #     fail-fast: true
-  #     matrix:
-  #       runtime:
-  #         - {name: linux-arm64, os: ubuntu-latest}
-  #         - {name: linux-x64,   os: ubuntu-latest}
-  #         - {name: win-x64,     os: windows-latest}
-  #   steps:
-  #     - name: Checkout Repository
-  #       uses: actions/checkout@main
-  #     - name: Setup dotnet
-  #       uses: actions/setup-dotnet@main
-  #       with:
-  #         dotnet-version: 8
-  #     - name: Make publish folder "./${{ matrix.runtime.name }}/"
-  #       run: mkdir -p "./${{ matrix.runtime.name }}/"
-  #     - name: Build Outbox
-  #       run: |
-  #         dotnet build "./src/Outbox/ConsoleApp/Seedysoft.Outbox.ConsoleApp.csproj" -c Release --nologo -v m
-  #         dotnet publish "./src/Outbox/ConsoleApp/Seedysoft.Outbox.ConsoleApp.csproj" -o "./${{ matrix.runtime.name }}/" -r "${{ matrix.runtime.name }}" -c Release --no-restore --nologo -p:PublishTrimmed=false --sc -v m
-  #     - name: Build Pvpc
-  #       run: |
-  #         dotnet build "./src/Pvpc/ConsoleApp/Seedysoft.Pvpc.ConsoleApp.csproj" -c Release --nologo -v m
-  #         dotnet publish "./src/Pvpc/ConsoleApp/Seedysoft.Pvpc.ConsoleApp.csproj" -o "./${{ matrix.runtime.name }}/" -r "${{ matrix.runtime.name }}" -c Release --no-restore --nologo -p:PublishTrimmed=false --sc -v m
-  #     - name: Build WebComparer
-  #       run: |
-  #         dotnet build "./src/WebComparer/ConsoleApp/Seedysoft.WebComparer.ConsoleApp.csproj" -c Release --nologo -v m
-  #         dotnet publish "./src/WebComparer/ConsoleApp/Seedysoft.WebComparer.ConsoleApp.csproj" -o "./${{ matrix.runtime.name }}/" -r "${{ matrix.runtime.name }}" -c Release --no-restore --nologo -p:PublishTrimmed=false --sc -v m
-  #     - name: Build BlazorWebApp
-  #       run: |
-  #         dotnet build "./src/BlazorWebApp/Server/Seedysoft.BlazorWebApp.Server.csproj" -c Release --nologo -v m
-  #         dotnet publish "./src/BlazorWebApp/Server/Seedysoft.BlazorWebApp.Server.csproj" -o "./${{ matrix.runtime.name }}/" -r "${{ matrix.runtime.name }}" -c Release --no-restore --nologo -p:PublishTrimmed=false --sc -v m
-  #     - name: Get Version from Project File
-  #       id: get-version
-  #       run: echo "version=$(grep -oE '<Version>[^<]+' MyApplication/MyApplication.csproj | sed 's/<Version>//')" >> $GITHUB_OUTPUT
+          echo ${{ steps.get-version.outputs.version }}
   #     - name: Pack to ${{ matrix.runtime.name }}.${{ github.ref_name }}.7z
   #       id: pack
   #       run: |
