@@ -21,7 +21,7 @@ permissions:
   
 jobs:
   publish_and_pack:
-    name: Publish and pack
+    name: publish_and_pack
     runs-on: ${{ matrix.runtime.os }}
     strategy:
       fail-fast: true
@@ -85,7 +85,8 @@ jobs:
     
   release:
     name: Create a release
-    needs: publish_and_pack
+    needs: 
+      - publish_and_pack
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
