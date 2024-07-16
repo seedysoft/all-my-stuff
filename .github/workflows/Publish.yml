@@ -49,6 +49,10 @@ jobs:
         run: |
           dotnet build "./src/Pvpc/ConsoleApp/Seedysoft.Pvpc.ConsoleApp.csproj" -c Release --nologo -v m
           dotnet publish "./src/Pvpc/ConsoleApp/Seedysoft.Pvpc.ConsoleApp.csproj" -o "./${{ matrix.runtime.name }}/" -r "${{ matrix.runtime.name }}" -c Release --no-restore --nologo -p:PublishTrimmed=false --sc -v m
+      - name: Build Update
+        run: |
+          dotnet build "./src/Update/ConsoleApp/Seedysoft.Update.ConsoleApp.csproj" -c Release --nologo -v m
+          dotnet publish "/src/Update/ConsoleApp/Seedysoft.Update.ConsoleApp.csproj" -o "./${{ matrix.runtime.name }}/" -r "${{ matrix.runtime.name }}" -c Release --no-restore --nologo -p:PublishTrimmed=false --sc -v m
       - name: Build WebComparer
         run: |
           dotnet build "./src/WebComparer/ConsoleApp/Seedysoft.WebComparer.ConsoleApp.csproj" -c Release --nologo -v m
