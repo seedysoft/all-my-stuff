@@ -13,7 +13,7 @@ defaults:
 on:
   push:
     branches:
-      - feat/use-artifacts-version
+      - release/*
   workflow_dispatch:
 
 permissions:
@@ -29,9 +29,9 @@ jobs:
       fail-fast: true
       matrix:
         runtime:
-          # - { name: linux-arm64, os: ubuntu-latest  }
+          - { name: linux-arm64, os: ubuntu-latest  }
           - { name: linux-x64,   os: ubuntu-latest  }
-          # - { name: win-x64,     os: windows-latest }
+          - { name: win-x64,     os: windows-latest }
     steps:
       - name: Checkout Repository
         uses: actions/checkout@main
@@ -41,27 +41,26 @@ jobs:
           dotnet-version: 8
       - name: Make publish folder "./${{ matrix.runtime.name }}/"
         run: mkdir -p "./${{ matrix.runtime.name }}/"
-      # - name: Build Outbox
-      #   run: |
-      #     dotnet build "./src/Outbox/ConsoleApp/Seedysoft.Outbox.ConsoleApp.csproj" -c Release --nologo -v m
-      #     dotnet publish "./src/Outbox/ConsoleApp/Seedysoft.Outbox.ConsoleApp.csproj" -o "./${{ matrix.runtime.name }}/" -r "${{ matrix.runtime.name }}" -c Release --no-restore --nologo -p:PublishTrimmed=false --sc -v m
-      # - name: Build Pvpc
-      #   run: |
-      #     dotnet build "./src/Pvpc/ConsoleApp/Seedysoft.Pvpc.ConsoleApp.csproj" -c Release --nologo -v m
-      #     dotnet publish "./src/Pvpc/ConsoleApp/Seedysoft.Pvpc.ConsoleApp.csproj" -o "./${{ matrix.runtime.name }}/" -r "${{ matrix.runtime.name }}" -c Release --no-restore --nologo -p:PublishTrimmed=false --sc -v m
-      # - name: Build WebComparer
-      #   run: |
-      #     dotnet build "./src/WebComparer/ConsoleApp/Seedysoft.WebComparer.ConsoleApp.csproj" -c Release --nologo -v m
-      #     dotnet publish "./src/WebComparer/ConsoleApp/Seedysoft.WebComparer.ConsoleApp.csproj" -o "./${{ matrix.runtime.name }}/" -r "${{ matrix.runtime.name }}" -c Release --no-restore --nologo -p:PublishTrimmed=false --sc -v m
+      - name: Build Outbox
+        run: |
+          dotnet build "./src/Outbox/ConsoleApp/Seedysoft.Outbox.ConsoleApp.csproj" -c Release --nologo -v m
+          dotnet publish "./src/Outbox/ConsoleApp/Seedysoft.Outbox.ConsoleApp.csproj" -o "./${{ matrix.runtime.name }}/" -r "${{ matrix.runtime.name }}" -c Release --no-restore --nologo -p:PublishTrimmed=false --sc -v m
+      - name: Build Pvpc
+        run: |
+          dotnet build "./src/Pvpc/ConsoleApp/Seedysoft.Pvpc.ConsoleApp.csproj" -c Release --nologo -v m
+          dotnet publish "./src/Pvpc/ConsoleApp/Seedysoft.Pvpc.ConsoleApp.csproj" -o "./${{ matrix.runtime.name }}/" -r "${{ matrix.runtime.name }}" -c Release --no-restore --nologo -p:PublishTrimmed=false --sc -v m
+      - name: Build WebComparer
+        run: |
+          dotnet build "./src/WebComparer/ConsoleApp/Seedysoft.WebComparer.ConsoleApp.csproj" -c Release --nologo -v m
+          dotnet publish "./src/WebComparer/ConsoleApp/Seedysoft.WebComparer.ConsoleApp.csproj" -o "./${{ matrix.runtime.name }}/" -r "${{ matrix.runtime.name }}" -c Release --no-restore --nologo -p:PublishTrimmed=false --sc -v m
       - name: Build BlazorWebApp
         run: |
           dotnet build "./src/BlazorWebApp/Server/Seedysoft.BlazorWebApp.Server.csproj" -c Release --nologo -v m
           dotnet publish "./src/BlazorWebApp/Server/Seedysoft.BlazorWebApp.Server.csproj" -o "./${{ matrix.runtime.name }}/" -r "${{ matrix.runtime.name }}" -c Release --no-restore --nologo -p:PublishTrimmed=false --sc -v m
       - name: Get Version from project file
         id: get-version
-        run: echo "version=$(grep -m 1 '"Seedysoft.Libs.BackgroundServices/' ./${{ matrix.runtime.name }}/Seedysoft.BlazorWebApp.Server.deps.json | grep -Eo '[[:digit:]]{2}\.[[:digit:]]{1,4}\.[[:digit:]]{1,4}')" >> $GITHUB_OUTPUT
-      - name: Show the next version
         run: |
+          echo "version=$(grep -m 1 '"Seedysoft.Libs.BackgroundServices/' ./${{ matrix.runtime.name }}/Seedysoft.BlazorWebApp.Server.deps.json | grep -Eo '[[:digit:]]{2}\.[[:digit:]]{1,4}\.[[:digit:]]{1,4}')" >> $GITHUB_OUTPUT
           echo ${{ steps.get-version.outputs.version }}
       - name: Pack to ${{ matrix.runtime.name }}.${{ steps.get-version.outputs.version }}.7z
         id: pack
