@@ -61,39 +61,52 @@ jobs:
       - name: Show the next version
         run: |
           echo ${{ steps.get-version.outputs.version }}
-  #     - name: Pack to ${{ matrix.runtime.name }}.${{ github.ref_name }}.7z
-  #       id: pack
-  #       run: |
-  #         cd ${{ matrix.runtime.name }}/
-  #         7z a -r -t7z "../${{ matrix.runtime.name }}.${{ github.ref_name }}.7z" *
-  #         cd ..
-  #     - name: Upload artifact ${{ matrix.runtime.name }}.${{ github.ref_name }}.7z
-  #       if: steps.pack.outcome == 'success'
-  #       uses: actions/upload-artifact@main
-  #       with:
-  #         name: ${{ matrix.runtime.name }}.${{ github.ref_name }}.7z
-  #         path: ${{ matrix.runtime.name }}.${{ github.ref_name }}.7z
-  #         compression-level: 0
-  #         if-no-files-found: error # `warn` or `ignore` are also available, defaults to `warn`
+      - name: Pack to ${{ matrix.runtime.name }}.${{ github.ref_name }}.7z
+        id: pack
+        run: |
+          cd ${{ matrix.runtime.name }}/
+          7z a -r -t7z "../${{ matrix.runtime.name }}.${{ github.ref_name }}.7z" *
+          cd ..
+#     - name: Upload artifact ${{ matrix.runtime.name }}.${{ github.ref_name }}.7z
+#       if: steps.pack.outcome == 'success'
+#       uses: actions/upload-artifact@main
+#       with:
+#         name: ${{ matrix.runtime.name }}.${{ github.ref_name }}.7z
+#         path: ${{ matrix.runtime.name }}.${{ github.ref_name }}.7z
+#         compression-level: 0
+#         if-no-files-found: error # `warn` or `ignore` are also available, defaults to `warn`
+      - name: Cache artifact ${{ matrix.runtime.name }}.${{ github.ref_name }}.7z
+        if: steps.pack.outcome == 'success'
+        id: cache-artifact
+        uses: actions/cache/save@v3
+        with:
+          path: ${{ matrix.runtime.name }}.${{ github.ref_name }}.7z
+          key: ${{ matrix.runtime.name }}.${{ github.ref_name }}
     
-  # release:
-  #   name: Create a release
-  #   needs: publish_and_pack
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Checkout Repository
-  #       uses: actions/checkout@main
-  #     - name: Make download folder
-  #       run: mkdir -p ./artifacts/
+  release:
+    name: Create a release
+    needs: publish_and_pack
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@main
+      - name: Make download folder
+        run: mkdir -p ./artifacts/
   #     - name: Download published app as artifact
   #       uses: actions/download-artifact@main
   #       with:
   #         path: ./artifacts
-  #     - name: Make Release
-  #       uses: softprops/action-gh-release@v2
-  #       if: startsWith(github.ref, 'refs/tags/')
-  #       with:
-  #         name: Release ${{ github.ref_name }}
-  #         fail_on_unmatched_files: true
-  #         generate_release_notes: true
-  #         files: ./artifacts/*/*.7z
+      - name: Restore cache files
+        uses: actions/cache/restore@v3
+        with:
+          path: ./artifacts
+          key: ${{ publish_and_pack.steps.cache-artifact.cache-primary-key }}
+          fail-on-cache-miss: true
+      - name: Make Release
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          name: Release ${{ github.ref_name }}
+          fail_on_unmatched_files: true
+          generate_release_notes: true
+          files: ./artifacts/*/*.7z
