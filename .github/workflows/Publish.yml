@@ -16,24 +16,19 @@ permissions:
   contents: write
   
 jobs:
-  example:
-    name: Example
+  build:
     runs-on: ubuntu-latest
     steps:
-    - name: Clone repository
-      uses: actions/checkout@main
-      with:
-        fetch-depth: 0
-        ref: ${{ github.event.pull_request.head.sha }}
-    - name: Get next version
-      id: get_next_version
-      uses: thenativeweb/get-next-version@main
-      with:
-        prefix: '' # optional, defaults to ''
-    - name: Show the next version
-      run: |
-        echo ${{ steps.get_next_version.outputs.version }}
-        echo ${{ steps.get_next_version.outputs.hasNextVersion }}
+      - uses: actions/checkout@main
+      - name: Bump version and push tag
+        id: tag_version
+        uses: mathieudutour/github-tag-action@v6.2
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Show the next version
+        run: |
+          echo ${{ steps.tag_version.outputs.new_tag }}
+          echo ${{ steps.tag_version.outputs.changelog }}
   # publish_and_pack:
   #   name: Publish and pack
   #   runs-on: ${{ matrix.runtime.os }}
