@@ -21,7 +21,7 @@ permissions:
   
 jobs:
   publish_and_pack:
-    name: publish_and_pack
+    name: Publish and pack
     runs-on: ${{ matrix.runtime.os }}
     strategy:
       fail-fast: true
@@ -101,7 +101,7 @@ jobs:
         uses: actions/cache/restore@v3
         with:
           path: ./artifacts
-          key: ${{ steps.cache-artifact.output.cache-primary-key }}
+          key: ${{ needs.publish_and_pack.steps.cache-artifact.output.cache-primary-key }}
           fail-on-cache-miss: true
       - name: Make Release
         uses: softprops/action-gh-release@v2
