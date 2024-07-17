@@ -14,8 +14,10 @@ public sealed class PvpcCronBackgroundServiceTests : Libs.Infrastructure.Tests.T
     private static decimal MinPriceAllowed = default!;
 
     [ClassInitialize]
-    public static new void ClassInitialize(TestContext testContext)
+    public static void PvpcCronBackgroundServiceTestsClassInitialize(TestContext testContext)
     {
+        ClassInitialize(testContext);
+
         Settings.PvpcSettings pvpcSettings = new()
         {
             CronExpression = "* * 30 2 *", // At every minute on day-of-month 30 in February.
@@ -44,7 +46,12 @@ public sealed class PvpcCronBackgroundServiceTests : Libs.Infrastructure.Tests.T
     }
 
     [ClassCleanup]
-    public static new void ClassCleanup() => PvpcService?.Dispose();
+    public static void PvpcCronBackgroundServiceTestsClassCleanup()
+    {
+        ClassCleanup();
+
+        PvpcService?.Dispose();
+    }
 
     [TestMethod]
     public void IsTimeToChargeNoPricesTest()

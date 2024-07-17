@@ -1,4 +1,3 @@
-using Seedysoft.Libs.Utils.Dependencies;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting.Internal;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -19,8 +18,10 @@ public sealed class UpdateBackgroundServiceCronTest : Libs.Infrastructure.Tests.
     }
 
     [ClassInitialize]
-    public static new void ClassInitialize(TestContext testContext)
+    public static void UpdateBackgroundServiceCronTestClassInitialize(TestContext testContext)
     {
+        ClassInitialize(testContext);
+
         Microsoft.Extensions.Hosting.HostApplicationBuilder hostApplicationBuilder = new();
 
         new Dependencies.Configurator().AddDependencies(hostApplicationBuilder);
@@ -34,7 +35,12 @@ public sealed class UpdateBackgroundServiceCronTest : Libs.Infrastructure.Tests.
     }
 
     [ClassCleanup]
-    public static new void ClassCleanup() => UpdateService?.Dispose();
+    public static void UpdateBackgroundServiceCronTestClassCleanup()
+    {
+        ClassCleanup();
+
+        UpdateService?.Dispose();
+    }
 
     [TestMethod]
     public async Task IsConnectionTest() => Assert.IsNotNull(await UpdateService.ConnectAsync());

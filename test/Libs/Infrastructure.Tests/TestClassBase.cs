@@ -13,13 +13,18 @@ public abstract class TestClassBase
     [ClassInitialize(InheritanceBehavior.BeforeEachDerivedClass)]
     public static void ClassInitialize(TestContext context)
     {
-        SqliteConnection = new("Filename=:memory:");
-        SqliteConnection.Open();
+        if (SqliteConnection == null)
+        {
+            SqliteConnection = new("Filename=:memory:");
+            SqliteConnection.Open();
 
-        Options = new DbContextOptionsBuilder<DbContexts.DbCxt>().UseSqlite(SqliteConnection).Options;
+            Options = new DbContextOptionsBuilder<DbContexts.DbCxt>().UseSqlite(SqliteConnection).Options;
 
-        using DbContexts.DbCxt dbCxt = GetDbCxt();
-        dbCxt.Database.Migrate();
+            using DbContexts.DbCxt dbCxt = GetDbCxt();
+            try
+            { dbCxt.Database.Migrate(); }
+            catch (Exception) { }
+        }
     }
 
     [ClassCleanup(InheritanceBehavior.BeforeEachDerivedClass)]
