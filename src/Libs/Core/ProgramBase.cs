@@ -4,7 +4,7 @@ namespace Seedysoft.Libs.Core;
 
 public abstract class ProgramBase
 {
-    public static Models.Config.RuntimeSettings Settings { get; set; } = default!;
+    public static Models.Config.RuntimeSettings Settings { get; set; } = new();
 
     public static async Task<T> ObtainCommandLineAsync<T>(string[] args) where T : Models.Config.ConsoleOptions
     {
@@ -17,7 +17,7 @@ public abstract class ProgramBase
             text.Copyright = " ";
             text.Heading = "All My Stuff " + System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
             Console.WriteLine(text);
-            Environment.Exit(1);
+            //Environment.Exit(1);
         });
 
         _ = parserResult.WithParsed(parsedValues => Settings = parsedValues.ToRunTimeSettings());
