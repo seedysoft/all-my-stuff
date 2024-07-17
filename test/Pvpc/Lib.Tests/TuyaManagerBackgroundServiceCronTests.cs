@@ -10,7 +10,7 @@ public sealed class TuyaManagerBackgroundServiceCronTests : Libs.Infrastructure.
 {
     private static Services.TuyaManagerBackgroundServiceCron TuyaManagerService = default!;
 
-    [ClassInitialize(InheritanceBehavior.None)]
+    [ClassInitialize]
     public static void TuyaManagerBackgroundServiceCronTestsClassInitialize(TestContext testContext)
     {
         ClassInitialize(testContext);
@@ -31,10 +31,11 @@ public sealed class TuyaManagerBackgroundServiceCronTests : Libs.Infrastructure.
             new ApplicationLifetime(new NullLogger<ApplicationLifetime>()));
     }
 
-    [ClassCleanup(InheritanceBehavior.None, ClassCleanupBehavior.EndOfClass)]
+    [ClassCleanup]
     public static void TuyaManagerBackgroundServiceCronTestsClassCleanup()
     {
         ClassCleanup();
+
         TuyaManagerService?.Dispose();
     }
 
