@@ -8,14 +8,11 @@ namespace Seedysoft.Update.Lib.Services;
 public class UpdateBackgroundServiceCron : Libs.BackgroundServices.Cron
 {
     private readonly ILogger<UpdateBackgroundServiceCron> logger;
-    private readonly IServiceProvider serviceProvider;
 
     public UpdateBackgroundServiceCron(IServiceProvider serviceProvider) : base(
         serviceProvider,
         serviceProvider.GetRequiredService<Microsoft.Extensions.Hosting.IHostApplicationLifetime>())
     {
-        this.serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
-
         logger = serviceProvider.GetRequiredService<ILogger<UpdateBackgroundServiceCron>>();
 
         Config = ServiceProvider.GetRequiredService<Settings.UpdateSettings>();
@@ -121,7 +118,7 @@ public class UpdateBackgroundServiceCron : Libs.BackgroundServices.Cron
     {
         GitHubClient gitHubClient = new(new ProductHeaderValue(Libs.Core.Constants.Github.RepositoryName))
         {
-            Credentials = new Credentials(serviceProvider.GetRequiredService<Settings.UpdateSettings>().GithubPat)
+            Credentials = new Credentials(ServiceProvider.GetRequiredService<Settings.UpdateSettings>().GithubPat)
         };
 
         return (await gitHubClient.Repository.Release.GetAll(Libs.Core.Constants.Github.OwnerName, Libs.Core.Constants.Github.RepositoryName)).Any()
