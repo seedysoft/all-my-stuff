@@ -42,18 +42,10 @@ public static partial class EnvironmentUtil
         return $"v{fvi.ProductVersion}";
     }
 
-    //public static string InstallationPath() => Path.GetDirectoryName(ExecutablePath())!;
+    public static string CurrentExecutablePath() => System.Reflection.Assembly.GetEntryAssembly()?.Location!;
 
-    public static string ExecutablePath() => System.Reflection.Assembly.GetEntryAssembly()?.Location!;
-
+    public static string GetMainProgramFileName() => $"{nameof(Seedysoft)}.BlazorWebApp.Server{(IsWindows ? ".exe" : string.Empty)}";
     public static string GetUpdaterFileName() => $"{nameof(Seedysoft)}.{nameof(Update)}.ConsoleApp{(IsWindows ? ".exe" : string.Empty)}";
 
     public static bool IsWindows => Environment.OSVersion.Platform == PlatformID.Win32NT;
-
-    //    public static bool IsDebug =>
-    //#if DEBUG
-    //            true;
-    //#else
-    //            false;
-    //#endif
 }
