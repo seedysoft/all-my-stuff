@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Seedysoft.Update.ConsoleApp": {
+      "commandName": "Project",
+      "commandLineArgs": "-i \"D:/Test/win-x64/\" -d \"0\" -l \"false\""
+    }
+  }
+}

@@ -80,40 +80,6 @@ public class UpdateBackgroundServiceCron : Libs.BackgroundServices.Cron
         finally { await Task.CompletedTask; }
     }
 
-    private void StartUpdater(string directory)
-    {
-        string UpdaterFullPath = Path.Combine(directory, Libs.Update.EnvironmentUtil.GetUpdaterFileName());
-        if (!File.Exists(UpdaterFullPath))
-        {
-            logger.LogError("Updater file {UpdaterFullPath} does NOT found.", UpdaterFullPath);
-            return;
-        }
-
-        Settings.UpdateConsoleOptions upd = Settings.UpdateConsoleOptions.Default;
-        upd.LaunchDebugger = true;
-        System.Diagnostics.ProcessStartInfo processStartInfo = new()
-        {
-            Arguments = upd.ToString(),
-            CreateNoWindow = true,
-            ErrorDialog = false,
-            FileName = UpdaterFullPath,
-            //RedirectStandardError = true,
-            //RedirectStandardInput = true,
-            //RedirectStandardOutput = true,
-            UseShellExecute = false,
-            WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden,
-        };
-
-        System.Diagnostics.Process process = new() { StartInfo = processStartInfo, };
-        if (!process.Start())
-        {
-            logger.LogWarning("Cannot start process {UpdaterFullPath}.", UpdaterFullPath);
-            return;
-        }
-
-        Environment.Exit(0);
-    }
-
     protected internal async Task<GitHubClient?> ConnectAsync()
     {
         GitHubClient gitHubClient = new(new ProductHeaderValue(Libs.Core.Constants.Github.RepositoryName))
@@ -137,15 +103,15 @@ public class UpdateBackgroundServiceCron : Libs.BackgroundServices.Cron
         }
 
         string platform;
-        string extractorFileName;
+        string extractorFileNameWithPath;
         if (Libs.Update.EnvironmentUtil.IsWindows)
         {
-            extractorFileName = @"C:\Program Files\7-Zip\7z.exe";
+            extractorFileNameWithPath = @"C:\Program Files\7-Zip\7z.exe";
             platform = "win";
         }
         else
         {
-            extractorFileName = "7zr";
+            extractorFileNameWithPath = "7zr";
             platform = "linux";
         }
 
@@ -160,8 +126,8 @@ public class UpdateBackgroundServiceCron : Libs.BackgroundServices.Cron
         {
             ReleaseAsset releaseAsset = releaseAssets.ElementAt(i);
 
-            string localFilename = Path.Combine(destinationDirectory, releaseAsset.Name);
-            if (File.Exists(localFilename))
+            string localFilenameWithPath = Path.Combine(destinationDirectory, releaseAsset.Name);
+            if (File.Exists(localFilenameWithPath))
                 continue;
 
             using HttpClient httpClient = new() { Timeout = TimeSpan.FromMinutes(5) };
@@ -180,7 +146,7 @@ public class UpdateBackgroundServiceCron : Libs.BackgroundServices.Cron
                         continue;
                     }
 
-                    using FileStream fileStream = File.Create(localFilename);
+                    using FileStream fileStream = File.Create(localFilenameWithPath);
                     {
                         await response.Content.CopyToAsync(fileStream);
                         await fileStream.FlushAsync();
@@ -189,19 +155,19 @@ public class UpdateBackgroundServiceCron : Libs.BackgroundServices.Cron
                 }
             }
 
-            ExtractFile(extractorFileName, localFilename, destinationDirectory);
+            ExtractFile(extractorFileNameWithPath, localFilenameWithPath, destinationDirectory);
         }
 
         return destinationDirectory;
     }
 
-    protected internal void ExtractFile(string extractorFileName, string sourceFileName, string destinationDirectory)
+    protected internal void ExtractFile(string extractorFileNameWithPath, string sourceFileNameWithPath, string destinationDirectory)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(extractorFileName);
-        ArgumentException.ThrowIfNullOrWhiteSpace(sourceFileName);
+        ArgumentException.ThrowIfNullOrWhiteSpace(extractorFileNameWithPath);
+        ArgumentException.ThrowIfNullOrWhiteSpace(sourceFileNameWithPath);
         ArgumentException.ThrowIfNullOrWhiteSpace(destinationDirectory);
 
-        if (!File.Exists(extractorFileName))
+        if (!File.Exists(extractorFileNameWithPath))
             return;
 
         System.Diagnostics.ProcessStartInfo processStartInfo = new()
@@ -210,10 +176,10 @@ public class UpdateBackgroundServiceCron : Libs.BackgroundServices.Cron
             // -aoa : Overwrite All existing files without prompt.
             // -bsp1 : -bs{o|e|p}{0|1|2} : set output stream for output/error/progress line
             // -o{Directory} : set Output directory
-            Arguments = $"x -aoa -bsp1 \"{sourceFileName}\" -o\"{destinationDirectory}\"",
+            Arguments = $"x -aoa -bsp1 \"{sourceFileNameWithPath}\" -o\"{destinationDirectory}\"",
             CreateNoWindow = true,
             ErrorDialog = false,
-            FileName = extractorFileName,
+            FileName = extractorFileNameWithPath,
             RedirectStandardError = true,
             RedirectStandardInput = true,
             RedirectStandardOutput = true,
@@ -227,47 +193,60 @@ public class UpdateBackgroundServiceCron : Libs.BackgroundServices.Cron
         };
         {
             process.ErrorDataReceived += (sender, e)
-                => logger.LogError("Received error from {extractorFileName}: {data}", extractorFileName, e.Data);
+                => logger.LogError("Received error from {extractor}: {data}", extractorFileNameWithPath, e.Data);
             process.OutputDataReceived += (sender, e)
-                => logger.LogInformation("Received info from {extractorFileName}: {data}", extractorFileName, e.Data);
+                => logger.LogInformation("Received info from {extractor}: {data}", extractorFileNameWithPath, e.Data);
 
             if (process.Start())
                 process.WaitForExit();
             else
-                logger.LogWarning("Cannot start process {extractorFileName}.", extractorFileName);
+                logger.LogWarning("Cannot start process {extractor}.", extractorFileNameWithPath);
         }
     }
 
-    public async Task CopyUpdatesAsync(string destinationDirectory, CancellationToken cancellationToken)
+    protected internal async Task CopyUpdateFilesAsync(string destinationDirectory, CancellationToken cancellationToken)
     {
-        string[] allFileNames = Directory.GetFiles(Libs.Update.EnvironmentUtil.ExecutablePath(), "*.*", SearchOption.AllDirectories);
-        logger.LogInformation("{Length} update files found", allFileNames.Length);
+        // Delete main program as cannot restart automatically
+
+        string sourceDirectory = System.Reflection.Assembly.GetExecutingAssembly().Location;
+        string[] allFileNamesWithPath = Directory.GetFiles(sourceDirectory, "*.*", SearchOption.AllDirectories);
+        logger.LogInformation("{Length} update files found", allFileNamesWithPath.Length);
 
         try
         {
-            for (int i = 0; i < allFileNames.Length; i++)
+            for (int i = 0; i < allFileNamesWithPath.Length; i++)
             {
                 if (cancellationToken.IsCancellationRequested)
                     break;
 
-                string fileName = Path.GetFileName(allFileNames[i]).ToLowerInvariant();
+                string current = allFileNamesWithPath[i];
 
-                if (fileName.EndsWith(".7z"))
+                if (current.EndsWith(".7z", StringComparison.InvariantCultureIgnoreCase) ||
+                    current.EndsWith(Libs.Update.EnvironmentUtil.GetMainProgramFileName(), StringComparison.InvariantCultureIgnoreCase))
+                {
                     continue;
+                }
 
-                await CopyUpdateFileAsync(destinationDirectory, fileName, destinationDirectory, cancellationToken);
+                await CopyFileAsync(destinationDirectory, current, sourceDirectory, cancellationToken);
             }
+
+            // Now copy main program file
+            await CopyFileAsync(
+                destinationDirectory,
+                allFileNamesWithPath.First(x => x.EndsWith(Libs.Update.EnvironmentUtil.GetMainProgramFileName())),
+                sourceDirectory,
+                cancellationToken);
         }
         catch (Exception e) { logger.LogError(e, "Error copying update files to {destination}", destinationDirectory); }
     }
 
-    private async Task CopyUpdateFileAsync(string destinationDirectory, string fullSourceFilePath, string sourceDirectory, CancellationToken cancellationToken)
+    private async Task CopyFileAsync(string destinationDirectory, string sourceFileNameWithPath, string sourceDirectory, CancellationToken cancellationToken)
     {
-        string fileName = Path.GetFileName(fullSourceFilePath);
-        string fullDestinationFilePath = Path.Combine(destinationDirectory, fullSourceFilePath[sourceDirectory.Length..]);
-        string fileDestinationDirectory = Path.GetDirectoryName(fullDestinationFilePath)!;
+        string fileName = Path.GetFileName(sourceFileNameWithPath);
+        string destinationFileNameWithPath = Path.Combine(destinationDirectory, sourceFileNameWithPath[(sourceDirectory.Length + 1)..]);
+        string fileDestinationDirectory = Path.GetDirectoryName(destinationFileNameWithPath)!;
 
-        logger.LogInformation("Attempting to copy {fileName} from source: {fullSourceFilePath} to destination: {fullDestinationFilePath}", fileName, fullSourceFilePath, fullDestinationFilePath);
+        logger.LogInformation("Attempting to copy {fileName} from source: {source} to destination: {destination}", fileName, sourceFileNameWithPath, destinationFileNameWithPath);
 
         for (int i = 0; i < 2; i++)
         {
@@ -282,10 +261,10 @@ public class UpdateBackgroundServiceCron : Libs.BackgroundServices.Cron
                     _ = Directory.CreateDirectory(fileDestinationDirectory);
                 }
 
-                File.Copy(fullSourceFilePath, fullDestinationFilePath, i > 0);
+                File.Copy(sourceFileNameWithPath, destinationFileNameWithPath, true);
                 logger.LogInformation("Copied {fileName}", fileName);
 
-                break;
+                break; // done on first attempt
             }
             catch (Exception e) { logger.LogError(e, "Error copying update files to {destination}", destinationDirectory); }
 
@@ -293,20 +272,66 @@ public class UpdateBackgroundServiceCron : Libs.BackgroundServices.Cron
 
             try
             {
-                if (File.Exists(fullDestinationFilePath))
+                if (File.Exists(destinationFileNameWithPath))
                 {
-                    logger.LogInformation("{fullDestinationFilePath} was found.", fullDestinationFilePath);
+                    logger.LogInformation("{fullDestinationFilePath} was found.", destinationFileNameWithPath);
                     await Task.Delay(TimeSpan.FromSeconds(1), cancellationToken);
-                    File.Delete(fullDestinationFilePath);
-                    logger.LogInformation("Deleted {fullDestinationFilePath}.", fullDestinationFilePath);
+                    File.Delete(destinationFileNameWithPath);
+                    logger.LogInformation("Deleted {fullDestinationFilePath}.", destinationFileNameWithPath);
                     await Task.Delay(TimeSpan.FromSeconds(1), cancellationToken);
                 }
                 else
                 {
-                    logger.LogInformation("{fullDestinationFilePath} was NOT found", fullDestinationFilePath);
+                    logger.LogInformation("{fullDestinationFilePath} was NOT found", destinationFileNameWithPath);
                 }
             }
-            catch (Exception e) { logger.LogError(e, "Error deleting {fullDestinationFilePath}.", fullDestinationFilePath); }
+            catch (Exception e) { logger.LogError(e, "Error deleting {fullDestinationFilePath}.", destinationFileNameWithPath); }
         }
+    }
+
+    public async Task UpdateAndStartAsync(string destinationDirectory, CancellationToken token)
+    {
+        await CopyUpdateFilesAsync(destinationDirectory, token);
+
+        StartMainProgram();
+    }
+
+    private void StartUpdater(string directory)
+    {
+        string UpdaterFileNameWithPath = Path.Combine(directory, Libs.Update.EnvironmentUtil.GetUpdaterFileName());
+        if (!File.Exists(UpdaterFileNameWithPath))
+        {
+            logger.LogError("Updater file {UpdaterFullPath} does NOT found.", UpdaterFileNameWithPath);
+            return;
+        }
+
+        Settings.UpdateConsoleOptions upd = Settings.UpdateConsoleOptions.Default;
+        upd.InstallDirectory = Libs.Update.EnvironmentUtil.CurrentExecutablePath();
+        System.Diagnostics.ProcessStartInfo processStartInfo = new()
+        {
+            Arguments = upd.ToString(),
+            CreateNoWindow = true,
+            ErrorDialog = false,
+            FileName = UpdaterFileNameWithPath,
+            UseShellExecute = true,
+            WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden,
+        };
+
+        System.Diagnostics.Process process = new() { StartInfo = processStartInfo, };
+
+        if (!process.Start())
+        {
+            logger.LogWarning("Cannot start process {UpdaterFullPath}.", UpdaterFileNameWithPath);
+            return;
+        }
+
+        Environment.Exit(0);
+    }
+
+    private void StartMainProgram()
+    {
+        // As it is a service, it starts itself
+
+        Environment.Exit(0);
     }
 }

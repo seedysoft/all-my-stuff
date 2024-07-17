@@ -22,8 +22,8 @@ public abstract class ProgramBase
 
         _ = parserResult.WithParsed(parsedValues => Settings = parsedValues.ToRunTimeSettings());
 
-        if (Settings.LaunchDebugger && !System.Diagnostics.Debugger.IsAttached)
-            _ = System.Diagnostics.Debugger.Launch();
+        //if (Settings.LaunchDebugger && !System.Diagnostics.Debugger.IsAttached)
+        //    _ = System.Diagnostics.Debugger.Launch();
 
         for (int i = Settings.SecondsToDelayWebApplicationStart; i > 0; --i)
         {

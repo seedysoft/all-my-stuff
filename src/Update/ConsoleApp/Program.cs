@@ -38,8 +38,8 @@ public sealed class Program : Libs.Core.ProgramBase
 
             using CancellationTokenSource CancelTokenSource = new();
 
-            using (Lib.Services.UpdateBackgroundServiceCron updateBackgroundServiceCron = host.Services.GetRequiredService<Lib.Services.UpdateBackgroundServiceCron>())
-                await updateBackgroundServiceCron.CopyUpdatesAsync(updateConsoleOptions.InstallDirectory, CancelTokenSource.Token);
+            using (Lib.Services.UpdateBackgroundServiceCron updateBackgroundServiceCron = Scope.ServiceProvider.GetRequiredService<Lib.Services.UpdateBackgroundServiceCron>())
+                await updateBackgroundServiceCron.UpdateAndStartAsync(updateConsoleOptions.InstallDirectory, CancelTokenSource.Token);
 
             Logger.LogInformation("End {ApplicationName}", AppName);
         }
