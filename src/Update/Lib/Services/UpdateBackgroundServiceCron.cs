@@ -18,6 +18,16 @@ public class UpdateBackgroundServiceCron : Libs.BackgroundServices.Cron
         Config = ServiceProvider.GetRequiredService<Settings.UpdateSettings>();
     }
 
+    public override async Task StartAsync(CancellationToken cancellationToken)
+    {
+        // Execute on init
+        _ = Task.Factory.StartNew(async () => await DoWorkAsync(cancellationToken), cancellationToken);
+
+        _ = base.StartAsync(cancellationToken);
+
+        await Task.CompletedTask;
+    }
+
     public override async Task DoWorkAsync(CancellationToken cancellationToken)
     {
         try
