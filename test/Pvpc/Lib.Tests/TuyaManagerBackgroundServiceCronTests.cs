@@ -5,16 +5,19 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Seedysoft.Pvpc.Lib.Tests;
 
+[TestClass]
 public sealed class TuyaManagerBackgroundServiceCronTests : Libs.Infrastructure.Tests.TestClassBase
 {
     private static Services.TuyaManagerBackgroundServiceCron TuyaManagerService = default!;
 
-    [ClassInitialize]
-    public static new void ClassInitialize(TestContext testContext)
+    [ClassInitialize(InheritanceBehavior.None)]
+    public static void TuyaManagerBackgroundServiceCronTestsClassInitialize(TestContext testContext)
     {
+        ClassInitialize(testContext);
+
         Settings.TuyaManagerSettings tuyaManagerSettings = new()
         {
-            CronExpression = "* * 30 2 *", // At every minute on day-of-month 30 in February.
+            CronExpression = "* * 30 2 *", // At every minute on day-of-month 30 in February = never.
         };
 
         IServiceCollection services = new ServiceCollection();
@@ -28,8 +31,12 @@ public sealed class TuyaManagerBackgroundServiceCronTests : Libs.Infrastructure.
             new ApplicationLifetime(new NullLogger<ApplicationLifetime>()));
     }
 
-    [ClassCleanup]
-    public static new void ClassCleanup() => TuyaManagerService?.Dispose();
+    [ClassCleanup(InheritanceBehavior.None, ClassCleanupBehavior.EndOfClass)]
+    public static void TuyaManagerBackgroundServiceCronTestsClassCleanup()
+    {
+        ClassCleanup();
+        TuyaManagerService?.Dispose();
+    }
 
     [TestMethod]
     public async Task DoWorkAsyncTest() => await TuyaManagerService.DoWorkAsync(default);

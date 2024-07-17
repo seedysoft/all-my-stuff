@@ -14,7 +14,7 @@ public class UpdateBackgroundServiceCron : Libs.BackgroundServices.Cron
         serviceProvider,
         serviceProvider.GetRequiredService<Microsoft.Extensions.Hosting.IHostApplicationLifetime>())
     {
-        this.serviceProvider = serviceProvider;
+        this.serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
 
         logger = serviceProvider.GetRequiredService<ILogger<UpdateBackgroundServiceCron>>();
 
@@ -200,6 +200,13 @@ public class UpdateBackgroundServiceCron : Libs.BackgroundServices.Cron
 
     protected internal void ExtractFile(string extractorFileName, string sourceFileName, string destinationDirectory)
     {
+        ArgumentException.ThrowIfNullOrWhiteSpace(extractorFileName);
+        ArgumentException.ThrowIfNullOrWhiteSpace(sourceFileName);
+        ArgumentException.ThrowIfNullOrWhiteSpace(destinationDirectory);
+
+        if (!File.Exists(extractorFileName))
+            return;
+
         System.Diagnostics.ProcessStartInfo processStartInfo = new()
         {
             Arguments = $"x -bsp1 \"{sourceFileName}\" -o\"{destinationDirectory}\"",
