@@ -209,7 +209,11 @@ public class UpdateBackgroundServiceCron : Libs.BackgroundServices.Cron
 
         System.Diagnostics.ProcessStartInfo processStartInfo = new()
         {
-            Arguments = $"x -bsp1 \"{sourceFileName}\" -o\"{destinationDirectory}\"",
+            // x : eXtract files with full paths
+            // -aoa : Overwrite All existing files without prompt.
+            // -bsp1 : -bs{o|e|p}{0|1|2} : set output stream for output/error/progress line
+            // -o{Directory} : set Output directory
+            Arguments = $"x -aoa -bsp1 \"{sourceFileName}\" -o\"{destinationDirectory}\"",
             CreateNoWindow = true,
             ErrorDialog = false,
             FileName = extractorFileName,
