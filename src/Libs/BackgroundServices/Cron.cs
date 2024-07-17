@@ -2,7 +2,7 @@
 
 namespace Seedysoft.Libs.BackgroundServices;
 
-public abstract class Cron(IServiceProvider serviceProvider, IHostApplicationLifetime hostApplicationLifetime) 
+public abstract class Cron(IServiceProvider serviceProvider, IHostApplicationLifetime hostApplicationLifetime)
     : BackgroundService
 {
     protected IServiceProvider ServiceProvider { get; init; } = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
