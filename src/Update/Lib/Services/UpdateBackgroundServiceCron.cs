@@ -33,7 +33,7 @@ public class UpdateBackgroundServiceCron : Libs.BackgroundServices.Cron
         try
         {
             Version? currentVersion = Libs.Update.EnvironmentUtil.ParseVersion(Libs.Update.EnvironmentUtil.MyVersion());
-            if (currentVersion == new Version(1, 0, 0))
+            if (currentVersion <= new Version(1, 0, 0))
             {
                 logger.LogInformation("Skipping checking for new releases because is runing in IDE.");
                 return;

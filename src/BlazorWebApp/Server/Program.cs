@@ -21,6 +21,10 @@ public class Program : Libs.Core.ProgramBase
 
         logger = webApplication.Services.GetRequiredService<ILogger<Program>>();
 
+        string AppName = webApplication.Services.GetRequiredService<IHostEnvironment>().ApplicationName;
+
+        logger.LogInformation("Called {ApplicationName} version {Version}", AppName, System.Reflection.Assembly.GetExecutingAssembly().GetName().Version);
+
         // Configure the HTTP request pipeline.
         if (webApplication.Environment.IsDevelopment())
         {
@@ -51,6 +55,8 @@ public class Program : Libs.Core.ProgramBase
         _ = webApplication.MapControllers();
 
         await webApplication.RunAsync();
+
+        logger.LogInformation("End {ApplicationName}", AppName);
     }
 
     private static void UnhandledExceptionTrapper(object sender, UnhandledExceptionEventArgs e)
