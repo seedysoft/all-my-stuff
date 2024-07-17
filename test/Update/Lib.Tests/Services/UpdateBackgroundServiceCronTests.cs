@@ -52,8 +52,8 @@ public sealed class UpdateBackgroundServiceCronTest : Libs.Infrastructure.Tests.
     public void ExtractFileTest()
     {
         const string extractorFileName = @"C:\Program Files\7-Zip\7z.exe";
-        const string tempDir = @"C:\Users\alfon\AppData\Local\Temp\Update-Release v1.1.1.6-638565582644439810";
-        string sourceFileName = Path.Combine(tempDir, "win-x64.v1.1.1.6.7z");
+        const string tempDir = @"C:\Users\alfon\AppData\Local\Temp\Update-Release v1.1.1.6-638568349446317829";
+        string sourceFileName = Path.Combine(tempDir, "win-x64.24.717.1512.7z");
 
         if (File.Exists(extractorFileName) && Directory.Exists(tempDir) && File.Exists(sourceFileName))
             UpdateService.ExtractFile(extractorFileName, sourceFileName, tempDir);
