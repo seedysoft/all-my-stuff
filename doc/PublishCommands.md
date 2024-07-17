@@ -18,8 +18,8 @@ $PublishDir="D:\_Syncthing\Seedysoft\win-x64\"
 dotnet publish $ProjectOrSolution -p:PublishDir=$PublishDir  -c $Config  -r linux-arm64  -p:BlazorCacheBootResources=false  -p:PublishTrimmed=false  --sc ;
 dotnet publish $ProjectOrSolution -p:PublishDir=$PublishDir  -c $Config  -r win-x64      -p:BlazorCacheBootResources=false  -p:PublishTrimmed=false  --sc ;
 
-dotnet publish $ProjectOrSolution -p:PublishDir=$PublishDir  -c $Config  -r linux-x64  -p:EnvironmentName="Development"   -p:BlazorCacheBootResources=false  -p:PublishTrimmed=false  --sc ;
-dotnet publish $ProjectOrSolution -p:PublishDir=$PublishDir  -c $Config  -r linux-x64  -p:BlazorCacheBootResources=false  -p:PublishTrimmed=false            --sc ;
+dotnet publish $ProjectOrSolution -p:PublishDir=$PublishDir  -c $Config  -r linux-x64    -p:EnvironmentName="Development"   -p:BlazorCacheBootResources=false  -p:PublishTrimmed=false  --sc ;
+dotnet publish $ProjectOrSolution -p:PublishDir=$PublishDir  -c $Config  -r linux-x64    -p:BlazorCacheBootResources=false  -p:PublishTrimmed=false            --sc ;
 
 dotnet publish C:\Users\alfon\_prog\seedysoft\all-my-stuff\src\Outbox\ConsoleApp\Seedysoft.Outbox.ConsoleApp.csproj            -p:PublishDir=$PublishDir  -c $Config  -r linux-arm64  -p:PublishTrimmed=false  --sc ;
 dotnet publish C:\Users\alfon\_prog\seedysoft\all-my-stuff\src\Pvpc\ConsoleApp\Seedysoft.Pvpc.ConsoleApp.csproj                -p:PublishDir=$PublishDir  -c $Config  -r linux-arm64  -p:PublishTrimmed=false  --sc ;

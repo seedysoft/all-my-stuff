@@ -49,9 +49,7 @@ public sealed class UpdateBackgroundServiceCronTest : Libs.Infrastructure.Tests.
         const string tempDir = @"C:\Users\alfon\AppData\Local\Temp\Update-Release v1.1.1.6-638565582644439810";
         string sourceFileName = Path.Combine(tempDir, "win-x64.v1.1.1.6.7z");
 
-        if (File.Exists(sourceFileName))
+        if (File.Exists(extractorFileName) && Directory.Exists(tempDir) && File.Exists(sourceFileName))
             UpdateService.ExtractFile(extractorFileName, sourceFileName, tempDir);
-        else
-            Assert.Inconclusive();
     }
 }

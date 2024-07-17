@@ -25,6 +25,7 @@ public static class Crypto
     private static byte[] EncryptBytes(byte[] inputBuffer, byte[] key)
     {
         ArgumentNullException.ThrowIfNull(inputBuffer);
+        ArgumentNullException.ThrowIfNull(key);
 
         byte[] iv;
         byte[] cipherText;
@@ -53,6 +54,7 @@ public static class Crypto
     private static byte[] DecryptBytes(byte[] encryptedBytes, byte[] key)
     {
         ArgumentNullException.ThrowIfNull(encryptedBytes);
+        ArgumentNullException.ThrowIfNull(key);
 
         using Aes cipher = BuildCryptographicObject(key);
         int cipherTextOffset = cipher.IV.Length;
