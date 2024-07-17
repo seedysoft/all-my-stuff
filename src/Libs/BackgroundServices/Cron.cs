@@ -2,15 +2,16 @@
 
 namespace Seedysoft.Libs.BackgroundServices;
 
-public abstract class Cron(IServiceProvider serviceProvider, IHostApplicationLifetime hostApplicationLifetime)
+public abstract class Cron(IServiceProvider serviceProvider, IHostApplicationLifetime hostApplicationLifetime) 
     : BackgroundService
 {
-    protected IServiceProvider ServiceProvider { get; init; } = serviceProvider;
+    protected IServiceProvider ServiceProvider { get; init; } = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
+    protected IHostApplicationLifetime HostApplicationLifetime { get; init; } = hostApplicationLifetime ?? throw new ArgumentNullException(nameof(hostApplicationLifetime));
     protected ScheduleConfig Config { get; init; } = default!;
 
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
-        if (!await WaitForAppStartup(hostApplicationLifetime, cancellationToken))
+        if (!await WaitForAppStartup(HostApplicationLifetime, cancellationToken))
             return;
 
         try
