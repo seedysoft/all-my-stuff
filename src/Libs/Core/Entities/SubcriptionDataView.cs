@@ -1,6 +1,6 @@
 ﻿namespace Seedysoft.Libs.Core.Entities;
 
-public partial class SubcriptionDataView
+public class SubcriptionDataView
 {
     public long? SubscriberId { get; set; }
 

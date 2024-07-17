@@ -7,7 +7,7 @@ using Telegram.Bot;
 
 namespace Seedysoft.Libs.TelegramBot.Services;
 
-public partial class TelegramHostedService : Core.NonBackgroundServiceBase, IHostedService
+public class TelegramHostedService : Core.NonBackgroundServiceBase, IHostedService
 {
     private readonly ILogger<TelegramHostedService> Logger;
     private readonly Settings.TelegramSettings TelegramSettings;
