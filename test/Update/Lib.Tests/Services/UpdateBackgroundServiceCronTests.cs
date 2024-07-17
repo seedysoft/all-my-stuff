@@ -2,14 +2,13 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting.Internal;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Seedysoft.Update.Lib.Services;
 
 namespace Seedysoft.Update.Lib.Tests.Services;
 
 [TestClass]
 public sealed class UpdateBackgroundServiceCronTest : Libs.Infrastructure.Tests.TestClassBase
 {
-    private static UpdateBackgroundServiceCron UpdateService = default!;
+    private static Lib.Services.UpdateBackgroundServiceCron UpdateService = default!;
 
     [TestInitialize]
     public void TestInitialize()
@@ -26,7 +25,7 @@ public sealed class UpdateBackgroundServiceCronTest : Libs.Infrastructure.Tests.
 
         new Dependencies.Configurator().AddDependencies(hostApplicationBuilder);
 
-        hostApplicationBuilder.Services.TryAddSingleton<Microsoft.Extensions.Logging.ILogger<UpdateBackgroundServiceCron>>(new NullLogger<UpdateBackgroundServiceCron>());
+        hostApplicationBuilder.Services.TryAddSingleton<Microsoft.Extensions.Logging.ILogger<Lib.Services.UpdateBackgroundServiceCron>>(new NullLogger<Lib.Services.UpdateBackgroundServiceCron>());
         hostApplicationBuilder.Services.TryAddSingleton<Microsoft.Extensions.Hosting.IHostApplicationLifetime>(new ApplicationLifetime(new NullLogger<ApplicationLifetime>()));
 
         Microsoft.Extensions.Hosting.IHost host = hostApplicationBuilder.Build();
