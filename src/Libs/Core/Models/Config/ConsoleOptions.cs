@@ -3,15 +3,20 @@ namespace Seedysoft.Libs.Core.Models.Config;
 public record ConsoleOptions
 {
     public static ConsoleOptions Default
-        => Build<ConsoleOptions>(delayStart: 0, launchDebugger: false);
-    public static ConsoleOptions Build<T>(ushort delayStart, bool launchDebugger) where T : ConsoleOptions, new()
-        => new T() { DelayStart = delayStart, LaunchDebugger = launchDebugger };
+        => Build<ConsoleOptions>(delayStart: 0/*, launchDebugger: false*/);
+    public static ConsoleOptions Build<T>(ushort delayStart/*, bool launchDebugger*/) where T : ConsoleOptions, new()
+        => new T() { DelayStart = delayStart/*, LaunchDebugger = launchDebugger*/ };
 
-    [CommandLine.Option(shortName: 'd', longName: $"{nameof(DelayStart)}", HelpText = "Time in seconds that the web application will wait until it starts.")]
+    [CommandLine.Option(
+        shortName: 'd', 
+        longName: $"{nameof(DelayStart)}", 
+        HelpText = "Time in seconds that the web application will wait until it starts.")]
     public ushort DelayStart { get; set; }
 
-    [CommandLine.Option(shortName: 'l', longName: $"{nameof(LaunchDebugger)}", HelpText = "Launch debugger.")]
-    public bool LaunchDebugger { get; set; }
+    //[CommandLine.Option(
+    //    shortName: 'l', 
+    //    longName: $"{nameof(LaunchDebugger)}", HelpText = "Launch debugger.")]
+    //public bool LaunchDebugger { get; set; }
 
     //[CommandLine.Option('i', "Install", HelpText = "Install Jackett windows service (Must be admin)")]
     //public bool Install { get; set; }
@@ -64,7 +69,7 @@ public record ConsoleOptions
         RuntimeSettings runtimeSettings = new()
         {
             SecondsToDelayWebApplicationStart = options.DelayStart,
-            LaunchDebugger = options.LaunchDebugger,
+            //LaunchDebugger = options.LaunchDebugger,
         };
 
         //// Logging

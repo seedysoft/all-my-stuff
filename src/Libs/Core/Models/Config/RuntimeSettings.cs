@@ -4,8 +4,6 @@ public record RuntimeSettings
 {
     public ushort SecondsToDelayWebApplicationStart { get; set; }
 
-    public bool LaunchDebugger { get; set; }
-
     //public bool LogRequests { get; set; }
 
     //public string? ClientOverride { get; set; }

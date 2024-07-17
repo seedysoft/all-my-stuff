@@ -22,14 +22,14 @@ internal sealed class Configurator : Libs.Utils.Dependencies.ConfiguratorBase
 
         _ = hostApplicationBuilder.Services.AddHostedService<Update.Lib.Services.UpdateBackgroundServiceCron>();
 
-        _ = hostApplicationBuilder.Services.AddHostedService<Libs.TelegramBot.Services.TelegramHostedService>();
+        //_ = hostApplicationBuilder.Services.AddHostedService<Libs.TelegramBot.Services.TelegramHostedService>();
 
-        _ = hostApplicationBuilder.Services.AddHostedService<Outbox.Lib.Services.OutboxBackgroundServiceCron>();
+        //_ = hostApplicationBuilder.Services.AddHostedService<Outbox.Lib.Services.OutboxBackgroundServiceCron>();
 
-        _ = hostApplicationBuilder.Services.AddHostedService<Pvpc.Lib.Services.PvpcBackgroundServiceCron>();
-        _ = hostApplicationBuilder.Services.AddHostedService<Pvpc.Lib.Services.TuyaManagerBackgroundServiceCron>();
+        //_ = hostApplicationBuilder.Services.AddHostedService<Pvpc.Lib.Services.PvpcBackgroundServiceCron>();
+        //_ = hostApplicationBuilder.Services.AddHostedService<Pvpc.Lib.Services.TuyaManagerBackgroundServiceCron>();
 
-        _ = hostApplicationBuilder.Services.AddHostedService<WebComparer.Lib.Services.WebComparerBackgroundServiceCron>();
+        //_ = hostApplicationBuilder.Services.AddHostedService<WebComparer.Lib.Services.WebComparerBackgroundServiceCron>();
 
         // Add services to the container.
         _ = hostApplicationBuilder.Services
