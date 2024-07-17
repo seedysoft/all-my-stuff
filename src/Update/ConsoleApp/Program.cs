@@ -34,7 +34,6 @@ public sealed class Program : Libs.Core.ProgramBase
             //foreach (KeyValuePair<string, string?> item in Config)
             //    Logger.LogDebug($"{item.Key}: {item.Value ?? "<<NULL>>"}");
 
-            // Migrate and seed the database during startup. Must be synchronous.
             using IServiceScope Scope = host.Services.CreateAsyncScope();
 
             using CancellationTokenSource CancelTokenSource = new();

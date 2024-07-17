@@ -1,19 +1,19 @@
-﻿using System.Text.RegularExpressions;
-
-namespace Seedysoft.Libs.Update;
+﻿namespace Seedysoft.Libs.Update;
 
 public static partial class EnvironmentUtil
 {
-    [GeneratedRegex(@"v(?<major>\d+)\.(?<minor>\d+)\.(?<build>\d+)", RegexOptions.Compiled)]
-    private static partial Regex ReleaseVersionRegex();
-    private static readonly Regex _VersionRegex = ReleaseVersionRegex();
+    [System.Text.RegularExpressions.GeneratedRegex(
+        @"(?<major>\d{2})\.(?<minor>\d{2,4})\.(?<build>\d{2,4})",
+        System.Text.RegularExpressions.RegexOptions.Compiled)]
+    private static partial System.Text.RegularExpressions.Regex ReleaseVersionRegex();
+    private static readonly System.Text.RegularExpressions.Regex _VersionRegex = ReleaseVersionRegex();
 
     public static Version? ParseVersion(string version)
     {
         if (string.IsNullOrWhiteSpace(version))
             return null;
 
-        Match parsed = _VersionRegex.Match(version);
+        System.Text.RegularExpressions.Match parsed = _VersionRegex.Match(version);
 
         int major;
         int minor;
@@ -35,17 +35,17 @@ public static partial class EnvironmentUtil
         return new Version(major, minor, build);
     }
 
-    public static string Version()
+    public static string MyVersion()
     {
-        var assembly = System.Reflection.Assembly.GetExecutingAssembly();
-        var fvi = System.Diagnostics.FileVersionInfo.GetVersionInfo(assembly.Location);
+        var fvi = System.Diagnostics.FileVersionInfo.GetVersionInfo(System.Reflection.Assembly.GetExecutingAssembly().Location);
+
         return $"v{fvi.ProductVersion}";
     }
 
-    public static string InstallationPath() => Path.GetDirectoryName(ExecutablePath())!;
+    //public static string InstallationPath() => Path.GetDirectoryName(ExecutablePath())!;
 
     public static string ExecutablePath() => System.Reflection.Assembly.GetEntryAssembly()?.Location!;
-    
+
     public static string GetUpdaterFileName() => $"{nameof(Seedysoft)}.{nameof(Update)}.ConsoleApp{(IsWindows ? ".exe" : string.Empty)}";
 
     public static bool IsWindows => Environment.OSVersion.Platform == PlatformID.Win32NT;
