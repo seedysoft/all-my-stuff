@@ -2,7 +2,6 @@
 ```PowerShell
 $Config="Debug"
 $Config="Release"
-$Config="Staging"
 
 $ProjectOrSolution="C:\Users\alfon\_prog\seedysoft\all-my-stuff\Seedysoft.Tests.sln"
 $ProjectOrSolution="C:\Users\alfon\_prog\seedysoft\all-my-stuff\src\Outbox\ConsoleApp\Seedysoft.Outbox.ConsoleApp.csproj"

@@ -1,25 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configurations>Debug;Release;Staging</Configurations>
     <ImplicitUsings>enable</ImplicitUsings>
     <IsPackable>false</IsPackable>
     <IsPublishable>False</IsPublishable>
     <Nullable>enable</Nullable>
+    <RuntimeIdentifiers>linux-arm64;linux-x64;win-x64</RuntimeIdentifiers>
     <TargetFramework>net8.0</TargetFramework>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
-    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)' == 'Staging'">
-    <RuntimeIdentifier>linux-x64</RuntimeIdentifier>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
-    <RuntimeIdentifier>linux-arm64</RuntimeIdentifier>
-  </PropertyGroup>
   <ItemGroup>
-    <Content Include="appsettings.Libs.FuelPrices.ConnectionStrings.json">
+    <None Include="appsettings.Libs.FuelPrices.ConnectionStrings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    </None>
     <Content Include="appsettings.Libs.FuelPrices.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -29,35 +20,13 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <DependentUpon>appsettings.Libs.FuelPrices.json</DependentUpon>
     </Content>
-    <None Include="appsettings.Libs.FuelPrices.Staging.json">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-      <DependentUpon>appsettings.Libs.FuelPrices.json</DependentUpon>
-    </None>
-	<None Include="appsettings.Libs.FuelPrices.Production.json">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-      <DependentUpon>appsettings.Libs.FuelPrices.json</DependentUpon>
-    </None>
-  </ItemGroup>
-  <ItemGroup Condition="'$(Configuration)' == 'Staging'">
-    <None Include="appsettings.Libs.FuelPrices.Development.json">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-      <DependentUpon>appsettings.Libs.FuelPrices.json</DependentUpon>
-    </None>
-    <Content Include="appsettings.Libs.FuelPrices.Staging.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <DependentUpon>appsettings.Libs.FuelPrices.json</DependentUpon>
-    </Content>
-	<None Include="appsettings.Libs.FuelPrices.Production.json">
+    <None Include="appsettings.Libs.FuelPrices.Production.json">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <DependentUpon>appsettings.Libs.FuelPrices.json</DependentUpon>
     </None>
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)' == 'Release'">
     <None Include="appsettings.Libs.FuelPrices.Development.json">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-      <DependentUpon>appsettings.Libs.FuelPrices.json</DependentUpon>
-    </None>
-	<None Include="appsettings.Libs.FuelPrices.Staging.json">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <DependentUpon>appsettings.Libs.FuelPrices.json</DependentUpon>
     </None>
@@ -89,8 +58,5 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Libs\Infrastructure\Seedysoft.Libs.Infrastructure.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <InternalsVisibleTo Include="$(AssemblyName).Tests" />
   </ItemGroup>
 </Project>
