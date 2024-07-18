@@ -152,7 +152,7 @@ public sealed class WebComparerBackgroundServiceCron : Libs.BackgroundServices.C
         OpenQA.Selenium.Chrome.ChromeDriverService chromeDriverService;
         switch (System.Runtime.InteropServices.RuntimeInformation.RuntimeIdentifier)
         {
-            case "linux-arm64":
+            case Libs.Core.Constants.RuntimeIdentifier.LinuxArm64:
                 Options.BinaryLocation = "/usr/lib/chromium-browser/chromium-browser";
 
                 chromeDriverService = OpenQA.Selenium.Chrome.ChromeDriverService.CreateDefaultService("/usr/lib/chromium-browser/", "chromedriver");
@@ -160,13 +160,13 @@ public sealed class WebComparerBackgroundServiceCron : Libs.BackgroundServices.C
                 chromeDriver = new(chromeDriverService, Options);
                 break;
 
-            //case "linux-x64":
-            //    Options.BinaryLocation = "/usr/lib/chromium-browser/chromium-browser";
+            case Libs.Core.Constants.RuntimeIdentifier.LinuxX64:
+                Options.BinaryLocation = "/usr/lib/chromium-browser/chromium-browser";
 
-            //    chromeDriverService = OpenQA.Selenium.Chrome.ChromeDriverService.CreateDefaultService("/usr/lib/chromium-browser/", "chromedriver");
+                chromeDriverService = OpenQA.Selenium.Chrome.ChromeDriverService.CreateDefaultService("/usr/lib/chromium-browser/", "chromedriver");
 
-            //    chromeDriver = new(chromeDriverService, Options);
-            //    break;
+                chromeDriver = new(chromeDriverService, Options);
+                break;
 
             default:
                 chromeDriver = new(Options);
