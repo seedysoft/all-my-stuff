@@ -1,16 +1,21 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
+    <Configurations>Debug;Release;Staging</Configurations>
     <ImplicitUsings>enable</ImplicitUsings>
     <IsPackable>false</IsPackable>
     <IsPublishable>False</IsPublishable>
     <Nullable>enable</Nullable>
-    <RuntimeIdentifiers>linux-arm64;linux-x64;win-x64</RuntimeIdentifiers>
     <TargetFramework>net8.0</TargetFramework>
   </PropertyGroup>
-  <ItemGroup>
-    <None Remove="appsettings.PvpcSettings.json" />
-    <None Remove="appsettings.TuyaManagerSettings.json" />
-  </ItemGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Staging'">
+    <RuntimeIdentifier>linux-x64</RuntimeIdentifier>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <RuntimeIdentifier>linux-arm64</RuntimeIdentifier>
+  </PropertyGroup>
   <ItemGroup>
     <Content Include="appsettings.PvpcSettings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

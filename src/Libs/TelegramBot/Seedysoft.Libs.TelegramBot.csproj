@@ -1,21 +1,46 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
+    <Configurations>Debug;Release;Staging</Configurations>
     <ImplicitUsings>enable</ImplicitUsings>
     <IsPackable>false</IsPackable>
     <IsPublishable>False</IsPublishable>
     <Nullable>enable</Nullable>
-    <RuntimeIdentifiers>linux-arm64;linux-x64;win-x64</RuntimeIdentifiers>
     <TargetFramework>net8.0</TargetFramework>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Staging'">
+    <RuntimeIdentifier>linux-x64</RuntimeIdentifier>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <RuntimeIdentifier>linux-arm64</RuntimeIdentifier>
+  </PropertyGroup>
   <ItemGroup>
-    <None Remove="appsettings.TelegramSettings.Development.json" />
     <Content Include="appsettings.TelegramSettings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <None Remove="appsettings.TelegramSettings.Production.json" />
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)' == 'Debug'">
     <Content Include="appsettings.TelegramSettings.Development.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <DependentUpon>appsettings.TelegramSettings.json</DependentUpon>
+    </Content>
+	<None Include="appsettings.TelegramSettings.Staging.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <DependentUpon>appsettings.TelegramSettings.json</DependentUpon>
+    </None>
+    <None Include="appsettings.TelegramSettings.Production.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <DependentUpon>appsettings.TelegramSettings.json</DependentUpon>
+    </None>
+  </ItemGroup>
+  <ItemGroup Condition="'$(Configuration)' == 'Staging'">
+    <None Include="appsettings.TelegramSettings.Development.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <DependentUpon>appsettings.TelegramSettings.json</DependentUpon>
+    </None>
+    <Content Include="appsettings.TelegramSettings.Staging.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <DependentUpon>appsettings.TelegramSettings.json</DependentUpon>
     </Content>
@@ -26,6 +51,10 @@
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)' == 'Release'">
     <None Include="appsettings.TelegramSettings.Development.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <DependentUpon>appsettings.TelegramSettings.json</DependentUpon>
+    </None>
+	<None Include="appsettings.TelegramSettings.Staging.json">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <DependentUpon>appsettings.TelegramSettings.json</DependentUpon>
     </None>
@@ -43,5 +72,8 @@
     <ProjectReference Include="..\BackgroundServices\Seedysoft.Libs.BackgroundServices.csproj" />
     <ProjectReference Include="..\Core\Seedysoft.Libs.Core.csproj" />
     <ProjectReference Include="..\Cryptography\Seedysoft.Libs.Cryptography.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="$(AssemblyName).Tests" />
   </ItemGroup>
 </Project>

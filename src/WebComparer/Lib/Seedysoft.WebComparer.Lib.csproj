@@ -1,14 +1,23 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
+    <Configurations>Debug;Release;Staging</Configurations>
     <ImplicitUsings>enable</ImplicitUsings>
     <IsPackable>false</IsPackable>
     <IsPublishable>False</IsPublishable>
     <Nullable>enable</Nullable>
-    <RuntimeIdentifiers>linux-arm64;linux-x64;win-x64</RuntimeIdentifiers>
     <TargetFramework>net8.0</TargetFramework>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
     <PublishChromeDriver>true</PublishChromeDriver>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Staging'">
+    <PublishChromeDriver>true</PublishChromeDriver>
+    <RuntimeIdentifier>linux-x64</RuntimeIdentifier>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <PublishChromeDriver>true</PublishChromeDriver>
+    <RuntimeIdentifier>linux-arm64</RuntimeIdentifier>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="DiffPlex" Version="1.7.2" />
@@ -21,5 +30,8 @@
     <ProjectReference Include="..\..\Libs\Core\Seedysoft.Libs.Core.csproj" />
     <ProjectReference Include="..\..\Libs\Infrastructure\Seedysoft.Libs.Infrastructure.csproj" />
     <ProjectReference Include="..\..\Libs\Utils\Seedysoft.Libs.Utils.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="$(AssemblyName).Tests" />
   </ItemGroup>
 </Project>
