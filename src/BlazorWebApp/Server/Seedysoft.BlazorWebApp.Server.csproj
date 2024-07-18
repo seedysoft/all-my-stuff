@@ -1,38 +1,19 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
   <PropertyGroup>
-    <Configurations>Debug;Release;Staging</Configurations>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <RuntimeIdentifiers>linux-arm64;linux-x64;win-x64</RuntimeIdentifiers>
     <StartupObject>Seedysoft.BlazorWebApp.Server.Program</StartupObject>
     <TargetFramework>net8.0</TargetFramework>
     <UserSecretsId>953853f7-9384-457c-a3c0-3492059196ab</UserSecretsId>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
-    <RuntimeIdentifiers>win-x64</RuntimeIdentifiers>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)' == 'Staging'">
-    <RuntimeIdentifiers>linux-x64</RuntimeIdentifiers>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
-    <RuntimeIdentifiers>linux-arm64</RuntimeIdentifiers>
-  </PropertyGroup>
   <ItemGroup Condition="'$(Configuration)' == 'Debug'">
-    <Content Remove="appsettings.BlazorWebApp.Server.Production.json" />
-    <None Include="appsettings.BlazorWebApp.Server.Production.json" />
-    <Content Remove="appsettings.BlazorWebApp.Server.Staging.json" />
-    <None Include="appsettings.BlazorWebApp.Server.Staging.json" />
-  </ItemGroup>
-  <ItemGroup Condition="'$(Configuration)' == 'Staging'">
-    <Content Remove="appsettings.BlazorWebApp.Server.Development.json" />
-    <None Include="appsettings.BlazorWebApp.Server.Development.json" />
     <Content Remove="appsettings.BlazorWebApp.Server.Production.json" />
     <None Include="appsettings.BlazorWebApp.Server.Production.json" />
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)' == 'Release'">
     <Content Remove="appsettings.BlazorWebApp.Server.Development.json" />
     <None Include="appsettings.BlazorWebApp.Server.Development.json" />
-    <Content Remove="appsettings.BlazorWebApp.Server.Staging.json" />
-    <None Include="appsettings.BlazorWebApp.Server.Staging.json" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\bashScripts\create-daemon.sh" Link="create-daemon.sh">
@@ -68,8 +49,5 @@
     <ProjectReference Include="..\..\Update\Lib\Seedysoft.Update.Lib.csproj" />
     <ProjectReference Include="..\..\WebComparer\Lib\Seedysoft.WebComparer.Lib.csproj" />
     <ProjectReference Include="..\Client\Seedysoft.BlazorWebApp.Client.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <InternalsVisibleTo Include="$(AssemblyName).Tests" />
   </ItemGroup>
 </Project>
