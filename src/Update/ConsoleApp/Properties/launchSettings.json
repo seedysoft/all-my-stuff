@@ -3,6 +3,11 @@
     "Seedysoft.Update.ConsoleApp": {
       "commandName": "Project",
       "commandLineArgs": "-i \"D:/Test/win-x64/\" -d \"0\" -l \"false\""
+    },
+    "WSL": {
+      "commandName": "WSL2",
+      "commandLineArgs": "\"{OutDir}Seedysoft.Update.ConsoleApp.dll\" -i \"/mnt/d/Test/linux-x64\"",
+      "distributionName": ""
     }
   }
 }

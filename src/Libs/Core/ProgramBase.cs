@@ -8,8 +8,14 @@ public abstract class ProgramBase
 
     public static async Task<T> ObtainCommandLineAsync<T>(string[] args) where T : Models.Config.ConsoleOptions
     {
-        Parser commandLineParser = new(settings => settings.CaseSensitive = false);
-        ParserResult<T> parserResult = commandLineParser.ParseArguments<T>(args);
+        Parser parser = new(settings =>
+        {
+            settings.AutoHelp = false;
+            settings.AutoVersion = false;
+            settings.CaseSensitive = false;
+            settings.HelpWriter = null;
+        });
+        ParserResult<T> parserResult = parser.ParseArguments<T>(args);
 
         _ = parserResult.WithNotParsed(errors =>
         {
@@ -20,7 +26,7 @@ public abstract class ProgramBase
             //Environment.Exit(1);
         });
 
-        _ = parserResult.WithParsed(parsedValues => Settings = parsedValues.ToRunTimeSettings());
+        Settings = parserResult.Value.ToRunTimeSettings();
 
         //if (Settings.LaunchDebugger && !System.Diagnostics.Debugger.IsAttached)
         //    _ = System.Diagnostics.Debugger.Launch();
