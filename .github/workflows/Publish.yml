@@ -62,6 +62,8 @@ jobs:
         dotnet-version: 8
     - name: Make publish folder "./${{ matrix.runtime.name }}/"
       run: mkdir -p "./${{ matrix.runtime.name }}/"
+    - name: Install wasm-tools workload
+      run: dotnet workload install wasm-tools
     - name: Publish Outbox
       run: dotnet publish "./src/Outbox/ConsoleApp/Seedysoft.Outbox.ConsoleApp.csproj" -o "./${{ matrix.runtime.name }}/" -p:AssemblyVersion="${{ needs.obtain_version.outputs.tag_version }}" -r "${{ matrix.runtime.name }}" -c Release --nologo -p:PublishTrimmed=false --sc -v m
     - name: Build Pvpc
