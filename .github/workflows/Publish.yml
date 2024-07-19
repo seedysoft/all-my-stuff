@@ -39,7 +39,7 @@ jobs:
         dotnet-version: 8
     - name: Build solution
       run: |
-        dotnet workload restore Seedysoft.Tests.sln
+        dotnet workload install wasm-tools
         dotnet build Seedysoft.Tests.sln -c Release -v n
 
   publish_and_pack_job:
