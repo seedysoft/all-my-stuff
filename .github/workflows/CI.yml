@@ -31,7 +31,7 @@ jobs:
         dotnet-version: 8
     - name: Build solution
       run: |
-        dotnet workload restore [/home/runner/work/all-my-stuff/all-my-stuff/src/BlazorWebApp/Client/Seedysoft.BlazorWebApp.Client.csproj]
+        dotnet workload restore --project ./src/BlazorWebApp/Client/Seedysoft.BlazorWebApp.Client.csproj
         dotnet build Seedysoft.Tests.sln -c Release -v n
     - name: Test
       run: dotnet test Seedysoft.Tests.sln -c Release --no-build -v n
