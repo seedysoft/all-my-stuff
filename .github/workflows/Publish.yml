@@ -31,6 +31,16 @@ jobs:
       run: |
         echo "version=$(date -u +%y.%m%d.%H%M)" >> $GITHUB_OUTPUT
         echo $GITHUB_OUTPUT
+    - name: Checkout Repository
+      uses: actions/checkout@main
+    - name: Setup dotnet
+      uses: actions/setup-dotnet@main
+      with:
+        dotnet-version: 8
+    - name: Build solution
+      run: |
+        dotnet workload restore Seedysoft.Tests.sln
+        dotnet build Seedysoft.Tests.sln -c Release -v n
 
   publish_and_pack_job:
     name: Publish and pack
@@ -52,15 +62,15 @@ jobs:
         dotnet-version: 8
     - name: Make publish folder "./${{ matrix.runtime.name }}/"
       run: mkdir -p "./${{ matrix.runtime.name }}/"
-    - name: Build Outbox
+    - name: Publish Outbox
       run: dotnet publish "./src/Outbox/ConsoleApp/Seedysoft.Outbox.ConsoleApp.csproj" -o "./${{ matrix.runtime.name }}/" -p:AssemblyVersion="${{ needs.obtain_version.outputs.tag_version }}" -r "${{ matrix.runtime.name }}" -c Release --nologo -p:PublishTrimmed=false --sc -v m
     - name: Build Pvpc
       run: dotnet publish "./src/Pvpc/ConsoleApp/Seedysoft.Pvpc.ConsoleApp.csproj" -o "./${{ matrix.runtime.name }}/" -p:AssemblyVersion="${{ needs.obtain_version.outputs.tag_version }}" -r "${{ matrix.runtime.name }}" -c Release --nologo -p:PublishTrimmed=false --sc -v m
-    - name: Build Update
+    - name: Publish Update
       run: dotnet publish "./src/Update/ConsoleApp/Seedysoft.Update.ConsoleApp.csproj" -o "./${{ matrix.runtime.name }}/" -p:AssemblyVersion="${{ needs.obtain_version.outputs.tag_version }}" -r "${{ matrix.runtime.name }}" -c Release --nologo -p:PublishTrimmed=false --sc -v m
-    - name: Build WebComparer
+    - name: Publish WebComparer
       run: dotnet publish "./src/WebComparer/ConsoleApp/Seedysoft.WebComparer.ConsoleApp.csproj" -o "./${{ matrix.runtime.name }}/" -p:AssemblyVersion="${{ needs.obtain_version.outputs.tag_version }}" -r "${{ matrix.runtime.name }}" -c Release --nologo -p:PublishTrimmed=false --sc -v m
-    - name: Build BlazorWebApp
+    - name: Publish BlazorWebApp
       run: dotnet publish "./src/BlazorWebApp/Server/Seedysoft.BlazorWebApp.Server.csproj" -o "./${{ matrix.runtime.name }}/" -p:AssemblyVersion="${{ needs.obtain_version.outputs.tag_version }}" -r "${{ matrix.runtime.name }}" -c Release --nologo -p:PublishTrimmed=false --sc -v m
     - name: Pack to ${{ matrix.runtime.name }}.${{ needs.obtain_version.outputs.tag_version }}.7z
       id: pack
