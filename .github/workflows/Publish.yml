@@ -73,7 +73,7 @@ jobs:
     - name: Publish WebComparer
       run: dotnet publish "./src/WebComparer/ConsoleApp/Seedysoft.WebComparer.ConsoleApp.csproj" -o "./${{ matrix.runtime.name }}/" -p:AssemblyVersion="${{ needs.obtain_version.outputs.tag_version }}" -r "${{ matrix.runtime.name }}" -c Release --nologo -p:PublishTrimmed=false --sc -v m
     - name: Publish BlazorWebApp
-      run: dotnet publish "./src/BlazorWebApp/Server/Seedysoft.BlazorWebApp.Server.csproj" -o "./${{ matrix.runtime.name }}/" -p:AssemblyVersion="${{ needs.obtain_version.outputs.tag_version }}" -r "${{ matrix.runtime.name }}" -c Release --nologo -p:PublishTrimmed=false --sc -v m
+      run: dotnet publish "./src/BlazorWebApp/Server/Seedysoft.BlazorWebApp.Server.csproj" -o "./${{ matrix.runtime.name }}/" -p:AssemblyVersion="${{ needs.obtain_version.outputs.tag_version }}" -r "${{ matrix.runtime.name }}" -c Release --nologo -p:BlazorCacheBootResources=false -p:PublishTrimmed=false --sc -v m
     - name: Pack to ${{ matrix.runtime.name }}.${{ needs.obtain_version.outputs.tag_version }}.7z
       id: pack
       run: |

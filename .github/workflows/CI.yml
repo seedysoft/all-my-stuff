@@ -32,6 +32,6 @@ jobs:
     - name: Build solution
       run: |
         dotnet workload install wasm-tools
-        dotnet build Seedysoft.Tests.sln -c Release -v n
+        dotnet build Seedysoft.Tests.sln -c Release -v m
     - name: Test
-      run: dotnet test Seedysoft.Tests.sln -c Release --no-build -v n
+      run: dotnet test Seedysoft.Tests.sln -c Release --no-build -v m
