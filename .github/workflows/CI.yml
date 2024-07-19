@@ -2,36 +2,36 @@
 
 name: CI
 
-env:
-  SEEDY_MASTER_KEY: ${{ secrets.SEEDY_MASTER_KEY }}
-
 defaults:
   run:
     shell: bash
 
-permissions:
-  contents: read
+env:
+  SEEDY_MASTER_KEY: ${{ secrets.SEEDY_MASTER_KEY }}
 
 on:
   pull_request:
   push:
     branches-ignore:
-      - 'feat/use-artifacts-version'
+    - 'feat/use-artifacts-version'
   workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
   build-and-test:
     name: Build and test
-    runs-on: [ ubuntu-latest ]
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@main
-      - name: Setup dotnet
-        uses: actions/setup-dotnet@main
-        with:
-          dotnet-version: 8
-
-      - name: Build
-        run: dotnet build Seedysoft.Tests.sln -c Release -v n
-
-      - name: Test
-        run: dotnet test Seedysoft.Tests.sln -c Release --no-build -v n
+    - uses: actions/checkout@main
+    - name: Setup dotnet
+      uses: actions/setup-dotnet@main
+      with:
+        dotnet-version: 8
+    - name: Build solution
+      run: |
+        dotnet workload restore Seedysoft.Tests.sln
+        dotnet build Seedysoft.Tests.sln -c Release -v n
+    - name: Test
+      run: dotnet test Seedysoft.Tests.sln -c Release --no-build -v n
