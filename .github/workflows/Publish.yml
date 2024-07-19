@@ -20,89 +20,87 @@ permissions:
   contents: write
   
 jobs:
+  obtain_version:
+    name: Obtain version
+    outputs:
+      tag_version: ${{ steps.get-version.outputs.version }}
+    runs-on: ubuntu-latest
+    steps:
+    - name: Get Version
+      id: get-version
+      run: |
+        echo "version=$(date -u +%y.%m%d.%H%M)" >> $GITHUB_OUTPUT
+        echo $version
+
   publish_and_pack_job:
     name: Publish and pack
-    outputs:
-      tag_version: ${{ steps.get-version.outputs.version }} 
+    needs: obtain_version
     runs-on: ${{ matrix.runtime.os }}
     strategy:
       fail-fast: true
       matrix:
         runtime:
-          - { name: linux-arm64, os: ubuntu-latest  }
-          - { name: linux-x64,   os: ubuntu-latest  }
-          - { name: win-x64,     os: windows-latest }
+        - { name: linux-arm64, os: ubuntu-latest  }
+        - { name: linux-x64,   os: ubuntu-latest  }
+        - { name: win-x64,     os: windows-latest }
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@main
-      - name: Setup dotnet
-        uses: actions/setup-dotnet@main
-        with:
-          dotnet-version: 8
-      - name: Make publish folder "./${{ matrix.runtime.name }}/"
-        run: mkdir -p "./${{ matrix.runtime.name }}/"
-      - name: Build Outbox
-        run: |
-          dotnet build "./src/Outbox/ConsoleApp/Seedysoft.Outbox.ConsoleApp.csproj" -c Release --nologo -v m
-          dotnet publish "./src/Outbox/ConsoleApp/Seedysoft.Outbox.ConsoleApp.csproj" -o "./${{ matrix.runtime.name }}/" -r "${{ matrix.runtime.name }}" -c Release --no-restore --nologo -p:PublishTrimmed=false --sc -v m
-      - name: Build Pvpc
-        run: |
-          dotnet build "./src/Pvpc/ConsoleApp/Seedysoft.Pvpc.ConsoleApp.csproj" -c Release --nologo -v m
-          dotnet publish "./src/Pvpc/ConsoleApp/Seedysoft.Pvpc.ConsoleApp.csproj" -o "./${{ matrix.runtime.name }}/" -r "${{ matrix.runtime.name }}" -c Release --no-restore --nologo -p:PublishTrimmed=false --sc -v m
-      - name: Build Update
-        run: |
-          dotnet build "./src/Update/ConsoleApp/Seedysoft.Update.ConsoleApp.csproj" -c Release --nologo -v m
-          dotnet publish "./src/Update/ConsoleApp/Seedysoft.Update.ConsoleApp.csproj" -o "./${{ matrix.runtime.name }}/" -r "${{ matrix.runtime.name }}" -c Release --no-restore --nologo -p:PublishTrimmed=false --sc -v m
-      - name: Build WebComparer
-        run: |
-          dotnet build "./src/WebComparer/ConsoleApp/Seedysoft.WebComparer.ConsoleApp.csproj" -c Release --nologo -v m
-          dotnet publish "./src/WebComparer/ConsoleApp/Seedysoft.WebComparer.ConsoleApp.csproj" -o "./${{ matrix.runtime.name }}/" -r "${{ matrix.runtime.name }}" -c Release --no-restore --nologo -p:PublishTrimmed=false --sc -v m
-      - name: Build BlazorWebApp
-        run: |
-          dotnet build "./src/BlazorWebApp/Server/Seedysoft.BlazorWebApp.Server.csproj" -c Release --nologo -v m
-          dotnet publish "./src/BlazorWebApp/Server/Seedysoft.BlazorWebApp.Server.csproj" -o "./${{ matrix.runtime.name }}/" -r "${{ matrix.runtime.name }}" -c Release --no-restore --nologo -p:PublishTrimmed=false --sc -v m
-      - name: Get Version from project file
-        id: get-version
-        run: |
-          echo "version=$(grep -m 1 '"Seedysoft.Libs.BackgroundServices/' ./${{ matrix.runtime.name }}/Seedysoft.BlazorWebApp.Server.deps.json | grep -Eo '[[:digit:]]{2}\.[[:digit:]]{1,4}\.[[:digit:]]{1,4}')" >> $GITHUB_OUTPUT
-          echo ${{ steps.get-version.outputs.version }}
-      - name: Pack to ${{ matrix.runtime.name }}.${{ steps.get-version.outputs.version }}.7z
-        id: pack
-        run: |
-          cd ${{ matrix.runtime.name }}/
-          7z a -r -t7z "../${{ matrix.runtime.name }}.${{ steps.get-version.outputs.version }}.7z" *
-          cd ..
-      - name: Upload artifact ${{ matrix.runtime.name }}.${{ steps.get-version.outputs.version }}.7z
-        if: steps.pack.outcome == 'success'
-        uses: actions/upload-artifact@main
-        with:
-          name: ${{ matrix.runtime.name }}.${{ steps.get-version.outputs.version }}.7z
-          path: ${{ matrix.runtime.name }}.${{ steps.get-version.outputs.version }}.7z
-          compression-level: 0
-          if-no-files-found: error # `warn` or `ignore` are also available, defaults to `warn`
+    - name: Checkout Repository
+      uses: actions/checkout@main
+    - name: Setup dotnet
+      uses: actions/setup-dotnet@main
+      with:
+        dotnet-version: 8
+    - name: Make publish folder "./${{ matrix.runtime.name }}/"
+      run: mkdir -p "./${{ matrix.runtime.name }}/"
+    - name: Build Outbox
+      run: dotnet publish "./src/Outbox/ConsoleApp/Seedysoft.Outbox.ConsoleApp.csproj" -o "./${{ matrix.runtime.name }}/" -p:AssemblyVersion=${{ needs.obtain_version.outputs.tag_version }} -r "${{ matrix.runtime.name }}" -c Release --nologo -p:PublishTrimmed=false --sc -v m
+    - name: Build Pvpc
+      run: dotnet publish "./src/Pvpc/ConsoleApp/Seedysoft.Pvpc.ConsoleApp.csproj" -o "./${{ matrix.runtime.name }}/" -p:AssemblyVersion=${{ needs.obtain_version.outputs.tag_version }} -r "${{ matrix.runtime.name }}" -c Release --nologo -p:PublishTrimmed=false --sc -v m
+    - name: Build Update
+      run: dotnet publish "./src/Update/ConsoleApp/Seedysoft.Update.ConsoleApp.csproj" -o "./${{ matrix.runtime.name }}/" -p:AssemblyVersion=${{ needs.obtain_version.outputs.tag_version }} -r "${{ matrix.runtime.name }}" -c Release --nologo -p:PublishTrimmed=false --sc -v m
+    - name: Build WebComparer
+      run: dotnet publish "./src/WebComparer/ConsoleApp/Seedysoft.WebComparer.ConsoleApp.csproj" -o "./${{ matrix.runtime.name }}/" -p:AssemblyVersion=${{ needs.obtain_version.outputs.tag_version }} -r "${{ matrix.runtime.name }}" -c Release --nologo -p:PublishTrimmed=false --sc -v m
+    - name: Build BlazorWebApp
+      run: dotnet publish "./src/BlazorWebApp/Server/Seedysoft.BlazorWebApp.Server.csproj" -o "./${{ matrix.runtime.name }}/" -p:AssemblyVersion=${{ needs.obtain_version.outputs.tag_version }} -r "${{ matrix.runtime.name }}" -c Release --nologo -p:PublishTrimmed=false --sc -v m
+    - name: Pack to ${{ matrix.runtime.name }}.${{ needs.obtain_version.outputs.tag_version }}.7z
+      id: pack
+      run: |
+        cd ${{ matrix.runtime.name }}/
+        7z a -r -t7z "../${{ matrix.runtime.name }}.${{ needs.obtain_version.outputs.tag_version }}.7z" *
+        cd ..
+    - name: Upload artifact ${{ matrix.runtime.name }}.${{ needs.obtain_version.outputs.tag_version }}.7z
+      if: steps.pack.outcome == 'success'
+      uses: actions/upload-artifact@main
+      with:
+        name: ${{ matrix.runtime.name }}.${{ needs.obtain_version.outputs.tag_version }}.7z
+        path: ${{ matrix.runtime.name }}.${{ needs.obtain_version.outputs.tag_version }}.7z
+        compression-level: 0
+        if-no-files-found: error # `warn` or `ignore` are also available, defaults to `warn`
           
   release_job:
     name: Create a release
-    needs: publish_and_pack_job
+    needs: 
+    - obtain_version
+    - publish_and_pack_job
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@main
-      - name: Make download folder
-        run: mkdir -p ./artifacts/
-      - name: Download published app as artifact
-        uses: actions/download-artifact@main
-        with:
-          path: ./artifacts
-      - name: Create a tag
-        run: |
-          git tag ${{ needs.publish_and_pack_job.outputs.tag_version }}
-          git push origin ${{ needs.publish_and_pack_job.outputs.tag_version }}
-      - name: Make Release
-        uses: softprops/action-gh-release@v2
-        with:
-          name: ${{ needs.publish_and_pack_job.outputs.tag_version }}
-          fail_on_unmatched_files: true
-          files: ./artifacts/*/*.7z
-          generate_release_notes: true
-          tag_name: ${{ needs.publish_and_pack_job.outputs.tag_version }}
+    - name: Checkout Repository
+      uses: actions/checkout@main
+    - name: Make download folder
+      run: mkdir -p ./artifacts/
+    - name: Download published app as artifact
+      uses: actions/download-artifact@main
+      with:
+        path: ./artifacts
+    - name: Create a tag
+      run: |
+        git tag ${{ needs.obtain_version.outputs.tag_version }}
+        git push origin ${{ needs.obtain_version.outputs.tag_version }}
+    - name: Make Release
+      uses: softprops/action-gh-release@v2
+      with:
+        name: ${{ needs.obtain_version.outputs.tag_version }}
+        fail_on_unmatched_files: true
+        files: ./artifacts/*/*.7z
+        generate_release_notes: true
+        tag_name: ${{ needs.obtain_version.outputs.tag_version }}

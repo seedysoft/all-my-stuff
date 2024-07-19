@@ -33,6 +33,8 @@ public class UpdateBackgroundServiceCron : Libs.BackgroundServices.Cron
         try
         {
             Version? currentVersion = Libs.Update.EnvironmentUtil.ParseVersion(Libs.Update.EnvironmentUtil.MyVersion());
+            logger.LogInformation("Current version is: {currentVersion}.", currentVersion);
+
             if (currentVersion <= new Version(1, 0, 0))
             {
                 logger.LogInformation("Skipping checking for new releases because is runing in IDE.");
@@ -192,11 +194,9 @@ public class UpdateBackgroundServiceCron : Libs.BackgroundServices.Cron
             // -o{Directory} : set Output directory
             Arguments = $"x -aoa \"{sourceFileNameWithPath}\" -o\"{destinationDirectory}\"",
             CreateNoWindow = true,
-            ErrorDialog = false,
             FileName = extractorFileNameWithPath,
             RedirectStandardError = true,
             RedirectStandardOutput = true,
-            UseShellExecute = false,
             WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden,
         };
         using System.Diagnostics.Process process = new() { StartInfo = processStartInfo, };
@@ -260,10 +260,10 @@ public class UpdateBackgroundServiceCron : Libs.BackgroundServices.Cron
     private async Task CopyFileAsync(string destinationDirectory, string sourceFileNameWithPath, string sourceDirectory, CancellationToken cancellationToken)
     {
         string fileName = Path.GetFileName(sourceFileNameWithPath);
-        string destinationFileNameWithPath = Path.Combine(destinationDirectory, sourceFileNameWithPath[(sourceDirectory.Length + 1)..]);
+        string destinationFileNameWithPath = Path.Combine(destinationDirectory, sourceFileNameWithPath[sourceDirectory.Length..]);
         string fileDestinationDirectory = Path.GetDirectoryName(destinationFileNameWithPath)!;
 
-        logger.LogInformation("Attempting to copy {fileName} from source: {source} to destination: {destination}", fileName, sourceFileNameWithPath, destinationFileNameWithPath);
+        logger.LogInformation("Attempting to copy {fileName} from source: {source} to destination: {destination}", fileName, sourceFileNameWithPath, fileDestinationDirectory);
 
         for (int i = 0; i < 2; i++)
         {
@@ -324,16 +324,13 @@ public class UpdateBackgroundServiceCron : Libs.BackgroundServices.Cron
 
         Task.Delay(TimeSpan.FromSeconds(5)).Wait();
 
-        Settings.UpdateConsoleOptions upd = Settings.UpdateConsoleOptions.Default;
-        upd.InstallDirectory = Libs.Update.EnvironmentUtil.CurrentExecutablePath();
+        Settings.UpdateConsoleOptions updateConsoleOptions = Settings.UpdateConsoleOptions.Default;
+        updateConsoleOptions.InstallDirectory = Libs.Update.EnvironmentUtil.CurrentExecutablePath();
         System.Diagnostics.ProcessStartInfo processStartInfo = new()
         {
-            Arguments = upd.ToString(),
+            Arguments = updateConsoleOptions.ToString(),
             CreateNoWindow = true,
-            ErrorDialog = false,
             FileName = UpdaterFileNameWithPath,
-            RedirectStandardOutput = true,
-            UseShellExecute = false,
             WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden,
             WorkingDirectory = directory,
         };
@@ -345,8 +342,6 @@ public class UpdateBackgroundServiceCron : Libs.BackgroundServices.Cron
             logger.LogWarning("Cannot start process {UpdaterFullPath}.", UpdaterFileNameWithPath);
             return;
         }
-
-        logger.LogInformation("Output from {UpdaterFileNameWithPath}: {StandardOutput}", UpdaterFileNameWithPath, process.StandardOutput.ReadToEnd());
 
         Environment.Exit(0);
     }

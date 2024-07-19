@@ -37,7 +37,7 @@ public static partial class EnvironmentUtil
 
     public static string MyVersion()
     {
-        var fvi = System.Diagnostics.FileVersionInfo.GetVersionInfo(System.Reflection.Assembly.GetExecutingAssembly().Location);
+        var fvi = System.Diagnostics.FileVersionInfo.GetVersionInfo(System.Reflection.Assembly.GetEntryAssembly()!.Location);
 
         return $"v{fvi.ProductVersion}";
     }
