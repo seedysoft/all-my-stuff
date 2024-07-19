@@ -2,15 +2,16 @@
   <!-- Common to all Seedysoft Projects -->
   <PropertyGroup>
     <ImplicitUsings>enable</ImplicitUsings>
-    <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
     <Nullable>enable</Nullable>
     <TargetFramework>net8.0</TargetFramework>
+    <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
     <!-- Specifies whether it's one of our own libraries -->
-    <!--<SeedysoftProject>false</SeedysoftProject>
-    <SeedysoftProject Condition="$(MSBuildProjectName.StartsWith('Seedysoft'))">true</SeedysoftProject>-->
+    <SeedysoftProject>false</SeedysoftProject>
+    <SeedysoftProject Condition="$(MSBuildProjectName.StartsWith('Seedysoft'))">true</SeedysoftProject>
   </PropertyGroup>
 
   <!-- Set the Product and Version info for our own projects -->
-  <!--<PropertyGroup Condition="'$(SeedysoftProject)' == 'true'">
-  </PropertyGroup>-->
+  <PropertyGroup Condition="'$(SeedysoftProject)' == 'true'">
+    <PathMap>$(MSBuildProjectDirectory)=./$(MSBuildProjectName)/</PathMap>
+  </PropertyGroup>
 </Project>
