@@ -1,12 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
   <PropertyGroup>
-    <ImplicitUsings>enable</ImplicitUsings>
     <NoDefaultLaunchSettingsFile>true</NoDefaultLaunchSettingsFile>
-    <Nullable>enable</Nullable>
     <StaticWebAssetProjectMode>Default</StaticWebAssetProjectMode>
-    <TargetFramework>net8.0</TargetFramework>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(RuntimeIdentifier)' == 'linux-arm64'">
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
     <WasmBuildNative>true</WasmBuildNative>
   </PropertyGroup>
   <ItemGroup>

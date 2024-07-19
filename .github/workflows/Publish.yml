@@ -30,7 +30,7 @@ jobs:
       id: get-version
       run: |
         echo "version=$(date -u +%y.%m%d.%H%M)" >> $GITHUB_OUTPUT
-        echo $version
+        echo $GITHUB_OUTPUT
 
   publish_and_pack_job:
     name: Publish and pack
@@ -53,15 +53,15 @@ jobs:
     - name: Make publish folder "./${{ matrix.runtime.name }}/"
       run: mkdir -p "./${{ matrix.runtime.name }}/"
     - name: Build Outbox
-      run: dotnet publish "./src/Outbox/ConsoleApp/Seedysoft.Outbox.ConsoleApp.csproj" -o "./${{ matrix.runtime.name }}/" -p:AssemblyVersion=${{ needs.obtain_version.outputs.tag_version }} -r "${{ matrix.runtime.name }}" -c Release --nologo -p:PublishTrimmed=false --sc -v m
+      run: dotnet publish "./src/Outbox/ConsoleApp/Seedysoft.Outbox.ConsoleApp.csproj" -o "./${{ matrix.runtime.name }}/" -p:AssemblyVersion="${{ needs.obtain_version.outputs.tag_version }}" -r "${{ matrix.runtime.name }}" -c Release --nologo -p:PublishTrimmed=false --sc -v m
     - name: Build Pvpc
-      run: dotnet publish "./src/Pvpc/ConsoleApp/Seedysoft.Pvpc.ConsoleApp.csproj" -o "./${{ matrix.runtime.name }}/" -p:AssemblyVersion=${{ needs.obtain_version.outputs.tag_version }} -r "${{ matrix.runtime.name }}" -c Release --nologo -p:PublishTrimmed=false --sc -v m
+      run: dotnet publish "./src/Pvpc/ConsoleApp/Seedysoft.Pvpc.ConsoleApp.csproj" -o "./${{ matrix.runtime.name }}/" -p:AssemblyVersion="${{ needs.obtain_version.outputs.tag_version }}" -r "${{ matrix.runtime.name }}" -c Release --nologo -p:PublishTrimmed=false --sc -v m
     - name: Build Update
-      run: dotnet publish "./src/Update/ConsoleApp/Seedysoft.Update.ConsoleApp.csproj" -o "./${{ matrix.runtime.name }}/" -p:AssemblyVersion=${{ needs.obtain_version.outputs.tag_version }} -r "${{ matrix.runtime.name }}" -c Release --nologo -p:PublishTrimmed=false --sc -v m
+      run: dotnet publish "./src/Update/ConsoleApp/Seedysoft.Update.ConsoleApp.csproj" -o "./${{ matrix.runtime.name }}/" -p:AssemblyVersion="${{ needs.obtain_version.outputs.tag_version }}" -r "${{ matrix.runtime.name }}" -c Release --nologo -p:PublishTrimmed=false --sc -v m
     - name: Build WebComparer
-      run: dotnet publish "./src/WebComparer/ConsoleApp/Seedysoft.WebComparer.ConsoleApp.csproj" -o "./${{ matrix.runtime.name }}/" -p:AssemblyVersion=${{ needs.obtain_version.outputs.tag_version }} -r "${{ matrix.runtime.name }}" -c Release --nologo -p:PublishTrimmed=false --sc -v m
+      run: dotnet publish "./src/WebComparer/ConsoleApp/Seedysoft.WebComparer.ConsoleApp.csproj" -o "./${{ matrix.runtime.name }}/" -p:AssemblyVersion="${{ needs.obtain_version.outputs.tag_version }}" -r "${{ matrix.runtime.name }}" -c Release --nologo -p:PublishTrimmed=false --sc -v m
     - name: Build BlazorWebApp
-      run: dotnet publish "./src/BlazorWebApp/Server/Seedysoft.BlazorWebApp.Server.csproj" -o "./${{ matrix.runtime.name }}/" -p:AssemblyVersion=${{ needs.obtain_version.outputs.tag_version }} -r "${{ matrix.runtime.name }}" -c Release --nologo -p:PublishTrimmed=false --sc -v m
+      run: dotnet publish "./src/BlazorWebApp/Server/Seedysoft.BlazorWebApp.Server.csproj" -o "./${{ matrix.runtime.name }}/" -p:AssemblyVersion="${{ needs.obtain_version.outputs.tag_version }}" -r "${{ matrix.runtime.name }}" -c Release --nologo -p:PublishTrimmed=false --sc -v m
     - name: Pack to ${{ matrix.runtime.name }}.${{ needs.obtain_version.outputs.tag_version }}.7z
       id: pack
       run: |
@@ -73,7 +73,7 @@ jobs:
       uses: actions/upload-artifact@main
       with:
         name: ${{ matrix.runtime.name }}.${{ needs.obtain_version.outputs.tag_version }}.7z
-        path: ${{ matrix.runtime.name }}.${{ needs.obtain_version.outputs.tag_version }}.7z
+        path: "${{ matrix.runtime.name }}.${{ needs.obtain_version.outputs.tag_version }}.7z"
         compression-level: 0
         if-no-files-found: error # `warn` or `ignore` are also available, defaults to `warn`
           
