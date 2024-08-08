@@ -13,7 +13,7 @@ defaults:
 on:
   push:
     branches:
-      - release/*
+    - release/*
   workflow_dispatch:
 
 permissions:
@@ -40,7 +40,7 @@ jobs:
     - name: Build solution
       run: |
         dotnet workload install wasm-tools
-        dotnet build Seedysoft.Tests.sln -c Release -v n
+        dotnet build Seedysoft.Tests.sln -c Release -v m
 
   publish_and_pack_job:
     name: Publish and pack
