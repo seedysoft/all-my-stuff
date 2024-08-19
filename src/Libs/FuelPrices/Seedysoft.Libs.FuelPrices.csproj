@@ -45,6 +45,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+    <PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" Version="2.1.9" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="EFCore.BulkExtensions.Sqlite" Version="8.1.0" />
