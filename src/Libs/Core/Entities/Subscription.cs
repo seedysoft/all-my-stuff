@@ -10,7 +10,7 @@ public sealed class Subscription
 
     public Enums.SubscriptionName SubscriptionName { get; set; }
 
-    public ICollection<Subscriber> Subscribers { get; set; } = new List<Subscriber>();
+    public ICollection<Subscriber> Subscribers { get; set; } = [];
 
     private string GetDebuggerDisplay() => $"{SubscriptionName} {SubscriptionId}";
 }

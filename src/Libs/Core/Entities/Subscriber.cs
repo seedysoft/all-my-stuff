@@ -14,7 +14,7 @@ public sealed class Subscriber
 
     public string? MailAddress { get; set; }
 
-    public ICollection<Subscription> Subscriptions { get; set; } = new List<Subscription>();
+    public ICollection<Subscription> Subscriptions { get; set; } = [];
 
     // Coalesce expression raises "Error CS0019  Operator '??' cannot be applied to operands of type 'long?' and 'string'".
     private string GetDebuggerDisplay() => $"{Firstname} - {(TelegramUserId.HasValue ? TelegramUserId : "Sin Telegram")} - {MailAddress ?? "Sin correo electrónico"}";
