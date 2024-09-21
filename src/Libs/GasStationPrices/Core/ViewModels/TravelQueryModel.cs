@@ -6,10 +6,43 @@ public record class TravelQueryModel
 
     public required string Destination { get; set; }
 
-    public required decimal MaxDistanceInKm { get; set; }
-    public double MaxDistanceInMeters => (double)MaxDistanceInKm * 1_000D;
+    public required int MaxDistanceInKm { get; set; }
 
     public required IReadOnlyCollection<long> PetroleumProductsSelectedIds { get; set; } = [];
 
-    public GoogleMapsComponents.Maps.LatLngBoundsLiteral Bounds { get; } = new();
+    private GoogleMapsComponents.Maps.LatLngBoundsLiteral bounds = new();
+    public GoogleMapsComponents.Maps.LatLngBoundsLiteral Bounds
+    {
+        get => bounds;
+        set
+        {
+            if (value != null)
+                bounds = value;
+        }
+    }
+
+    public bool IsInsideBounds(Json.Minetur.EstacionTerrestre estacionTerrestre)
+    {
+        const int decimals = 5;
+
+        double GasStationLat = Math.Round(estacionTerrestre.Lat, decimals);
+        double GasStationLon = Math.Round(estacionTerrestre.Lon, decimals);
+
+#if DEBUG
+        double N = Utils.Helpers.GeometricHelper.ExpandLatitude(Bounds.North, Bounds.West, MaxDistanceInKm);
+        double S = Utils.Helpers.GeometricHelper.ExpandLatitude(Bounds.South, Bounds.East, MaxDistanceInKm);
+        double E = Utils.Helpers.GeometricHelper.ExpandLongitude(Bounds.South, Bounds.East, MaxDistanceInKm);
+        double W = Utils.Helpers.GeometricHelper.ExpandLongitude(Bounds.North, Bounds.West, MaxDistanceInKm);
+
+        return
+            GasStationLat < N && GasStationLat > S &&
+            GasStationLon < E && GasStationLon > W;
+#else
+        return
+            GasStationLat < Utils.Helpers.GeometricHelper.ExpandLatitude(Bounds.North, Bounds.West, MaxDistanceInKm) &&
+            GasStationLat > Utils.Helpers.GeometricHelper.ExpandLatitude(Bounds.South, Bounds.East, MaxDistanceInKm) &&
+            GasStationLon > Utils.Helpers.GeometricHelper.ExpandLongitude(Bounds.South, Bounds.East, MaxDistanceInKm) &&
+            GasStationLon < Utils.Helpers.GeometricHelper.ExpandLongitude(Bounds.North, Bounds.West, MaxDistanceInKm);
+#endif
+    }
 }

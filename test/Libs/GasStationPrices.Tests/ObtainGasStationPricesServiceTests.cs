@@ -50,7 +50,7 @@ public sealed class ObtainGasStationPricesTests : Infrastructure.Tests.TestClass
         {
             Origin = "Juan Ramón Jiménez 8 Burgos",
             Destination = "Calle la Iglesia 11 Brazuelo León",
-            MaxDistanceInKm = 5.0M,
+            MaxDistanceInKm = 50,
             PetroleumProductsSelectedIds = [],
         };
 
