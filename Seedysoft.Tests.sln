@@ -81,6 +81,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{37555E57-CBD7-4E16-9B92-9EB096D4DDD3}"
 	ProjectSection(SolutionItems) = preProject
 		.github\workflows\CI.yml = .github\workflows\CI.yml
+		.github\workflows\delete-old-runs.yml = .github\workflows\delete-old-runs.yml
 		.github\workflows\Publish.yml = .github\workflows\Publish.yml
 	EndProjectSection
 EndProject
