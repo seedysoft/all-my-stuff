@@ -153,9 +153,9 @@ public sealed class WebComparerCronBackgroundService : Libs.BackgroundServices.C
         switch (System.Runtime.InteropServices.RuntimeInformation.RuntimeIdentifier)
         {
             case "linux-arm64":
-                Options.BinaryLocation = "/usr/lib/chromium-browser/chromium-browser";
+                Options.BinaryLocation = "/usr/bin/chromium-browser";
 
-                chromeDriverService = OpenQA.Selenium.Chrome.ChromeDriverService.CreateDefaultService("/usr/lib/chromium-browser/", "chromedriver");
+                chromeDriverService = OpenQA.Selenium.Chrome.ChromeDriverService.CreateDefaultService("/usr/bin/", "chromedriver");
 
                 chromeDriver = new(chromeDriverService, Options);
                 break;
@@ -231,7 +231,7 @@ public sealed class WebComparerCronBackgroundService : Libs.BackgroundServices.C
 
         Dictionary<int, string> DataForMail = GetDataForMail(webData, DiffModel);
 
-        return string.Join(Environment.NewLine, DataForMail.OrderBy(x => x.Key).Select(x => x.Value));
+        return string.Join(Environment.NewLine, DataForMail.OrderBy(static x => x.Key).Select(static x => x.Value));
     }
 
     private static Dictionary<int, string> GetDataForMail(Libs.Core.Entities.WebData webData, DiffPlex.DiffBuilder.Model.DiffPaneModel DiffModel)
@@ -286,7 +286,7 @@ public sealed class WebComparerCronBackgroundService : Libs.BackgroundServices.C
 
         // Subscriptions: Ayto Burgos y Dip Burgos Tablones
         if (ObtainedLinesNormalized.ElementAtOrDefault(0)?.StartsWith("Descripción Tablón Fecha") ?? false)
-            ObtainedLinesNormalized = ObtainedLinesNormalized.Take(1).Union(ObtainedLinesNormalized.Where(x => x.EndsWith("Personal")));
+            ObtainedLinesNormalized = ObtainedLinesNormalized.Take(1).Union(ObtainedLinesNormalized.Where(static x => x.EndsWith("Personal")));
 
         return string.Join(Environment.NewLine, ObtainedLinesNormalized);
     }
@@ -306,7 +306,7 @@ public sealed class WebComparerCronBackgroundService : Libs.BackgroundServices.C
         if (!diffModel.HasDifferences)
             return true;
 
-        DiffPlex.DiffBuilder.Model.DiffPiece[] ChangedLines = diffModel.Lines.Where(x => x.Type != DiffPlex.DiffBuilder.Model.ChangeType.Unchanged).ToArray();
+        DiffPlex.DiffBuilder.Model.DiffPiece[] ChangedLines = diffModel.Lines.Where(static x => x.Type != DiffPlex.DiffBuilder.Model.ChangeType.Unchanged).ToArray();
         string[]? IgnoreTexts = webData.IgnoreChangeWhen?.Split(';', StringSplitOptions.RemoveEmptyEntries);
         for (int j = 0; j < IgnoreTexts?.Length; j++)
         {

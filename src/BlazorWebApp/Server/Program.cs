@@ -13,6 +13,7 @@ public class Program : Libs.Core.ProgramBase
 
         _ = webApplicationBuilder.AddAllMyDependencies();
 
+        // TODO         Learn how it works
         _ = webApplicationBuilder.Configuration.AddInMemoryCollection(Libs.Core.Models.Config.RuntimeSettings.GetValues(Settings));
 
         WebApplication webApplication = webApplicationBuilder.Build();

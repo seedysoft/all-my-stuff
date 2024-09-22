@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Seedysoft.Libs.Utils.Extensions;
-using System.Collections.Immutable;
 
 namespace Seedysoft.Outbox.Lib.Services;
 
@@ -52,10 +51,10 @@ public sealed class OutboxCronBackgroundService : Libs.BackgroundServices.Cron
                 {
                     Libs.Core.Entities.Outbox PendingMessage = PendingMessages[i];
 
-                    var Subscribers = AllSubscribers
+                    Libs.Core.Entities.Subscriber[] Subscribers = AllSubscribers
                         .Where(x => x.Subscriptions.Any(s => s.SubscriptionName == PendingMessage.SubscriptionName))
                         .Where(x => PendingMessage.SubscriptionId == null || x.Subscriptions.Any(y => y.SubscriptionId == PendingMessage.SubscriptionId))
-                        .ToImmutableArray();
+                        .ToArray();
 
                     for (int j = 0; j < Subscribers.Length; j++)
                     {
@@ -113,7 +112,7 @@ public sealed class OutboxCronBackgroundService : Libs.BackgroundServices.Cron
 
         decimal Avg = entities.Average(x => x.KWhPriceInEuros);
         sb = sb.Append("<!DOCTYPE html><html><body><div>");
-        sb = sb.Append($"<h2>Día: {entities.First().AtDateTimeOffset.Date.ToString("dd-MM-yy (dddd)", Libs.Utils.Constants.Formats.ESCultureInfo.DateTimeFormat)}</h2>");
+        sb = sb.Append($"<h2>Día: {entities.First().AtDateTimeOffset.Date.ToString("dd-MM-yy (dddd)", Libs.Core.Constants.Globalization.CultureInfoES.DateTimeFormat)}</h2>");
         sb = sb.Append($"<h3>Precio medio: {Avg:N5} € / Kwh</h3>");
 
         for (int h = 0; h < 3; h++)
@@ -128,7 +127,7 @@ public sealed class OutboxCronBackgroundService : Libs.BackgroundServices.Cron
                     Media = entities.Skip(i).Take(h + 1).Average(x => x.KWhPriceInEuros),
                 })
                 .OrderBy(x => x.Rango)
-                .ToImmutableArray();
+                .ToArray();
 
             const int HowMany = 6;
             decimal Min = entities.OrderBy(x => x.KWhPriceInEuros).Take(HowMany).Max(x => x.KWhPriceInEuros);

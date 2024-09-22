@@ -1,111 +1,58 @@
 ﻿@page "/travelsearch"
+@attribute [StreamRendering(true)]
 
-@using Seedysoft.Libs.FuelPrices.Core.ViewModels;
-@using System.Collections.Immutable;
+@using GoogleMapsComponents;
+@using Seedysoft.Libs.GasStationPrices.Core.ViewModels;
 
-@inject HttpClient Http
-@inject NavigationManager NavManager
+@{
+  Variant variant = Variant.Outlined;
+}
 
-<MudGrid Class="d-inline-flex" Justify="Justify.Center">
+<MudContainer MaxWidth="MaxWidth.ExtraExtraLarge">
+
+  <MudGrid Class="d-inline-flex" Justify="Justify.Center">
+
     <MudItem xs="12">
-        <MudText Align="Align.Center" GutterBottom Typo="Typo.h4">Search directions</MudText>
-    </MudItem>
-
-    <MudItem xs="12">
-        <EditForm @ref="TravelQueryEditForm" Model="@TravelQuery" OnValidSubmit="OnValidSubmitAsync">
+      <MudForm @ref=TravelQueryMudForm Model="travelQueryModel" SuppressImplicitSubmission="true" Validation="@(travelQueryModelFluentValidator.ValidateValue)">
+        <MudGrid Class="d-inline-flex" Justify="Justify.Center">
+          <MudItem xs="7">
             <MudStack Class="d-flex flex-wrap gap-4" Justify="Justify.SpaceEvenly" Row="true">
-                <MudTextField @bind-Value="TravelQuery.Origin" AutoFocus="true" Class="d-flex flex-wrap gap-4" For="@(() => TravelQuery.Origin)" Label="Origin"
-                              Placeholder="Select an origin place" Variant="Variant.Outlined" />
-                <MudTextField @bind-Value="TravelQuery.Destination" Class="d-flex flex-wrap gap-4" For="@(() => TravelQuery.Destination)" Label="Destination"
-                              Placeholder="Select a destination place" Variant="Variant.Outlined" />
-                <MudButton ButtonType="ButtonType.Submit" Class="ml-auto" Disabled="@(IsLoadingDirections || IsLoadingGasStations)" StartIcon="@Icons.Material.Filled.Search"
-                           Variant="Variant.Outlined">
-                    @if (IsLoadingDirections)
-                    {
-                        <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
-                        <MudText Class="ms-2">Processing ...</MudText>
-                    }
-                    else
-                    {
-                        <MudText>Find directions</MudText>
-                    }
-                </MudButton>
+              <MudAutocomplete @bind-Value="travelQueryModel.Origin" AutoFocus="true" Class="d-flex flex-wrap gap-4" Clearable="true" DebounceInterval="450" Dense="true" For="@(() => travelQueryModel.Origin)" FullWidth="true" Label="Origin" MaxItems="20" MinCharacters="3"
+                               Placeholder="Select an origin place" Required="true" ResetValueOnEmptyText="true" SearchFunc="FindPlacesAsync" SelectOnActivation="true" ShowProgressIndicator="true" T="string" Variant="variant" />
+              <MudAutocomplete @bind-Value="travelQueryModel.Destination" Class="d-flex flex-wrap gap-4" Clearable="true" DebounceInterval="450" Dense="true" For="@(() => travelQueryModel.Destination)" FullWidth="true" Label="Destination" MaxItems="20" MinCharacters="3"
+                               Placeholder="Select a destination place" Required="true" ResetValueOnEmptyText="true" SearchFunc="FindPlacesAsync" SelectOnActivation="true" ShowProgressIndicator="true" T="string" Variant="variant" />
+              <MudStack Class="d-flex" Justify="Justify.SpaceBetween" Row="true">
+                <MudText Inline="true">Km. max</MudText>
+                <MudSlider @bind-Value="travelQueryModel.MaxDistanceInKm" Max="5M" Min="0.25M" Size="Size.Large" Step="0.25M" T="decimal" TickMarks="true" ValueLabel="true"></MudSlider>
+                <MudIconButton ButtonType="ButtonType.Button" Icon="@Icons.Material.Filled.Search" OnClick="LoadDataAsync" Variant="variant"></MudIconButton>
+              </MudStack>
             </MudStack>
-        </EditForm>
-    </MudItem>
+          </MudItem>
 
-    <MudItem xs="12">
-        <MudDataGrid @ref="DirectionsMudDataGrid" Dense="true" Filterable="true" FilterCaseSensitivity="DataGridFilterCaseSensitivity.CaseInsensitive"
-                     FilterMode="DataGridFilterMode.ColumnFilterMenu" FixedHeader="true" Items="DirectionsObtained" Loading="IsLoadingDirections" RowClassFunc="DirectionsMudDataGridRowClassFunc"
-                     RowsPerPage="int.MaxValue" ReadOnly="true" SortMode="SortMode.Multiple" Style="min-height: 145px;">
-            <Columns>
-                <PropertyColumn Property="x => x.Summary" CellStyle="width: 100%;" />
-                <PropertyColumn Property="x => x.DurationText" CellStyle="text-align: right !important; white-space: nowrap; width: 1%;" Title="Duration" />
-                <PropertyColumn Property="x => x.DistanceText" CellStyle="text-align: right !important; white-space: nowrap; width: 1%;" Title="Distance" />
-                <TemplateColumn CellStyle="text-align: center !important; white-space: nowrap; width: 1%;" Filterable="false" Sortable="false">
-                    <CellTemplate>
-                        <MudIconButton Href="@context!.Item!.GoogleMapsUri" Icon="@Icons.Material.Sharp.Map" Target="_blank" title="Show map"></MudIconButton>
-                    </CellTemplate>
-                </TemplateColumn>
-            </Columns>
-
-            <NoRecordsContent>
-                <MudText Align="Align.Center" GutterBottom="true">There is no data</MudText>
-            </NoRecordsContent>
-        </MudDataGrid>
-    </MudItem>
-
-    <MudItem xs="12">
-        <MudForm @ref="GasStationMudForm" Model="@GasStationQuery">
-            <MudStack Class="d-flex flex-wrap gap-4" Justify="Justify.SpaceEvenly" Row="true">
-                <MudNumericField @bind-Value="GasStationQuery.MaxDistanceInKm" Class="d-flex flex-wrap gap-4" For="@(() => GasStationQuery.MaxDistanceInKm)" Format="F1" FullWidth="false"
-                                 Label="Max distance (km)" Max="50M" Min=".5M" Step=".5M" Style="width: 150px;" Variant="Variant.Outlined" />
-                <MudSelect @bind-SelectedValues="PetroleumProductsSelected" @bind-Value="PetroleumProductsSelectedValue" Adornment="Adornment.Start"
-                           AdornmentIcon="@Icons.Material.Filled.LocalGasStation" Class="d-flex flex-grow-1 gap-4" Clearable="true" Dense="true" FullWidth="true" Label="Products"
-                           MultiSelection="true" MultiSelectionTextFunc="@(new Func<List<string>, string>(GetMultiSelectionText))" SelectAll="true" Strict="true" Style="min-width: 300px;"
-                           T="IdDescRecord" ToStringFunc="@IdDescRecord.IdDescRecordConverter" Variant="Variant.Outlined">
-                    @foreach (IdDescRecord item in PetroleumProducts ?? ImmutableArray<IdDescRecord>.Empty)
-                    {
-                        <MudSelectItem T="IdDescRecord" Value="@item">@item.Desc</MudSelectItem>
-                    }
-                </MudSelect>
-                <MudButton Class="ml-auto" Disabled="@(IsLoadingDirections || IsLoadingGasStations)" OnClick="OnSubmitGasStationsAsync" StartIcon="@Icons.Material.Filled.Search"
-                           Variant="Variant.Outlined">
-                    @if (IsLoadingGasStations)
-                    {
-                        <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
-                        <MudText Class="ms-2">Processing ...</MudText>
-                    }
-                    else
-                    {
-                        <MudText>Find gas stations</MudText>
-                    }
-                </MudButton>
+          <MudItem xs="5">
+            <MudStack Class="pb-4" Justify="Justify.SpaceBetween" Row="true">
+              <MudButton ButtonType="ButtonType.Button" EndIcon="@Icons.Material.Filled.SelectAll" IconSize="Size.Large" OnClick="SelectAllChips" Variant="variant">All</MudButton>
+              <MudButton ButtonType="ButtonType.Button" EndIcon="@Icons.Material.Filled.Deselect" IconSize="Size.Large" OnClick="UnSelectAllChips" Variant="variant">None</MudButton>
             </MudStack>
-        </MudForm>
+            <MudChipSet @bind-SelectedValues="travelQueryModel.PetroleumProductsSelectedIds" CheckMark="false" Color="Color.Info" SelectionMode="SelectionMode.MultiSelection" T="long" Variant="Variant.Text">
+              @foreach (Seedysoft.Libs.GasStationPrices.Core.Json.Minetur.ProductoPetrolifero item in PetroleumProducts)
+              {
+                <MudTooltip Text="@item.Nombre">
+                  <MudChip Default="@item.Abreviatura.StartsWith("G9")" Text="@item.Abreviatura" Value="@item.IdProducto"></MudChip>
+                </MudTooltip>
+              }
+            </MudChipSet>
+          </MudItem>
+        </MudGrid>
+      </MudForm>
     </MudItem>
 
     <MudItem xs="12">
-        <MudDataGrid Dense="true" Filterable="true" FilterCaseSensitivity="DataGridFilterCaseSensitivity.CaseInsensitive" FilterMode="DataGridFilterMode.ColumnFilterMenu" FixedHeader="true"
-                     Items="@GasStations" Loading="IsLoadingGasStations" RowsPerPage="int.MaxValue" ReadOnly="true" SortMode="SortMode.Multiple">
-            <Columns>
-                <PropertyColumn Property="x => x.Estacion" CellStyle="width: 100%;" Title="Gas Station" />
-                <PropertyColumn Property="x => x.Producto" CellStyle="white-space: nowrap; width: 1%;" Title="Product" />
-                <PropertyColumn Property="x => x.Precio" CellStyle="text-align: right !important; white-space: nowrap; width: 1%;" InitialDirection="SortDirection.Ascending" Title="Price" />
-                <PropertyColumn Property="x => x.Localidad" CellStyle="white-space: nowrap; width: 1%;" Title="Locality" />
-                <PropertyColumn Property="x => x.Municipio" CellStyle="white-space: nowrap; width: 1%;" Title="Municipality" />
-                <PropertyColumn Property="x => x.Provincia" CellStyle="white-space: nowrap; width: 1%;" Title="Province" />
-                <TemplateColumn CellStyle="text-align: center !important; width: 1%;" Filterable="false" Sortable="false">
-                    <CellTemplate>
-                        <MudIconButton Href="@context!.Item!.GoogleMapsUri" Icon="@Icons.Material.Sharp.Map" Target="_blank" title="Show location"></MudIconButton>
-                    </CellTemplate>
-                </TemplateColumn>
-            </Columns>
-
-            <NoRecordsContent>
-                <MudText Align="Align.Center" GutterBottom="true">There is no data</MudText>
-            </NoRecordsContent>
-        </MudDataGrid>
+      <div style="height:450px">
+        <GoogleMap @ref="@TravelGoogleMap" Id="map1" Options="@mapOptions" Height="100%" OnAfterInit="@(async () => await GoogleMapOnAfterInitAsync())"></GoogleMap>
+      </div>
     </MudItem>
-</MudGrid>
 
+  </MudGrid>
+
+</MudContainer>

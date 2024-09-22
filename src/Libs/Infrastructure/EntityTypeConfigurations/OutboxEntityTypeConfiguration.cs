@@ -7,24 +7,24 @@ internal abstract class OutboxTableEntityTypeConfigurationT<T> : IEntityTypeConf
     public void Configure(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder<T> builder)
     {
         _ = builder
-            .Property(x => x.OutboxId)
+            .Property(static x => x.OutboxId)
             .IsRequired()
             .ValueGeneratedOnAdd();
 
         _ = builder
-            .Property(x => x.Payload)
+            .Property(static x => x.Payload)
             .IsRequired();
 
         _ = builder
-            .Property(x => x.SubscriptionName)
+            .Property(static x => x.SubscriptionName)
             .HasConversion<string>()
             .IsRequired();
 
         _ = builder
-            .Property(x => x.SubscriptionId);
+            .Property(static x => x.SubscriptionId);
 
         _ = builder
-            .Property(x => x.SentAtDateTimeOffset)
+            .Property(static x => x.SentAtDateTimeOffset)
             .HasConversion(ValueConverters.DateTimeOffsetString.NullableDateTimeOffsetStringValueConverter);
     }
 }
@@ -37,7 +37,7 @@ internal sealed class OutboxEntityTypeConfiguration : OutboxTableEntityTypeConfi
 
         _ = builder
             .ToTable(nameof(Core.Entities.Outbox))
-            .HasKey(x => x.OutboxId);
+            .HasKey(static x => x.OutboxId);
     }
 }
 
@@ -48,7 +48,7 @@ internal sealed class OutboxViewEntityTypeConfiguration : OutboxTableEntityTypeC
         base.Configure(builder);
 
         _ = builder
-            .Property(x => x.SentAtDateTimeUnix);
+            .Property(static x => x.SentAtDateTimeUnix);
 
         _ = builder
             .ToView(nameof(Core.Entities.OutboxView))

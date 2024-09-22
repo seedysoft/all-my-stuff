@@ -7,40 +7,40 @@ internal abstract class WebDataEntityTypeConfigurationT<T> : IEntityTypeConfigur
     public void Configure(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder<T> builder)
     {
         _ = builder
-            .Property(x => x.SubscriptionId);
+            .Property(static x => x.SubscriptionId);
 
         _ = builder
-            .Property(x => x.WebUrl)
+            .Property(static x => x.WebUrl)
             .IsRequired();
 
         _ = builder
-            .Property(x => x.Description)
+            .Property(static x => x.Description)
             .IsRequired();
 
         _ = builder
-            .Property(x => x.CurrentWebContent);
+            .Property(static x => x.CurrentWebContent);
 
         _ = builder
-            .Property(x => x.SeenAtDateTimeOffset)
+            .Property(static x => x.SeenAtDateTimeOffset)
             .HasConversion(ValueConverters.DateTimeOffsetString.NullableDateTimeOffsetStringValueConverter);
 
         _ = builder
-            .Property(x => x.UpdatedAtDateTimeOffset)
+            .Property(static x => x.UpdatedAtDateTimeOffset)
             .HasConversion(ValueConverters.DateTimeOffsetString.NullableDateTimeOffsetStringValueConverter);
 
         _ = builder
-            .Property(x => x.IgnoreChangeWhen);
+            .Property(static x => x.IgnoreChangeWhen);
 
         _ = builder
-            .Property(x => x.CssSelector)
+            .Property(static x => x.CssSelector)
             .HasDefaultValue("body");
 
         _ = builder
-            .Property(x => x.TakeAboveBelowLines)
+            .Property(static x => x.TakeAboveBelowLines)
             .HasDefaultValue(3);
 
         _ = builder
-            .Property(x => x.UseHttpClient)
+            .Property(static x => x.UseHttpClient)
             .HasDefaultValue(false);
     }
 }
@@ -52,10 +52,10 @@ internal sealed class WebDataEntityTypeConfiguration : WebDataEntityTypeConfigur
         base.Configure(builder);
 
         _ = builder
-            .Ignore(x => x.DataToSend);
+            .Ignore(static x => x.DataToSend);
 
         _ = builder
             .ToTable(nameof(Core.Entities.WebData))
-            .HasKey(x => x.SubscriptionId);
+            .HasKey(static x => x.SubscriptionId);
     }
 }

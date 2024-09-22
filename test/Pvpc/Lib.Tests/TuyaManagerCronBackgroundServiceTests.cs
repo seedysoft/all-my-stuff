@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting.Internal;
 using Microsoft.Extensions.Logging.Abstractions;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Seedysoft.Pvpc.Lib.Tests;
 
@@ -29,7 +28,7 @@ public sealed class TuyaManagerCronBackgroundServiceTests : Libs.Infrastructure.
             new ApplicationLifetime(new NullLogger<ApplicationLifetime>()));
     }
 
-    [ClassCleanup]
+    [ClassCleanup(ClassCleanupBehavior.EndOfClass)]
     public static new void ClassCleanup() => TuyaManagerService?.Dispose();
 
     [TestMethod]

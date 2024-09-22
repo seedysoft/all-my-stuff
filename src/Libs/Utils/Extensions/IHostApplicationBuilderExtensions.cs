@@ -8,7 +8,7 @@ public static class IHostApplicationBuilderExtensions
     public static Microsoft.Extensions.Hosting.IHostApplicationBuilder AddAllMyDependencies(
         this Microsoft.Extensions.Hosting.IHostApplicationBuilder hostApplicationBuilder)
     {
-        System.Reflection.Assembly entryAssembly = System.Reflection.Assembly.GetEntryAssembly()!;
+        System.Reflection.Assembly entryAssembly = System.Reflection.Assembly.GetCallingAssembly()!;
 
         if (System.Diagnostics.Debugger.IsAttached)
         {
@@ -21,8 +21,8 @@ public static class IHostApplicationBuilderExtensions
 
         IEnumerable<System.Reflection.Assembly> referencedAssemblies = GetAllReferencedAssembliesSorted(entryAssembly);
 
-        Type[] typesToRegister = referencedAssemblies.SelectMany((System.Reflection.Assembly n) => n.GetTypes())
-            .Where((Type t) => t is not null && t.IsSubclassOf(typeof(Dependencies.ConfiguratorBase)))
+        Type[] typesToRegister = referencedAssemblies.SelectMany(static (System.Reflection.Assembly n) => n.GetTypes())
+            .Where(static (Type t) => t is not null && t.IsSubclassOf(typeof(Dependencies.ConfiguratorBase)))
             .ToArray();
 
         foreach (Type? type in typesToRegister)
@@ -35,12 +35,13 @@ public static class IHostApplicationBuilderExtensions
     {
         var results = new List<System.Reflection.Assembly> { source };
 
-        results.InsertRange(0, source.GetReferencedAssemblies().SelectMany((System.Reflection.AssemblyName name) =>
+        results.InsertRange(0, source.GetReferencedAssemblies().SelectMany(static (System.Reflection.AssemblyName name) =>
         {
             var loaded = System.Reflection.Assembly.Load(name);
-            return loaded.GetTypes().Any((Type t) => t is not null && t.IsSubclassOf(typeof(Dependencies.ConfiguratorBase)))
+
+            return loaded.DefinedTypes.Any(static (Type t) => t is not null && t.IsSubclassOf(typeof(Dependencies.ConfiguratorBase)))
                 ? GetAllReferencedAssembliesSorted(loaded)
-                : Array.Empty<System.Reflection.Assembly>();
+                : [];
         }).Distinct());
 
         return results.Distinct();

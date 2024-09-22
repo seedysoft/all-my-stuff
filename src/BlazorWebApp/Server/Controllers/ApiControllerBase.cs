@@ -1,12 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System.Text.Json;
+﻿namespace Seedysoft.BlazorWebApp.Server.Controllers;
 
-namespace Seedysoft.BlazorWebApp.Server.Controllers;
-
-[ApiController]
-public abstract class ApiControllerBase(ILogger logger) : ControllerBase
+[Microsoft.AspNetCore.Mvc.ApiController]
+public abstract class ApiControllerBase(ILogger logger) : Microsoft.AspNetCore.Mvc.ControllerBase
 {
     protected virtual ILogger Logger { get; init; } = logger;
 
-    protected internal JsonSerializerOptions JsonOptions { get; } = new() { };
+    //protected internal System.Text.Json.JsonSerializerOptions JsonOptions { get; } = new() { };
 }

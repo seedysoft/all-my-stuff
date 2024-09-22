@@ -12,7 +12,7 @@ namespace Seedysoft.Libs.Infrastructure.Migrations
         {
             migrationBuilder.CreateTable(
                 name: "Outbox",
-                columns: table => new
+                columns: static table => new
                 {
                     OutboxId = table.Column<long>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", value: true),
@@ -21,26 +21,26 @@ namespace Seedysoft.Libs.Infrastructure.Migrations
                     SubscriptionId = table.Column<long>(type: "INTEGER", nullable: true),
                     SentAtDateTimeOffset = table.Column<string>(type: "TEXT", nullable: true),
                 },
-                constraints: table =>
+                constraints: static table =>
                 {
-                    table.PrimaryKey("PK_Outbox", x => x.OutboxId);
+                    table.PrimaryKey("PK_Outbox", static x => x.OutboxId);
                 });
 
             migrationBuilder.CreateTable(
                 name: "Pvpc",
-                columns: table => new
+                columns: static table => new
                 {
                     AtDateTimeOffset = table.Column<string>(type: "TEXT", nullable: false),
                     MWhPriceInEuros = table.Column<decimal>(type: "TEXT", nullable: false),
                 },
-                constraints: table =>
+                constraints: static table =>
                 {
-                    table.PrimaryKey("PK_Pvpc", x => x.AtDateTimeOffset);
+                    table.PrimaryKey("PK_Pvpc", static x => x.AtDateTimeOffset);
                 });
 
             migrationBuilder.CreateTable(
                 name: "Subscriber",
-                columns: table => new
+                columns: static table => new
                 {
                     SubscriberId = table.Column<long>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", value: true),
@@ -48,41 +48,41 @@ namespace Seedysoft.Libs.Infrastructure.Migrations
                     TelegramUserId = table.Column<long>(type: "INTEGER", nullable: true),
                     MailAddress = table.Column<string>(type: "TEXT", nullable: true),
                 },
-                constraints: table =>
+                constraints: static table =>
                 {
-                    table.PrimaryKey("PK_Subscriber", x => x.SubscriberId);
+                    table.PrimaryKey("PK_Subscriber", static x => x.SubscriberId);
                 });
 
             migrationBuilder.CreateTable(
                 name: "Subscription",
-                columns: table => new
+                columns: static table => new
                 {
                     SubscriptionId = table.Column<long>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", value: true),
                     SubscriptionName = table.Column<string>(type: "TEXT", nullable: false),
                 },
-                constraints: table =>
+                constraints: static table =>
                 {
-                    table.PrimaryKey("PK_Subscription", x => x.SubscriptionId);
+                    table.PrimaryKey("PK_Subscription", static x => x.SubscriptionId);
                 });
 
             migrationBuilder.CreateTable(
                 name: "TuyaDevice",
-                columns: table => new
+                columns: static table => new
                 {
                     Id = table.Column<string>(type: "TEXT", nullable: false),
                     Address = table.Column<string>(type: "TEXT", nullable: false),
                     Version = table.Column<float>(type: "REAL", nullable: false),
                     LocalKey = table.Column<string>(type: "TEXT", nullable: false),
                 },
-                constraints: table =>
+                constraints: static table =>
                 {
-                    table.PrimaryKey("PK_TuyaDevice", x => x.Id);
+                    table.PrimaryKey("PK_TuyaDevice", static x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
                 name: "WebData",
-                columns: table => new
+                columns: static table => new
                 {
                     SubscriptionId = table.Column<long>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", value: true),
@@ -96,30 +96,30 @@ namespace Seedysoft.Libs.Infrastructure.Migrations
                     TakeAboveBelowLines = table.Column<long>(type: "INTEGER", nullable: false, defaultValue: 3L),
                     UseHttpClient = table.Column<bool>(type: "INTEGER", nullable: false, defaultValue: false),
                 },
-                constraints: table =>
+                constraints: static table =>
                 {
-                    table.PrimaryKey("PK_WebData", x => x.SubscriptionId);
+                    table.PrimaryKey("PK_WebData", static x => x.SubscriptionId);
                 });
 
             migrationBuilder.CreateTable(
                 name: "SubscriberSubscription",
-                columns: table => new
+                columns: static table => new
                 {
                     SubscriberId = table.Column<long>(type: "INTEGER", nullable: false),
                     SubscriptionId = table.Column<long>(type: "INTEGER", nullable: false),
                 },
-                constraints: table =>
+                constraints: static table =>
                 {
-                    table.PrimaryKey("PK_SubscriberSubscription", x => new { x.SubscriberId, x.SubscriptionId });
+                    table.PrimaryKey("PK_SubscriberSubscription", static x => new { x.SubscriberId, x.SubscriptionId });
                     table.ForeignKey(
                         name: "FK_SubscriberSubscription_Subscriber_SubscriberId",
-                        column: x => x.SubscriberId,
+                        column: static x => x.SubscriberId,
                         principalTable: "Subscriber",
                         principalColumn: "SubscriberId",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_SubscriberSubscription_Subscription_SubscriptionId",
-                        column: x => x.SubscriptionId,
+                        column: static x => x.SubscriptionId,
                         principalTable: "Subscription",
                         principalColumn: "SubscriptionId",
                         onDelete: ReferentialAction.Cascade);

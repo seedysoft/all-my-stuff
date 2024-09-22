@@ -1,16 +1,13 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using System.Collections.Immutable;
 
 namespace Seedysoft.BlazorWebApp.Server.Controllers;
 
-[Route(Client.Constants.ControllerUris.PetroleumProductsControllerUri)]
-public sealed class PetroleumProductsController : ApiControllerBase
+[Route(Client.Constants.PetroleumProductsUris.Controller)]
+public sealed class PetroleumProductsController(ILogger<PetroleumProductsController> logger) : ApiControllerBase(logger)
 {
-    public PetroleumProductsController(ILogger<PetroleumProductsController> logger) : base(logger) => Logger = logger;
-
-    [HttpGet()]
-    [Route("[action]")]
-    public async Task<IImmutableList<Libs.FuelPrices.Core.ViewModels.IdDescRecord>> PetroleumProductsForFilterAsync(
-        [FromServices] Libs.FuelPrices.Services.ObtainFuelPricesService obtainFuelPricesService)
-        => await obtainFuelPricesService.GetPetroleumProductsAsync();
+    [HttpGet(Client.Constants.PetroleumProductsUris.Actions.ForFilter)]
+    public async Task<IEnumerable<Libs.GasStationPrices.Core.Json.Minetur.ProductoPetrolifero>> ForFilterAsync(
+        [FromServices] Libs.GasStationPrices.Services.ObtainGasStationPricesService obtainGasStationPricesService,
+        CancellationToken cancellationToken)
+        => await obtainGasStationPricesService.GetPetroleumProductsAsync(cancellationToken);
 }

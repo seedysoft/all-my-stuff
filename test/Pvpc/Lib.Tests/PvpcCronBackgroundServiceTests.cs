@@ -1,7 +1,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting.Internal;
 using Microsoft.Extensions.Logging.Abstractions;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+[assembly: Parallelize(Workers = 0, Scope = ExecutionScope.MethodLevel)]
 
 namespace Seedysoft.Pvpc.Lib.Tests;
 
@@ -36,14 +37,14 @@ public sealed class PvpcCronBackgroundServiceTests : Libs.Infrastructure.Tests.T
         TimeToQuery = DateTimeOffset.UtcNow;
         MinPriceAllowed = 0.05M;
         Prices = Enumerable.Range(0, 24)
-            .Select(i => new Libs.Core.Entities.Pvpc(
+            .Select(static i => new Libs.Core.Entities.Pvpc(
                 TimeToQuery.UtcDateTime.AddHours(i),
                 decimal.Divide(Random.Shared.Next(40_000, 220_000), 1_000M)))
             .ToArray();
-        Prices.Last(x => x.AtDateTimeOffset <= TimeToQuery).MWhPriceInEuros = 49M; // 0.049 KWhPriceInEuros
+        Prices.Last(static x => x.AtDateTimeOffset <= TimeToQuery).MWhPriceInEuros = 49M; // 0.049 KWhPriceInEuros
     }
 
-    [ClassCleanup]
+    [ClassCleanup(ClassCleanupBehavior.EndOfClass)]
     public static new void ClassCleanup() => PvpcService?.Dispose();
 
     [TestMethod]
@@ -96,6 +97,6 @@ public sealed class PvpcCronBackgroundServiceTests : Libs.Infrastructure.Tests.T
             TimeToQuery,
             tuyaManagerSettings);
 
-        Assert.AreEqual(res, Prices.Any(x => x.KWhPriceInEuros <= MinPriceAllowed));
+        Assert.AreEqual(res, Prices.Any(static x => x.KWhPriceInEuros <= MinPriceAllowed));
     }
 }

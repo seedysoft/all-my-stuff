@@ -24,6 +24,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_SolutionItems", "_Solution
 		.gitattributes = .gitattributes
 		.gitignore = .gitignore
 		src\Directory.Build.props = src\Directory.Build.props
+		nuget.config = nuget.config
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Seedysoft.Libs.Infrastructure", "src\Libs\Infrastructure\Seedysoft.Libs.Infrastructure.csproj", "{733108C1-F3A2-4AE7-AB43-BADCB4161169}"
@@ -59,8 +60,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Seedysoft.BlazorWebApp.Serv
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Seedysoft.Libs.Core.Tests", "test\Libs\Core.Tests\Seedysoft.Libs.Core.Tests.csproj", "{9FCDE68A-2CEE-4A2C-93DF-04928A78A7BC}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Seedysoft.Libs.FuelPrices", "src\Libs\FuelPrices\Seedysoft.Libs.FuelPrices.csproj", "{7543792A-762F-4AE2-B37F-816F9D023AE2}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Seedysoft.Libs.Cryptography", "src\Libs\Cryptography\Seedysoft.Libs.Cryptography.csproj", "{91BBB425-F8FA-4477-B1E2-9F56222C2405}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Seedysoft.Libs.Cryptography.Tests", "test\Libs\Cryptography.Tests\Seedysoft.Libs.Cryptography.Tests.csproj", "{9A25AD59-8CEF-44EB-B702-11169A87E76B}"
@@ -81,8 +80,13 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{37555E57-CBD7-4E16-9B92-9EB096D4DDD3}"
 	ProjectSection(SolutionItems) = preProject
 		.github\workflows\CI.yml = .github\workflows\CI.yml
+		.github\workflows\delete-old-runs.yml = .github\workflows\delete-old-runs.yml
 		.github\workflows\Publish.yml = .github\workflows\Publish.yml
 	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Seedysoft.Libs.GasStationPrices", "src\Libs\GasStationPrices\Seedysoft.Libs.GasStationPrices.csproj", "{469DC5DC-25F0-4FBE-9217-A3267C8E4152}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Seedysoft.Libs.GasStationPrices.Tests", "test\Libs\GasStationPrices.Tests\Seedysoft.Libs.GasStationPrices.Tests.csproj", "{F380D00C-02F8-4390-9A96-E88E24886212}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -146,10 +150,6 @@ Global
 		{9FCDE68A-2CEE-4A2C-93DF-04928A78A7BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9FCDE68A-2CEE-4A2C-93DF-04928A78A7BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9FCDE68A-2CEE-4A2C-93DF-04928A78A7BC}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7543792A-762F-4AE2-B37F-816F9D023AE2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7543792A-762F-4AE2-B37F-816F9D023AE2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7543792A-762F-4AE2-B37F-816F9D023AE2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7543792A-762F-4AE2-B37F-816F9D023AE2}.Release|Any CPU.Build.0 = Release|Any CPU
 		{91BBB425-F8FA-4477-B1E2-9F56222C2405}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{91BBB425-F8FA-4477-B1E2-9F56222C2405}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{91BBB425-F8FA-4477-B1E2-9F56222C2405}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -174,6 +174,14 @@ Global
 		{5C844147-B8EA-4A92-81DD-BB5D017E1749}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5C844147-B8EA-4A92-81DD-BB5D017E1749}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5C844147-B8EA-4A92-81DD-BB5D017E1749}.Release|Any CPU.Build.0 = Release|Any CPU
+		{469DC5DC-25F0-4FBE-9217-A3267C8E4152}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{469DC5DC-25F0-4FBE-9217-A3267C8E4152}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{469DC5DC-25F0-4FBE-9217-A3267C8E4152}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{469DC5DC-25F0-4FBE-9217-A3267C8E4152}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F380D00C-02F8-4390-9A96-E88E24886212}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F380D00C-02F8-4390-9A96-E88E24886212}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F380D00C-02F8-4390-9A96-E88E24886212}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F380D00C-02F8-4390-9A96-E88E24886212}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -193,7 +201,6 @@ Global
 		{C9D74763-F199-4D59-AFE3-048A21B24161} = {D502505E-CB81-4391-8F4A-C08474E89805}
 		{D0101826-65C5-4D4E-95A5-CE9D96EDF7F1} = {1B84AE05-2D2A-49BD-A067-883B8FA01D75}
 		{9FCDE68A-2CEE-4A2C-93DF-04928A78A7BC} = {1B84AE05-2D2A-49BD-A067-883B8FA01D75}
-		{7543792A-762F-4AE2-B37F-816F9D023AE2} = {1B84AE05-2D2A-49BD-A067-883B8FA01D75}
 		{91BBB425-F8FA-4477-B1E2-9F56222C2405} = {1B84AE05-2D2A-49BD-A067-883B8FA01D75}
 		{9A25AD59-8CEF-44EB-B702-11169A87E76B} = {1B84AE05-2D2A-49BD-A067-883B8FA01D75}
 		{E9470628-052C-4E2A-9855-78D9AB0F2A19} = {1B84AE05-2D2A-49BD-A067-883B8FA01D75}
@@ -202,6 +209,8 @@ Global
 		{5C844147-B8EA-4A92-81DD-BB5D017E1749} = {1B84AE05-2D2A-49BD-A067-883B8FA01D75}
 		{95FDC373-822D-408A-83C7-B8D7F31570A1} = {76425700-456B-44B0-B42A-B0DC73595E5E}
 		{37555E57-CBD7-4E16-9B92-9EB096D4DDD3} = {95FDC373-822D-408A-83C7-B8D7F31570A1}
+		{469DC5DC-25F0-4FBE-9217-A3267C8E4152} = {1B84AE05-2D2A-49BD-A067-883B8FA01D75}
+		{F380D00C-02F8-4390-9A96-E88E24886212} = {1B84AE05-2D2A-49BD-A067-883B8FA01D75}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {76CD9B0B-E4FA-4E83-9623-2163AE82F180}

@@ -7,14 +7,14 @@ internal sealed class PvpcEntityTypeConfiguration : IEntityTypeConfiguration<Cor
     public void Configure(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder<Core.Entities.Pvpc> builder)
     {
         _ = builder
-            .Property(x => x.AtDateTimeOffset)
+            .Property(static x => x.AtDateTimeOffset)
             .HasConversion(ValueConverters.DateTimeOffsetString.DateTimeOffsetStringValueConverter);
 
         _ = builder
-            .Property(x => x.MWhPriceInEuros);
+            .Property(static x => x.MWhPriceInEuros);
 
         _ = builder
             .ToTable(nameof(Core.Entities.Pvpc))
-            .HasKey(x => x.AtDateTimeOffset);
+            .HasKey(static x => x.AtDateTimeOffset);
     }
 }

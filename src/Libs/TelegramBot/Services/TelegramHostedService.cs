@@ -1,19 +1,19 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Telegram.Bot.Polling;
-using Telegram.Bot.Types.InlineQueryResults;
-using Telegram.Bot.Types.ReplyMarkups;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Seedysoft.Libs.Utils.Extensions;
 using Telegram.Bot;
 using Telegram.Bot.Exceptions;
+using Telegram.Bot.Polling;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
+using Telegram.Bot.Types.InlineQueryResults;
+using Telegram.Bot.Types.ReplyMarkups;
 
 namespace Seedysoft.Libs.TelegramBot.Services;
 
-public partial class TelegramHostedService : Core.NonBackgroundServiceBase, IHostedService
+public class TelegramHostedService : Core.NonBackgroundServiceBase, IHostedService
 {
     private readonly ILogger<TelegramHostedService> Logger;
     private readonly Settings.TelegramSettings TelegramSettings;
@@ -52,7 +52,7 @@ public partial class TelegramHostedService : Core.NonBackgroundServiceBase, IHos
     private static BotCommand[] GetMyCommands()
     {
         return Enum.GetValues<Enums.BotActionName>().
-            Select(x => new BotCommand()
+            Select(static x => new BotCommand()
             {
                 Command = x.ToString(),
                 Description = x.GetEnumDescription(),
@@ -153,7 +153,7 @@ public partial class TelegramHostedService : Core.NonBackgroundServiceBase, IHos
         if (System.Diagnostics.Debugger.IsAttached)
             to = long.Parse(TelegramSettings.Users.UserTest.Id);
 
-        text = text[..Math.Min(text.Length, Utils.Constants.Telegram.MessageLengthLimit)];
+        text = text[..Math.Min(text.Length, Core.Constants.Telegram.MessageLengthLimit)];
         ChatId ToChatId = new(to);
 
         try
@@ -188,7 +188,7 @@ public partial class TelegramHostedService : Core.NonBackgroundServiceBase, IHos
         if (System.Diagnostics.Debugger.IsAttached)
             to = long.Parse(TelegramSettings.Users.UserTest.Id);
 
-        text = text[..Math.Min(text.Length, Utils.Constants.Telegram.MessageLengthLimit)];
+        text = text[..Math.Min(text.Length, Core.Constants.Telegram.MessageLengthLimit)];
         ChatId ToChatId = new(to);
 
         try
@@ -263,10 +263,10 @@ public partial class TelegramHostedService : Core.NonBackgroundServiceBase, IHos
             _ => null,
         };
         _ = await botClient.EditMessageReplyMarkupAsync(
-            chatId: callbackQuery.Message!.Chat.Id
-            , messageId: callbackQuery.Message!.MessageId
-            , replyMarkup: InlineKeyboardMarkup.Empty()
-            , cancellationToken: cancellationToken);
+            chatId: callbackQuery.Message!.Chat.Id,
+            messageId: callbackQuery.Message!.MessageId,
+            replyMarkup: InlineKeyboardMarkup.Empty(),
+            cancellationToken: cancellationToken);
 
         //await botClient.AnswerCallbackQueryAsync(
         //    callbackQueryId: callbackQuery.Id,
@@ -275,9 +275,9 @@ public partial class TelegramHostedService : Core.NonBackgroundServiceBase, IHos
         //    cancellationToken: cancellationToken);
 
         _ = await botClient.SendTextMessageAsync(
-            chatId: callbackQuery.Message!.Chat.Id
-            , text: ResponseText ?? $"No he podido saber qué hacer con {callbackQuery.Data ?? "Nulo"}"
-            , cancellationToken: cancellationToken);
+            chatId: callbackQuery.Message!.Chat.Id, 
+            text: ResponseText ?? $"No he podido saber qué hacer con {callbackQuery.Data ?? "Nulo"}", 
+            cancellationToken: cancellationToken);
 
         async Task<string?> ParseResponseTextAsync(CallbackQuery callbackQuery, CancellationToken cancellationToken)
         {
@@ -418,7 +418,7 @@ public partial class TelegramHostedService : Core.NonBackgroundServiceBase, IHos
         string[]? data = message.Text!.Split(' ');
         if (data.Length < 2 || !DateTime.TryParseExact(
             data[1],
-            Libs.Utils.Constants.Formats.YearMonthDayFormat,
+            Core.Constants.Formats.YearMonthDay,
             System.Globalization.CultureInfo.InvariantCulture,
             System.Globalization.DateTimeStyles.None,
             out DateTime dateTimeToObtain))
@@ -433,7 +433,7 @@ public partial class TelegramHostedService : Core.NonBackgroundServiceBase, IHos
         Core.Entities.Pvpc[]? Prices = await dbCtx.Pvpcs.AsNoTracking()
             .Where(x => x.AtDateTimeOffset >= dateTimeToObtain)
             .Where(x => x.AtDateTimeOffset < dateTimeToObtain.AddDays(1))
-            .ToArrayAsync(cancellationToken: cancellationToken);
+            .ToArrayAsync(cancellationToken);
 
         string responseText = MessageGetMarkdownV2TextForPrices(Prices);
 
@@ -630,7 +630,7 @@ public partial class TelegramHostedService : Core.NonBackgroundServiceBase, IHos
             return await MessageSendUsageAsync(TelegramUserId, cancellationToken);
 
         string TextToSend = Subscriptions.Length != 0
-            ? "Estás suscrit@ a:\n" + string.Join("\n", Subscriptions.Select(x => $"{x}"))
+            ? "Estás suscrit@ a:\n" + string.Join("\n", Subscriptions.Select(static x => $"{x}"))
             : "Usted no tiene suscripciones";
 
         return await MessageSendTextAsync(TelegramUserId, TextToSend, null, cancellationToken);
@@ -645,7 +645,7 @@ public partial class TelegramHostedService : Core.NonBackgroundServiceBase, IHos
         // TODO                 Cambiar el mensaje de ayuda, incluyendo que pueden enviar direcciones http[s].
         return await MessageSendTextAsync(
             to,
-            "Comandos disponibles:\n" + string.Join("\n", MyCommands.Select(x => $"/{x.Command} {x.Description}")),
+            "Comandos disponibles:\n" + string.Join("\n", MyCommands.Select(static x => $"/{x.Command} {x.Description}")),
             null,
             cancellationToken);
     }
@@ -747,7 +747,7 @@ public partial class TelegramHostedService : Core.NonBackgroundServiceBase, IHos
 
             Core.Enums.SubscriptionName.webComparer => await MessageSendTextAsync(
                 telegramUserId,
-                pendingMessage.Payload[new Range(0, Math.Min(Utils.Constants.Telegram.MessageLengthLimit, pendingMessage.Payload.Length))],
+                pendingMessage.Payload[new Range(0, Math.Min(Core.Constants.Telegram.MessageLengthLimit, pendingMessage.Payload.Length))],
 parseMode: null,
                 stoppingToken),
 
@@ -768,13 +768,13 @@ parseMode: null,
         DateTime ObtainedDate = prices[0].AtDateTimeOffset.Date;
 
         int HowMany = Math.Min(6, prices.Length - 1);
-        decimal Min = prices.OrderBy(x => x.KWhPriceInEuros).Take(HowMany).Max(x => x.KWhPriceInEuros);
-        decimal Max = prices.OrderByDescending(x => x.KWhPriceInEuros).Take(HowMany).Min(x => x.KWhPriceInEuros);
-        decimal Avg = prices.Average(x => x.KWhPriceInEuros);
+        decimal Min = prices.OrderBy(static x => x.KWhPriceInEuros).Take(HowMany).Max(static x => x.KWhPriceInEuros);
+        decimal Max = prices.OrderByDescending(static x => x.KWhPriceInEuros).Take(HowMany).Min(static x => x.KWhPriceInEuros);
+        decimal Avg = prices.Average(static x => x.KWhPriceInEuros);
 
         System.Text.StringBuilder sb = new(500);
-        sb = sb.AppendLine($"Media del *{ObtainedDate.ToString(Utils.Constants.Formats.LongDateFormat, Utils.Constants.Formats.ESCultureInfo)}*");
-        sb = sb.AppendLine($"*{Avg.ToString("N5", Utils.Constants.Formats.ESCultureInfo)} € / kWh*");
+        sb = sb.AppendLine($"Media del *{ObtainedDate.ToString(Core.Constants.Formats.LongDate, Core.Constants.Globalization.CultureInfoES)}*");
+        sb = sb.AppendLine($"*{Avg.ToString("N5", Core.Constants.Globalization.CultureInfoES)} € / kWh*");
 
         for (int i = 0; i < prices.Length; i++)
         {
@@ -783,7 +783,7 @@ parseMode: null,
                 prices[i].KWhPriceInEuros <= Min ? Constants.Emojis.GreenCircle :
                 prices[i].KWhPriceInEuros <= Avg ? Constants.Emojis.YellowCircle : Constants.Emojis.OrangeCircle;
 
-            sb = sb.AppendLine($"{prices[i].AtDateTimeOffset.Hour:00}  {emoji}  {prices[i].KWhPriceInEuros.ToString("N5", Utils.Constants.Formats.ESCultureInfo)}");
+            sb = sb.AppendLine($"{prices[i].AtDateTimeOffset.Hour:00}  {emoji}  {prices[i].KWhPriceInEuros.ToString("N5", Core.Constants.Globalization.CultureInfoES)}");
         }
 
         return sb.ToString();

@@ -1,4 +1,4 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿[assembly: Parallelize(Workers = 0, Scope = ExecutionScope.MethodLevel)]
 
 namespace Seedysoft.Libs.Cryptography.Tests;
 
@@ -6,19 +6,17 @@ namespace Seedysoft.Libs.Cryptography.Tests;
 public sealed class CryptoTests
 {
     [TestMethod]
-    public void EncryptThenDecryptTest()
+    [DataRow("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam nulla tellus, elementum sit amet nunc.")]
+    public void EncryptThenDecryptTest(string textToEncrypt)
     {
-        const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        string Key = System.Security.Cryptography.RandomNumberGenerator.GetString("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 32);
 
-        string TextToEncrypt = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam nulla tellus, elementum sit amet nunc.";
-        string Key = System.Security.Cryptography.RandomNumberGenerator.GetString(chars, 32);
-
-        string encryptedBytes = Crypto.EncryptText(TextToEncrypt, Key);
+        string encryptedBytes = Crypto.EncryptText(textToEncrypt, Key);
         System.Diagnostics.Debug.WriteLine(encryptedBytes);
 
         string decryptedText = Crypto.DecryptText(encryptedBytes, Key);
         System.Diagnostics.Debug.WriteLine(decryptedText);
 
-        Assert.AreEqual(TextToEncrypt, decryptedText);
+        Assert.AreEqual(textToEncrypt, decryptedText);
     }
 }

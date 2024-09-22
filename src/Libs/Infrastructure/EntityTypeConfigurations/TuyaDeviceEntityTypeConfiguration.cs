@@ -9,23 +9,23 @@ internal sealed class TuyaDeviceEntityTypeConfiguration : IEntityTypeConfigurati
         // TODO                           Encrypt
 
         _ = builder
-            .Property(s => s.Id)
+            .Property(static s => s.Id)
             .ValueGeneratedNever();
 
         _ = builder
-            .Property(s => s.Address)
+            .Property(static s => s.Address)
             .HasConversion<string>();
 
         _ = builder
-            .Property(s => s.Version)
+            .Property(static s => s.Version)
             .IsRequired();
 
         _ = builder
-            .Property(s => s.LocalKey)
+            .Property(static s => s.LocalKey)
             .IsRequired();
 
         _ = builder
             .ToTable(nameof(Core.Entities.TuyaDevice))
-            .HasKey(s => s.Id);
+            .HasKey(static s => s.Id);
     }
 }
