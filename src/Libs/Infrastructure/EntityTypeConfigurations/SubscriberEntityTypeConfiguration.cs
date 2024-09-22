@@ -7,29 +7,29 @@ internal sealed class SubscriberEntityTypeConfiguration : IEntityTypeConfigurati
     public void Configure(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder<Core.Entities.Subscriber> builder)
     {
         _ = builder
-            .Property(e => e.SubscriberId)
+            .Property(static e => e.SubscriberId)
             .IsRequired()
             .ValueGeneratedOnAdd();
 
         _ = builder
-            .Property(e => e.TelegramUserId);
+            .Property(static e => e.TelegramUserId);
 
         _ = builder
-            .Property(s => s.MailAddress);
+            .Property(static s => s.MailAddress);
 
         _ = builder
             .ToTable(nameof(Core.Entities.Subscriber))
-            .HasKey(e => e.SubscriberId);
+            .HasKey(static e => e.SubscriberId);
 
         _ = builder
-            .HasMany(s => s.Subscriptions)
-            .WithMany(s => s.Subscribers)
+            .HasMany(static s => s.Subscriptions)
+            .WithMany(static s => s.Subscribers)
             .UsingEntity<Core.Entities.SubscriberSubscription>(
-                s => s.HasOne<Core.Entities.Subscription>().WithMany().HasForeignKey(e => e.SubscriptionId).OnDelete(DeleteBehavior.Cascade),
-                s => s.HasOne<Core.Entities.Subscriber>().WithMany().HasForeignKey(e => e.SubscriberId).OnDelete(DeleteBehavior.Cascade),
-                s => s.ToTable($"{nameof(Core.Entities.Subscriber)}{nameof(Core.Entities.Subscription)}").HasKey(e => new { e.SubscriberId, e.SubscriptionId }));
+                static s => s.HasOne<Core.Entities.Subscription>().WithMany().HasForeignKey(static e => e.SubscriptionId).OnDelete(DeleteBehavior.Cascade),
+                static s => s.HasOne<Core.Entities.Subscriber>().WithMany().HasForeignKey(static e => e.SubscriberId).OnDelete(DeleteBehavior.Cascade),
+                static s => s.ToTable($"{nameof(Core.Entities.Subscriber)}{nameof(Core.Entities.Subscription)}").HasKey(static e => new { e.SubscriberId, e.SubscriptionId }));
 
         _ = builder
-            .Navigation(e => e.Subscriptions);
+            .Navigation(static e => e.Subscriptions);
     }
 }

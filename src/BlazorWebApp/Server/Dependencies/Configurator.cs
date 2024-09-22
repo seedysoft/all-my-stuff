@@ -20,6 +20,7 @@ internal sealed class Configurator : Libs.Utils.Dependencies.ConfiguratorBase
         // Add Todo service for components adopting SSR
         //_ = hostApplicationBuilder.Services.AddScoped<IMovieService, ServerMovieService>();
 
+#if !DEBUG
         _ = hostApplicationBuilder.Services.AddHostedService<Libs.TelegramBot.Services.TelegramHostedService>();
 
         _ = hostApplicationBuilder.Services.AddHostedService<Outbox.Lib.Services.OutboxCronBackgroundService>();
@@ -28,6 +29,7 @@ internal sealed class Configurator : Libs.Utils.Dependencies.ConfiguratorBase
         _ = hostApplicationBuilder.Services.AddHostedService<Pvpc.Lib.Services.TuyaManagerCronBackgroundService>();
 
         _ = hostApplicationBuilder.Services.AddHostedService<WebComparer.Lib.Services.WebComparerCronBackgroundService>();
+#endif
 
         // Add services to the container.
         _ = hostApplicationBuilder.Services

@@ -42,7 +42,7 @@ public sealed class TuyaManagerCronBackgroundService : Libs.BackgroundServices.C
         {
             Libs.Infrastructure.DbContexts.DbCxt dbCxt = ServiceProvider.GetRequiredService<Libs.Infrastructure.DbContexts.DbCxt>();
 
-            Libs.Core.Entities.TuyaDevice[] Devices = await dbCxt.TuyaDevices.AsNoTracking().ToArrayAsync(cancellationToken: stoppingToken);
+            Libs.Core.Entities.TuyaDevice[] Devices = await dbCxt.TuyaDevices.AsNoTracking().ToArrayAsync(stoppingToken);
 
             DateTimeOffset timeToCheckDateTimeOffset = DateTimeOffset.Now;
             DateTimeOffset dateToQueryDateTimeOffset = timeToCheckDateTimeOffset.Subtract(timeToCheckDateTimeOffset.TimeOfDay);
@@ -50,7 +50,7 @@ public sealed class TuyaManagerCronBackgroundService : Libs.BackgroundServices.C
             Libs.Core.Entities.Pvpc[] PricesForDayPvpcs = await dbCxt.Pvpcs.AsNoTracking()
                 .Where(x => x.AtDateTimeOffset >= dateToQueryDateTimeOffset)
                 .Where(x => x.AtDateTimeOffset < dateToQueryDateTimeOffset.AddDays(1))
-                .ToArrayAsync(cancellationToken: stoppingToken);
+                .ToArrayAsync( stoppingToken);
 
             bool IsTimeToCharge = PvpcCronBackgroundService.IsTimeToCharge(PricesForDayPvpcs, timeToCheckDateTimeOffset, Settings);
 

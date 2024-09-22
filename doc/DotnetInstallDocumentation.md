@@ -58,10 +58,16 @@ find . -type d -name "8.0.1" -exec rm -rf "{}" \;
 ```bash
 # ./dotnet workload search [<SEARCH_STRING>] [-v|--verbosity <LEVEL>]
 # ./dotnet workload search -?|-h|--help
-./dotnet workload install wasm-tools
+dotnet workload install wasm-tools
+dotnet workload update
 ```
 
 **Update Entity Framework global tools:**
 ```bash
 dotnet tool update --global dotnet-ef
+```
+
+**MudBlazor Templates
+```bash
+dotnet new install MudBlazor.Templates
 ```

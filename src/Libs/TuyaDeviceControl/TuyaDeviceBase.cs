@@ -324,7 +324,7 @@ public class TuyaDeviceBase
     }
     private bool NegotiateSessionKeyGenerateFinalize()
     {
-        LocalKey = LocalNonce.Zip(RemoteNonce, (a, b) => Convert.ToByte(a ^ b)).ToArray();
+        LocalKey = LocalNonce.Zip(RemoteNonce, static (a, b) => Convert.ToByte(a ^ b)).ToArray();
 
         Debug.WriteLine($"{nameof(LocalNonce)}={Convert.ToHexString(LocalNonce)}");
         Debug.WriteLine($"{nameof(RemoteNonce)}={Convert.ToHexString(RemoteNonce)}");
@@ -818,7 +818,7 @@ public class TuyaDeviceBase
         {
             byte[] newData = new byte[length];
             _ = (Socket?.Receive(newData));
-            if (newData.Length == 0 || newData.All(x => x == 0))
+            if (newData.Length == 0 || newData.All(static x => x == 0))
             {
                 Debug.WriteLine($"{nameof(RecvAll)}(): no data? {Convert.ToHexString(newData)}");
                 // #connection closed?

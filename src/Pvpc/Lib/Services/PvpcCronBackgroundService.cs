@@ -39,7 +39,7 @@ public sealed class PvpcCronBackgroundService : Libs.BackgroundServices.Cron
 
         Logger.LogInformation("Called {ApplicationName} version {Version}", AppName, System.Reflection.Assembly.GetExecutingAssembly().GetName().Version);
 
-        Logger.LogInformation("Obtaining PVPC for the day {ForDate}", forDate.ToString(Libs.Utils.Constants.Formats.YearMonthDayFormat));
+        Logger.LogInformation("Obtaining PVPC for the day {ForDate}", forDate.ToString(Libs.Core.Constants.Formats.YearMonthDay));
 
         string UrlString = string.Format(Settings.DataUrlTemplate, forDate);
         Logger.LogInformation("From {UrlString}", UrlString);

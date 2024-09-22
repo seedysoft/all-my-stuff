@@ -7,19 +7,19 @@ internal sealed class SubscriptionEntityTypeConfiguration : IEntityTypeConfigura
     public void Configure(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder<Core.Entities.Subscription> builder)
     {
         _ = builder
-            .Property(s => s.SubscriptionId)
+            .Property(static s => s.SubscriptionId)
             .ValueGeneratedOnAdd();
 
         _ = builder
-            .Property(s => s.SubscriptionName)
+            .Property(static s => s.SubscriptionName)
             .HasConversion<string>();
 
         _ = builder
             .ToTable(nameof(Core.Entities.Subscription))
-            .HasKey(s => s.SubscriptionId);
+            .HasKey(static s => s.SubscriptionId);
 
         _ = builder
-            .Navigation(e => e.Subscribers)
+            .Navigation(static e => e.Subscribers)
             // System.InvalidOperationException: 'Cycle detected while auto-including navigations: 'Subscription.Subscribers', 'Subscriber.Subscriptions'. To fix this issue, either don't configure at least one navigation in the cycle as auto included in `OnModelCreating` or call 'IgnoreAutoInclude' method on the query.'
             /*.AutoInclude()*/;
     }

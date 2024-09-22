@@ -399,3 +399,6 @@ FodyWeavers.xsd
 
 # My db folder
 src/BlazorWebApp/databases
+
+# WinMerge backups
+*.bak

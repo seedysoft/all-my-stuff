@@ -1,11 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
     <RuntimeIdentifiers>linux-arm64;linux-x64;win-x64</RuntimeIdentifiers>
-    <UserSecretsId>953853f7-9384-457c-a3c0-3492059196ab</UserSecretsId>
     <StartupObject>Seedysoft.BlazorWebApp.Server.Program</StartupObject>
+    <TargetFramework>net8.0</TargetFramework>
+    <UserSecretsId>953853f7-9384-457c-a3c0-3492059196ab</UserSecretsId>
   </PropertyGroup>
   <ItemGroup Condition="'$(Configuration)' == 'Debug'">
     <Content Remove="appsettings.BlazorWebApp.Server.Production.json" />
@@ -44,6 +44,7 @@
     <PackageReference Include="Serilog.Sinks.File" Version="6.0.0" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Libs\GasStationPrices\Seedysoft.Libs.GasStationPrices.csproj" />
     <ProjectReference Include="..\..\Libs\Utils\Seedysoft.Libs.Utils.csproj" />
     <ProjectReference Include="..\..\Outbox\Lib\Seedysoft.Outbox.Lib.csproj" />
     <ProjectReference Include="..\..\WebComparer\Lib\Seedysoft.WebComparer.Lib.csproj" />

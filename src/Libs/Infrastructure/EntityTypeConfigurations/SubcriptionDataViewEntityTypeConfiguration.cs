@@ -7,28 +7,28 @@ internal sealed class SubcriptionDataViewEntityTypeConfiguration : IEntityTypeCo
     public void Configure(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder<Core.Entities.SubcriptionDataView> builder)
     {
         _ = builder
-            .Property(e => e.SubscriberId);
+            .Property(static e => e.SubscriberId);
 
         _ = builder
-            .Property(x => x.SubscriptionId);
+            .Property(static x => x.SubscriptionId);
 
         _ = builder
-            .Property(x => x.Firstname);
+            .Property(static x => x.Firstname);
 
         _ = builder
-            .Property(x => x.TelegramUserId);
+            .Property(static x => x.TelegramUserId);
 
         _ = builder
-            .Property(x => x.MailAddress);
+            .Property(static x => x.MailAddress);
 
         _ = builder
-            .Property(x => x.SubscriptionName);
+            .Property(static x => x.SubscriptionName);
 
         _ = builder
-            .Property(x => x.Description);
+            .Property(static x => x.Description);
 
         _ = builder
-            .Property(x => x.WebUrl);
+            .Property(static x => x.WebUrl);
 
         _ = builder
             .ToView(nameof(Core.Entities.SubcriptionDataView))

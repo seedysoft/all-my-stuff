@@ -2,5 +2,5 @@
 
 public static class Constants
 {
-    public readonly static ApplicationException UnknownVersionNumberApplicationException = new("Unknown Version Number");
+    public static readonly ApplicationException UnknownVersionNumberApplicationException = new("Unknown Version Number");
 }

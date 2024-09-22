@@ -1,0 +1,63 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+    <IsPublishable>False</IsPublishable>
+    <RuntimeIdentifiers>linux-arm64;linux-x64;win-x64</RuntimeIdentifiers>
+  </PropertyGroup>
+  <ItemGroup>
+    <Content Include="appsettings.Libs.GasStationPrices.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup Condition="'$(Configuration)' == 'Debug'">
+    <Content Include="appsettings.Libs.GasStationPrices.Development.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <DependentUpon>appsettings.Libs.GasStationPrices.json</DependentUpon>
+    </Content>
+    <None Include="appsettings.Libs.GasStationPrices.Production.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <DependentUpon>appsettings.Libs.GasStationPrices.json</DependentUpon>
+    </None>
+  </ItemGroup>
+  <ItemGroup Condition="'$(Configuration)' == 'Release'">
+    <None Include="appsettings.Libs.GasStationPrices.Development.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <DependentUpon>appsettings.Libs.GasStationPrices.json</DependentUpon>
+    </None>
+    <Content Include="appsettings.Libs.GasStationPrices.Production.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <DependentUpon>appsettings.Libs.GasStationPrices.json</DependentUpon>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="BlazorGoogleMaps" Version="4.7.11" />
+    <PackageReference Include="FluentValidation" Version="11.9.2" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="8.0.0" />
+    <PackageReference Include="RestSharp" Version="112.0.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Libs\Infrastructure\Seedysoft.Libs.Infrastructure.csproj" />
+    <ProjectReference Include="..\Cryptography\Seedysoft.Libs.Cryptography.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="Seedysoft.Libs.GasStationPrices.Tests" />
+  </ItemGroup>
+  <ItemGroup>
+    <Using Include="System.Text.Json.Serialization.JsonConverterAttribute">
+      <Alias>K</Alias>
+    </Using>
+    <Using Include="System.Text.Json.Serialization.JsonIgnoreAttribute">
+      <Alias>I</Alias>
+    </Using>
+    <Using Include="System.Text.Json.Serialization.JsonIgnoreCondition">
+      <Alias>C</Alias>
+    </Using>
+    <Using Include="System.Text.Json.Serialization.JsonPropertyNameAttribute">
+      <Alias>J</Alias>
+    </Using>
+  </ItemGroup>
+</Project>

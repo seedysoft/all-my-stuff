@@ -7,11 +7,7 @@ internal class Program
         var webAssemblyHostBuilder = Microsoft.AspNetCore.Components.WebAssembly.Hosting.WebAssemblyHostBuilder.CreateDefault(args);
 
         _ = webAssemblyHostBuilder.Services
-            .AddScoped(sp =>
-            new HttpClient
-            {
-                BaseAddress = new Uri(webAssemblyHostBuilder.HostEnvironment.BaseAddress),
-            })
+            .AddScoped(sp => new HttpClient { BaseAddress = new Uri(webAssemblyHostBuilder.HostEnvironment.BaseAddress), })
 
             .AddMudServices()
         ;
