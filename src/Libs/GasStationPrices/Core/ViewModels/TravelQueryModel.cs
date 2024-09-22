@@ -1,6 +1,6 @@
 ﻿namespace Seedysoft.Libs.GasStationPrices.Core.ViewModels;
 
-public record TravelQueryModel
+public record class TravelQueryModel
 {
     public required string Origin { get; set; }
 
@@ -11,5 +11,5 @@ public record TravelQueryModel
 
     public required IReadOnlyCollection<long> PetroleumProductsSelectedIds { get; set; } = [];
 
-    public required GoogleMapsComponents.Maps.LatLngBoundsLiteral Bounds { get; set; }
+    public GoogleMapsComponents.Maps.LatLngBoundsLiteral Bounds { get; } = new();
 }

@@ -52,7 +52,6 @@ public sealed class ObtainGasStationPricesTests : Infrastructure.Tests.TestClass
             Destination = "Calle la Iglesia 11 Brazuelo León",
             MaxDistanceInKm = 5.0M,
             PetroleumProductsSelectedIds = [],
-            Bounds = default!,
         };
 
         IAsyncEnumerator<Core.ViewModels.GasStationModel> gasStationModels =

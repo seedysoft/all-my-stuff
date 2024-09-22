@@ -31,7 +31,6 @@ public partial class TravelSearch
 #endif
         MaxDistanceInKm = 5M,
         PetroleumProductsSelectedIds = [],
-        Bounds = default!,
     };
 
     private IEnumerable<Libs.GasStationPrices.Core.Json.Minetur.ProductoPetrolifero> PetroleumProducts = [];
@@ -186,10 +185,10 @@ public partial class TravelSearch
         if (directionsResult == null)
             return;
 
-        travelQueryModel.Bounds.North = directionsResult.Routes.Select(static x => x.Bounds?.North ?? 90D).Max();
-        travelQueryModel.Bounds.South = directionsResult.Routes.Select(static x => x.Bounds?.South ?? -90D).Min();
-        travelQueryModel.Bounds.East = directionsResult.Routes.Select(static x => x.Bounds?.East ?? 180D).Max();
-        travelQueryModel.Bounds.West = directionsResult.Routes.Select(static x => x.Bounds?.West ?? -180D).Min();
+        travelQueryModel.Bounds.North = directionsResult.Routes?.Select(static x => x.Bounds?.North).Max() ?? 90D;
+        travelQueryModel.Bounds.South = directionsResult.Routes?.Select(static x => x.Bounds?.South).Min() ?? -90D;
+        travelQueryModel.Bounds.East = directionsResult.Routes?.Select(static x => x.Bounds?.East).Max() ?? 180D;
+        travelQueryModel.Bounds.West = directionsResult.Routes?.Select(static x => x.Bounds?.West).Min() ?? -180D;
 
         // TODO         Use directionsResult
 
