@@ -153,9 +153,9 @@ public sealed class WebComparerCronBackgroundService : Libs.BackgroundServices.C
         switch (System.Runtime.InteropServices.RuntimeInformation.RuntimeIdentifier)
         {
             case "linux-arm64":
-                Options.BinaryLocation = "/usr/lib/chromium-browser/chromium-browser";
+                Options.BinaryLocation = "/usr/bin/chromium-browser";
 
-                chromeDriverService = OpenQA.Selenium.Chrome.ChromeDriverService.CreateDefaultService("/usr/lib/chromium-browser/", "chromedriver");
+                chromeDriverService = OpenQA.Selenium.Chrome.ChromeDriverService.CreateDefaultService("/usr/bin/", "chromedriver");
 
                 chromeDriver = new(chromeDriverService, Options);
                 break;

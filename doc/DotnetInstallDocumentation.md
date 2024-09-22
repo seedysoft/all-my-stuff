@@ -7,6 +7,8 @@
 **Manual installation documentation:** \
 <https://learn.microsoft.com/en-us/dotnet/core/install/linux-scripted-manual#manual-install>
 
+dotnet tool update --global PowerShell
+
 ==**NOTE: On first installation, export variables:**== \
 Windows (PowerShell):
 ```PowerShell
@@ -30,6 +32,8 @@ WSL (PowerShell):
 ```PowerShell
 [Environment]::SetEnvironmentVariable("WSLENV", $env:WSLENV + "SEEDY_MASTER_KEY:", [System.EnvironmentVariableTarget]::User)
 ```
+
+sudo apt-get install chromium-chromedriver
 
 **Dotnet downloads:** \
 <https://dotnet.microsoft.com/en-us/download/dotnet>
