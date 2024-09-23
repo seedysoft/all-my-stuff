@@ -23,10 +23,10 @@ public record class EstacionTerrestre
     //[J("Remisión")] public required string Remision { get; init; }
     [J("Rótulo")] public required string Rotulo { get; init; }
     //[J("Tipo Venta")] public required string TipoVenta { get; init; }
-    //[J("IDEESS")][K(typeof(Utils.Extensions.ParseStringConverter))] public long IdEstacionServicio { get; init; }
-    //[J("IDMunicipio")][K(typeof(Utils.Extensions.ParseStringConverter))] public long IdMunicipio { get; init; }
+    //[J("IDEESS"), K(typeof(Utils.Extensions.ParseStringConverter))] public long IdEstacionServicio { get; init; }
+    //[J("IDMunicipio"), K(typeof(Utils.Extensions.ParseStringConverter))] public long IdMunicipio { get; init; }
     //[J("IDProvincia")] public required string IdProvincia { get; init; }
-    //[J("IDCCAA")][K(typeof(Utils.Extensions.ParseStringConverter))] public long IdComunidad { get; init; }
+    //[J("IDCCAA"), K(typeof(Utils.Extensions.ParseStringConverter))] public long IdComunidad { get; init; }
 
     [J("Precio Biodiesel")] public required string PrecioBiodiesel { get; init; }
     [J("Precio Bioetanol")] public required string PrecioBioetanol { get; init; }

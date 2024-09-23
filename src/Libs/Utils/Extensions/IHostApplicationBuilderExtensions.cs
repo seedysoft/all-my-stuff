@@ -33,7 +33,7 @@ public static class IHostApplicationBuilderExtensions
 
     public static IEnumerable<System.Reflection.Assembly> GetAllReferencedAssembliesSorted(System.Reflection.Assembly source)
     {
-        var results = new List<System.Reflection.Assembly> { source };
+        var results = new List<System.Reflection.Assembly> { source, };
 
         results.InsertRange(0, source.GetReferencedAssemblies().SelectMany(static (System.Reflection.AssemblyName name) =>
         {

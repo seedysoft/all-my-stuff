@@ -1,4 +1,6 @@
-﻿#pragma warning disable CA1707 // Identifiers should not contain underscores
+﻿// TODO:            Remove all pragma warning disable
+
+#pragma warning disable CA1707 // Identifiers should not contain underscores
 
 using System.ComponentModel;
 

@@ -19,7 +19,8 @@ internal sealed class Configurator : Utils.Dependencies.ConfiguratorBase
 
     protected override void AddMyServices(IHostApplicationBuilder hostApplicationBuilder)
     {
-        hostApplicationBuilder.Services.TryAddSingleton(hostApplicationBuilder.Configuration.GetSection(nameof(Settings.TelegramSettings)).Get<Settings.TelegramSettings>()!);
+        hostApplicationBuilder.Services.TryAddSingleton(
+            hostApplicationBuilder.Configuration.GetSection(nameof(Settings.TelegramSettings)).Get<Settings.TelegramSettings>()!);
         hostApplicationBuilder.Services.TryAddSingleton<Services.TelegramHostedService>();
     }
 }

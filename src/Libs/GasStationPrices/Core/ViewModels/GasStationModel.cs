@@ -36,6 +36,6 @@ public record class GasStationModel
             new(Json.Minetur.ProductoPetrolifero.H2, estacionTerrestre.PrecioHidrogeno.ParseWithNumberFormatInfoES()),
         ];
 
-        return values.Where(x => x.Price.HasValue);
+        return values.Where(static x => x.Price.HasValue);
     }
 }

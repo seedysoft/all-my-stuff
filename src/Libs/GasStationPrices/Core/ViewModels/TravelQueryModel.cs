@@ -28,21 +28,15 @@ public record class TravelQueryModel
         double GasStationLat = Math.Round(estacionTerrestre.Lat, decimals);
         double GasStationLon = Math.Round(estacionTerrestre.Lon, decimals);
 
-#if DEBUG
         double N = Utils.Helpers.GeometricHelper.ExpandLatitude(Bounds.North, Bounds.West, MaxDistanceInKm);
         double S = Utils.Helpers.GeometricHelper.ExpandLatitude(Bounds.South, Bounds.East, MaxDistanceInKm);
         double E = Utils.Helpers.GeometricHelper.ExpandLongitude(Bounds.South, Bounds.East, MaxDistanceInKm);
         double W = Utils.Helpers.GeometricHelper.ExpandLongitude(Bounds.North, Bounds.West, MaxDistanceInKm);
 
         return
-            GasStationLat < N && GasStationLat > S &&
-            GasStationLon < E && GasStationLon > W;
-#else
-        return
-            GasStationLat < Utils.Helpers.GeometricHelper.ExpandLatitude(Bounds.North, Bounds.West, MaxDistanceInKm) &&
-            GasStationLat > Utils.Helpers.GeometricHelper.ExpandLatitude(Bounds.South, Bounds.East, MaxDistanceInKm) &&
-            GasStationLon > Utils.Helpers.GeometricHelper.ExpandLongitude(Bounds.South, Bounds.East, MaxDistanceInKm) &&
-            GasStationLon < Utils.Helpers.GeometricHelper.ExpandLongitude(Bounds.North, Bounds.West, MaxDistanceInKm);
-#endif
+            GasStationLat < N &&
+            GasStationLat > S &&
+            GasStationLon < E &&
+            GasStationLon > W;
     }
 }

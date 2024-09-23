@@ -1,6 +1,6 @@
 ﻿namespace Seedysoft.Libs.TelegramBot.Settings;
 
-public record TelegramSettings : BackgroundServices.ScheduleConfig
+public record class TelegramSettings : BackgroundServices.ScheduleConfig
 {
     public required Users Users { get; init; }
 

@@ -42,11 +42,11 @@ public sealed class Program : Libs.Core.ProgramBase
 
             if (args?.Length < 1
                 || !DateTime.TryParseExact(
-                    args?[0]
-                    , Libs.Core.Constants.Formats.YearMonthDay
-                    , System.Globalization.CultureInfo.InvariantCulture
-                    , System.Globalization.DateTimeStyles.None
-                    , out ForDate))
+                    args?[0],
+                    Libs.Core.Constants.Formats.YearMonthDay,
+                    System.Globalization.CultureInfo.InvariantCulture,
+                    System.Globalization.DateTimeStyles.None,
+                    out ForDate))
             {
                 Logger.LogInformation($"You can provide the date in {Libs.Core.Constants.Formats.YearMonthDay} format as an argument");
                 ForDate = DateTimeOffset.UtcNow.AddDays(1).Date;

@@ -5,7 +5,6 @@
 /// </summary>
 public static class Emojis
 {
-
     /// <summary>
     /// Cara con una ceja levantada.
     /// </summary>

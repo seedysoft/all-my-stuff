@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace Seedysoft.Libs.GasStationPrices.Core.ViewModels;
+﻿namespace Seedysoft.Libs.GasStationPrices.Core.ViewModels;
 
 public record class GasStationInfoModel
 {
@@ -16,7 +14,7 @@ public record class GasStationInfoModel
 
     public string Municipio { get; set; } = default!;
 
-    [DisplayFormat(DataFormatString = "{0:0.000;;}")]
+    [System.ComponentModel.DataAnnotations.DisplayFormat(DataFormatString = "{0:0.000;;}")]
     public decimal Precio { get; set; }
 
     public string Producto { get; set; } = default!;

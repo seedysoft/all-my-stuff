@@ -1,6 +1,4 @@
-﻿using System.Diagnostics;
-
-namespace Seedysoft.Libs.TuyaDeviceControl.Extensions;
+﻿namespace Seedysoft.Libs.TuyaDeviceControl.Extensions;
 
 public static class TuyaExtensions
 {
@@ -15,6 +13,7 @@ public static class TuyaExtensions
         string headerFormat = data[..4] == ProtocolVersionsAndHeaders.PREFIX_6699_BIN
             ? ProtocolVersionsAndHeaders.MESSAGE_HEADER_FMT_6699
             : ProtocolVersionsAndHeaders.MESSAGE_HEADER_FMT_55AA;
+
         int headerLength = StructConverter.CalcSize(headerFormat);
 
         if (data.Length < headerLength)
@@ -42,7 +41,7 @@ public static class TuyaExtensions
         {
             // #prefix, unknown, seqno, cmd, payload_len = unpacked
             // #//seqno |= unknown << 32
-            Debug.WriteLine($"header unknown field='{Convert.ToHexString(unpacked[1])}'", 16);
+            System.Diagnostics.Debug.WriteLine($"header unknown field='{Convert.ToHexString(unpacked[1])}'", 16);
             seqno = Convert.ToUInt32(Convert.ToHexString(unpacked[2]), 16);
             cmd = Convert.ToUInt32(Convert.ToHexString(unpacked[3]), 16);
             payloadLength = Convert.ToUInt32(Convert.ToHexString(unpacked[4]), 16);

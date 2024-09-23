@@ -3,7 +3,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Seedysoft.Libs.Utils.Extensions;
 using Seedysoft.Pvpc.Lib.Extensions;
-using System.Diagnostics;
 
 namespace Seedysoft.Pvpc.Lib.Services;
 
@@ -13,7 +12,8 @@ public sealed class TuyaManagerCronBackgroundService : Libs.BackgroundServices.C
 
     public TuyaManagerCronBackgroundService(
         IServiceProvider serviceProvider,
-        Microsoft.Extensions.Hosting.IHostApplicationLifetime hostApplicationLifetime) : base(serviceProvider, hostApplicationLifetime)
+        Microsoft.Extensions.Hosting.IHostApplicationLifetime hostApplicationLifetime) 
+        : base(serviceProvider, hostApplicationLifetime)
     {
         Logger = ServiceProvider.GetRequiredService<ILogger<TuyaManagerCronBackgroundService>>();
 
@@ -24,7 +24,7 @@ public sealed class TuyaManagerCronBackgroundService : Libs.BackgroundServices.C
 
     public override async Task StartAsync(CancellationToken cancellationToken)
     {
-        // Execute on init
+        // Execute on init in background (fire and forget), so no hang on start 
         _ = Task.Factory.StartNew(async () => await DoWorkAsync(cancellationToken), cancellationToken);
 
         _ = base.StartAsync(cancellationToken);
@@ -63,13 +63,13 @@ public sealed class TuyaManagerCronBackgroundService : Libs.BackgroundServices.C
                 object? TurnResult = IsTimeToCharge ? tuyaDeviceBase.TurnOn() : tuyaDeviceBase.TurnOff();
                 if (TurnResult is Dictionary<string, object> dict)
                 {
-                    Debug.WriteLine($"Turn {IsTimeToCharge} results:");
+                    System.Diagnostics.Debug.WriteLine($"Turn {IsTimeToCharge} results:");
                     foreach (KeyValuePair<string, object> kvp in dict)
-                        Debug.WriteLine($"\t'{kvp.Key}'='{kvp.Value}'");
+                        System.Diagnostics.Debug.WriteLine($"\t'{kvp.Key}'='{kvp.Value}'");
                 }
                 else
                 {
-                    Debug.WriteLine($"Turn {IsTimeToCharge} result: '{TurnResult}'");
+                    System.Diagnostics.Debug.WriteLine($"Turn {IsTimeToCharge} result: '{TurnResult}'");
                 }
             }
         }

@@ -1,12 +1,10 @@
-using MudBlazor;
-
 namespace Seedysoft.BlazorWebApp.Client.Layout;
 
 public partial class MainLayout
 {
     private bool _drawerOpen = true;
     private bool _isDarkMode = true;
-    private MudTheme? _theme = null;
+    private MudBlazor.MudTheme? _theme = null;
 
     protected override void OnInitialized()
     {
@@ -16,7 +14,7 @@ public partial class MainLayout
         {
             PaletteLight = _lightPalette,
             PaletteDark = _darkPalette,
-            LayoutProperties = new LayoutProperties()
+            LayoutProperties = new MudBlazor.LayoutProperties()
         };
     }
 
@@ -24,7 +22,7 @@ public partial class MainLayout
 
     private void DarkModeToggle() => _isDarkMode = !_isDarkMode;
 
-    private readonly PaletteLight _lightPalette = new()
+    private readonly MudBlazor.PaletteLight _lightPalette = new()
     {
         Black = "#110e2d",
         AppbarText = "#424242",
@@ -34,7 +32,7 @@ public partial class MainLayout
         GrayLighter = "#f9f9f9",
     };
 
-    private readonly PaletteDark _darkPalette = new()
+    private readonly MudBlazor.PaletteDark _darkPalette = new()
     {
         Primary = "#7e6fff",
         Surface = "#1e1e2d",
@@ -65,7 +63,7 @@ public partial class MainLayout
 
     public string DarkLightModeButtonIcon => _isDarkMode switch
     {
-        true => Icons.Material.Rounded.AutoMode,
-        false => Icons.Material.Outlined.DarkMode,
+        true => MudBlazor.Icons.Material.Rounded.AutoMode,
+        false => MudBlazor.Icons.Material.Outlined.DarkMode,
     };
 }

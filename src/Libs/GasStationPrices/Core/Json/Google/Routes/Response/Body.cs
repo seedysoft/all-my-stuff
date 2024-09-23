@@ -9,9 +9,9 @@ public class Body
     /// <summary>
     /// In some cases when the server is not able to compute the route results with all of the input preferences, it may fallback to using a different way of computation. When fallback mode is used, this field contains detailed info about the fallback response. Otherwise this field is unset.
     /// </summary>
-    [J("fallbackInfo")][I(Condition = C.WhenWritingNull)] public FallbackInfo? FallbackInfo { get; set; }
+    [J("fallbackInfo"), I(Condition = C.WhenWritingNull)] public FallbackInfo? FallbackInfo { get; set; }
     /// <summary>
     /// Contains geocoding response info for waypoints specified as addresses.
     /// </summary>
-    [J("geocodingResults")][I(Condition = C.WhenWritingNull)] public GeocodingResults? GeocodingResults { get; set; }
+    [J("geocodingResults"), I(Condition = C.WhenWritingNull)] public GeocodingResults? GeocodingResults { get; set; }
 }

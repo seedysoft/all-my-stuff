@@ -14,7 +14,8 @@ public sealed class WebComparerCronBackgroundService : Libs.BackgroundServices.C
 
     public WebComparerCronBackgroundService(
         IServiceProvider serviceProvider,
-        Microsoft.Extensions.Hosting.IHostApplicationLifetime hostApplicationLifetime) : base(serviceProvider, hostApplicationLifetime)
+        Microsoft.Extensions.Hosting.IHostApplicationLifetime hostApplicationLifetime) 
+        : base(serviceProvider, hostApplicationLifetime)
     {
         Logger = ServiceProvider.GetRequiredService<ILogger<WebComparerCronBackgroundService>>();
 
@@ -69,7 +70,10 @@ public sealed class WebComparerCronBackgroundService : Libs.BackgroundServices.C
         finally { await Task.CompletedTask; }
     }
 
-    private async Task FindDataToSendAsync(Libs.Infrastructure.DbContexts.DbCxt dbCtx, Libs.Core.Entities.WebData webData, CancellationToken cancellationToken)
+    private async Task FindDataToSendAsync(
+        Libs.Infrastructure.DbContexts.DbCxt dbCtx,
+        Libs.Core.Entities.WebData webData,
+        CancellationToken cancellationToken)
     {
         string Content = GetContent(webData);
 
@@ -201,12 +205,14 @@ public sealed class WebComparerCronBackgroundService : Libs.BackgroundServices.C
 
                 RetryCount = 0;
             }
-            catch (Exception e) when (Logger.LogAndHandle(e, "{TryToPerformWebDriverActions} failed", nameof(TryPerformWebDriverActions))) { RetryCount--; }
+            catch (Exception e) when (Logger.LogAndHandle(e, "{MethodName} failed", nameof(TryPerformWebDriverActions))) { RetryCount--; }
         }
         while (RetryCount > 0);
     }
 
-    private static string? GetDifferencesOrNull(Libs.Core.Entities.WebData webData, string obtainedString)
+    private static string? GetDifferencesOrNull(
+        Libs.Core.Entities.WebData webData,
+        string obtainedString)
     {
         if (string.IsNullOrWhiteSpace(obtainedString))
             return null;
@@ -234,7 +240,9 @@ public sealed class WebComparerCronBackgroundService : Libs.BackgroundServices.C
         return string.Join(Environment.NewLine, DataForMail.OrderBy(static x => x.Key).Select(static x => x.Value));
     }
 
-    private static Dictionary<int, string> GetDataForMail(Libs.Core.Entities.WebData webData, DiffPlex.DiffBuilder.Model.DiffPaneModel DiffModel)
+    private static Dictionary<int, string> GetDataForMail(
+        Libs.Core.Entities.WebData webData,
+        DiffPlex.DiffBuilder.Model.DiffPaneModel DiffModel)
     {
         Dictionary<int, string> DataForMail = new(DiffModel.Lines.Count);
 
@@ -301,7 +309,9 @@ public sealed class WebComparerCronBackgroundService : Libs.BackgroundServices.C
             .Trim();
     }
 
-    private static bool ShouldIgnoreChanges(DiffPlex.DiffBuilder.Model.DiffPaneModel diffModel, Libs.Core.Entities.WebData webData)
+    private static bool ShouldIgnoreChanges(
+        DiffPlex.DiffBuilder.Model.DiffPaneModel diffModel,
+        Libs.Core.Entities.WebData webData)
     {
         if (!diffModel.HasDifferences)
             return true;
@@ -320,7 +330,8 @@ public sealed class WebComparerCronBackgroundService : Libs.BackgroundServices.C
         return false;
     }
 
-    private static string GetChangeTypePreffix(DiffPlex.DiffBuilder.Model.ChangeType lineChangeType)
+    private static string GetChangeTypePreffix(
+        DiffPlex.DiffBuilder.Model.ChangeType lineChangeType)
     {
         return lineChangeType switch
         {

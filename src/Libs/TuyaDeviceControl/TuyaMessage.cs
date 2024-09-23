@@ -11,7 +11,7 @@
 /// <param name="IsCrcGood"></param>
 /// <param name="Prefix"></param>
 /// <param name="InitVector"></param>
-public record TuyaMessage(
+public record class TuyaMessage(
     uint SeqNo,
     uint Cmd,
     uint RetCode,

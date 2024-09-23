@@ -1,6 +1,6 @@
 ﻿namespace Seedysoft.Libs.GasStationPrices.Core.Settings;
 
-public record RoutesApi
+public record class RoutesApi
 {
     public required string UriFormat { get; init; }
 

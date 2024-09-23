@@ -22,7 +22,8 @@ public sealed class Outbox : OutboxBase
         Payload = payload;
     }
 
-    private string GetDebuggerDisplay() => $"{SubscriptionName} {SubscriptionId} {(SentAtDateTimeOffset.HasValue ? "sent on " + SentAtDateTimeOffset.ToString() : "pending")}";
+    private string GetDebuggerDisplay() 
+        => $"{SubscriptionName} {SubscriptionId} {(SentAtDateTimeOffset.HasValue ? "sent on " + SentAtDateTimeOffset.ToString() : "pending")}";
 }
 
 public sealed class OutboxView : OutboxBase

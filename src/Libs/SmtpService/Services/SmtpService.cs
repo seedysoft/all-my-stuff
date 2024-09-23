@@ -2,12 +2,13 @@
 
 namespace Seedysoft.Libs.SmtpService.Services;
 
-public sealed class SmtpService(
-    Settings.SmtpServiceSettings smtpServiceSettings,
-    ILogger<SmtpService> logger)
+public sealed class SmtpService(Settings.SmtpServiceSettings smtpServiceSettings, ILogger<SmtpService> logger)
 {
-    private readonly Settings.SmtpServiceSettings SmtpServiceSettings = smtpServiceSettings ?? throw new ArgumentNullException(nameof(smtpServiceSettings));
-    private readonly ILogger<SmtpService> Logger = logger;
+    private readonly Settings.SmtpServiceSettings SmtpServiceSettings =
+        smtpServiceSettings ?? throw new ArgumentNullException(nameof(smtpServiceSettings));
+
+    private readonly ILogger<SmtpService> Logger =
+        logger ?? throw new ArgumentNullException(nameof(logger));
 
     public async Task SendMailAsync(
         string? to,
@@ -16,10 +17,8 @@ public sealed class SmtpService(
         bool? isBodyHtml,
         CancellationToken cancellationToken = default!)
     {
-        if (string.IsNullOrWhiteSpace(subject))
-            throw new ArgumentException($"'{nameof(subject)}' cannot be null or whitespace", nameof(subject));
-        if (string.IsNullOrWhiteSpace(body))
-            throw new ArgumentException($"'{nameof(body)}' cannot be null or whitespace", nameof(body));
+        ArgumentException.ThrowIfNullOrWhiteSpace(subject, nameof(subject));
+        ArgumentException.ThrowIfNullOrWhiteSpace(body, nameof(body));
 
         bool IsHtmlBody = isBodyHtml ?? false;
         using System.Net.Mail.MailMessage Message = new()

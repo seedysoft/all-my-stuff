@@ -16,7 +16,8 @@ internal sealed class Configurator : Utils.Dependencies.ConfiguratorBase
 
     protected override void AddMyServices(IHostApplicationBuilder hostApplicationBuilder)
     {
-        hostApplicationBuilder.Services.TryAddSingleton(hostApplicationBuilder.Configuration.GetSection(nameof(Settings.SmtpServiceSettings)).Get<Settings.SmtpServiceSettings>()!);
+        hostApplicationBuilder.Services.TryAddSingleton(
+            hostApplicationBuilder.Configuration.GetSection(nameof(Settings.SmtpServiceSettings)).Get<Settings.SmtpServiceSettings>()!);
         hostApplicationBuilder.Services.TryAddTransient<Services.SmtpService>();
     }
 }

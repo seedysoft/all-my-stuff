@@ -1,9 +1,6 @@
 ﻿using Seedysoft.Libs.TuyaDeviceControl.Extensions;
 using System.Diagnostics;
 using System.Net.Sockets;
-using System.Security.Cryptography;
-using System.Text;
-using System.Text.Json;
 
 namespace Seedysoft.Libs.TuyaDeviceControl;
 
@@ -75,7 +72,7 @@ public class TuyaDeviceBase
     }
 
     private string VersionStr => string.Create(System.Globalization.CultureInfo.InvariantCulture, $"v{Vers:0.0}");
-    private byte[] VersionBytes => JsonSerializer.SerializeToUtf8Bytes(Vers);
+    private byte[] VersionBytes => System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(Vers);
     private byte[] VersionHeader => [.. VersionBytes, .. ProtocolVersionsAndHeaders.PROTOCOL_3x_HEADER];
 
     private Dictionary<string, object?> DpsToRequest { get; set; }
@@ -88,7 +85,7 @@ public class TuyaDeviceBase
     private byte[] RealLocalKey { get; set; }
     private AESCipher? Cipher { get; set; }
 
-    private static byte[] LocalNonce => Encoding.UTF8.GetBytes("0123456789abcdef");
+    private static byte[] LocalNonce => System.Text.Encoding.UTF8.GetBytes("0123456789abcdef");
 
     #endregion
 
@@ -124,7 +121,7 @@ public class TuyaDeviceBase
         SendWait = 0.01f;
         RemoteNonce = [];
 
-        LocalKey = Encoding.Latin1.GetBytes(localKey);//.encode("latin1");
+        LocalKey = System.Text.Encoding.Latin1.GetBytes(localKey);//.encode("latin1");
         RealLocalKey = LocalKey;
 
         // #make sure we call our set_version() and not a subclass since some of
@@ -139,7 +136,7 @@ public class TuyaDeviceBase
         MessagePayload? payload = GenerateMessagePayload(TuyaCommandTypes.DP_QUERY);
 
         object? data = SendReceive(payload, getResponse: !noWait);
-        Debug.WriteLine($"{nameof(GetStatus)} received data={JsonSerializer.Serialize(data)}");
+        Debug.WriteLine($"{nameof(GetStatus)} received data={System.Text.Json.JsonSerializer.Serialize(data)}");
         if (!noWait && data != null && data is Dictionary<string, object> errorJson && errorJson.TryGetValue("err", out object? value))
         {
             if (value.ToString() == nameof(ErrorCode.ERR_DEVTYPE))
@@ -308,7 +305,7 @@ public class TuyaDeviceBase
         }
 
         RemoteNonce = payload[..16];
-        byte[] hmacCheck = HMACSHA256.HashData(LocalKey, LocalNonce);
+        byte[] hmacCheck = System.Security.Cryptography.HMACSHA256.HashData(LocalKey, LocalNonce);
         Debug.WriteLine($"{nameof(hmacCheck)} = {Convert.ToHexString(hmacCheck)} len = {hmacCheck.Length}");
         if (!hmacCheck.SequenceEqual(payload[16..48]))
         {
@@ -318,7 +315,7 @@ public class TuyaDeviceBase
 
         Debug.WriteLine($"Session Local nonce={Convert.ToHexString(LocalNonce)}");
         Debug.WriteLine($"Session Rmote nonce={Convert.ToHexString(RemoteNonce)}");
-        byte[] rkeyHmac = HMACSHA256.HashData(LocalKey, RemoteNonce);
+        byte[] rkeyHmac = System.Security.Cryptography.HMACSHA256.HashData(LocalKey, RemoteNonce);
 
         return new MessagePayload((uint)TuyaCommandTypes.SESS_KEY_NEG_FINISH, rkeyHmac);
     }
@@ -460,7 +457,7 @@ public class TuyaDeviceBase
             string spayload;
             try
             {
-                spayload = Encoding.UTF8.GetString(payload);
+                spayload = System.Text.Encoding.UTF8.GetString(payload);
             }
             catch
             {
@@ -488,7 +485,7 @@ public class TuyaDeviceBase
         Dictionary<string, object>? jsonPayload;
         try
         {
-            jsonPayload = JsonSerializer.Deserialize<Dictionary<string, object>>(payload);
+            jsonPayload = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, object>>(payload);
         }
         catch
         {
@@ -565,10 +562,10 @@ public class TuyaDeviceBase
             byte[] preMd5String =
                 [.. "data="u8.ToArray(), .. payload, .. "||lpv="u8.ToArray(), .. ProtocolVersionsAndHeaders.PROTOCOL_VERSION_BYTES_31, .. "||"u8.ToArray(), .. LocalKey];
 
-            string hexDigest = BitConverter.ToString(MD5.HashData(preMd5String)).Replace("-", string.Empty);
+            string hexDigest = BitConverter.ToString(System.Security.Cryptography.MD5.HashData(preMd5String)).Replace("-", string.Empty);
             // #some tuya libraries strip 8: to :24
             // #payload = (PROTOCOL_VERSION_BYTES_31 + hexdigest[8:][:16].encode("latin1") + payload)
-            payload = [.. ProtocolVersionsAndHeaders.PROTOCOL_VERSION_BYTES_31, .. Encoding.Latin1.GetBytes(hexDigest[8..]).Concat(payload)];
+            payload = [.. ProtocolVersionsAndHeaders.PROTOCOL_VERSION_BYTES_31, .. System.Text.Encoding.Latin1.GetBytes(hexDigest[8..]).Concat(payload)];
         }
 
         Cipher = null;
@@ -585,12 +582,14 @@ public class TuyaDeviceBase
 
         return PackMessage(mess, hmacKey: hmacKey);
     }
-    private Dictionary<string, object>? ProcessMessage(TuyaMessage? msg, string? devType = null)
+    private Dictionary<string, object>? ProcessMessage(
+        TuyaMessage? msg,
+        string? devType = null)
     {
         // null packet, nothing to decode
         if (msg == null || msg.Payload.Length == 0)
         {
-            Debug.WriteLine($"raw unpacked message={JsonSerializer.Serialize(msg)}");
+            Debug.WriteLine($"raw unpacked message={System.Text.Json.JsonSerializer.Serialize(msg)}");
             // legacy/default mode avoids persisting socket across commands
             CheckSocketClose();
             return null;
@@ -604,7 +603,7 @@ public class TuyaDeviceBase
         try
         {
             // #Data available: seqno cmd retcode payload crc
-            Debug.WriteLine($"raw unpacked message={JsonSerializer.Serialize(msg)}");
+            Debug.WriteLine($"raw unpacked message={System.Text.Json.JsonSerializer.Serialize(msg)}");
             result = DecodeTuyaMessagePayload(msg.Payload);
             if (result is null)
                 Debug.WriteLine($"DecodePayload() failed!");
@@ -666,14 +665,14 @@ public class TuyaDeviceBase
         {
             foreach (string cmd in dict2.Keys)
             {
-                if (!dict1.TryGetValue(cmd, out Dictionary<string, object>? value))
-                {
-                    dict1[cmd] = _deepcopy(dict2[cmd]);
-                }
-                else
+                if (dict1.TryGetValue(cmd, out Dictionary<string, object>? value))
                 {
                     foreach (string var in dict2[cmd].Keys)
                         value[var] = dict2[cmd][var] is Dictionary<string, object> d ? _deepcopy(d) : dict2[cmd][var];
+                }
+                else
+                {
+                    dict1[cmd] = _deepcopy(dict2[cmd]);
                 }
             }
         }
@@ -691,7 +690,7 @@ public class TuyaDeviceBase
                 _merge_payload_dicts(PayloadDict, versionDict);
             if (DevType != "default")
                 _merge_payload_dicts(PayloadDict, Constants.PayloadDefDict[DevType]);
-            Debug.WriteLine($"final {nameof(PayloadDict)} for '{Id}' ('{VersionStr}'/'{DevType}')={JsonSerializer.Serialize(PayloadDict)}");
+            Debug.WriteLine($"final {nameof(PayloadDict)} for '{Id}' ('{VersionStr}'/'{DevType}')={System.Text.Json.JsonSerializer.Serialize(PayloadDict)}");
             // #save it so we don't have to calculate this again unless something changes
             LastDevType = DevType;
         }
@@ -750,7 +749,7 @@ public class TuyaDeviceBase
             jsonData["reqType"] = reqType;
 
         string payload = jsonData != null && jsonData.Count > 0 && !string.IsNullOrWhiteSpace(jsonData.FirstOrDefault().Value?.ToString())
-            ? JsonSerializer.Serialize(jsonData)
+            ? System.Text.Json.JsonSerializer.Serialize(jsonData)
             : string.Empty;
         // Create byte buffer from hex data
 
@@ -760,7 +759,7 @@ public class TuyaDeviceBase
         Debug.WriteLine($"building command '{command}({tuyaCommand})' payload='{payload}'");
 
         // create Tuya message packet
-        return new MessagePayload(commandOverride.Value, Encoding.UTF8.GetBytes(payload));
+        return new MessagePayload(commandOverride.Value, System.Text.Encoding.UTF8.GetBytes(payload));
     }
 
     private TuyaMessage Receive()
@@ -846,7 +845,10 @@ public class TuyaDeviceBase
     /// <param name="getResponse">getresponse(bool): If True, wait for and return response.</param>
     /// <param name="decodeResponse"></param>
     /// <returns></returns>
-    private object? SendReceive(MessagePayload? payload, bool getResponse = true, bool decodeResponse = true)
+    private object? SendReceive(
+        MessagePayload? payload,
+        bool getResponse = true,
+        bool decodeResponse = true)
     {
         bool success = false;
         bool partialSuccess = false;
@@ -866,7 +868,7 @@ public class TuyaDeviceBase
             {
                 // unable to get a socket - device likely offline
                 CheckSocketClose(force: true);
-                return ErrorJson(sockResult, JsonSerializer.SerializeToUtf8Bytes(payload));
+                return ErrorJson(sockResult, System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(payload));
             }
 
             // send request to device
@@ -905,7 +907,7 @@ public class TuyaDeviceBase
                     else
                     {
                         success = true;
-                        Debug.WriteLine($"received message={JsonSerializer.Serialize(msg)}");
+                        Debug.WriteLine($"received message={System.Text.Json.JsonSerializer.Serialize(msg)}");
                     }
                 }
                 else
@@ -940,7 +942,7 @@ public class TuyaDeviceBase
                 {
                     Debug.WriteLine($"Exceeded tinytuya retry limit ({SocketRetryLimit})");
                     // timeout reached - return error
-                    return ErrorJson(ErrorCode.ERR_KEY_OR_VER, JsonSerializer.SerializeToUtf8Bytes(payload));
+                    return ErrorJson(ErrorCode.ERR_KEY_OR_VER, System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(payload));
                 }
                 // wait a bit before retrying
                 Task.Delay(TimeSpan.FromSeconds(0.1)).Wait();
@@ -959,7 +961,7 @@ public class TuyaDeviceBase
                     }
                     // no valid messages received
                     CheckSocketClose(force: true);
-                    return ErrorJson(ErrorCode.ERR_KEY_OR_VER, JsonSerializer.SerializeToUtf8Bytes(payload));
+                    return ErrorJson(ErrorCode.ERR_KEY_OR_VER, System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(payload));
                 }
             }
             catch (Exception)
@@ -976,7 +978,7 @@ public class TuyaDeviceBase
                     Debug.WriteLine($"Exceeded tinytuya retry limit ({SocketRetryLimit})");
                     Debug.WriteLine($"Unable to connect to device ");
                     // timeout reached - return error
-                    return ErrorJson(ErrorCode.ERR_CONNECT, JsonSerializer.SerializeToUtf8Bytes(payload));
+                    return ErrorJson(ErrorCode.ERR_CONNECT, System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(payload));
                 }
                 // wait a bit before retrying
                 Task.Delay(TimeSpan.FromSeconds(0.1)).Wait();
@@ -1011,7 +1013,7 @@ public class TuyaDeviceBase
 
         object? data = SendReceive(payload, getResponse: !noWait);
         //log.debug("set_status received data=%r", data);
-        Debug.WriteLine($"{nameof(SetStatus)} received data='{JsonSerializer.Serialize(data)}'");
+        Debug.WriteLine($"{nameof(SetStatus)} received data='{System.Text.Json.JsonSerializer.Serialize(data)}'");
 
         return data;
     }
@@ -1074,7 +1076,7 @@ public class TuyaDeviceBase
             data = [.. data, .. msg.Payload];
             byte[] crc = hmacKey == null
                 ? BitConverter.GetBytes(System.IO.Hashing.Crc32.HashToUInt32(data) & 0xFFFFFFFF)
-                : HMACSHA256.HashData(hmacKey, data);
+                : System.Security.Cryptography.HMACSHA256.HashData(hmacKey, data);
             //Debug.WriteLine($"crc={Convert.ToHexString(crc)}");
             // #Calculate CRC, add it together with suffix
             byte[] CrcAndSuffixPacked = StructConverter.Pack(endFormat, crc, ProtocolVersionsAndHeaders.SUFFIX_VALUE);
@@ -1164,7 +1166,7 @@ public class TuyaDeviceBase
             {
                 byte[] haveCrc = hmacKey == null
                     ? BitConverter.GetBytes(System.IO.Hashing.Crc32.HashToUInt32(new(data.Take((int)(headerLength + header.Length) - endLength).ToArray())))
-                    : new HMACSHA256(hmacKey).ComputeHash(data.Take((int)(headerLength + header.Length) - endLength).ToArray());
+                    : new System.Security.Cryptography.HMACSHA256(hmacKey).ComputeHash(data.Take((int)(headerLength + header.Length) - endLength).ToArray());
 
                 if (suffix != ProtocolVersionsAndHeaders.SUFFIX_55AA_VALUE)
                     Debug.WriteLine($"Suffix prefix wrong! {suffix:X8} != {ProtocolVersionsAndHeaders.SUFFIX_VALUE:X8}");
@@ -1242,7 +1244,7 @@ public class TuyaDeviceBase
         string spayload;
         try
         {
-            spayload = Encoding.UTF8.GetString(payload ?? []);
+            spayload = System.Text.Encoding.UTF8.GetString(payload ?? []);
         }
         catch (Exception) { spayload = string.Empty; }
 

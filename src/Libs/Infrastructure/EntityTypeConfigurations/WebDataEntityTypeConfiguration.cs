@@ -45,7 +45,8 @@ internal abstract class WebDataEntityTypeConfigurationT<T> : IEntityTypeConfigur
     }
 }
 
-internal sealed class WebDataEntityTypeConfiguration : WebDataEntityTypeConfigurationT<Core.Entities.WebData>, IEntityTypeConfiguration<Core.Entities.WebData>
+internal sealed class WebDataEntityTypeConfiguration
+    : WebDataEntityTypeConfigurationT<Core.Entities.WebData>, IEntityTypeConfiguration<Core.Entities.WebData>
 {
     public new void Configure(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder<Core.Entities.WebData> builder)
     {

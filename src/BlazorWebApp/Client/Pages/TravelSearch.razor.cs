@@ -48,8 +48,11 @@ public partial class TravelSearch
 
         //PetroleumProducts = File.ReadAllText("C:\\Users\\alfon\\Downloads\\RouteResponse.json").FromJson<IEnumerable<Libs.GasStationPrices.Core.Json.Minetur.ProductoPetrolifero>>();
 
-        travelQueryModel.PetroleumProductsSelectedIds =
-            PetroleumProducts.Where(static x => x.Abreviatura.StartsWith("G9")).Select(static x => x.IdProducto).ToArray().AsReadOnly();
+        travelQueryModel.PetroleumProductsSelectedIds = PetroleumProducts
+            .Where(static x => x.Abreviatura.StartsWith("G9"))
+            .Select(static x => x.IdProducto)
+            .ToArray()
+            .AsReadOnly();
 
         mapOptions = new()
         {
@@ -132,8 +135,10 @@ public partial class TravelSearch
         return [];
     }
 
-    private void SelectAllChips() => travelQueryModel.PetroleumProductsSelectedIds = PetroleumProducts.Select(static x => x.IdProducto).ToArray().AsReadOnly();
-    private void UnSelectAllChips() => travelQueryModel.PetroleumProductsSelectedIds = [];
+    private void SelectAllChips()
+        => travelQueryModel.PetroleumProductsSelectedIds = PetroleumProducts.Select(static x => x.IdProducto).ToArray().AsReadOnly();
+    private void UnSelectAllChips()
+        => travelQueryModel.PetroleumProductsSelectedIds = [];
 
     private async Task LoadDataAsync()
     {
@@ -185,10 +190,10 @@ public partial class TravelSearch
         if (directionsResult == null)
             return;
 
-        travelQueryModel.Bounds.North = directionsResult.Routes.Select(x => x.Bounds?.North ?? 90D).Max();
-        travelQueryModel.Bounds.South = directionsResult.Routes.Select(x => x.Bounds?.South ?? -90D).Min();
-        travelQueryModel.Bounds.East = directionsResult.Routes.Select(x => x.Bounds?.East ?? 180D).Max();
-        travelQueryModel.Bounds.West = directionsResult.Routes.Select(x => x.Bounds?.West ?? -180D).Min();
+        travelQueryModel.Bounds.North = directionsResult.Routes.Select(static x => x.Bounds?.North ?? 90D).Max();
+        travelQueryModel.Bounds.South = directionsResult.Routes.Select(static x => x.Bounds?.South ?? -90D).Min();
+        travelQueryModel.Bounds.East = directionsResult.Routes.Select(static x => x.Bounds?.East ?? 180D).Max();
+        travelQueryModel.Bounds.West = directionsResult.Routes.Select(static x => x.Bounds?.West ?? -180D).Min();
 
         // TODO         Use directionsResult
 

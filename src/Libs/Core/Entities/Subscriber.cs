@@ -3,12 +3,9 @@
 [System.Diagnostics.DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
 public sealed class Subscriber
 {
-    private Subscriber() { }
-    public Subscriber(string firstname) => Firstname = firstname;
-
     public long SubscriberId { get; set; }
 
-    public string Firstname { get; set; } = default!;
+    public required string Firstname { get; init; }
 
     public long? TelegramUserId { get; set; }
 
@@ -17,5 +14,6 @@ public sealed class Subscriber
     public ICollection<Subscription> Subscriptions { get; set; } = [];
 
     // Coalesce expression raises "Error CS0019  Operator '??' cannot be applied to operands of type 'long?' and 'string'".
-    private string GetDebuggerDisplay() => $"{Firstname} - {(TelegramUserId.HasValue ? TelegramUserId : "Sin Telegram")} - {MailAddress ?? "Sin correo electrónico"}";
+    private string GetDebuggerDisplay()
+        => $"{Firstname} - {(TelegramUserId.HasValue ? TelegramUserId : "Sin Telegram")} - {MailAddress ?? "Sin correo electrónico"}";
 }

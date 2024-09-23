@@ -1,13 +1,14 @@
 ﻿using System.Text.Json;
-using System.Text.Json.Serialization;
 
 namespace Seedysoft.Libs.Utils.Extensions;
 
 public static class JsonExtensions
 {
-    public static T FromJson<T>(this string json) => JsonSerializer.Deserialize<T>(json, Converter.Settings) ?? throw new InvalidOperationException();
+    public static T FromJson<T>(this string json) 
+        => JsonSerializer.Deserialize<T>(json, Converter.Settings) ?? throw new InvalidOperationException();
 
-    public static string ToJson<T>(this T self) => JsonSerializer.Serialize(self, Converter.Settings);
+    public static string ToJson<T>(this T self) 
+        => JsonSerializer.Serialize(self, Converter.Settings);
 }
 
 internal static class Converter
@@ -89,7 +90,7 @@ internal static class Converter
 //    public static readonly IsoDateTimeOffsetConverter Singleton = new();
 //}
 
-public class ParseStringConverter : JsonConverter<long>
+public class ParseStringConverter : System.Text.Json.Serialization.JsonConverter<long>
 {
     public override bool CanConvert(Type t) => t == typeof(long);
 
