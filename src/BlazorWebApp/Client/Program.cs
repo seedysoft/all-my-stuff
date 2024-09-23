@@ -14,6 +14,7 @@ internal class Program
 
         await webAssemblyHostBuilder
             .Build()
-            .RunAsync();
+            .RunAsync()
+        ;
     }
 }

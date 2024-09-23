@@ -28,11 +28,11 @@ public class RouteModifiers
     /// <summary>
     /// Specifies the vehicle information.
     /// </summary>
-    [J("vehicleInfo")][I(Condition = C.WhenWritingNull)] public Shared.VehicleInfo? VehicleInfo { get; set; }
+    [J("vehicleInfo"), I(Condition = C.WhenWritingNull)] public Shared.VehicleInfo? VehicleInfo { get; set; }
     /// <summary>
     /// Encapsulates information about toll passes. If toll passes are provided, the API tries to return the pass price.
     /// If toll passes are not provided, the API treats the toll pass as unknown and tries to return the cash price.
     /// Applies only to the <see cref="RouteTravelMode.DRIVE"/> and <see cref="RouteTravelMode.TwoWheeler"/>.
     /// </summary>
-    [J("tollPasses")][I(Condition = C.WhenWritingNull)] public Shared.TollPass[]? TollPasses { get; set; }
+    [J("tollPasses"), I(Condition = C.WhenWritingNull)] public Shared.TollPass[]? TollPasses { get; set; }
 }

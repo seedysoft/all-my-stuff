@@ -8,4 +8,4 @@
 /// <param name="Cmd"></param>
 /// <param name="Length"></param>
 /// <param name="TotalLength"></param>
-public record TuyaHeader(uint Prefix, uint SeqNo, uint Cmd, uint Length, uint TotalLength);
+public record class TuyaHeader(uint Prefix, uint SeqNo, uint Cmd, uint Length, uint TotalLength);

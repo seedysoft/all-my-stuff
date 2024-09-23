@@ -2,7 +2,10 @@
 
 namespace Seedysoft.Libs.BackgroundServices;
 
-public abstract class Cron(IServiceProvider serviceProvider, IHostApplicationLifetime hostApplicationLifetime) : BackgroundService
+public abstract class Cron(
+    IServiceProvider serviceProvider,
+    IHostApplicationLifetime hostApplicationLifetime)
+    : BackgroundService
 {
     protected IServiceProvider ServiceProvider { get; init; } = serviceProvider;
     protected ScheduleConfig Config { get; init; } = default!;
@@ -36,7 +39,9 @@ public abstract class Cron(IServiceProvider serviceProvider, IHostApplicationLif
         finally { await Task.CompletedTask; }
     }
 
-    private static async Task<bool> WaitForAppStartup(IHostApplicationLifetime lifetime, CancellationToken cancellationToken)
+    private static async Task<bool> WaitForAppStartup(
+        IHostApplicationLifetime lifetime,
+        CancellationToken cancellationToken)
     {
         TaskCompletionSource startedSource = new();
         TaskCompletionSource cancelledSource = new();

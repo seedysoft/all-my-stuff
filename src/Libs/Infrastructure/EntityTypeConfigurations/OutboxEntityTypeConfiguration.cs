@@ -29,7 +29,8 @@ internal abstract class OutboxTableEntityTypeConfigurationT<T> : IEntityTypeConf
     }
 }
 
-internal sealed class OutboxEntityTypeConfiguration : OutboxTableEntityTypeConfigurationT<Core.Entities.Outbox>, IEntityTypeConfiguration<Core.Entities.Outbox>
+internal sealed class OutboxEntityTypeConfiguration
+    : OutboxTableEntityTypeConfigurationT<Core.Entities.Outbox>, IEntityTypeConfiguration<Core.Entities.Outbox>
 {
     public new void Configure(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder<Core.Entities.Outbox> builder)
     {
@@ -41,7 +42,8 @@ internal sealed class OutboxEntityTypeConfiguration : OutboxTableEntityTypeConfi
     }
 }
 
-internal sealed class OutboxViewEntityTypeConfiguration : OutboxTableEntityTypeConfigurationT<Core.Entities.OutboxView>, IEntityTypeConfiguration<Core.Entities.OutboxView>
+internal sealed class OutboxViewEntityTypeConfiguration
+    : OutboxTableEntityTypeConfigurationT<Core.Entities.OutboxView>, IEntityTypeConfiguration<Core.Entities.OutboxView>
 {
     public new void Configure(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder<Core.Entities.OutboxView> builder)
     {

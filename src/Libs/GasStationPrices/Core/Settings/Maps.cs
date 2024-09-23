@@ -1,6 +1,6 @@
 ﻿namespace Seedysoft.Libs.GasStationPrices.Core.Settings;
 
-public record Maps
+public record class Maps
 {
     public required string UriFormat { get; init; }
 }

@@ -27,15 +27,22 @@ internal sealed class Configurator : Utils.Dependencies.ConfiguratorBase
             string ConnectionString = hostApplicationBuilder.Configuration.GetConnectionString($"{ConnectionStringName}") ?? throw new KeyNotFoundException($"Connection string '{ConnectionStringName}' not found.");
             string FullFilePath = Path.GetFullPath(ConnectionString);
             while (!File.Exists(FullFilePath))
+            {
+#if DEBUG
+                if (System.Diagnostics.Debugger.IsAttached)
+                    System.Diagnostics.Debugger.Break();
+#endif
                 FullFilePath = Path.GetFullPath(ConnectionString = ConnectionString.Insert(0, "../"));
+            }
+
             if (!File.Exists(FullFilePath))
                 throw new FileNotFoundException("Database file not found.", FullFilePath);
 
             _ = dbContextOptionsBuilder.UseSqlite($"{Core.Constants.DatabaseStrings.DataSource}{FullFilePath}");
             dbContextOptionsBuilder.ConfigureDebugOptions();
-        }
-        , ServiceLifetime.Transient
-        , ServiceLifetime.Transient);
+        },
+        ServiceLifetime.Transient,
+        ServiceLifetime.Transient);
 
         SQLitePCL.Batteries.Init();
     }
@@ -45,11 +52,11 @@ internal sealed class Configurator : Utils.Dependencies.ConfiguratorBase
         _ = hostApplicationBuilder.Services
             .AddLogging(iLoggingBuilder =>
             {
-                IConfigurationSection configurationSection = hostApplicationBuilder.Configuration.GetRequiredSection("Serilog:WriteTo:1:Args:path");
+                IConfigurationSection configurationSection =
+                    hostApplicationBuilder.Configuration.GetRequiredSection("Serilog:WriteTo:1:Args:path");
 
-                configurationSection.Value = Path.GetFullPath(configurationSection.Value!.Replace(
-                    "{ApplicationName}",
-                    hostApplicationBuilder.Environment.ApplicationName));
+                configurationSection.Value =
+                    Path.GetFullPath(configurationSection.Value!.Replace("{ApplicationName}", hostApplicationBuilder.Environment.ApplicationName));
 
                 _ = iLoggingBuilder.AddSerilog(new LoggerConfiguration()
                     .ReadFrom.Configuration(hostApplicationBuilder.Configuration)

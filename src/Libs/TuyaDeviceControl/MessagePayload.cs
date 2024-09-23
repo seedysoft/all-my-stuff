@@ -5,4 +5,4 @@
 /// </summary>
 /// <param name="Cmd">Command from <see cref="TuyaCommandTypes"/>.</param>
 /// <param name="Payload"></param>
-public record MessagePayload(uint Cmd, byte[] Payload) { }
+public record class MessagePayload(uint Cmd, byte[] Payload) { }

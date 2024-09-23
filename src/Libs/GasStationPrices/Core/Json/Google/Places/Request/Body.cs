@@ -26,13 +26,13 @@ public class Body
     /// Specifies an area to search.
     /// This location serves as a bias which means results around the specified location can be returned, including results outside the specified area.
     /// </summary>
-    [J("locationbias")][I(Condition = C.WhenWritingNull)] public Location? LocationBias { get; set; }
+    [J("locationbias"), I(Condition = C.WhenWritingNull)] public Location? LocationBias { get; set; }
 
     /// <summary>
     /// Specifies an area to search.
     /// Results outside the specified area are not returned.
     /// </summary>
-    [J("locationrestriction")][I(Condition = C.WhenWritingNull)] public Location? LocationRestriction { get; set; }
+    [J("locationrestriction"), I(Condition = C.WhenWritingNull)] public Location? LocationRestriction { get; set; }
 
     /// <summary>
     /// A place can only have a single primary type from types listed in Table A or Table B.
@@ -52,7 +52,7 @@ public class Body
     /// Although every place has a primary type, not every primary type is supported by Places API (New).
     /// Supported types include those listed in Table A or Table B.
     /// </summary>
-    [J("includedPrimaryTypes")][I(Condition = C.WhenWritingNull)] public string[]? IncludedPrimaryTypes { get; set; }
+    [J("includedPrimaryTypes"), I(Condition = C.WhenWritingNull)] public string[]? IncludedPrimaryTypes { get; set; }
 
     /// <summary>
     /// Only include results from the list of specified regions, specified as an array of up to 15 ccTLD ("top-level domain") two-character values.
@@ -61,7 +61,7 @@ public class Body
     /// "includedRegionCodes": ["de", "fr"]
     /// If you specify both locationRestriction and includedRegionCodes, the results are located in the area of intersection of the two settings.
     /// </summary>
-    [J("includedRegionCodes")][I(Condition = C.WhenWritingNull)] public string[]? IncludedRegionCodes { get; set; }
+    [J("includedRegionCodes"), I(Condition = C.WhenWritingNull)] public string[]? IncludedRegionCodes { get; set; }
 
     /// <summary>
     /// The preferred language in which to return results.
@@ -79,7 +79,7 @@ public class Body
     /// All other addresses are returned in the preferred language, after matching terms have been chosen to match the terms in the input parameter.
     /// If a name is not available in the preferred language, the API uses the closest match.
     /// </summary>
-    [J("languageCode")][I(Condition = C.WhenWritingNull)] public string? LanguageCode { get; set; }
+    [J("languageCode"), I(Condition = C.WhenWritingNull)] public string? LanguageCode { get; set; }
 
     /// <summary>
     /// The region code used to format the response, specified as a ccTLD ("top-level domain") two-character value.
@@ -88,14 +88,14 @@ public class Body
     /// If you specify an invalid region code, the API returns an INVALID_ARGUMENT error.
     /// The parameter can affect results based on applicable law.
     /// </summary>
-    [J("regionCode")][I(Condition = C.WhenWritingNull)] public string? RegionCode { get; set; }
+    [J("regionCode"), I(Condition = C.WhenWritingNull)] public string? RegionCode { get; set; }
 
     /// <summary>
     /// The origin point from which to calculate straight-line distance to the destination (returned as distanceMeters).
     /// If this value is omitted, straight-line distance will not be returned.
     /// Must be specified as latitude and longitude coordinates:
     /// </summary>
-    [J("origin")][I(Condition = C.WhenWritingNull)] public Shared.LatitudeLongitude? Origin { get; set; }
+    [J("origin"), I(Condition = C.WhenWritingNull)] public Shared.LatitudeLongitude? Origin { get; set; }
 
     //[J("inputOffset")] public int InputOffset { get; set; }
 
@@ -110,5 +110,5 @@ public class Body
     /// Autocomplete (New) uses session tokens to group the query and selection phases of a user autocomplete search into a discrete session for billing purposes.
     /// For more information, see Session tokens.
     /// </summary>
-    [J("sessionToken")][I(Condition = C.WhenWritingNull)] public string? SessionToken { get; set; }
+    [J("sessionToken"), I(Condition = C.WhenWritingNull)] public string? SessionToken { get; set; }
 }

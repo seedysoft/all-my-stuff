@@ -15,7 +15,8 @@ public sealed class PvpcCronBackgroundService : Libs.BackgroundServices.Cron
 
     public PvpcCronBackgroundService(
         IServiceProvider serviceProvider,
-        Microsoft.Extensions.Hosting.IHostApplicationLifetime hostApplicationLifetime) : base(serviceProvider, hostApplicationLifetime)
+        Microsoft.Extensions.Hosting.IHostApplicationLifetime hostApplicationLifetime)
+        : base(serviceProvider, hostApplicationLifetime)
     {
         Logger = ServiceProvider.GetRequiredService<ILogger<PvpcCronBackgroundService>>();
 
@@ -120,9 +121,9 @@ public sealed class PvpcCronBackgroundService : Libs.BackgroundServices.Cron
     }
 
     internal static bool IsTimeToCharge(
-        Libs.Core.Entities.Pvpc[] pvpcs
-        , DateTimeOffset timeToCheckDateTimeOffset
-        , Settings.TuyaManagerSettings tuyaManagerSettings)
+        Libs.Core.Entities.Pvpc[] pvpcs,
+        DateTimeOffset timeToCheckDateTimeOffset,
+        Settings.TuyaManagerSettings tuyaManagerSettings)
     {
         if (pvpcs.Length == 0)
             return false;

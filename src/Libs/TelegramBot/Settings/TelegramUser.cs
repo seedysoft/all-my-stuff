@@ -1,6 +1,6 @@
 ﻿namespace Seedysoft.Libs.TelegramBot.Settings;
 
-public record TelegramUser
+public record class TelegramUser
 {
     public required TelegramBotUser BotProd { get; init; }
     public required TelegramBotUser BotTest { get; init; }

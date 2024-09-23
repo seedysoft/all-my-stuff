@@ -1,5 +1,6 @@
 ﻿namespace Seedysoft.Libs.GasStationPrices.Core.Settings;
 
+// TODO         Remove not used
 public record class GoogleMapsPlatform
 {
     private string apiKey = default!;

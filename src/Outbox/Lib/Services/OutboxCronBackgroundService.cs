@@ -12,7 +12,8 @@ public sealed class OutboxCronBackgroundService : Libs.BackgroundServices.Cron
 
     public OutboxCronBackgroundService(
         IServiceProvider serviceProvider,
-        Microsoft.Extensions.Hosting.IHostApplicationLifetime hostApplicationLifetime) : base(serviceProvider, hostApplicationLifetime)
+        Microsoft.Extensions.Hosting.IHostApplicationLifetime hostApplicationLifetime)
+        : base(serviceProvider, hostApplicationLifetime)
     {
         Logger = ServiceProvider.GetRequiredService<ILogger<OutboxCronBackgroundService>>();
 
@@ -92,7 +93,7 @@ public sealed class OutboxCronBackgroundService : Libs.BackgroundServices.Cron
             }
 
             const int KeepDays = 20;
-            DateTimeOffset dateTimeOffset = DateTimeOffset.Now.AddDays(-KeepDays);
+            DateTimeOffset dateTimeOffset = DateTimeOffset.UtcNow.AddDays(-KeepDays);
             await dbCtx.BulkDeleteAsync(dbCtx.Outbox.Where(x => x.SentAtDateTimeOffset < dateTimeOffset), cancellationToken: stoppingToken);
             Logger.LogDebug("Removed {Entities} old entities", await dbCtx.SaveChangesAsync(stoppingToken));
         }

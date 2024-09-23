@@ -9,7 +9,8 @@ public sealed class TuyaManagerCronBackgroundServiceTests : Libs.Infrastructure.
 {
     private static Services.TuyaManagerCronBackgroundService TuyaManagerService = default!;
 
-    [ClassInitialize]
+    // TODO                     Avoid static test methods 
+    [ClassInitialize(InheritanceBehavior.None)]
     public static new void ClassInitialize(TestContext context)
     {
         Settings.TuyaManagerSettings tuyaManagerSettings = new()

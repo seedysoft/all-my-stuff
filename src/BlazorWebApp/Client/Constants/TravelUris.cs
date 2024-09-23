@@ -8,7 +8,6 @@ public sealed class TravelUris : BaseUris
     {
         public const string FindPlaces = nameof(FindPlaces);
         public const string GetGasStations = nameof(GetGasStations);
-        //public const string ObtainGasStations = nameof(ObtainGasStations);
 
         private Actions() { }
     }

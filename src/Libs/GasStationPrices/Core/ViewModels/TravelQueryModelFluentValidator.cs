@@ -11,7 +11,7 @@ public class TravelQueryModelFluentValidator : AbstractValidator<TravelQueryMode
     public TravelQueryModelFluentValidator()
     {
         _ = RuleFor(static x => x.MaxDistanceInKm)
-            .InclusiveBetween(0.25M, 5M);
+            .InclusiveBetween(1, 50);
 
         _ = RuleFor(static x => x.PetroleumProductsSelectedIds)
             .Must(static x => x.Count != 0)

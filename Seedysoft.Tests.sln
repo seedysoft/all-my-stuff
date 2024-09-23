@@ -84,9 +84,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{
 		.github\workflows\Publish.yml = .github\workflows\Publish.yml
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Seedysoft.Libs.GasStationPrices", "src\Libs\GasStationPrices\Seedysoft.Libs.GasStationPrices.csproj", "{469DC5DC-25F0-4FBE-9217-A3267C8E4152}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Seedysoft.Libs.GasStationPrices", "src\Libs\GasStationPrices\Seedysoft.Libs.GasStationPrices.csproj", "{21FB98BB-6EB9-49F0-8E99-7B223ED1245C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Seedysoft.Libs.GasStationPrices.Tests", "test\Libs\GasStationPrices.Tests\Seedysoft.Libs.GasStationPrices.Tests.csproj", "{F380D00C-02F8-4390-9A96-E88E24886212}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Seedysoft.Libs.GasStationPrices.Tests", "test\Libs\GasStationPrices.Tests\Seedysoft.Libs.GasStationPrices.Tests.csproj", "{7A124DA0-9DA4-4F63-92B4-18F5473CD1AF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -174,14 +174,14 @@ Global
 		{5C844147-B8EA-4A92-81DD-BB5D017E1749}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5C844147-B8EA-4A92-81DD-BB5D017E1749}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5C844147-B8EA-4A92-81DD-BB5D017E1749}.Release|Any CPU.Build.0 = Release|Any CPU
-		{469DC5DC-25F0-4FBE-9217-A3267C8E4152}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{469DC5DC-25F0-4FBE-9217-A3267C8E4152}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{469DC5DC-25F0-4FBE-9217-A3267C8E4152}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{469DC5DC-25F0-4FBE-9217-A3267C8E4152}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F380D00C-02F8-4390-9A96-E88E24886212}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F380D00C-02F8-4390-9A96-E88E24886212}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F380D00C-02F8-4390-9A96-E88E24886212}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F380D00C-02F8-4390-9A96-E88E24886212}.Release|Any CPU.Build.0 = Release|Any CPU
+		{21FB98BB-6EB9-49F0-8E99-7B223ED1245C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{21FB98BB-6EB9-49F0-8E99-7B223ED1245C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{21FB98BB-6EB9-49F0-8E99-7B223ED1245C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{21FB98BB-6EB9-49F0-8E99-7B223ED1245C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7A124DA0-9DA4-4F63-92B4-18F5473CD1AF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7A124DA0-9DA4-4F63-92B4-18F5473CD1AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7A124DA0-9DA4-4F63-92B4-18F5473CD1AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7A124DA0-9DA4-4F63-92B4-18F5473CD1AF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -209,8 +209,8 @@ Global
 		{5C844147-B8EA-4A92-81DD-BB5D017E1749} = {1B84AE05-2D2A-49BD-A067-883B8FA01D75}
 		{95FDC373-822D-408A-83C7-B8D7F31570A1} = {76425700-456B-44B0-B42A-B0DC73595E5E}
 		{37555E57-CBD7-4E16-9B92-9EB096D4DDD3} = {95FDC373-822D-408A-83C7-B8D7F31570A1}
-		{469DC5DC-25F0-4FBE-9217-A3267C8E4152} = {1B84AE05-2D2A-49BD-A067-883B8FA01D75}
-		{F380D00C-02F8-4390-9A96-E88E24886212} = {1B84AE05-2D2A-49BD-A067-883B8FA01D75}
+		{21FB98BB-6EB9-49F0-8E99-7B223ED1245C} = {1B84AE05-2D2A-49BD-A067-883B8FA01D75}
+		{7A124DA0-9DA4-4F63-92B4-18F5473CD1AF} = {1B84AE05-2D2A-49BD-A067-883B8FA01D75}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {76CD9B0B-E4FA-4E83-9623-2163AE82F180}

@@ -1,5 +1,4 @@
 ﻿using Seedysoft.Libs.TuyaDeviceControl.Extensions;
-using System.Security.Cryptography;
 using System.Text;
 
 namespace Seedysoft.Libs.TuyaDeviceControl;
@@ -21,15 +20,15 @@ internal sealed class AESCipher(byte[] key)
             if (pad)
                 raw = AESCipherExtensions.Pad(raw, 16);
 
-            using var cipher = Aes.Create();
+            using var cipher = System.Security.Cryptography.Aes.Create();
             cipher.Key = Key;
-            cipher.Mode = CipherMode.ECB;
-            cryptedText = cipher.EncryptEcb(raw, PaddingMode.None);
+            cipher.Mode = System.Security.Cryptography.CipherMode.ECB;
+            cryptedText = cipher.EncryptEcb(raw, System.Security.Cryptography.PaddingMode.None);
         }
         else
         {
             initialVector = AESCipherExtensions.GetEncryptionInitVector(initialVector);
-            using AesGcm cipher = new(Key, AesGcm.NonceByteSizes.MaxSize);
+            using System.Security.Cryptography.AesGcm cipher = new(Key, System.Security.Cryptography.AesGcm.NonceByteSizes.MaxSize);
 
             byte[] tag = [];
             cipher.Encrypt(initialVector ?? [], raw, cryptedText, tag, header);
@@ -66,16 +65,16 @@ internal sealed class AESCipher(byte[] key)
         {
             byte[]? initialVectorDecrypted;
             (initialVectorDecrypted, _) = AESCipherExtensions.GetDecryptionInitVector(initialVector, enc);
-            using AesGcm cipher = new(Key, AesGcm.NonceByteSizes.MaxSize);
+            using System.Security.Cryptography.AesGcm cipher = new(Key, System.Security.Cryptography.AesGcm.NonceByteSizes.MaxSize);
             cipher.Decrypt(initialVectorDecrypted ?? [], enc, tag ?? [], raw, header);
         }
         else
         {
-            using var cipher = Aes.Create();
+            using var cipher = System.Security.Cryptography.Aes.Create();
             cipher.Key = Key;
-            cipher.Mode = CipherMode.ECB;
+            cipher.Mode = System.Security.Cryptography.CipherMode.ECB;
 
-            raw = cipher.DecryptEcb(enc, PaddingMode.None);
+            raw = cipher.DecryptEcb(enc, System.Security.Cryptography.PaddingMode.None);
             raw = AESCipherExtensions.Unpad(raw, verifyPadding);
         }
 

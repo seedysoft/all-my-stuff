@@ -8,5 +8,5 @@ public class RouteLegStepTravelAdvisory
     /// <summary>
     /// NOTE: This field is not currently populated.
     /// </summary>
-    [J("speedReadingIntervals")][I(Condition = C.WhenWritingNull)] public SpeedReadingInterval[]? SpeedReadingIntervals { get; set; }
+    [J("speedReadingIntervals"), I(Condition = C.WhenWritingNull)] public SpeedReadingInterval[]? SpeedReadingIntervals { get; set; }
 }

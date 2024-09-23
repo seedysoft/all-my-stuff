@@ -23,7 +23,7 @@
                                Placeholder="Select a destination place" Required="true" ResetValueOnEmptyText="true" SearchFunc="FindPlacesAsync" SelectOnActivation="true" ShowProgressIndicator="true" T="string" Variant="variant" />
               <MudStack Class="d-flex" Justify="Justify.SpaceBetween" Row="true">
                 <MudText Inline="true">Km. max</MudText>
-                <MudSlider @bind-Value="travelQueryModel.MaxDistanceInKm" Max="5M" Min="0.25M" Size="Size.Large" Step="0.25M" T="decimal" TickMarks="true" ValueLabel="true"></MudSlider>
+                <MudSlider @bind-Value="travelQueryModel.MaxDistanceInKm" Max="50" Min="1" Size="Size.Large" Step="1" T="int" TickMarks="true" ValueLabel="true"></MudSlider>
                 <MudIconButton ButtonType="ButtonType.Button" Icon="@Icons.Material.Filled.Search" OnClick="LoadDataAsync" Variant="variant"></MudIconButton>
               </MudStack>
             </MudStack>
