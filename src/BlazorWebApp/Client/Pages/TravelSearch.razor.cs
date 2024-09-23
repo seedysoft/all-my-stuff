@@ -212,7 +212,8 @@ public partial class TravelSearch
 
         advancedMarkerElementList ??= await GoogleMapsComponents.Maps.Extension.AdvancedMarkerElementList.CreateAsync(TravelGoogleMap.JsRuntime, []);
 
-        await foreach (Libs.GasStationPrices.Core.ViewModels.GasStationModel? gasStationModel in response.Content.ReadFromJsonAsAsyncEnumerable<Libs.GasStationPrices.Core.ViewModels.GasStationModel>()!)
+        await foreach (Libs.GasStationPrices.Core.ViewModels.GasStationModel? gasStationModel in
+            response.Content.ReadFromJsonAsAsyncEnumerable<Libs.GasStationPrices.Core.ViewModels.GasStationModel>()!)
         {
             if (gasStationModel == null)
                 continue;

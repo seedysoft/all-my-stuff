@@ -108,33 +108,12 @@ public sealed class ObtainGasStationPricesService(IConfiguration configuration, 
         {
             Core.Json.Minetur.EstacionTerrestre estacionTerrestre = gasStations.EstacionesTerrestres[i];
 
-            if (IsValidForFilters(estacionTerrestre))
-            {
-                // TODO     Filtrar por los productos seleccionados.
-                // TODO             ¿Cómo "mapear" ProductosPetroliferos con las propiedades? ¿Switch?
-                yield return Core.ViewModels.GasStationModel.Map(estacionTerrestre);
-            }
-        }
+            Core.ViewModels.GasStationModel? gasStationModel = travelQueryModel.IsInsideBounds(estacionTerrestre);
 
-        bool IsValidForFilters(Core.Json.Minetur.EstacionTerrestre estacionTerrestre)
-        {
-            return
-                estacionTerrestre.Lat < travelQueryModel.Bounds.North
-                && estacionTerrestre.Lat > travelQueryModel.Bounds.South
-                && estacionTerrestre.Lon > travelQueryModel.Bounds.East
-                && estacionTerrestre.Lon < travelQueryModel.Bounds.West
-            //&& HasPrices(estacionTerrestre, travelQueryModel.PetroleumProductsSelectedIds)
-            // Decimal places   Decimal degrees Distance (meters)   Notes
-            // 0	            1.0             110,574.3	        111 km
-            // 1	            0.1	            11,057.43	        11 km
-            // 2	            0.01	        1,105.74	        1 km
-            // 3	            0.001	        110.57	
-            // 4	            0.0001	        11.06	
-            // 5	            0.00001	        1.11	
-            // 6	            0.000001	    0.11	            11 cm
-            // 7	            0.0000001	    0.01	            1 cm
-            // 8	            0.00000001	    0.001	            1 mm
-            ;
+            // TODO     Filtrar por los productos seleccionados.
+            // TODO             ¿Cómo "mapear" ProductosPetroliferos con las propiedades? ¿Switch?
+            if (gasStationModel != null)
+                yield return gasStationModel;
         }
     }
 

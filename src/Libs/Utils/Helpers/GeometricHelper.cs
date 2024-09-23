@@ -5,36 +5,36 @@ public static class GeometricHelper
     private static double DegreesToRadians(double degrees) => degrees * (Math.PI / 180d);
     private static double RadiansToDegrees(double radians) => radians * (180d / Math.PI);
 
-    private static double GetEarthRadiusKilometers(double latitudeInRadians)
+    private static double GetEarthRadiusKilometers(double latDegrees)
     {
-        double f1 = Math.Pow(Math.Pow(Core.Constants.Earth.RadiusMetersAtEquator, 2) * Math.Cos(latitudeInRadians), 2);
-        double f2 = Math.Pow(Math.Pow(Core.Constants.Earth.RadiusMetersAtPole, 2) * Math.Sin(latitudeInRadians), 2);
-        double f3 = Math.Pow(Core.Constants.Earth.RadiusMetersAtEquator * Math.Cos(latitudeInRadians), 2);
-        double f4 = Math.Pow(Core.Constants.Earth.RadiusMetersAtPole * Math.Sin(latitudeInRadians), 2);
+        double f1 = Math.Pow(Math.Pow(Core.Constants.Earth.RadiusMetersAtEquator, 2) * Math.Cos(latDegrees), 2);
+        double f2 = Math.Pow(Math.Pow(Core.Constants.Earth.RadiusMetersAtPole, 2) * Math.Sin(latDegrees), 2);
+        double f3 = Math.Pow(Core.Constants.Earth.RadiusMetersAtEquator * Math.Cos(latDegrees), 2);
+        double f4 = Math.Pow(Core.Constants.Earth.RadiusMetersAtPole * Math.Sin(latDegrees), 2);
 
         double radius = Math.Sqrt((f1 + f2) / (f3 + f4));
 
         return radius / 1_000d;
     }
 
-    public static double ExpandLongitude(double latInDegrees, double lonInDegrees, double kilometers)
+    public static double ExpandLongitude(double latDegrees, double lonDegrees, double kilometers)
     {
         // Length of 1 degree of longitude = cosine(latitude) * [length of degree at equator ]
         // www.colorado.edu/geography/gcraft/warmup/aquifer/html/distance.html [12/5/2000]
 
-        double DeltaLongitude = kilometers / (double)(Math.Cos(DegreesToRadians(latInDegrees)) * GetOneDegreeLonKilometers(latInDegrees));
+        double DeltaLongitude = kilometers / (double)(Math.Cos(DegreesToRadians(latDegrees)) * GetOneDegreeLonKilometers(latDegrees));
 
-        return (double)Math.Round(lonInDegrees + DeltaLongitude, 5);
+        return (double)Math.Round(lonDegrees + DeltaLongitude, 5);
 
-        static double GetOneDegreeLonKilometers(double latInDegrees)
+        static double GetOneDegreeLonKilometers(double latDegrees)
         {
             // Compute spherical coordinates
             double EarthCircumferenceOnEquator = Core.Constants.Earth.RadiusMetersAtEquator / 1_000d * 2 * Math.PI;
 
-            return (double)(Math.Cos(DegreesToRadians(latInDegrees)) * EarthCircumferenceOnEquator / Core.Constants.Earth.Degrees);
+            return (double)(Math.Cos(DegreesToRadians(latDegrees)) * EarthCircumferenceOnEquator / Core.Constants.Earth.Degrees);
         }
     }
-    public static double ExpandLatitude(double latInDegrees, double lonInDegrees, double kilometers)
+    public static double ExpandLatitude(double latDegrees, double lonDegrees, double kilometers)
     {
         // Length of 1 degree of latitude ranges from
         //    68.70 miles at  0 deg N to
@@ -45,33 +45,41 @@ public static class GeometricHelper
         // "What is the distance between a degree of latitude and longitude?"
         // www.geography.about.com/science/geography/library/faq/blqzdistancedegree.htm cached 12/05/00
 
-        (double MinLatInDegrees, double MinLonInDegrees, double MaxLatInDegrees, double MaxLonInDegrees)
-            = GetOneDegreeLatKilometers(latInDegrees, lonInDegrees);
+        GoogleMapsComponents.Maps.LatLngBoundsLiteral LatLngBounds = GetOneDegreeLatKilometers(latDegrees, lonDegrees, kilometers);
 
-        double DeltaLatitude = kilometers / Haversine.Distance(MinLatInDegrees, MinLonInDegrees, MaxLatInDegrees, MaxLonInDegrees);
+        double DeltaLatitude = kilometers / Haversine.Distance(LatLngBounds.South, LatLngBounds.West, LatLngBounds.North, LatLngBounds.East);
 
-        return (double)Math.Round(latInDegrees + DeltaLatitude, 5);
+        return (double)Math.Round(latDegrees + DeltaLatitude, 5);
 
-        static (double MinLatInDegrees, double MinLonInDegrees, double MaxLatInDegrees, double MaxLonInDegrees) GetOneDegreeLatKilometers(
-            double latInDegrees,
-            double lonInDegrees,
+        static GoogleMapsComponents.Maps.LatLngBoundsLiteral GetOneDegreeLatKilometers(
+            double latDegrees,
+            double lonDegrees,
             double halfSideInKm = 0)
         {
-            double lat = DegreesToRadians(latInDegrees);
-            double lon = DegreesToRadians(lonInDegrees);
+            // Radius of Earth at given latitude
+            double radius = GetEarthRadiusKilometers(latDegrees);
+
+            double latRadians = DegreesToRadians(latDegrees);
+            // Radius of the parallel at given latitude
+            double pradius = radius * Math.Cos(latRadians);
+
             double halfSide = 500d * halfSideInKm;
 
-            // Radius of Earth at given latitude
-            double radius = GetEarthRadiusKilometers(latInDegrees);
-            // Radius of the parallel at given latitude
-            double pradius = radius * Math.Cos(lat);
+            double latRadiansMin = latRadians - (halfSide / radius);
+            double latRadiansMax = latRadians + (halfSide / radius);
 
-            double latMin = lat - (halfSide / radius);
-            double latMax = lat + (halfSide / radius);
-            double lonMin = lon - (halfSide / pradius);
-            double lonMax = lon + (halfSide / pradius);
+            double lonRadians = DegreesToRadians(lonDegrees);
 
-            return (RadiansToDegrees(latMin), RadiansToDegrees(lonMin), RadiansToDegrees(latMax), RadiansToDegrees(lonMax));
+            double lonRadiansMin = lonRadians - (halfSide / pradius);
+            double lonRadiansMax = lonRadians + (halfSide / pradius);
+
+            return new()
+            {
+                North = RadiansToDegrees(latRadiansMax),
+                South = RadiansToDegrees(latRadiansMin),
+                East = RadiansToDegrees(lonRadiansMax),
+                West = RadiansToDegrees(lonRadiansMin),
+            };
         }
     }
 
