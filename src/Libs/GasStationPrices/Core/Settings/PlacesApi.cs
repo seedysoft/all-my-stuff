@@ -1,6 +1,6 @@
 ﻿namespace Seedysoft.Libs.GasStationPrices.Core.Settings;
 
-public record class PlacesApi
+public readonly record struct PlacesApi
 {
     public required string UriFormat { get; init; }
 

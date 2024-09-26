@@ -89,18 +89,18 @@ public static class GeometricHelper
         /// Returns the distance in kilometers of any two latitude / longitude points.
         /// </summary>
         /// <returns></returns>
-        public static double Distance(double fromLatitude, double fromLongitude, double toLatitude, double toLongitude)
+        public static double Distance(double fromLatDegrees, double fromLonDegrees, double toLatDegrees, double toLonDegrees)
         {
-            double Lat = DegreesToRadians(toLatitude - fromLatitude);
-            double Lon = DegreesToRadians(toLongitude - fromLongitude);
+            double LatRadians = DegreesToRadians(toLatDegrees - fromLatDegrees);
+            double LonRadians = DegreesToRadians(toLonDegrees - fromLonDegrees);
 
             double a =
-                (Math.Sin(Lat / 2) * Math.Sin(Lat / 2)) +
-                (Math.Cos(DegreesToRadians(fromLatitude)) * Math.Cos(DegreesToRadians(toLatitude)) * Math.Sin(Lon / 2) * Math.Sin(Lon / 2));
+                (Math.Sin(LatRadians / 2) * Math.Sin(LatRadians / 2)) +
+                (Math.Cos(DegreesToRadians(fromLatDegrees)) * Math.Cos(DegreesToRadians(toLatDegrees)) * Math.Sin(LonRadians / 2) * Math.Sin(LonRadians / 2));
 
             double c = 2 * Math.Asin(Math.Min(1, Math.Sqrt(a)));
 
-            return (double)(GetEarthRadiusKilometers(toLatitude) * c);
+            return (double)(GetEarthRadiusKilometers(toLatDegrees) * c);
         }
     }
 }

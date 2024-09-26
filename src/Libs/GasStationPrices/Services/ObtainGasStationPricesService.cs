@@ -10,6 +10,9 @@ public sealed class ObtainGasStationPricesService(IConfiguration configuration, 
     private readonly Core.Settings.SettingsRoot Settings
         = configuration.GetSection(nameof(Core.Settings.SettingsRoot)).Get<Core.Settings.SettingsRoot>()!;
 
+    public async Task<string> GetMapId(CancellationToken cancellationToken)
+        => await Task.FromResult(Settings.GoogleMapsPlatform.Maps.MapId);
+
     public async Task<IEnumerable<string>> FindPlacesAsync(
         string textToFind,
         CancellationToken cancellationToken)
