@@ -64,8 +64,8 @@ public partial class TravelSearch
             //CameraControlOptions = new() { Position = GoogleMapsComponents.Maps.ControlPosition.TopLeft, },
             Center = new GoogleMapsComponents.Maps.LatLngLiteral()
             {
-                Lat = -3.6659289163890474,
-                Lng = 42.35378137832184,
+                Lat = Libs.Core.Constants.Earth.Home.Lat,
+                Lng = Libs.Core.Constants.Earth.Home.Lng,
             },
             //ClickableIcons = false,
             ColorScheme = GoogleMapsComponents.Maps.ColorScheme.FollowSystem,

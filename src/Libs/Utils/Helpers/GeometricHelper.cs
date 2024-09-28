@@ -1,25 +1,15 @@
-﻿namespace Seedysoft.Libs.Utils.Helpers;
+﻿using Seedysoft.Libs.Core.Constants;
+
+namespace Seedysoft.Libs.Utils.Helpers;
 
 public static class GeometricHelper
 {
-    private static double DegreesToRadians(double degrees) => degrees * (Math.PI / 180d);
-    private static double RadiansToDegrees(double radians) => radians * (180d / Math.PI);
-
-    private static double GetEarthRadiusKilometers(double latDegrees)
-    {
-        double f1 = Math.Pow(Math.Pow(Core.Constants.Earth.RadiusMetersAtEquator, 2) * Math.Cos(latDegrees), 2);
-        double f2 = Math.Pow(Math.Pow(Core.Constants.Earth.RadiusMetersAtPole, 2) * Math.Sin(latDegrees), 2);
-        double f3 = Math.Pow(Core.Constants.Earth.RadiusMetersAtEquator * Math.Cos(latDegrees), 2);
-        double f4 = Math.Pow(Core.Constants.Earth.RadiusMetersAtPole * Math.Sin(latDegrees), 2);
-
-        double radius = Math.Sqrt((f1 + f2) / (f3 + f4));
-
-        return radius / 1_000d;
-    }
+    public static double DegreesToRadians(double degrees) => degrees * (Math.PI / 180d);
+    public static double RadiansToDegrees(double radians) => radians * (180d / Math.PI);
 
     public static double ExpandLongitude(double latDegrees, double lonDegrees, double kilometers)
     {
-        // Length of 1 degree of longitude = cosine(latitude) * [length of degree at equator ]
+        // Length of 1 degree of longitude = cosine(latitude) * [length of degree at equator]
         // www.colorado.edu/geography/gcraft/warmup/aquifer/html/distance.html [12/5/2000]
 
         double DeltaLongitude = kilometers / (double)(Math.Cos(DegreesToRadians(latDegrees)) * GetOneDegreeLonKilometers(latDegrees));
@@ -29,7 +19,7 @@ public static class GeometricHelper
         static double GetOneDegreeLonKilometers(double latDegrees)
         {
             // Compute spherical coordinates
-            double EarthCircumferenceOnEquator = Core.Constants.Earth.RadiusMetersAtEquator / 1_000d * 2 * Math.PI;
+            double EarthCircumferenceOnEquator = Core.Constants.Earth.RadiusMeanInMeters / 1_000d * 2 * Math.PI;
 
             return (double)(Math.Cos(DegreesToRadians(latDegrees)) * EarthCircumferenceOnEquator / Core.Constants.Earth.Degrees);
         }
@@ -57,7 +47,7 @@ public static class GeometricHelper
             double halfSideInKm = 0)
         {
             // Radius of Earth at given latitude
-            double radius = GetEarthRadiusKilometers(latDegrees);
+            double radius = Earth.RadiusMeanInMeters / 1_000;
 
             double latRadians = DegreesToRadians(latDegrees);
             // Radius of the parallel at given latitude
@@ -100,7 +90,7 @@ public static class GeometricHelper
 
             double c = 2 * Math.Asin(Math.Min(1, Math.Sqrt(a)));
 
-            return (double)(GetEarthRadiusKilometers(toLatDegrees) * c);
+            return (double)(Earth.RadiusMeanInMeters / 1_000 * c);
         }
     }
 }

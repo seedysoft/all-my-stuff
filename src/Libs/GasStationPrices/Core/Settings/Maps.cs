@@ -8,6 +8,6 @@ public record class Maps
         get => mapId;
         init => mapId = Cryptography.Crypto.DecryptText(value, Utils.Helpers.EnvironmentHelper.GetMasterKey());
     }
-    
+
     public required string UriFormat { get; init; }
 }
