@@ -7,7 +7,7 @@
     <StaticWebAssetProjectMode>Default</StaticWebAssetProjectMode>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="BlazorGoogleMaps" Version="4.7.11" />
+    <PackageReference Include="BlazorGoogleMaps" Version="4.7.12" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.8" />
   	<PackageReference Include="MudBlazor" Version="7.8.0" />
   </ItemGroup>
