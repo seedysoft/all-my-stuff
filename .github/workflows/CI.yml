@@ -32,4 +32,6 @@ jobs:
         run: dotnet build Seedysoft.Tests.sln -c Release -v n
 
       - name: Test
+        env:
+          SEEDY_MASTER_KEY: ${{ secrets.SEEDY_MASTER_KEY }}
         run: dotnet test Seedysoft.Tests.sln -c Release --no-build -v n
