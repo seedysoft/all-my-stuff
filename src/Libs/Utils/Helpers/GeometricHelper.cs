@@ -1,6 +1,4 @@
-﻿using Seedysoft.Libs.Core.Constants;
-
-namespace Seedysoft.Libs.Utils.Helpers;
+﻿namespace Seedysoft.Libs.Utils.Helpers;
 
 public static class GeometricHelper
 {
@@ -47,7 +45,7 @@ public static class GeometricHelper
             double halfSideInKm = 0)
         {
             // Radius of Earth at given latitude
-            double radius = Earth.RadiusMeanInMeters / 1_000;
+            double radius = Core.Constants.Earth.RadiusMeanInMeters / 1_000;
 
             double latRadians = DegreesToRadians(latDegrees);
             // Radius of the parallel at given latitude
@@ -90,7 +88,7 @@ public static class GeometricHelper
 
             double c = 2 * Math.Asin(Math.Min(1, Math.Sqrt(a)));
 
-            return (double)(Earth.RadiusMeanInMeters / 1_000 * c);
+            return (double)(Core.Constants.Earth.RadiusMeanInMeters / 1_000 * c);
         }
     }
 }

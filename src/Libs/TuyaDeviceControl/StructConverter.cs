@@ -58,9 +58,9 @@ public static class StructConverter
     /// <summary>
     /// Convert an array of objects to a byte array, along with a string that can be used with <see cref="Unpack(string, byte[])"/>.
     /// </summary>
-    /// <param name="items">An object array of items to convert.</param>
-    /// <param name="isLittleEndian">Set to False if you want to use big endian output.</param>
-    /// <param name="NeededFormatStringToRecover">Variable to place an 'Unpack'-compatible format string into.</param>
+    /// <param name="items">An object array of items to convert</param>
+    /// <param name="isLittleEndian">Set to False if you want to use big endian output</param>
+    /// <param name="NeededFormatStringToRecover">Variable to place an 'Unpack'-compatible format string into</param>
     /// <returns>A <see cref="byte[]"/> containing the objects provided in binary format.</returns>
     public static byte[] Pack(string fmt, params object[] items)
     {
@@ -111,8 +111,8 @@ public static class StructConverter
     /// <summary>
     /// Convert a <see cref="byte[]"/> into an <see cref="byte[][]"/> based on Python's "struct.unpack" protocol.
     /// </summary>
-    /// <param name="fmt">A "struct.pack"-compatible format string.</param>
-    /// <param name="bytes">An <see cref="byte[]"/> to split.</param>
+    /// <param name="fmt">A "struct.pack"-compatible format string</param>
+    /// <param name="bytes">An <see cref="byte[]"/> to split</param>
     /// <returns><see cref="byte[][]"/>.</returns>
     /// <remarks>You are responsible for casting the <see cref="byte[]"/> in the array back to their proper types.</remarks>
     public static byte[][] Unpack(string fmt, params byte[] bytes)

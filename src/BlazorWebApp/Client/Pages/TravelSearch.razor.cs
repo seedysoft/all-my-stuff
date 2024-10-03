@@ -216,10 +216,14 @@ public partial class TravelSearch
         if (directionsResult == null)
             return;
 
-        travelQueryModel.Bounds.North = directionsResult.Routes.Select(static x => x.Bounds?.North ?? 90D).Max();
-        travelQueryModel.Bounds.South = directionsResult.Routes.Select(static x => x.Bounds?.South ?? -90D).Min();
-        travelQueryModel.Bounds.East = directionsResult.Routes.Select(static x => x.Bounds?.East ?? 180D).Max();
-        travelQueryModel.Bounds.West = directionsResult.Routes.Select(static x => x.Bounds?.West ?? -180D).Min();
+        travelQueryModel.Bounds.North =
+            directionsResult.Routes.Select(static x => x.Bounds?.North ?? Libs.Core.Constants.Earth.MaxLatitudeInDegrees).Max();
+        travelQueryModel.Bounds.South =
+            directionsResult.Routes.Select(static x => x.Bounds?.South ?? Libs.Core.Constants.Earth.MinLatitudeInDegrees).Min();
+        travelQueryModel.Bounds.East =
+            directionsResult.Routes.Select(static x => x.Bounds?.East ?? Libs.Core.Constants.Earth.MaxLongitudeInDegrees).Max();
+        travelQueryModel.Bounds.West =
+            directionsResult.Routes.Select(static x => x.Bounds?.West ?? Libs.Core.Constants.Earth.MinLongitudeInDegrees).Min();
 
         StringContent requestContent = new(
             System.Text.Json.JsonSerializer.Serialize(travelQueryModel),
