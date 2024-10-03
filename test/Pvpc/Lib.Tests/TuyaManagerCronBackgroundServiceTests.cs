@@ -9,9 +9,8 @@ public sealed class TuyaManagerCronBackgroundServiceTests : Libs.Infrastructure.
 {
     private static Services.TuyaManagerCronBackgroundService TuyaManagerService = default!;
 
-    // TODO                     Avoid static test methods 
     [ClassInitialize(InheritanceBehavior.None)]
-    public static new void ClassInitialize(TestContext context)
+    public static void ClassInitialize(TestContext context)
     {
         Settings.TuyaManagerSettings tuyaManagerSettings = new()
         {
@@ -29,8 +28,8 @@ public sealed class TuyaManagerCronBackgroundServiceTests : Libs.Infrastructure.
             new ApplicationLifetime(new NullLogger<ApplicationLifetime>()));
     }
 
-    [ClassCleanup(ClassCleanupBehavior.EndOfClass)]
-    public static new void ClassCleanup() => TuyaManagerService?.Dispose();
+    [ClassCleanup(InheritanceBehavior.None, ClassCleanupBehavior.EndOfClass)]
+    public static void ClassCleanup() => TuyaManagerService?.Dispose();
 
     [TestMethod]
     public async Task DoWorkAsyncTest() => await TuyaManagerService.DoWorkAsync(default);

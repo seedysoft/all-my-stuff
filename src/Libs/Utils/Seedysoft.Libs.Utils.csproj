@@ -8,6 +8,7 @@
     <RuntimeIdentifiers>linux-arm64;linux-x64;win-x64</RuntimeIdentifiers>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="BlazorGoogleMaps" Version="4.7.12" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.8" />
     <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="8.0.1" />

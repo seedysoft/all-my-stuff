@@ -629,7 +629,7 @@ public class TuyaDeviceBase
     /// <summary>
     /// Generate the payload to send.
     /// </summary>
-    /// <param name="command">The type of command.</param>
+    /// <param name="command">The type of command</param>
     /// <param name="data">The data to send. This is what will be passed via the 'dps' entry</param>
     /// <param name="gwId">Will be used for gwId</param>
     /// <param name="devId">Will be used for devId</param>
@@ -841,8 +841,8 @@ public class TuyaDeviceBase
     /// <summary>
     /// Send single buffer `payload` and receive a single buffer.
     /// </summary>
-    /// <param name="payload">payload(bytes): Data to send. Set to 'None' to receive only.</param>
-    /// <param name="getResponse">getresponse(bool): If True, wait for and return response.</param>
+    /// <param name="payload">payload(bytes): Data to send. Set to 'None' to receive only</param>
+    /// <param name="getResponse">getresponse(bool): If True, wait for and return response</param>
     /// <param name="decodeResponse"></param>
     /// <returns></returns>
     private object? SendReceive(
@@ -998,9 +998,9 @@ public class TuyaDeviceBase
     /// <summary>
     /// Set status of the device to 'on' or 'off'.
     /// </summary>
-    /// <param name="isOn">true for 'on', false for 'off'.</param>
+    /// <param name="isOn">true for 'on', false for 'off'</param>
     /// <param name="switchNumber">The switch to set</param>
-    /// <param name="noWait">true to send without waiting for response.</param>
+    /// <param name="noWait">true to send without waiting for response</param>
     /// <returns></returns>
     private object? SetStatus(bool isOn, uint switchNumber = 1, bool noWait = false)
     {

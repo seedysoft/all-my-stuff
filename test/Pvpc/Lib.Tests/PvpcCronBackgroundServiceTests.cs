@@ -2,8 +2,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting.Internal;
 using Microsoft.Extensions.Logging.Abstractions;
 
-[assembly: Parallelize(Workers = 0, Scope = ExecutionScope.MethodLevel)]
-
 namespace Seedysoft.Pvpc.Lib.Tests;
 
 [TestClass]
@@ -14,8 +12,8 @@ public sealed class PvpcCronBackgroundServiceTests : Libs.Infrastructure.Tests.T
     private static DateTimeOffset TimeToQuery = default!;
     private static decimal MinPriceAllowed = default!;
 
-    [ClassInitialize]
-    public static new void ClassInitialize(TestContext testContext)
+    [ClassInitialize(InheritanceBehavior.None)]
+    public static void ClassInitialize(TestContext testContext)
     {
         Settings.PvpcSettings pvpcSettings = new()
         {
@@ -44,8 +42,8 @@ public sealed class PvpcCronBackgroundServiceTests : Libs.Infrastructure.Tests.T
         Prices.Last(static x => x.AtDateTimeOffset <= TimeToQuery).MWhPriceInEuros = 49M; // 0.049 KWhPriceInEuros
     }
 
-    [ClassCleanup(ClassCleanupBehavior.EndOfClass)]
-    public static new void ClassCleanup() => PvpcService?.Dispose();
+    [ClassCleanup(InheritanceBehavior.None, ClassCleanupBehavior.EndOfClass)]
+    public static void ClassCleanup() => PvpcService?.Dispose();
 
     [TestMethod]
     public void IsTimeToChargeNoPricesTest()

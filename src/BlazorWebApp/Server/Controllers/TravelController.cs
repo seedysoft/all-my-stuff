@@ -7,6 +7,12 @@ public sealed class TravelController : ApiControllerBase
 {
     public TravelController(ILogger<TravelController> logger) : base(logger) => Logger = logger;
 
+    [HttpGet(Client.Constants.TravelUris.Actions.GetMapId)]
+    public async Task<string> GetMapId(
+        [FromServices] Libs.GasStationPrices.Services.ObtainGasStationPricesService obtainGasStationPricesService,
+        CancellationToken cancellationToken)
+        => await obtainGasStationPricesService.GetMapId(cancellationToken);
+
     [HttpGet(Client.Constants.TravelUris.Actions.FindPlaces)]
     public async Task<IEnumerable<string>> FindPlacesAsync(
         [AsParameters] string textToFind,

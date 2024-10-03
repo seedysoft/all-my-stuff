@@ -8,6 +8,9 @@
     <TargetFramework>net8.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="..\Core.Tests\GlobalUsings.cs" Link="GlobalUsings.cs" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="coverlet.collector" Version="6.0.2">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
@@ -15,6 +18,7 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.8" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite.Core" Version="8.0.8" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.1" />
+    <PackageReference Include="Microsoft.Testing.Extensions.VSTestBridge" Version="1.4.0" />
     <PackageReference Include="MSTest" Version="3.6.0" />
   </ItemGroup>
   <ItemGroup>
