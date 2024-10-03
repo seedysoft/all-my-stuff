@@ -2,8 +2,6 @@
 using Microsoft.Extensions.Hosting;
 using Seedysoft.Libs.Utils.Extensions;
 
-[assembly: Parallelize(Workers = 0, Scope = ExecutionScope.MethodLevel)]
-
 namespace Seedysoft.Libs.GasStationPrices.Tests;
 
 [TestClass]
@@ -11,8 +9,8 @@ public sealed class ObtainGasStationPricesTests : Infrastructure.Tests.TestClass
 {
     private static Services.ObtainGasStationPricesService ObtainGasStationPricesService = default!;
 
-    [ClassInitialize]
-    public static new void ClassInitialize(TestContext testContext)
+    [ClassInitialize(InheritanceBehavior.None)]
+    public static void ClassInitialize(TestContext testContext)
     {
         IHostApplicationBuilder appBuilder = new HostApplicationBuilder();
         _ = appBuilder.AddAllMyDependencies();
@@ -20,7 +18,7 @@ public sealed class ObtainGasStationPricesTests : Infrastructure.Tests.TestClass
 
         ObtainGasStationPricesService = serviceProvider.GetRequiredService<Services.ObtainGasStationPricesService>();
     }
-    //[ClassCleanup]
+    //[ClassCleanup(InheritanceBehavior.None, ClassCleanupBehavior.EndOfClass)]
     //public static new void ClassCleanup() => ObtainGasStationPricesService?.Dispose();
 
     [TestMethod]

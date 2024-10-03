@@ -10,7 +10,13 @@ public record class TravelQueryModel
 
     public required IReadOnlyCollection<long> PetroleumProductsSelectedIds { get; set; } = [];
 
-    private GoogleMapsComponents.Maps.LatLngBoundsLiteral bounds = new();
+    private GoogleMapsComponents.Maps.LatLngBoundsLiteral bounds = new()
+    {
+        East = Libs.Core.Constants.Earth.MaxLongitudeInDegrees,
+        North = Libs.Core.Constants.Earth.MaxLatitudeInDegrees,
+        South = Libs.Core.Constants.Earth.MinLatitudeInDegrees,
+        West = Libs.Core.Constants.Earth.MinLongitudeInDegrees,
+    };
     public GoogleMapsComponents.Maps.LatLngBoundsLiteral Bounds
     {
         get => bounds;

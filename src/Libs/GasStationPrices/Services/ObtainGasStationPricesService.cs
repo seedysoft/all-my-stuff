@@ -25,15 +25,9 @@ public sealed class ObtainGasStationPricesService(IConfiguration configuration, 
             RestRequest restRequest = BuildFindPlacesRequest(textToFind);
             RestClient restClient = new(Settings.GoogleMapsPlatform.PlacesApi.UriFormat);
             Core.Json.Google.Places.Response.Body? body = null;
-#if DEBUG
             RestResponse restResponse = await restClient.ExecutePostAsync(restRequest, cancellationToken);
             if (restResponse.IsSuccessStatusCode)
                 body = restResponse.Content!.FromJson<Core.Json.Google.Places.Response.Body>();
-#else
-            RestResponse<Core.Json.Google.Places.Response.Body> restResponse =
-                (await restClient.ExecutePostAsync<Core.Json.Google.Places.Response.Body>(restRequest, cancellationToken)).ThrowIfError();
-            body = restResponse.Data!;
-#endif
             if (body == null)
                 return [];
 
@@ -92,15 +86,9 @@ public sealed class ObtainGasStationPricesService(IConfiguration configuration, 
         {
             RestRequest restRequest = new(Settings.Minetur.Uris.EstacionesTerrestres);
             RestClient restClient = new(Settings.Minetur.Uris.Base) { AcceptedContentTypes = [System.Net.Mime.MediaTypeNames.Application.Json,], };
-#if DEBUG
             RestResponse restResponse = await restClient.ExecuteGetAsync(restRequest, cancellationToken);
             if (restResponse.IsSuccessStatusCode)
                 gasStations = restResponse.Content!.FromJson<Core.Json.Minetur.Body>();
-#else
-            RestResponse<Core.Json.Minetur.Body> restResponse =
-                (await restClient.ExecutePostAsync<Core.Json.Minetur.Body>(restRequest, cancellationToken)).ThrowIfError();
-            gasStations = restResponse.Data!;
-#endif
         }
         catch (Exception e) when (logger.LogAndHandle(e, "Unexpected error")) { }
 
@@ -130,15 +118,9 @@ public sealed class ObtainGasStationPricesService(IConfiguration configuration, 
             {
                 RestRequest restRequest = new(string.Format(Settings.Minetur.Uris.ListadosBase, "ProductosPetroliferos"));
                 RestClient restClient = new(Settings.Minetur.Uris.Base) { AcceptedContentTypes = [System.Net.Mime.MediaTypeNames.Application.Json,], };
-#if DEBUG
                 RestResponse restResponse = await restClient.ExecuteGetAsync(restRequest, cancellationToken);
                 if (restResponse.IsSuccessStatusCode)
                     Res = restResponse.Content!.FromJson<IEnumerable<Core.Json.Minetur.ProductoPetrolifero>>();
-#else
-                RestResponse<IEnumerable<Core.Json.Minetur.ProductoPetrolifero>> restResponse =
-                    (await restClient.ExecuteGetAsync<IEnumerable<Core.Json.Minetur.ProductoPetrolifero>>(restRequest, cancellationToken)).ThrowIfError();
-                Res = restResponse.Data!;
-#endif
             }
 
             return Res ?? [];

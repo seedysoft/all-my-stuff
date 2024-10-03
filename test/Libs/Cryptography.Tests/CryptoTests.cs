@@ -1,6 +1,4 @@
-﻿[assembly: Parallelize(Workers = 0, Scope = ExecutionScope.MethodLevel)]
-
-namespace Seedysoft.Libs.Cryptography.Tests;
+﻿namespace Seedysoft.Libs.Cryptography.Tests;
 
 [TestClass]
 public sealed class CryptoTests
