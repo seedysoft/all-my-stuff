@@ -1,3 +1,7 @@
+using GoogleMapsLibrary.Maps;
+using GoogleMapsLibrary.Maps.Coordinates;
+using GoogleMapsLibrary.Marker;
+using GoogleMapsLibrary.Routes;
 using Microsoft.AspNetCore.Components;
 using Seedysoft.Libs.Utils.Extensions;
 using System.Net.Http.Json;
@@ -13,10 +17,10 @@ public partial class TravelSearch
 
     private MudBlazor.MudForm TravelQueryMudForm { get; set; } = default!;
 
-    private GoogleMapsComponents.GoogleMap TravelGoogleMap { get; set; } = default!;
-    private GoogleMapsComponents.Maps.MapOptions mapOptions = default!;
-    private GoogleMapsComponents.Maps.DirectionsRenderer directionsRenderer = default!;
-    private readonly Stack<GoogleMapsComponents.Maps.AdvancedMarkerElement> advancedMarkerElements = new();
+    private GoogleMapsJavascriptApi.GoogleMap TravelGoogleMap { get; set; } = default!;
+    private MapOptions mapOptions = default!;
+    private DirectionsRenderer directionsRenderer = default!;
+    private readonly Stack<AdvancedMarkerElement> advancedMarkerElements = new();
 
     private readonly Libs.GasStationPrices.Core.ViewModels.TravelQueryModelFluentValidator travelQueryModelFluentValidator = new();
     private readonly Libs.GasStationPrices.Core.ViewModels.TravelQueryModel travelQueryModel = new()
@@ -59,24 +63,24 @@ public partial class TravelSearch
         mapOptions = new()
         {
             //ApiLoadOptions = new() { Language = "en-US", },
-            //BackgroundColor = "",
+            //BackgroundColor = string.Empty,
             //CameraControl = false,
-            //CameraControlOptions = new() { Position = GoogleMapsComponents.Maps.ControlPosition.TopLeft, },
-            Center = new GoogleMapsComponents.Maps.LatLngLiteral()
+            //CameraControlOptions = new() { Position = ControlPosition.TopLeft, },
+            Center = new LatLngLiteral()
             {
                 Lat = Libs.Core.Constants.Earth.Home.Lat,
                 Lng = Libs.Core.Constants.Earth.Home.Lng,
             },
             //ClickableIcons = false,
-            ColorScheme = GoogleMapsComponents.Maps.ColorScheme.FollowSystem,
+            ColorScheme = GoogleMapsLibrary.Core.ColorScheme.FollowSystem,
             //ControlSize = 10,
             //DisableDefaultUI = true,
             //DisableDoubleClickZoom = false,
             //Draggable = false,
-            //DraggableCursor = "",
-            //DraggingCursor = "",
+            //DraggableCursor = string.Empty,
+            //DraggingCursor = string.Empty,
             //FullscreenControl = false,
-            //FullscreenControlOptions = new() { Position = GoogleMapsComponents.Maps.ControlPosition.TopCenter, },
+            //FullscreenControlOptions = new() { Position = ControlPosition.TopCenter, },
             //Heading = 5,
             //HeadingInteractionEnabled = false,
             //IsFractionalZoomEnabled = false,
@@ -85,30 +89,30 @@ public partial class TravelSearch
             //MapTypeControl = false,
             //MapTypeControlOptions = new()
             //{
-            //    MapTypeIds = [GoogleMapsComponents.Maps.MapTypeId.Hybrid, GoogleMapsComponents.Maps.MapTypeId.Terrain,],
-            //    Position = GoogleMapsComponents.Maps.ControlPosition.TopRight,
-            //    Style = GoogleMapsComponents.Maps.MapTypeControlStyle.Default,
+            //    MapTypeIds = [MapTypeId.Hybrid, MapTypeId.Terrain,],
+            //    Position = ControlPosition.TopRight,
+            //    Style = MapTypeControlStyle.Default,
             //},
-            MapTypeId = GoogleMapsComponents.Maps.MapTypeId.Roadmap,
+            MapTypeId = MapTypeId.Roadmap,
             //MaxZoom = 30,
             //MinZoom = 0,
             //NoClear = true,
             //PanControl = false,
-            //PanControlOptions = new() { Position = GoogleMapsComponents.Maps.ControlPosition.LeftTop, },
-            ////RenderingType = GoogleMapsComponents.Maps.RenderingType.Uninitialized,
+            //PanControlOptions = new() { Position = ControlPosition.LeftTop, },
+            ////RenderingType = RenderingType.Uninitialized,
             ////Restriction = new() { latLngBounds = new() { }, strictBounds = false, },
             //RotateControl = false,
-            //RotateControlOptions = new() { Position = GoogleMapsComponents.Maps.ControlPosition.LeftCenter, },
+            //RotateControlOptions = new() { Position = ControlPosition.LeftCenter, },
             //ScaleControl = false,
-            //ScaleControlOptions = new() { Style = GoogleMapsComponents.Maps.ScaleControlStyle.Default, },
+            //ScaleControlOptions = new() { Style = ScaleControlStyle.Default, },
             //Scrollwheel = false,
             StreetViewControl = false,
-            //StreetViewControlOptions = new() { Position = GoogleMapsComponents.Maps.ControlPosition.BottomCenter, },
-            //Styles = [new() { elementType = "", featureType = "", stylers = [new GoogleMapsComponents.Maps.GoogleMapStyleColor() { color = "", }] }],
+            //StreetViewControlOptions = new() { Position = ControlPosition.BottomCenter, },
+            //Styles = [new() { elementType = "", featureType = "", stylers = [new GoogleMapStyleColor() { color = "", }] }],
             //Tilt = 10,
             Zoom = 14,
             ZoomControl = true,
-            //ZoomControlOptions = new() { Position = GoogleMapsComponents.Maps.ControlPosition.BottomRight, },
+            //ZoomControlOptions = new() { Position = ControlPosition.BottomRight, },
         };
     }
 
@@ -135,11 +139,11 @@ public partial class TravelSearch
 
     private async Task GoogleMapOnAfterInitAsync()
     {
-        GoogleMapsComponents.Maps.LatLngBounds _bounds = await GoogleMapsComponents.Maps.LatLngBounds.CreateAsync(TravelGoogleMap.JsRuntime);
+        LatLngBounds _bounds = await LatLngBounds.CreateAsync(TravelGoogleMap.JsRuntime);
         Console.WriteLine($"Bounds: {_bounds.ToJson()}");
 
         //Create instance of DirectionRenderer
-        directionsRenderer = await GoogleMapsComponents.Maps.DirectionsRenderer.CreateAsync(
+        directionsRenderer = await DirectionsRenderer.CreateAsync(
             TravelGoogleMap!.JsRuntime,
             new() { Map = TravelGoogleMap.InteropObject }
         );
@@ -176,7 +180,7 @@ public partial class TravelSearch
         if (!validationResult.IsValid)
         {
             IEnumerable<string> errors = validationResult.Errors.Select(static x => $"<li>{x.ErrorMessage}</li>");
-            _ = Snackbar.Add(new MarkupString($"<ul>{string.Join("", errors)}</ul>"), MudBlazor.Severity.Error);
+            _ = Snackbar.Add(new MarkupString($"<ul>{string.Join(string.Empty, errors)}</ul>"), MudBlazor.Severity.Error);
             return;
         }
 
@@ -186,14 +190,14 @@ public partial class TravelSearch
             await directionsRenderer.SetMap(TravelGoogleMap!.InteropObject);
 
         //Direction Request
-        GoogleMapsComponents.Maps.DirectionsRequest directionsRequest = new()
+        DirectionsRequest directionsRequest = new()
         {
             Origin = travelQueryModel.Origin,
             Destination = travelQueryModel.Destination,
             AvoidFerries = false,
             AvoidHighways = false,
             AvoidTolls = false,
-            DrivingOptions = new() { DepartureTime = DateTime.UtcNow, TrafficModel = GoogleMapsComponents.Maps.TrafficModel.bestguess, },
+            DrivingOptions = new() { DepartureTime = DateTime.UtcNow, TrafficModel = TrafficModel.BestGuess, },
             OptimizeWaypoints = false,
             ProvideRouteAlternatives = true,
             //Region = "es",
@@ -201,18 +205,18 @@ public partial class TravelSearch
             //{
             //    ArrivalTime = DateTime.UtcNow,
             //    DepartureTime = DateTime.UtcNow,
-            //    Modes = [GoogleMapsComponents.Maps.TransitMode.Bus, GoogleMapsComponents.Maps.TransitMode.Train],
-            //    RoutingPreference = GoogleMapsComponents.Maps.TransitRoutePreference.FewerTransfers,
+            //    Modes = [TransitMode.Bus, TransitMode.Train],
+            //    RoutingPreference = TransitRoutePreference.FewerTransfers,
             //},
-            TravelMode = GoogleMapsComponents.Maps.TravelMode.Driving,
-            //UnitSystem = GoogleMapsComponents.Maps.UnitSystem.Metric, // InvalidValueError: in property unitSystem: metric is not an accepted value
+            TravelMode = TravelMode.Driving,
+            //UnitSystem = UnitSystem.Metric, // InvalidValueError: in property unitSystem: metric is not an accepted value
             Waypoints = [
-                //new GoogleMapsComponents.Maps.DirectionsWaypoint() { Location = "Bethlehem, PA", Stopover = true }
+                //new DirectionsWaypoint() { Location = "Bethlehem, PA", Stopover = true }
             ],
         };
 
         //Calculate Route
-        GoogleMapsComponents.Maps.DirectionsResult? directionsResult = await directionsRenderer.Route(directionsRequest);
+        DirectionsResult? directionsResult = await directionsRenderer.Route(directionsRequest);
         if (directionsResult == null)
             return;
 
@@ -244,11 +248,11 @@ public partial class TravelSearch
             if (gasStationModel == null)
                 continue;
 
-            GoogleMapsComponents.Maps.AdvancedMarkerElementOptions advancedMarkerElementOptions = new()
+            AdvancedMarkerElementOptions advancedMarkerElementOptions = new()
             {
-                CollisionBehavior = GoogleMapsComponents.Maps.CollisionBehavior.REQUIRED,
+                CollisionBehavior = CollisionBehavior.Required,
                 Content = $"<div style='background-color:blue'>{gasStationModel.Rotulo}</div>",
-                //Content = new GoogleMapsComponents.Maps.PinElement() { },
+                //Content = new PinElement() { },
                 GmpClickable = true,
                 GmpDraggable = false,
                 Map = TravelGoogleMap.InteropObject,
@@ -257,8 +261,8 @@ public partial class TravelSearch
                 ZIndex = 0,
             };
 
-            GoogleMapsComponents.Maps.AdvancedMarkerElement advancedMarkerElement =
-                await GoogleMapsComponents.Maps.AdvancedMarkerElement.CreateAsync(TravelGoogleMap!.JsRuntime, advancedMarkerElementOptions);
+            AdvancedMarkerElement advancedMarkerElement =
+                await AdvancedMarkerElement.CreateAsync(TravelGoogleMap!.JsRuntime, advancedMarkerElementOptions);
 
             _ = advancedMarkerElements.Append(advancedMarkerElement);
         }
@@ -269,7 +273,7 @@ public partial class TravelSearch
         if (advancedMarkerElements == null)
             return;
 
-        foreach (GoogleMapsComponents.Maps.AdvancedMarkerElement markerListMarker in advancedMarkerElements)
+        foreach (AdvancedMarkerElement markerListMarker in advancedMarkerElements)
             await markerListMarker.SetMap(null);
 
         advancedMarkerElements.Clear();

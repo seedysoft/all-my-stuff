@@ -22,54 +22,54 @@ public static class GeometricHelper
             return (double)(Math.Cos(DegreesToRadians(latDegrees)) * EarthCircumferenceOnEquator / Core.Constants.Earth.Degrees);
         }
     }
-    public static double ExpandLatitude(double latDegrees, double lonDegrees, double kilometers)
-    {
-        // Length of 1 degree of latitude ranges from
-        //    68.70 miles at  0 deg N to
-        //    68.83          25 deg N (tip of Florida not including the Keys)
-        //    69.12          50 deg N (approximate US/Canada border)   (range = 0.29 mile = 1531 feet = 510 yards)
-        //    69.41 miles at 90 deg N (Compton's Encyclopedia Online v.3.0 www.comptons.com/encyclopedia/TABLES/150995113_T.html)
-        //    68.703 miles at equator to 69.407 at poles due to earth's slightly ellipsoid shape)
-        // "What is the distance between a degree of latitude and longitude?"
-        // www.geography.about.com/science/geography/library/faq/blqzdistancedegree.htm cached 12/05/00
+    //public static double ExpandLatitude(double latDegrees, double lonDegrees, double kilometers)
+    //{
+    //    // Length of 1 degree of latitude ranges from
+    //    //    68.70 miles at  0 deg N to
+    //    //    68.83          25 deg N (tip of Florida not including the Keys)
+    //    //    69.12          50 deg N (approximate US/Canada border)   (range = 0.29 mile = 1531 feet = 510 yards)
+    //    //    69.41 miles at 90 deg N (Compton's Encyclopedia Online v.3.0 www.comptons.com/encyclopedia/TABLES/150995113_T.html)
+    //    //    68.703 miles at equator to 69.407 at poles due to earth's slightly ellipsoid shape)
+    //    // "What is the distance between a degree of latitude and longitude?"
+    //    // www.geography.about.com/science/geography/library/faq/blqzdistancedegree.htm cached 12/05/00
 
-        GoogleMapsComponents.Maps.LatLngBoundsLiteral LatLngBounds = GetOneDegreeLatKilometers(latDegrees, lonDegrees, kilometers);
+    //    LatLngBoundsLiteral LatLngBounds = GetOneDegreeLatKilometers(latDegrees, lonDegrees, kilometers);
 
-        double DeltaLatitude = kilometers / Haversine.Distance(LatLngBounds.South, LatLngBounds.West, LatLngBounds.North, LatLngBounds.East);
+    //    double DeltaLatitude = kilometers / Haversine.Distance(LatLngBounds.South, LatLngBounds.West, LatLngBounds.North, LatLngBounds.East);
 
-        return (double)Math.Round(latDegrees + DeltaLatitude, 5);
+    //    return (double)Math.Round(latDegrees + DeltaLatitude, 5);
 
-        static GoogleMapsComponents.Maps.LatLngBoundsLiteral GetOneDegreeLatKilometers(
-            double latDegrees,
-            double lonDegrees,
-            double halfSideInKm = 0)
-        {
-            // Radius of Earth at given latitude
-            double radius = Core.Constants.Earth.RadiusMeanInMeters / 1_000;
+    //    static LatLngBoundsLiteral GetOneDegreeLatKilometers(
+    //        double latDegrees,
+    //        double lonDegrees,
+    //        double halfSideInKm = 0)
+    //    {
+    //        // Radius of Earth at given latitude
+    //        double radius = Core.Constants.Earth.RadiusMeanInMeters / 1_000;
 
-            double latRadians = DegreesToRadians(latDegrees);
-            // Radius of the parallel at given latitude
-            double pradius = radius * Math.Cos(latRadians);
+    //        double latRadians = DegreesToRadians(latDegrees);
+    //        // Radius of the parallel at given latitude
+    //        double pradius = radius * Math.Cos(latRadians);
 
-            double halfSide = 500d * halfSideInKm;
+    //        double halfSide = 500d * halfSideInKm;
 
-            double latRadiansMin = latRadians - (halfSide / radius);
-            double latRadiansMax = latRadians + (halfSide / radius);
+    //        double latRadiansMin = latRadians - (halfSide / radius);
+    //        double latRadiansMax = latRadians + (halfSide / radius);
 
-            double lonRadians = DegreesToRadians(lonDegrees);
+    //        double lonRadians = DegreesToRadians(lonDegrees);
 
-            double lonRadiansMin = lonRadians - (halfSide / pradius);
-            double lonRadiansMax = lonRadians + (halfSide / pradius);
+    //        double lonRadiansMin = lonRadians - (halfSide / pradius);
+    //        double lonRadiansMax = lonRadians + (halfSide / pradius);
 
-            return new()
-            {
-                North = RadiansToDegrees(latRadiansMax),
-                South = RadiansToDegrees(latRadiansMin),
-                East = RadiansToDegrees(lonRadiansMax),
-                West = RadiansToDegrees(lonRadiansMin),
-            };
-        }
-    }
+    //        return new()
+    //        {
+    //            North = RadiansToDegrees(latRadiansMax),
+    //            South = RadiansToDegrees(latRadiansMin),
+    //            East = RadiansToDegrees(lonRadiansMax),
+    //            West = RadiansToDegrees(lonRadiansMin),
+    //        };
+    //    }
+    //}
 
     private static class Haversine
     {
