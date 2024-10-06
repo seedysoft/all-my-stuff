@@ -23,6 +23,6 @@ internal sealed class Configurator : Utils.Dependencies.ConfiguratorBase
 
         hostApplicationBuilder.Services.TryAddScoped<Services.ObtainGasStationPricesService>();
 
-        hostApplicationBuilder.Services.TryAddScoped<GoogleMapsComponents.IBlazorGoogleMapsKeyService, Services.BlazorGoogleMapsKeyService>();
+        hostApplicationBuilder.Services.TryAddScoped<GoogleMapsLibrary.Interfaces.IBlazorGoogleMapsKeyService, Services.BlazorGoogleMapsKeyService>();
     }
 }

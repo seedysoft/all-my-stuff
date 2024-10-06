@@ -1,10 +1,11 @@
-﻿using Seedysoft.Libs.Utils.Extensions;
+﻿using GoogleMapsLibrary.Maps.Coordinates;
+using Seedysoft.Libs.Utils.Extensions;
 
 namespace Seedysoft.Libs.GasStationPrices.Core.ViewModels;
 
 public record class GasStationModel
 {
-    public required GoogleMapsComponents.Maps.LatLngLiteral LatLon { get; init; }
+    public required LatLngLiteral LatLon { get; init; }
 
     public required string Rotulo { get; init; }
 
