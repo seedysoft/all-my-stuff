@@ -7,11 +7,12 @@
     <StaticWebAssetProjectMode>Default</StaticWebAssetProjectMode>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="BlazorGoogleMaps" Version="4.7.14" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.10" />
   	<PackageReference Include="MudBlazor" Version="7.13.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Libs\GasStationPrices\Seedysoft.Libs.GasStationPrices.csproj" />
+    <ProjectReference Include="..\..\Libs\GoogleMapsJavascriptApi\GoogleMapsJavascriptApi.csproj" />
+    <ProjectReference Include="..\..\Libs\GoogleMapsLibrary\GoogleMapsLibrary.csproj" />
   </ItemGroup>
 </Project>
