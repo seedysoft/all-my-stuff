@@ -12,13 +12,14 @@ public record class TravelQueryModel
 
     public required IReadOnlyCollection<long> PetroleumProductsSelectedIds { get; set; } = [];
 
-    private LatLngBoundsLiteral bounds = new()
-    {
-        East = Libs.Core.Constants.Earth.MaxLongitudeInDegrees,
-        North = Libs.Core.Constants.Earth.MaxLatitudeInDegrees,
-        South = Libs.Core.Constants.Earth.MinLatitudeInDegrees,
-        West = Libs.Core.Constants.Earth.MinLongitudeInDegrees,
-    };
+    private LatLngBoundsLiteral bounds;
+    //private LatLngBoundsLiteral bounds = new(new GoogleMapsLibrary.GmpJsInterop() )
+    //{
+    //    East = Libs.Core.Constants.Earth.MaxLongitudeInDegrees,
+    //    North = Libs.Core.Constants.Earth.MaxLatitudeInDegrees,
+    //    South = Libs.Core.Constants.Earth.MinLatitudeInDegrees,
+    //    West = Libs.Core.Constants.Earth.MinLongitudeInDegrees,
+    //};
     public LatLngBoundsLiteral Bounds
     {
         get => bounds;

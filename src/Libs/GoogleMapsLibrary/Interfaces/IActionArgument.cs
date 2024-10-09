@@ -2,5 +2,5 @@
 
 internal interface IActionArgument
 {
-    JsObjectRef JsObjectRef { get; set; }
+    GmpJsInterop GmpJsInterop { get; set; }
 }

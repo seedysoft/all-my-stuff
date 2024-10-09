@@ -17,7 +17,7 @@ public partial class TravelSearch
 
     private MudBlazor.MudForm TravelQueryMudForm { get; set; } = default!;
 
-    private GoogleMapsJavascriptApi.GoogleMap TravelGoogleMap { get; set; } = default!;
+    private GoogleMapsJavascriptApi.GoogleMapComponent TravelGoogleMap { get; set; } = default!;
     private MapOptions mapOptions = default!;
     private DirectionsRenderer directionsRenderer = default!;
     private readonly Stack<AdvancedMarkerElement> advancedMarkerElements = new();
@@ -176,106 +176,106 @@ public partial class TravelSearch
 
     private async Task LoadDataAsync()
     {
-        FluentValidation.Results.ValidationResult validationResult = await travelQueryModelFluentValidator.ValidateAsync(travelQueryModel);
-        if (!validationResult.IsValid)
-        {
-            IEnumerable<string> errors = validationResult.Errors.Select(static x => $"<li>{x.ErrorMessage}</li>");
-            _ = Snackbar.Add(new MarkupString($"<ul>{string.Join(string.Empty, errors)}</ul>"), MudBlazor.Severity.Error);
-            return;
-        }
+        //        FluentValidation.Results.ValidationResult validationResult = await travelQueryModelFluentValidator.ValidateAsync(travelQueryModel);
+        //        if (!validationResult.IsValid)
+        //        {
+        //            IEnumerable<string> errors = validationResult.Errors.Select(static x => $"<li>{x.ErrorMessage}</li>");
+        //            _ = Snackbar.Add(new MarkupString($"<ul>{string.Join(string.Empty, errors)}</ul>"), MudBlazor.Severity.Error);
+        //            return;
+        //        }
 
-        await RemoveAllMarkersAsync();
+        //        await RemoveAllMarkersAsync();
 
-        if (await directionsRenderer.GetMap() is null)
-            await directionsRenderer.SetMap(TravelGoogleMap!.InteropObject);
+        //        if (await directionsRenderer.GetMap() is null)
+        //            await directionsRenderer.SetMap(TravelGoogleMap!.InteropObject);
 
-        //Direction Request
-        DirectionsRequest directionsRequest = new()
-        {
-            Origin = travelQueryModel.Origin,
-            Destination = travelQueryModel.Destination,
-            AvoidFerries = false,
-            AvoidHighways = false,
-            AvoidTolls = false,
-            DrivingOptions = new() { DepartureTime = DateTime.UtcNow, TrafficModel = TrafficModel.BestGuess, },
-            OptimizeWaypoints = false,
-            ProvideRouteAlternatives = true,
-            //Region = "es",
-            //TransitOptions = new()
-            //{
-            //    ArrivalTime = DateTime.UtcNow,
-            //    DepartureTime = DateTime.UtcNow,
-            //    Modes = [TransitMode.Bus, TransitMode.Train],
-            //    RoutingPreference = TransitRoutePreference.FewerTransfers,
-            //},
-            TravelMode = TravelMode.Driving,
-            //UnitSystem = UnitSystem.Metric, // InvalidValueError: in property unitSystem: metric is not an accepted value
-            Waypoints = [
-                //new DirectionsWaypoint() { Location = "Bethlehem, PA", Stopover = true }
-            ],
-        };
+        //        //Direction Request
+        //        DirectionsRequest directionsRequest = new()
+        //        {
+        //            Origin = travelQueryModel.Origin,
+        //            Destination = travelQueryModel.Destination,
+        //            AvoidFerries = false,
+        //            AvoidHighways = false,
+        //            AvoidTolls = false,
+        //            DrivingOptions = new() { DepartureTime = DateTime.UtcNow, TrafficModel = TrafficModel.BestGuess, },
+        //            OptimizeWaypoints = false,
+        //            ProvideRouteAlternatives = true,
+        //            //Region = "es",
+        //            //TransitOptions = new()
+        //            //{
+        //            //    ArrivalTime = DateTime.UtcNow,
+        //            //    DepartureTime = DateTime.UtcNow,
+        //            //    Modes = [TransitMode.Bus, TransitMode.Train],
+        //            //    RoutingPreference = TransitRoutePreference.FewerTransfers,
+        //            //},
+        //            TravelMode = TravelMode.Driving,
+        //            //UnitSystem = UnitSystem.Metric, // InvalidValueError: in property unitSystem: metric is not an accepted value
+        //            Waypoints = [
+        //                //new DirectionsWaypoint() { Location = "Bethlehem, PA", Stopover = true }
+        //            ],
+        //        };
 
-        //Calculate Route
-        DirectionsResult? directionsResult = await directionsRenderer.Route(directionsRequest);
-        if (directionsResult == null)
-            return;
+        //        //Calculate Route
+        //        DirectionsResult? directionsResult = await directionsRenderer.Route(directionsRequest);
+        //        if (directionsResult == null)
+        //            return;
 
-        travelQueryModel.Bounds.North =
-            directionsResult.Routes.Select(static x => x.Bounds?.North ?? Libs.Core.Constants.Earth.MaxLatitudeInDegrees).Max();
-        travelQueryModel.Bounds.South =
-            directionsResult.Routes.Select(static x => x.Bounds?.South ?? Libs.Core.Constants.Earth.MinLatitudeInDegrees).Min();
-        travelQueryModel.Bounds.East =
-            directionsResult.Routes.Select(static x => x.Bounds?.East ?? Libs.Core.Constants.Earth.MaxLongitudeInDegrees).Max();
-        travelQueryModel.Bounds.West =
-            directionsResult.Routes.Select(static x => x.Bounds?.West ?? Libs.Core.Constants.Earth.MinLongitudeInDegrees).Min();
+        //        travelQueryModel.Bounds.North =
+        //            directionsResult.Routes.Select(static x => x.Bounds?.North ?? Libs.Core.Constants.Earth.MaxLatitudeInDegrees).Max();
+        //        travelQueryModel.Bounds.South =
+        //            directionsResult.Routes.Select(static x => x.Bounds?.South ?? Libs.Core.Constants.Earth.MinLatitudeInDegrees).Min();
+        //        travelQueryModel.Bounds.East =
+        //            directionsResult.Routes.Select(static x => x.Bounds?.East ?? Libs.Core.Constants.Earth.MaxLongitudeInDegrees).Max();
+        //        travelQueryModel.Bounds.West =
+        //            directionsResult.Routes.Select(static x => x.Bounds?.West ?? Libs.Core.Constants.Earth.MinLongitudeInDegrees).Min();
 
-        StringContent requestContent = new(
-            System.Text.Json.JsonSerializer.Serialize(travelQueryModel),
-            System.Text.Encoding.UTF8,
-            System.Net.Mime.MediaTypeNames.Application.Json);
-        string FromUri = $"{NavManager.BaseUri}{Constants.TravelUris.Controller}/{Constants.TravelUris.Actions.GetGasStations}";
-        HttpRequestMessage requestMessage = new(HttpMethod.Post, FromUri) { Content = requestContent, };
-#pragma warning disable CA1416 // Validate platform compatibility
-        HttpResponseMessage response = Http.Send(requestMessage);
-#pragma warning restore CA1416 // Validate platform compatibility
+        //        StringContent requestContent = new(
+        //            System.Text.Json.JsonSerializer.Serialize(travelQueryModel),
+        //            System.Text.Encoding.UTF8,
+        //            System.Net.Mime.MediaTypeNames.Application.Json);
+        //        string FromUri = $"{NavManager.BaseUri}{Constants.TravelUris.Controller}/{Constants.TravelUris.Actions.GetGasStations}";
+        //        HttpRequestMessage requestMessage = new(HttpMethod.Post, FromUri) { Content = requestContent, };
+        //#pragma warning disable CA1416 // Validate platform compatibility
+        //        HttpResponseMessage response = Http.Send(requestMessage);
+        //#pragma warning restore CA1416 // Validate platform compatibility
 
-        if (!response.IsSuccessStatusCode)
-            return;
+        //        if (!response.IsSuccessStatusCode)
+        //            return;
 
-        await foreach (Libs.GasStationPrices.Core.ViewModels.GasStationModel? gasStationModel in
-            response.Content.ReadFromJsonAsAsyncEnumerable<Libs.GasStationPrices.Core.ViewModels.GasStationModel>()!)
-        {
-            if (gasStationModel == null)
-                continue;
+        //        await foreach (Libs.GasStationPrices.Core.ViewModels.GasStationModel? gasStationModel in
+        //            response.Content.ReadFromJsonAsAsyncEnumerable<Libs.GasStationPrices.Core.ViewModels.GasStationModel>()!)
+        //        {
+        //            if (gasStationModel == null)
+        //                continue;
 
-            AdvancedMarkerElementOptions advancedMarkerElementOptions = new()
-            {
-                CollisionBehavior = CollisionBehavior.Required,
-                Content = $"<div style='background-color:blue'>{gasStationModel.Rotulo}</div>",
-                //Content = new PinElement() { },
-                GmpClickable = true,
-                GmpDraggable = false,
-                Map = TravelGoogleMap.InteropObject,
-                Position = gasStationModel.LatLon,
-                Title = gasStationModel.Rotulo,
-                ZIndex = 0,
-            };
+        //            AdvancedMarkerElementOptions advancedMarkerElementOptions = new()
+        //            {
+        //                CollisionBehavior = CollisionBehavior.Required,
+        //                Content = $"<div style='background-color:blue'>{gasStationModel.Rotulo}</div>",
+        //                //Content = new PinElement() { },
+        //                GmpClickable = true,
+        //                GmpDraggable = false,
+        //                Map = TravelGoogleMap.InteropObject,
+        //                Position = gasStationModel.LatLon,
+        //                Title = gasStationModel.Rotulo,
+        //                ZIndex = 0,
+        //            };
 
-            AdvancedMarkerElement advancedMarkerElement =
-                await AdvancedMarkerElement.CreateAsync(TravelGoogleMap!.JsRuntime, advancedMarkerElementOptions);
+        //            AdvancedMarkerElement advancedMarkerElement =
+        //                await AdvancedMarkerElement.CreateAsync(TravelGoogleMap!.JsRuntime, advancedMarkerElementOptions);
 
-            _ = advancedMarkerElements.Append(advancedMarkerElement);
-        }
+        //            _ = advancedMarkerElements.Append(advancedMarkerElement);
+        //        }
     }
 
     private async Task RemoveAllMarkersAsync()
     {
-        if (advancedMarkerElements == null)
-            return;
+        //if (advancedMarkerElements == null)
+        //    return;
 
-        foreach (AdvancedMarkerElement markerListMarker in advancedMarkerElements)
-            await markerListMarker.SetMap(null);
+        //foreach (AdvancedMarkerElement markerListMarker in advancedMarkerElements)
+        //    await markerListMarker.SetMap(null);
 
-        advancedMarkerElements.Clear();
+        //advancedMarkerElements.Clear();
     }
 }

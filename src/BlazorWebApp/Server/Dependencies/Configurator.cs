@@ -1,4 +1,5 @@
-﻿using MudBlazor.Services;
+﻿using Microsoft.JSInterop;
+using MudBlazor.Services;
 
 namespace Seedysoft.BlazorWebApp.Server.Dependencies;
 
@@ -30,6 +31,9 @@ internal sealed class Configurator : Libs.Utils.Dependencies.ConfiguratorBase
 
         _ = hostApplicationBuilder.Services.AddHostedService<WebComparer.Lib.Services.WebComparerCronBackgroundService>();
 #endif
+
+        hostApplicationBuilder.Services
+            .AddScoped(static serviceProvider => new GoogleMapsLibrary.GmpJsInterop(serviceProvider.GetRequiredService<IJSRuntime>()));
 
         // Add services to the container.
         _ = hostApplicationBuilder.Services
