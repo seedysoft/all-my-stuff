@@ -8,15 +8,15 @@
 /// </summary>
 public class DirectionsResult
 {
-    ///// <summary>
-    ///// An array of DirectionsGeocodedWaypoints, each of which contains information about the geocoding of origin, destination and waypoints.
-    ///// </summary>
-    //[JsonPropertyName("geocoded_waypoints")]
-    //public IEnumerable<DirectionsGeocodedWaypoint> GeoCodedWaypoints { get; set; }
+    //    ///// <summary>
+    //    ///// An array of DirectionsGeocodedWaypoints, each of which contains information about the geocoding of origin, destination and waypoints.
+    //    ///// </summary>
+    //    //[JsonPropertyName("geocoded_waypoints")]
+    //    //public IEnumerable<DirectionsGeocodedWaypoint> GeoCodedWaypoints { get; set; }
 
-    /// <summary>
-    /// An array of DirectionsRoutes, each of which contains information about the legs and steps of which it is composed. 
-    /// There will only be one route unless the DirectionsRequest was made with provideRouteAlternatives set to true.
-    /// </summary>
-    public IEnumerable<DirectionsRoute> Routes { get; set; }
+    //    /// <summary>
+    //    /// An array of DirectionsRoutes, each of which contains information about the legs and steps of which it is composed. 
+    //    /// There will only be one route unless the DirectionsRequest was made with provideRouteAlternatives set to true.
+    //    /// </summary>
+    //    public IEnumerable<DirectionsRoute> Routes { get; set; }
 }

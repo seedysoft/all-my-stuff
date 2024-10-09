@@ -1,7 +1,7 @@
 ﻿using System.Reflection;
 using System.Text.Json;
 
-namespace GoogleMapsLibrary.Helpers;
+namespace GoogleMapsLibrary.Serialization;
 
 /// <summary>
 /// 
