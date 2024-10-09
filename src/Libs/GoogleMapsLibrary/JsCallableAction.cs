@@ -4,25 +4,14 @@ using System.Text.Json;
 
 namespace GoogleMapsLibrary;
 
-public class JsCallableAction
+public class JsCallableAction(IJSRuntime jsRuntime, Delegate @delegate, params Type[] argumentTypes)
 {
-    private readonly Delegate _delegate;
-    private readonly Type[] _argumentTypes;
-    private readonly IJSRuntime _jsRuntime;
-
-    public JsCallableAction(IJSRuntime jsRuntime, Delegate @delegate, params Type[] argumentTypes)
-    {
-        _jsRuntime = jsRuntime;
-        _delegate = @delegate;
-        _argumentTypes = argumentTypes;
-    }
-
     [JSInvokable]
     public void Invoke(string args, string guid)
     {
-        if (string.IsNullOrWhiteSpace(args) || _argumentTypes.Length == 0)
+        if (string.IsNullOrWhiteSpace(args) || argumentTypes.Length == 0)
         {
-            _ = _delegate.DynamicInvoke();
+            _ = @delegate.DynamicInvoke();
             return;
         }
 
@@ -30,17 +19,17 @@ public class JsCallableAction
             .RootElement
             .EnumerateArray();
 
-        object?[] arguments = _argumentTypes.Zip(jArray, (type, jToken) => new { jToken, type })
+        object?[] arguments = argumentTypes.Zip(jArray, (type, jToken) => new { jToken, type })
             .Select(x =>
             {
-                object? obj =Serialization. Helper.DeSerializeObject(x.jToken, x.type);
+                object? obj = Serialization.Helper.DeSerializeObject(x.jToken, x.type);
                 if (obj is IActionArgument actionArg)
-                    actionArg.JsObjectRef = new JsObjectRef(_jsRuntime, new Guid(guid));
+                    actionArg.GmpJsInterop = new GmpJsInterop(jsRuntime/*, new Guid(guid)*/);
 
                 return obj;
             })
             .ToArray();
 
-        _ = _delegate.DynamicInvoke(arguments);
+        _ = @delegate.DynamicInvoke(arguments);
     }
 }

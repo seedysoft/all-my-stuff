@@ -1,4 +1,6 @@
 ﻿using GoogleMapsLibrary.Maps;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.JSInterop;
 
 namespace GoogleMapsLibrary.Core;
 
@@ -8,77 +10,75 @@ namespace GoogleMapsLibrary.Core;
 /// Unless otherwise noted, this is not true of other classes in the API, and inheriting from other classes in the API is not supported.
 /// </summary>
 /// <see href="https://developers.google.com/maps/documentation/javascript/reference/event#MVCObject"/>
-public abstract class MVCObject(JsObjectRef jsObjectRef) : IDisposable
+public abstract class MVCObject(/*[FromKeyedServices(nameof(GmpJsInterop))]*/ /*GmpJsInterop gmpJsInterop*/) : IDisposable, IAsyncDisposable
 {
-    protected JsObjectRef _jsObjectRef { get; private set; } = jsObjectRef;
-    private readonly Dictionary<string, List<MapEventListener>> EventListeners = [];
+    //private readonly Dictionary<string, List<MapEventListener>> EventListeners = [];
+
+    //private void AddEvent(string eventName, MapEventListener listener)
+    //{
+    //    if (!EventListeners.TryGetValue(eventName, out List<MapEventListener>? collection))
+    //    {
+    //        collection = [];
+    //        EventListeners.Add(eventName, collection);
+    //    }
+
+    //    collection.Add(listener);
+    //}
+
+    //public async Task<MapEventListener> AddListener(string eventName, Action handler)
+    //{
+    //    JsObjectRef listenerRef = await gmpJsInterop.InvokeWithReturnedObjectRefAsync("addListener", eventName, handler);
+
+    //    var eventListener = new MapEventListener(listenerRef);
+    //    AddEvent(eventName, eventListener);
+    //    return eventListener;
+    //}
+
+    //public async Task<MapEventListener> AddListener<T>(string eventName, Action<T> handler)
+    //{
+    //    JsObjectRef listenerRef = await gmpJsInterop.InvokeWithReturnedObjectRefAsync("addListener", eventName, handler);
+
+    //    var eventListener = new MapEventListener(listenerRef);
+    //    AddEvent(eventName, eventListener);
+    //    return eventListener;
+    //}
+
+    ////Note: Might want to wrap the handler with our own handler to make sure that we dispose the event after trigger?
+    //public async Task<MapEventListener> AddListenerOnce(string eventName, Action handler)
+    //{
+    //    JsObjectRef listenerRef = await gmpJsInterop.InvokeWithReturnedObjectRefAsync("addListenerOnce", eventName, handler);
+
+    //    var eventListener = new MapEventListener(listenerRef);
+    //    AddEvent(eventName, eventListener);
+    //    return eventListener;
+    //}
+
+    //public async Task<MapEventListener> AddListenerOnce<T>(string eventName, Action<T> handler)
+    //{
+    //    JsObjectRef listenerRef = await gmpJsInterop.InvokeWithReturnedObjectRefAsync("addListenerOnce", eventName, handler);
+
+    //    var eventListener = new MapEventListener(listenerRef);
+    //    AddEvent(eventName, eventListener);
+    //    return eventListener;
+    //}
+
+    //public async Task ClearListeners(string eventName)
+    //{
+    //    if (EventListeners.TryGetValue(eventName, out List<MapEventListener>? listeners))
+    //    {
+    //        foreach (MapEventListener? listener in listeners.Where(listener => !listener.IsRemoved))
+    //            await listener.RemoveAsync();
+
+    //        //IMHO is better preserving the knowledge that Marker had some EventListeners attached to "eventName" in the past
+    //        //so, instead to clear the list and remove the key from dictionary, I prefer to leave the key with an empty list
+    //        EventListeners[eventName].Clear();
+    //        //EventListeners.Remove(eventName);
+    //    }
+    //}
+
+    #region Dispose
+
     private bool _isDisposed;
-
-    private void AddEvent(string eventName, MapEventListener listener)
-    {
-        if (!EventListeners.TryGetValue(eventName, out List<MapEventListener>? collection))
-        {
-            collection = [];
-            EventListeners.Add(eventName, collection);
-        }
-
-        collection.Add(listener);
-    }
-
-    public async Task<MapEventListener> AddListener(string eventName, Action handler)
-    {
-        JsObjectRef listenerRef = await _jsObjectRef.InvokeWithReturnedObjectRefAsync(
-            "addListener", eventName, handler);
-
-        var eventListener = new MapEventListener(listenerRef);
-        AddEvent(eventName, eventListener);
-        return eventListener;
-    }
-
-    public async Task<MapEventListener> AddListener<T>(string eventName, Action<T> handler)
-    {
-        JsObjectRef listenerRef = await _jsObjectRef.InvokeWithReturnedObjectRefAsync(
-            "addListener", eventName, handler);
-
-        var eventListener = new MapEventListener(listenerRef);
-        AddEvent(eventName, eventListener);
-        return eventListener;
-    }
-
-    //Note: Might want to wrap the handler with our own handler to make sure that we dispose the event after trigger?
-    public async Task<MapEventListener> AddListenerOnce(string eventName, Action handler)
-    {
-        JsObjectRef listenerRef = await _jsObjectRef.InvokeWithReturnedObjectRefAsync(
-            "addListenerOnce", eventName, handler);
-
-        var eventListener = new MapEventListener(listenerRef);
-        AddEvent(eventName, eventListener);
-        return eventListener;
-    }
-
-    public async Task<MapEventListener> AddListenerOnce<T>(string eventName, Action<T> handler)
-    {
-        JsObjectRef listenerRef = await _jsObjectRef.InvokeWithReturnedObjectRefAsync(
-            "addListenerOnce", eventName, handler);
-
-        var eventListener = new MapEventListener(listenerRef);
-        AddEvent(eventName, eventListener);
-        return eventListener;
-    }
-
-    public async Task ClearListeners(string eventName)
-    {
-        if (EventListeners.TryGetValue(eventName, out List<MapEventListener>? listeners))
-        {
-            foreach (MapEventListener? listener in listeners.Where(listener => !listener.IsRemoved))
-                await listener.RemoveAsync();
-
-            //IMHO is better preserving the knowledge that Marker had some EventListeners attached to "eventName" in the past
-            //so, instead to clear the list and remove the key from dictionary, I prefer to leave the key with an empty list
-            EventListeners[eventName].Clear();
-            //EventListeners.Remove(eventName);
-        }
-    }
 
     public virtual async ValueTask DisposeAsync()
     {
@@ -98,18 +98,16 @@ public abstract class MVCObject(JsObjectRef jsObjectRef) : IDisposable
     /// </summary>
     protected virtual async ValueTask DisposeAsyncCore()
     {
-        foreach (MapEventListener? eventListener in EventListeners.SelectMany(listener => listener.Value))
-        {
-            if (eventListener.IsRemoved)
-            {
-                continue;
-            }
+        //foreach (MapEventListener? eventListener in EventListeners.SelectMany(listener => listener.Value))
+        //{
+        //    if (eventListener.IsRemoved)
+        //        continue;
 
-            await eventListener.DisposeAsync();
-        }
+        //    await eventListener.DisposeAsync();
+        //}
 
-        EventListeners.Clear();
-        _ = await _jsObjectRef.DisposeAsync();
+        //EventListeners.Clear();
+        //await gmpJsInterop.DisposeAsync();
     }
 
     protected virtual void Dispose(bool disposing)
@@ -135,4 +133,6 @@ public abstract class MVCObject(JsObjectRef jsObjectRef) : IDisposable
         Dispose(disposing: true);
         GC.SuppressFinalize(this);
     }
+
+    #endregion
 }
