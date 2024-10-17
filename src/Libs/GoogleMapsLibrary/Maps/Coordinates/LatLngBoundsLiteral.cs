@@ -1,6 +1,4 @@
-﻿using Microsoft.JSInterop;
-
-namespace GoogleMapsLibrary.Maps.Coordinates;
+﻿namespace GoogleMapsLibrary.Maps.Coordinates;
 
 /// <summary>
 /// Object literals are accepted in place of <see cref="LatLngBounds"> objects throughout the API.
@@ -8,7 +6,7 @@ namespace GoogleMapsLibrary.Maps.Coordinates;
 /// All <see cref="South">, <see cref="West"/>, <see cref="North"/> and <see cref="East"/> must be set, otherwise an exception is thrown.
 /// </summary>
 /// <remarks>https://developers.google.com/maps/documentation/javascript/reference/coordinates#LatLngBoundsLiteral</remarks>
-public class LatLngBoundsLiteral : LatLngBounds
+public class LatLngBoundsLiteral
 {
     //    /// <summary>
     //    /// Constructs a new empty bounds.
@@ -33,7 +31,7 @@ public class LatLngBoundsLiteral : LatLngBounds
     //        return obj;
     //    }
 
-    protected LatLngBoundsLiteral(GmpJsInterop jsObjectRef) : base(jsObjectRef) { }
+    //protected LatLngBoundsLiteral(GmpJsInterop jsObjectRef) : base(jsObjectRef) { }
 
     //    //protected LatLngBoundsLiteral(LatLngBounds latLngBounds) : base(latLngBounds) { }
 

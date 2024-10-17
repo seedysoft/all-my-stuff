@@ -1,5 +1,4 @@
 ﻿using GoogleMapsLibrary.Maps;
-using GoogleMapsLibrary.Serialization;
 
 namespace GoogleMapsLibrary.Routes;
 

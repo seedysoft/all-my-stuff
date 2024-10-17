@@ -8,7 +8,7 @@ namespace GoogleMapsLibrary.Maps.Coordinates;
 /// <remarks>https://developers.google.com/maps/documentation/javascript/reference/coordinates#LatLngBounds</remarks>
 public class LatLngBounds /*: IDisposable*/
 {
-        protected internal readonly GmpJsInterop _jsObjectRef;
+    protected internal readonly GmpJsInterop _jsObjectRef;
 
     /// <summary>
     /// Constructs a new empty bounds.
@@ -39,6 +39,7 @@ public class LatLngBounds /*: IDisposable*/
     //        return obj;
     //    }
 
+    internal LatLngBounds() { }
     protected LatLngBounds(GmpJsInterop jsObjectRef) => _jsObjectRef = jsObjectRef;
 
     //    public void Dispose()

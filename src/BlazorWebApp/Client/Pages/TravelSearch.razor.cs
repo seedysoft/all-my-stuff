@@ -49,8 +49,6 @@ public partial class TravelSearch
         string FromUri = $"{NavManager.BaseUri}{Constants.PetroleumProductsUris.Controller}/{Constants.PetroleumProductsUris.Actions.ForFilter}";
         PetroleumProducts = await Http.GetFromJsonAsync<IEnumerable<Libs.GasStationPrices.Core.Json.Minetur.ProductoPetrolifero>>(FromUri) ?? [];
 
-        //PetroleumProducts = File.ReadAllText("C:\\Users\\alfon\\Downloads\\RouteResponse.json").FromJson<IEnumerable<Libs.GasStationPrices.Core.Json.Minetur.ProductoPetrolifero>>();
-
         travelQueryModel.PetroleumProductsSelectedIds = PetroleumProducts
             .Where(static x => x.Abreviatura.StartsWith("G9"))
             .Select(static x => x.IdProducto)

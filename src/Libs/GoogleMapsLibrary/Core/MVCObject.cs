@@ -1,8 +1,4 @@
-﻿using GoogleMapsLibrary.Maps;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.JSInterop;
-
-namespace GoogleMapsLibrary.Core;
+﻿namespace GoogleMapsLibrary.Core;
 
 /// <summary>
 /// Base class implementing KVO.

@@ -78,7 +78,7 @@ internal static class IJSRuntimeExtensions
     //    {
     //        string? guid = await jsRuntime.InvokeAsync<string?>(identifier, jsFriendlyArgs);
 
-    //        return guid == null ? default : (TRes)JsObjectRefInstances.GetInstance(guid);
+    //        return guid == null ? default : /*(TRes)JsObjectRefInstances.GetInstance(guid)*/ default;
     //    }
 
     //    if (typeof(IOneOf).IsAssignableFrom(typeof(TRes)))

@@ -40,10 +40,12 @@ public class Program : Libs.Core.ProgramBase
             .UseStaticFiles()
             .UseAntiforgery();
 
-        _ = webApplication.MapRazorComponents<Components.App>()
+        _ = webApplication
+            .MapRazorComponents<Components.App>()
             .AddInteractiveServerRenderMode()
             .AddInteractiveWebAssemblyRenderMode()
-            .AddAdditionalAssemblies(typeof(Client._Imports).Assembly);
+            .AddAdditionalAssemblies(typeof(Client._Imports).Assembly)
+            /*.AddAdditionalAssemblies(typeof(GoogleMapsJavascriptApi.GoogleMapComponent).Assembly)*/;
 
         _ = webApplication.MapControllers();
 
