@@ -1,6 +1,4 @@
-﻿using GoogleMapsLibrary.Interfaces;
-
-namespace GoogleMapsLibrary.Maps.Data;
+﻿namespace GoogleMapsLibrary.Maps.Data;
 
 /// <summary>
 /// A feature has a geometry, an id, and a set of properties

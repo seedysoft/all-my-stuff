@@ -1,8 +1,4 @@
-﻿using GoogleMapsLibrary.Core;
-using GoogleMapsLibrary.Maps.Coordinates;
-using Microsoft.JSInterop;
-
-namespace GoogleMapsLibrary.Maps;
+﻿namespace GoogleMapsLibrary.Maps;
 
 public class Projection /*: IDisposable*/
 {

@@ -1,10 +1,6 @@
 ﻿using GoogleMapsLibrary.Core;
-using GoogleMapsLibrary.Helpers;
-using GoogleMapsLibrary.Interfaces;
-using GoogleMapsLibrary.Maps.Coordinates;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
-using OneOf;
 
 namespace GoogleMapsLibrary.Maps;
 
@@ -23,7 +19,7 @@ public class Map : MVCObject/*, IJsObjectRef, IAsyncDisposable*/
 
     //private bool _isDisposed;
 
-    //public MapData Data { get; private set; }
+    public MapData Data { get; private set; }
 
     public static async Task<Map> CreateAsync(IJSRuntime jsRuntime, ElementReference mapDiv, MapOptions? opts = null)
     {
@@ -31,20 +27,21 @@ public class Map : MVCObject/*, IJsObjectRef, IAsyncDisposable*/
             await jsRuntime.InvokeVoidAsync("blazorGoogleMaps.objectManager.initMap", opts.ApiLoadOptions);
 
         //GmpJsInterop jsObjectRef = await GmpJsInterop.CreateAsync(jsRuntime, "google.maps.Map", mapDiv, opts);
-        //GmpJsInterop dataObjectRef = await jsObjectRef.GetObjectReference("data");
-        //var data = new MapData(dataObjectRef);
+        ////GmpJsInterop dataObjectRef = await jsObjectRef.GetObjectReference("data");
+        //var data = new MapData(/*dataObjectRef*/);
         //var map = new Map(jsObjectRef, data);
 
-        ////JsObjectRefInstances.Add(map);
+        Map map = await jsRuntime.InvokeAsync<Map>("blazorGoogleMaps.objectManager.createMap", mapDiv, opts);
+        //JsObjectRefInstances.Add(map);
 
-        ////DemoMapId = await jsObjectRef.InvokePropertyAsync<string>("DEMO_MAP_ID");
+        //DemoMapId = await jsObjectRef.InvokePropertyAsync<string>("DEMO_MAP_ID");
 
-        //return map;
+        return map;
 
-        return await new GmpJsInterop(jsRuntime).InvokeAsync<Map>("google.maps.Map", mapDiv, opts);
+        //return await new GmpJsInterop(jsRuntime).InvokeAsync<Map>("google.maps.Map", mapDiv, opts);
     }
 
-    //private Map(JsObjectRef jsObjectRef, MapData data) : base(jsObjectRef) => Data = data;
+    private Map(GmpJsInterop jsObjectRef, MapData data) /*: base(jsObjectRef)*/ => Data = data;
 
     //public async Task AddControl(ControlPosition position, ElementReference reference)
     //    => _ = await _jsObjectRef.JSRuntime.MyInvokeAsync<object>("blazorGoogleMaps.objectManager.addControls", Guid.ToString(), position, reference);

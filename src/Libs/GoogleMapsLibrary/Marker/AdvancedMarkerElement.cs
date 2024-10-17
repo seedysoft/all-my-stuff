@@ -1,9 +1,4 @@
 ﻿using GoogleMapsLibrary.Core;
-using GoogleMapsLibrary.Interfaces;
-using GoogleMapsLibrary.Maps;
-using GoogleMapsLibrary.Maps.Coordinates;
-using Microsoft.JSInterop;
-using OneOf;
 
 namespace GoogleMapsLibrary.Marker;
 

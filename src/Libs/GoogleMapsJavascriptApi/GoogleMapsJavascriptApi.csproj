@@ -11,10 +11,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Remove="wwwroot\gmpJsInterop.js" />
-  </ItemGroup>
-
-  <ItemGroup>
     <SupportedPlatform Include="browser" />
   </ItemGroup>
 

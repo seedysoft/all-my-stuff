@@ -1,9 +1,4 @@
-﻿using GoogleMapsLibrary.Maps;
-using GoogleMapsLibrary.Maps.Coordinates;
-using GoogleMapsLibrary.Serialization;
-using OneOf;
-
-namespace GoogleMapsLibrary.Marker;
+﻿namespace GoogleMapsLibrary.Marker;
 
 /// <summary>
 /// 

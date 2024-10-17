@@ -1,5 +1,4 @@
 ﻿using GoogleMapsLibrary.Core;
-using System.Collections;
 
 namespace GoogleMapsLibrary.Maps;
 

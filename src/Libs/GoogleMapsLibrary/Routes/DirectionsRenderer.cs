@@ -1,5 +1,4 @@
 ﻿using GoogleMapsLibrary.Core;
-using GoogleMapsLibrary.Maps;
 using Microsoft.JSInterop;
 
 namespace GoogleMapsLibrary.Routes;
