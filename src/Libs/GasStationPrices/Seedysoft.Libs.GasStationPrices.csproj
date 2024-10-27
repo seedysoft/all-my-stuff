@@ -8,11 +8,6 @@
     <RuntimeIdentifiers>linux-arm64;linux-x64;win-x64</RuntimeIdentifiers>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Remove="Core\Json\Google\Directions\Response\**" />
-    <EmbeddedResource Remove="Core\Json\Google\Directions\Response\**" />
-    <None Remove="Core\Json\Google\Directions\Response\**" />
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="appsettings.Libs.GasStationPrices.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -50,8 +45,5 @@
   </ItemGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="Seedysoft.Libs.GasStationPrices.Tests" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Core\Json\Google\Directions\" />
   </ItemGroup>
 </Project>
