@@ -1,4 +1,6 @@
-﻿namespace Seedysoft.Libs.GasStationPrices.Core.ViewModels;
+﻿using Seedysoft.Libs.Core.Models;
+
+namespace Seedysoft.Libs.GasStationPrices.Core.ViewModels;
 
 public record class TravelQueryModel
 {
@@ -10,14 +12,14 @@ public record class TravelQueryModel
 
     public required IReadOnlyCollection<long> PetroleumProductsSelectedIds { get; set; } = [];
 
-    private GoogleMapsComponents.Maps.LatLngBoundsLiteral bounds = new()
+    private GoogleMapsRazorClassLib.Directions.LatLngBoundsLiteral bounds = new()
     {
         East = Libs.Core.Constants.Earth.MaxLongitudeInDegrees,
         North = Libs.Core.Constants.Earth.MaxLatitudeInDegrees,
         South = Libs.Core.Constants.Earth.MinLatitudeInDegrees,
         West = Libs.Core.Constants.Earth.MinLongitudeInDegrees,
     };
-    public GoogleMapsComponents.Maps.LatLngBoundsLiteral Bounds
+    public GoogleMapsRazorClassLib.Directions.LatLngBoundsLiteral Bounds
     {
         get => bounds;
         set

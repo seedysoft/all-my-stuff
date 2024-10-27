@@ -90,6 +90,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Seedysoft.Libs.GasStationPr
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Seedysoft.Libs.GasStationPrices.Tests", "test\Libs\GasStationPrices.Tests\Seedysoft.Libs.GasStationPrices.Tests.csproj", "{7A124DA0-9DA4-4F63-92B4-18F5473CD1AF}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Seedysoft.Libs.GoogleMapsRazorClassLib", "src\Libs\GoogleMapsRazorClassLib\Seedysoft.Libs.GoogleMapsRazorClassLib.csproj", "{0771EEAA-800A-4678-A086-BF56849471B3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -184,6 +186,10 @@ Global
 		{7A124DA0-9DA4-4F63-92B4-18F5473CD1AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7A124DA0-9DA4-4F63-92B4-18F5473CD1AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7A124DA0-9DA4-4F63-92B4-18F5473CD1AF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0771EEAA-800A-4678-A086-BF56849471B3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0771EEAA-800A-4678-A086-BF56849471B3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0771EEAA-800A-4678-A086-BF56849471B3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0771EEAA-800A-4678-A086-BF56849471B3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -213,6 +219,7 @@ Global
 		{37555E57-CBD7-4E16-9B92-9EB096D4DDD3} = {95FDC373-822D-408A-83C7-B8D7F31570A1}
 		{21FB98BB-6EB9-49F0-8E99-7B223ED1245C} = {1B84AE05-2D2A-49BD-A067-883B8FA01D75}
 		{7A124DA0-9DA4-4F63-92B4-18F5473CD1AF} = {1B84AE05-2D2A-49BD-A067-883B8FA01D75}
+		{0771EEAA-800A-4678-A086-BF56849471B3} = {1B84AE05-2D2A-49BD-A067-883B8FA01D75}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {76CD9B0B-E4FA-4E83-9623-2163AE82F180}

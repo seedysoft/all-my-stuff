@@ -4,7 +4,8 @@ namespace Seedysoft.Libs.GasStationPrices.Core.ViewModels;
 
 public record class GasStationModel
 {
-    public required GoogleMapsComponents.Maps.LatLngLiteral LatLon { get; init; }
+    public double Lat { get; set; }
+    public double Lng { get; set; }
 
     public required string Rotulo { get; init; }
 
@@ -12,7 +13,8 @@ public record class GasStationModel
 
     internal static GasStationModel Map(Json.Minetur.EstacionTerrestre estacionTerrestre) => new()
     {
-        LatLon = new() { Lat = estacionTerrestre.Lat, Lng = estacionTerrestre.Lon },
+        Lat = estacionTerrestre.Lat,
+        Lng = estacionTerrestre.Lon,
         Prices = MapPrices(estacionTerrestre),
         Rotulo = estacionTerrestre.Rotulo,
     };
