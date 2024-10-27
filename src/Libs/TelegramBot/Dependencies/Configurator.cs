@@ -4,7 +4,7 @@ using Microsoft.Extensions.Hosting;
 
 namespace Seedysoft.Libs.TelegramBot.Dependencies;
 
-internal sealed class Configurator : Utils.Dependencies.ConfiguratorBase
+public sealed class Configurator : Utils.Dependencies.ConfiguratorBase
 {
     protected override void AddJsonFiles(IHostApplicationBuilder hostApplicationBuilder)
     {
