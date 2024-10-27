@@ -12,5 +12,6 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Libs\GasStationPrices\Seedysoft.Libs.GasStationPrices.csproj" />
+    <ProjectReference Include="..\..\Libs\GoogleMapsRazorClassLib\Seedysoft.Libs.GoogleMapsRazorClassLib.csproj" />
   </ItemGroup>
 </Project>

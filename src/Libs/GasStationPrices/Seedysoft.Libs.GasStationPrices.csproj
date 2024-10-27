@@ -8,6 +8,11 @@
     <RuntimeIdentifiers>linux-arm64;linux-x64;win-x64</RuntimeIdentifiers>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="Core\Json\Google\Directions\Response\**" />
+    <EmbeddedResource Remove="Core\Json\Google\Directions\Response\**" />
+    <None Remove="Core\Json\Google\Directions\Response\**" />
+  </ItemGroup>
+  <ItemGroup>
     <Content Include="appsettings.Libs.GasStationPrices.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -33,8 +38,7 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="BlazorGoogleMaps" Version="4.9.1" />
-    <PackageReference Include="FluentValidation" Version="11.11.0" />
+    <PackageReference Include="FluentValidation" Version="11.10.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.1" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="8.0.1" />
     <PackageReference Include="RestSharp" Version="112.1.0" />
@@ -42,22 +46,12 @@
   <ItemGroup>
     <ProjectReference Include="..\..\Libs\Infrastructure\Seedysoft.Libs.Infrastructure.csproj" />
     <ProjectReference Include="..\Cryptography\Seedysoft.Libs.Cryptography.csproj" />
+    <ProjectReference Include="..\GoogleMapsRazorClassLib\Seedysoft.Libs.GoogleMapsRazorClassLib.csproj" />
   </ItemGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="Seedysoft.Libs.GasStationPrices.Tests" />
   </ItemGroup>
   <ItemGroup>
-    <Using Include="System.Text.Json.Serialization.JsonConverterAttribute">
-      <Alias>K</Alias>
-    </Using>
-    <Using Include="System.Text.Json.Serialization.JsonIgnoreAttribute">
-      <Alias>I</Alias>
-    </Using>
-    <Using Include="System.Text.Json.Serialization.JsonIgnoreCondition">
-      <Alias>C</Alias>
-    </Using>
-    <Using Include="System.Text.Json.Serialization.JsonPropertyNameAttribute">
-      <Alias>J</Alias>
-    </Using>
+    <Folder Include="Core\Json\Google\Directions\" />
   </ItemGroup>
 </Project>

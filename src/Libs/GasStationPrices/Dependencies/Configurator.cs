@@ -22,7 +22,5 @@ internal sealed class Configurator : Utils.Dependencies.ConfiguratorBase
             hostApplicationBuilder.Configuration.GetSection(nameof(Core.Settings.SettingsRoot)).Get<Core.Settings.SettingsRoot>()!);
 
         hostApplicationBuilder.Services.TryAddScoped<Services.ObtainGasStationPricesService>();
-
-        hostApplicationBuilder.Services.TryAddScoped<GoogleMapsComponents.IBlazorGoogleMapsKeyService, Services.BlazorGoogleMapsKeyService>();
     }
 }

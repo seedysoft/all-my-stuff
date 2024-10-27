@@ -1,0 +1,16 @@
+﻿@namespace Seedysoft.Libs.GoogleMapsRazorClassLib.GoogleMap
+
+@inherits SeedysoftComponentBase
+
+<ScriptsLoader Async="true"
+               Defer="true"
+               Id="@($"sl{Id}")"
+               Class="mt-4"
+               ScriptId="@($"script{Id}")"
+               Source="@GoogleMapsJsFileUrl"
+               OnLoad="@OnScriptLoad"
+               OnError="@OnScriptError" />
+
+<div @ref="@Element" id="@Id" class="@ClassNames" style="@StyleNames" @attributes="@AdditionalAttributes">
+</div>
+

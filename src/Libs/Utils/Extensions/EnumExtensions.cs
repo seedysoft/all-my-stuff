@@ -19,4 +19,19 @@ public static class EnumExtensions
         description = null;
         return false;
     }
+
+    public static string ToCssString(this Core.Enums.Unit unit) =>
+        unit switch
+        {
+            Core.Enums.Unit.Em => "em",
+            Core.Enums.Unit.Percentage => "%",
+            Core.Enums.Unit.Pt => "pt",
+            Core.Enums.Unit.Px => "px",
+            Core.Enums.Unit.Rem => "rem",
+            Core.Enums.Unit.Vh => "vh",
+            Core.Enums.Unit.VMax => "vmax",
+            Core.Enums.Unit.VMin => "vmin",
+            Core.Enums.Unit.Vw => "vw",
+            _ => string.Empty
+    };
 }
