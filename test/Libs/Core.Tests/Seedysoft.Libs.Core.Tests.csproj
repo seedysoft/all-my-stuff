@@ -12,8 +12,8 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.Testing.Extensions.VSTestBridge" Version="1.4.1" />
-    <PackageReference Include="MSTest" Version="3.6.1" />
+    <PackageReference Include="Microsoft.Testing.Extensions.VSTestBridge" Version="1.4.2" />
+    <PackageReference Include="MSTest" Version="3.6.2" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\src\Libs\Core\Seedysoft.Libs.Core.csproj" />

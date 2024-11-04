@@ -63,19 +63,19 @@ public class TelegramHostedService : Core.NonBackgroundServiceBase, IHostedServi
         IEnumerable<BotCommand>? myCommands,
         CancellationToken stoppingToken)
     {
-        TelegramSettings.CurrentBot.SetMe(await LocalTelegramBotClient.GetMeAsync(stoppingToken));
+        TelegramSettings.CurrentBot.SetMe(await LocalTelegramBotClient.GetMe(stoppingToken));
 
         if (myCommands != null)
             //TelegramBotClient.DeleteMyCommandsAsync
-            await LocalTelegramBotClient.SetMyCommandsAsync(commands: myCommands, cancellationToken: stoppingToken);
+            await LocalTelegramBotClient.SetMyCommands(commands: myCommands, cancellationToken: stoppingToken);
 
         // StartReceiving does not block the caller thread. Receiving is done on the ThreadPool.
         ReceiverOptions OptionsReceiver = new()
         {
             AllowedUpdates = default,
+            DropPendingUpdates = default,
             Limit = default,
             Offset = default,
-            ThrowPendingUpdates = default,
         };
         //Enums.UpdateType[] UpdatesAllowed = { Enums.UpdateType.Message | Enums.UpdateType.Unknown };
         //receiverOptions.AllowedUpdates = UpdatesAllowed;
@@ -157,7 +157,7 @@ public class TelegramHostedService : Core.NonBackgroundServiceBase, IHostedServi
 
         try
         {
-            return await LocalTelegramBotClient.SendTextMessageAsync(
+            return await LocalTelegramBotClient.SendMessage(
                 chatId: ToChatId,
                 text: text,
                 replyMarkup: replyMarkup,
@@ -171,7 +171,7 @@ public class TelegramHostedService : Core.NonBackgroundServiceBase, IHostedServi
             //  =  Ver más
             //  =  </form>
             // Retry without HTML
-            return await LocalTelegramBotClient.SendTextMessageAsync(
+            return await LocalTelegramBotClient.SendMessage(
                 chatId: ToChatId,
                 text: text,
                 cancellationToken: cancellationToken);
@@ -192,10 +192,10 @@ public class TelegramHostedService : Core.NonBackgroundServiceBase, IHostedServi
 
         try
         {
-            return await LocalTelegramBotClient.SendTextMessageAsync(
+            return await LocalTelegramBotClient.SendMessage(
                 chatId: ToChatId,
                 text: text,
-                parseMode: parseMode ?? (text.ContainsHtml() ? ParseMode.Html : null),
+                parseMode: parseMode ?? (text.ContainsHtml() ? ParseMode.Html : ParseMode.None),
                 cancellationToken: cancellationToken);
         }
         catch (ApiRequestException e) when (e.Message?.StartsWith("Bad Request: can't parse entities:", StringComparison.InvariantCultureIgnoreCase) ?? false)
@@ -206,7 +206,7 @@ public class TelegramHostedService : Core.NonBackgroundServiceBase, IHostedServi
             //  =  Ver más
             //  =  </form>
             // Retry without HTML
-            return await LocalTelegramBotClient.SendTextMessageAsync(
+            return await LocalTelegramBotClient.SendMessage(
                 chatId: ToChatId,
                 text: text,
                 cancellationToken: cancellationToken);
@@ -265,7 +265,8 @@ public class TelegramHostedService : Core.NonBackgroundServiceBase, IHostedServi
 
             _ => null,
         };
-        _ = await botClient.EditMessageReplyMarkupAsync(
+
+        _ = await botClient.EditMessageReplyMarkup(
             chatId: callbackQuery.Message!.Chat.Id,
             messageId: callbackQuery.Message!.MessageId,
             replyMarkup: InlineKeyboardMarkup.Empty(),
@@ -277,7 +278,7 @@ public class TelegramHostedService : Core.NonBackgroundServiceBase, IHostedServi
         //    showAlert: false,
         //    cancellationToken: cancellationToken);
 
-        _ = await botClient.SendTextMessageAsync(
+        _ = await botClient.SendMessage(
             chatId: callbackQuery.Message!.Chat.Id,
             text: ResponseText ?? $"No he podido saber qué hacer con {callbackQuery.Data ?? "Nulo"}",
             cancellationToken: cancellationToken);
@@ -310,7 +311,7 @@ public class TelegramHostedService : Core.NonBackgroundServiceBase, IHostedServi
     {
         Logger.LogDebug("Received ChosenInlineResult: {ResultId}", chosenInlineResult.ResultId);
 
-        _ = await botClient.SendTextMessageAsync(
+        _ = await botClient.SendMessage(
             chatId: chosenInlineResult.From.Id,
             text: $"Recibido {chosenInlineResult.ResultId}",
             cancellationToken: cancellationToken);
@@ -331,7 +332,7 @@ public class TelegramHostedService : Core.NonBackgroundServiceBase, IHostedServi
                 inputMessageContent: new InputTextMessageContent("hello"))
             ];
 
-        await botClient.AnswerInlineQueryAsync(
+        await botClient.AnswerInlineQuery(
             inlineQueryId: inlineQuery.Id,
             results: results,
             isPersonal: true,
@@ -598,11 +599,11 @@ public class TelegramHostedService : Core.NonBackgroundServiceBase, IHostedServi
 
     private async Task ChatActionSendAsync(
         Message message,
-        ChatAction chatAction,
+        ChatAction action,
         CancellationToken cancellationToken)
-        => await LocalTelegramBotClient.SendChatActionAsync(
+        => await LocalTelegramBotClient.SendChatAction(
             chatId: message.Chat.Id,
-            chatAction: chatAction,
+            action: action,
             cancellationToken: cancellationToken);
 
     private async Task<Message> StartAsync(
@@ -643,7 +644,7 @@ public class TelegramHostedService : Core.NonBackgroundServiceBase, IHostedServi
         long to,
         CancellationToken cancellationToken)
     {
-        BotCommand[] MyCommands = await LocalTelegramBotClient.GetMyCommandsAsync(cancellationToken: cancellationToken);
+        BotCommand[] MyCommands = await LocalTelegramBotClient.GetMyCommands(cancellationToken: cancellationToken);
 
         // TODO                 Cambiar el mensaje de ayuda, incluyendo que pueden enviar direcciones http[s].
         return await MessageSendTextAsync(
