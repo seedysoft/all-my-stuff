@@ -1,6 +1,4 @@
-﻿using Seedysoft.Libs.Core.Models;
-
-namespace Seedysoft.Libs.GasStationPrices.Core.ViewModels;
+﻿namespace Seedysoft.Libs.GasStationPrices.Core.ViewModels;
 
 public record class TravelQueryModel
 {

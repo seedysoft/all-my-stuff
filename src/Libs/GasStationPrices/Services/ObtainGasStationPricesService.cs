@@ -49,7 +49,13 @@ public sealed class ObtainGasStationPricesService(IConfiguration configuration, 
 
             Core.Json.Google.Places.Request.Body PlacesRequestBody = new()
             {
+                // Required
                 Input = textToFind,
+                // Optional
+                IncludedPrimaryTypes = ["geocode", "locality", "route", "street_address"],
+                IncludeQueryPredictions = false,
+                //IncludedRegionCodes = [""],
+                //LanguageCode = "",
                 //LocationBias = new()
                 //{
                 //    Rectangle = new()
@@ -62,12 +68,8 @@ public sealed class ObtainGasStationPricesService(IConfiguration configuration, 
                 //{
                 //    Circle = new() { Center = new() { Latitude = 3.3, Longitude = 3.3, }, }
                 //},
-                IncludedPrimaryTypes = ["geocode", "locality", "route", "street_address"],
-                //IncludedRegionCodes = [""],
-                //LanguageCode = "",
                 //RegionCode = "",
                 //Origin = new() { Latitude = 5.5, Longitude = 5.5, },
-                IncludeQueryPredictions = false,
                 //SessionToken = string.Empty,
             };
 

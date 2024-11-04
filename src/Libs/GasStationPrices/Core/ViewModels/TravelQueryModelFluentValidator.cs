@@ -10,6 +10,14 @@ public class TravelQueryModelFluentValidator : AbstractValidator<TravelQueryMode
 {
     public TravelQueryModelFluentValidator()
     {
+        _ = RuleFor(x => x.Origin)
+            .Must(x => !string.IsNullOrWhiteSpace(x))
+            .WithMessage($"{nameof(TravelQueryModel.Origin)} must not be empty");
+
+        _ = RuleFor(x => x.Destination)
+            .Must(x => !string.IsNullOrWhiteSpace(x))
+            .WithMessage($"{nameof(TravelQueryModel.Destination)} must not be empty");
+
         _ = RuleFor(static x => x.MaxDistanceInKm)
             .InclusiveBetween(1, 50);
 
@@ -20,9 +28,9 @@ public class TravelQueryModelFluentValidator : AbstractValidator<TravelQueryMode
 
     public Func<object, string, Task<IEnumerable<string>>> ValidateValue => async (model, propertyName) =>
     {
-        FluentValidation.Results.ValidationResult result = await
-            ValidateAsync(ValidationContext<TravelQueryModel>.CreateWithOptions((TravelQueryModel)model, x => x.IncludeProperties(propertyName)));
+        FluentValidation.Results.ValidationResult result = await ValidateAsync(
+            ValidationContext<TravelQueryModel>.CreateWithOptions((TravelQueryModel)model, x => x.IncludeProperties(propertyName)));
 
-        return result.IsValid ? (IEnumerable<string>)[] : result.Errors.Select(e => e.ErrorMessage);
+        return result.IsValid ? [] : result.Errors.Select(e => e.ErrorMessage);
     };
 }

@@ -14,7 +14,10 @@ public class Service(IJSRuntime jSRuntime, string elementId)
     /// <returns></returns>
     public async Task<Result?> Route(Request request)
     {
-        string response = await jSRuntime.InvokeAsync<string>($"{Constants.SeedysoftGoogleMaps}.directionsRoute", elementId, request);
+        string response = await jSRuntime.InvokeAsync<string>(
+            $"{Constants.SeedysoftGoogleMaps}.directionsRoute",
+            TimeSpan.FromSeconds(2),
+            [elementId, request]);
 
         try
         {
