@@ -22,7 +22,7 @@ internal sealed class AESCipher(byte[] key)
 
             using var cipher = System.Security.Cryptography.Aes.Create();
             cipher.Key = Key;
-            cipher.Mode = System.Security.Cryptography.CipherMode.CBC;
+            cipher.Mode = System.Security.Cryptography.CipherMode.ECB;
             cryptedText = cipher.EncryptEcb(raw, System.Security.Cryptography.PaddingMode.None);
         }
         else
@@ -65,7 +65,7 @@ internal sealed class AESCipher(byte[] key)
         {
             using var cipher = System.Security.Cryptography.Aes.Create();
             cipher.Key = Key;
-            cipher.Mode = System.Security.Cryptography.CipherMode.CBC;
+            cipher.Mode = System.Security.Cryptography.CipherMode.ECB;
 
             raw = cipher.DecryptEcb(enc, System.Security.Cryptography.PaddingMode.None);
             raw = AESCipherExtensions.Unpad(raw, verifyPadding);

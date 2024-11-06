@@ -3,8 +3,8 @@
 [TestClass]
 public sealed class CryptoTests
 {
-    [TestMethod]
     [DataRow("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam nulla tellus, elementum sit amet nunc.")]
+    [TestMethod]
     public void EncryptThenDecryptTest(string textToEncrypt)
     {
         string Key = System.Security.Cryptography.RandomNumberGenerator.GetString("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 32);
