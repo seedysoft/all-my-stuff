@@ -90,7 +90,7 @@ public static class Crypto
 
         var aes = Aes.Create();
         aes.Key = key; //aes.KeySize = masterKey.Length * 8L;
-        aes.Mode = CipherMode.ECB;
+        aes.Mode = CipherMode.CBC;
         aes.Padding = PaddingMode.ISO10126;
 
         return aes;

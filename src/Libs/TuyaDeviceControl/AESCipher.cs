@@ -22,7 +22,7 @@ internal sealed class AESCipher(byte[] key)
 
             using var cipher = System.Security.Cryptography.Aes.Create();
             cipher.Key = Key;
-            cipher.Mode = System.Security.Cryptography.CipherMode.ECB;
+            cipher.Mode = System.Security.Cryptography.CipherMode.CBC;
             cryptedText = cipher.EncryptEcb(raw, System.Security.Cryptography.PaddingMode.None);
         }
         else
@@ -61,21 +61,21 @@ internal sealed class AESCipher(byte[] key)
         }
 
         byte[] raw = [];
-        if (initialVector != null)
+        if (initialVector == null)
+        {
+            using var cipher = System.Security.Cryptography.Aes.Create();
+            cipher.Key = Key;
+            cipher.Mode = System.Security.Cryptography.CipherMode.CBC;
+
+            raw = cipher.DecryptEcb(enc, System.Security.Cryptography.PaddingMode.None);
+            raw = AESCipherExtensions.Unpad(raw, verifyPadding);
+        }
+        else
         {
             byte[]? initialVectorDecrypted;
             (initialVectorDecrypted, _) = AESCipherExtensions.GetDecryptionInitVector(initialVector, enc);
             using System.Security.Cryptography.AesGcm cipher = new(Key, System.Security.Cryptography.AesGcm.NonceByteSizes.MaxSize);
             cipher.Decrypt(initialVectorDecrypted ?? [], enc, tag ?? [], raw, header);
-        }
-        else
-        {
-            using var cipher = System.Security.Cryptography.Aes.Create();
-            cipher.Key = Key;
-            cipher.Mode = System.Security.Cryptography.CipherMode.ECB;
-
-            raw = cipher.DecryptEcb(enc, System.Security.Cryptography.PaddingMode.None);
-            raw = AESCipherExtensions.Unpad(raw, verifyPadding);
         }
 
         return decodeText ? Encoding.ASCII.GetBytes(Encoding.UTF8.GetString(raw)) : raw;
