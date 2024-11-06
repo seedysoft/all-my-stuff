@@ -4,8 +4,8 @@ root = true
 [*.{csproj}]
 charset = utf-8-bom
 indent_style = space
-indent_size = 2
-tab_width = 2
+indent_size = 4
+tab_width = 4
 
 # C# and VB files
 [*.{cs,vb}]
