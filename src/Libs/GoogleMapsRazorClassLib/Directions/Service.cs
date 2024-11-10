@@ -12,7 +12,7 @@ public class Service(IJSRuntime jSRuntime, string elementId)
     /// </summary>
     /// <param name="request"></param>
     /// <returns></returns>
-    public async Task<Result?> Route(Request request)
+    public async Task<Leg[]?> Route(Request request)
     {
         string response = await jSRuntime.InvokeAsync<string>(
             $"{Constants.SeedysoftGoogleMaps}.directionsRoute",
@@ -21,7 +21,7 @@ public class Service(IJSRuntime jSRuntime, string elementId)
 
         try
         {
-            Result? dirResult = Serialization.Helper.DeSerializeObject<Result>(response);
+            Leg[]? dirResult = Serialization.Helper.DeSerializeObject<Leg[]>(response);
 
             return dirResult;
         }

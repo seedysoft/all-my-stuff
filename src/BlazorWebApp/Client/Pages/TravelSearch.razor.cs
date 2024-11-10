@@ -125,6 +125,8 @@ public partial class TravelSearch
 
         RemoveAllMarkers();
 
+        // TODO          Make Request and remove Bounds dependency
+
         //Direction Request
         Libs.GoogleMapsRazorClassLib.Directions.Request directionsRequest = new()
         {
@@ -136,7 +138,7 @@ public partial class TravelSearch
             //AvoidTolls = false,
             //DrivingOptions = new() { DepartureTime = DateTime.UtcNow, TrafficModel = Libs.GoogleMapsRazorClassLib.Directions.TrafficModel.bestguess, },
             //OptimizeWaypoints = false,
-            //ProvideRouteAlternatives = true,
+            ProvideRouteAlternatives = true,
             ////Region = "es",
             ////TransitOptions = new()
             ////{
@@ -150,20 +152,19 @@ public partial class TravelSearch
             //    //new GoogleMapsComponents.Maps.DirectionsWaypoint() { Location = "Bethlehem, PA", Stopover = true }
             //],
         };
-        directionsService = new(JSRuntime, TravelGoogleMap.Id);
+        directionsService ??= new(JSRuntime, TravelGoogleMap.Id);
         //Calculate Route
-        Libs.GoogleMapsRazorClassLib.Directions.Result? directionsResult = await directionsService.Route(directionsRequest);
-        if (directionsResult == null)
+        Libs.GoogleMapsRazorClassLib.Directions.Leg[]? directionsLegs = await directionsService.Route(directionsRequest);
+        if (directionsLegs == null)
             return;
 
-        travelQueryModel.Bounds.North =
-            directionsResult.Routes.Select(static x => x.Bounds?.North ?? Libs.Core.Constants.Earth.MaxLatitudeInDegrees).Max();
-        travelQueryModel.Bounds.South =
-            directionsResult.Routes.Select(static x => x.Bounds?.South ?? Libs.Core.Constants.Earth.MinLatitudeInDegrees).Min();
-        travelQueryModel.Bounds.East =
-            directionsResult.Routes.Select(static x => x.Bounds?.East ?? Libs.Core.Constants.Earth.MaxLongitudeInDegrees).Max();
-        travelQueryModel.Bounds.West =
-            directionsResult.Routes.Select(static x => x.Bounds?.West ?? Libs.Core.Constants.Earth.MinLongitudeInDegrees).Min();
+        IEnumerable<Libs.GoogleMapsRazorClassLib.Directions.LatLngLiteral> LatLngsQuery =
+            directionsLegs.SelectMany(x => x.Steps).SelectMany(x => x.LatLngs);
+
+        travelQueryModel.Bounds.North = LatLngsQuery.Max(x => x?.Lat) ?? Libs.Core.Constants.Earth.MaxLatitudeInDegrees;
+        travelQueryModel.Bounds.South = LatLngsQuery.Min(x => x?.Lat) ?? Libs.Core.Constants.Earth.MinLatitudeInDegrees;
+        travelQueryModel.Bounds.East = LatLngsQuery.Max(x => x?.Lng) ?? Libs.Core.Constants.Earth.MaxLongitudeInDegrees;
+        travelQueryModel.Bounds.West = LatLngsQuery.Min(x => x?.Lng) ?? Libs.Core.Constants.Earth.MinLongitudeInDegrees;
 
         StringContent requestContent = new(
             System.Text.Json.JsonSerializer.Serialize(travelQueryModel),

@@ -1,6 +1,12 @@
 # Remove the line below if you want to inherit .editorconfig settings from higher directories
 root = true
 
+[*.json]
+charset = utf-8-bom
+indent_style = space
+indent_size = 2
+tab_width = 2
+
 [*.{csproj}]
 charset = utf-8-bom
 indent_style = space
@@ -112,6 +118,7 @@ csharp_style_conditional_delegate_call = true:warning
 
 # Modifier preferences
 csharp_prefer_static_local_function = true:warning
+csharp_prefer_static_anonymous_function = true:warning
 csharp_preferred_modifier_order = public,private,protected,internal,file,static,extern,new,virtual,abstract,sealed,override,readonly,unsafe,required,volatile,async
 csharp_style_prefer_readonly_struct = true:warning
 csharp_style_prefer_readonly_struct_member = true:warning
