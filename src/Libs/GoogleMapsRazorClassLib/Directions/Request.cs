@@ -69,12 +69,12 @@ public class Request
     //[I(Condition = C.WhenWritingNull)]
     //public bool? OptimizeWaypoints { get; set; }
 
-    ///// <summary>
-    ///// Whether or not route alternatives should be provided. 
-    ///// Optional.
-    ///// </summary>
-    //[I(Condition = C.WhenWritingNull)]
-    //public bool? ProvideRouteAlternatives { get; set; }
+    /// <summary>
+    /// Whether or not route alternatives should be provided. 
+    /// Optional.
+    /// </summary>
+    [I(Condition = C.WhenWritingNull)]
+    public bool? ProvideRouteAlternatives { get; set; }
 
     ///// <summary>
     ///// Region code used as a bias for geocoding requests. 
