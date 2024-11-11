@@ -110,22 +110,15 @@ window.seedysoft = {
       }
     },
 
-    directionsRoute: async (elementId, request) => {
+    directionsRoute: (elementId, request) => {
       let directionsService = new google.maps.DirectionsService();
 
-      return await directionsService
+      return directionsService
         .route(request)
         .then((response) => {
           window.seedysoft.googleMaps.directionsRenderers[elementId].setDirections(response);
 
-          let legs = [];
-          response.routes.forEach((r) => {
-            r.legs.forEach((l) => {
-              legs.push(l);
-            });
-          });
-
-          return legs;
+          return window.seedysoft.googleMaps.get(elementId).map.getBounds();
         })
         .catch((e) => { window.alert("Directions request failed: '" + e + "'"); });
     }

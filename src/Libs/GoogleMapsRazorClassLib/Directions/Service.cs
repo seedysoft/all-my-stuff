@@ -12,23 +12,17 @@ public class Service(IJSRuntime jSRuntime, string elementId)
     /// </summary>
     /// <param name="request"></param>
     /// <returns></returns>
-    public async Task<Leg[]?> Route(Request request)
+    public async Task<LatLngBoundsLiteral> RouteAsync(Request request)
     {
-        string response = await jSRuntime.InvokeAsync<string>(
-            $"{Constants.SeedysoftGoogleMaps}.directionsRoute",
-            TimeSpan.FromSeconds(2),
-            [elementId, request]);
-
         try
         {
-            Leg[]? dirResult = Serialization.Helper.DeSerializeObject<Leg[]>(response);
+            return await jSRuntime.InvokeAsync<LatLngBoundsLiteral>(
+                $"{Constants.SeedysoftGoogleMaps}.directionsRoute",
+                TimeSpan.FromSeconds(2),
+                [elementId, request]);
+        }
+        catch (Exception e) { Console.WriteLine("Error parsing DirectionsResult Object. Message: " + e.Message); }
 
-            return dirResult;
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine("Error parsing DirectionsResult Object. Message: " + e.Message);
-            return null;
-        }
+        return default!;
     }
 }

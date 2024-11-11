@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 namespace Seedysoft.Libs.GoogleMapsRazorClassLib.Directions;
 
 /// <summary>
-/// The status returned by the <see cref="Service"/>> on the completion of a call to <see cref="Service.Route"/>().
+/// The status returned by the <see cref="Service"/> on the completion of a call to <see cref="Service.RouteAsync"/>().
 /// Specify these by value, or by using the constant's name.
 /// For example, 'OK' or google.maps.DirectionsStatus.OK.
 /// </summary>

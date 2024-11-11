@@ -87,7 +87,10 @@ public sealed class ObtainGasStationPricesService(IConfiguration configuration, 
         try
         {
             RestRequest restRequest = new(Settings.Minetur.Uris.EstacionesTerrestres);
-            RestClient restClient = new(Settings.Minetur.Uris.Base) { AcceptedContentTypes = [System.Net.Mime.MediaTypeNames.Application.Json,], };
+            RestClient restClient = new(Settings.Minetur.Uris.Base)
+            {
+                AcceptedContentTypes = [System.Net.Mime.MediaTypeNames.Application.Json,],
+            };
             RestResponse restResponse = await restClient.ExecuteGetAsync(restRequest, cancellationToken);
             if (restResponse.IsSuccessStatusCode)
                 gasStations = restResponse.Content!.FromJson<Core.Json.Minetur.Body>();
