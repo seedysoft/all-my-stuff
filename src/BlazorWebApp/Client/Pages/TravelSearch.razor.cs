@@ -125,8 +125,6 @@ public partial class TravelSearch
 
         RemoveAllMarkers();
 
-        // TODO          Make Request and remove Bounds dependency
-
         //Direction Request
         Libs.GoogleMapsRazorClassLib.Directions.Request directionsRequest = new()
         {
@@ -153,19 +151,11 @@ public partial class TravelSearch
             //],
         };
         directionsService ??= new(JSRuntime, TravelGoogleMap.Id);
-        //Calculate Route
-        Libs.GoogleMapsRazorClassLib.Directions.Leg[]? directionsLegs = await directionsService.Route(directionsRequest);
-        if (directionsLegs == null)
-            return;
+        travelQueryModel.Bounds = await directionsService.RouteAsync(directionsRequest);
 
-        IEnumerable<Libs.GoogleMapsRazorClassLib.Directions.LatLngLiteral> LatLngsQuery =
-            directionsLegs.SelectMany(x => x.Steps).SelectMany(x => x.LatLngs);
+        // TODO             Show alternatives
 
-        travelQueryModel.Bounds.North = LatLngsQuery.Max(x => x?.Lat) ?? Libs.Core.Constants.Earth.MaxLatitudeInDegrees;
-        travelQueryModel.Bounds.South = LatLngsQuery.Min(x => x?.Lat) ?? Libs.Core.Constants.Earth.MinLatitudeInDegrees;
-        travelQueryModel.Bounds.East = LatLngsQuery.Max(x => x?.Lng) ?? Libs.Core.Constants.Earth.MaxLongitudeInDegrees;
-        travelQueryModel.Bounds.West = LatLngsQuery.Min(x => x?.Lng) ?? Libs.Core.Constants.Earth.MinLongitudeInDegrees;
-
+        // Load GasStations
         StringContent requestContent = new(
             System.Text.Json.JsonSerializer.Serialize(travelQueryModel),
             System.Text.Encoding.UTF8,
@@ -185,6 +175,8 @@ public partial class TravelSearch
             if (gasStationModel == null)
                 continue;
 
+            // TODO             Fix markers
+
             Libs.GoogleMapsRazorClassLib.GoogleMap.Marker marker = new()
             {
                 Content = $"<div style='background-color:blue'>{gasStationModel.Rotulo}</div>",
@@ -193,7 +185,7 @@ public partial class TravelSearch
                     Background = "",
                     BorderColor = "",
                     Glyph = null,
-                    GlyphColor = "",
+                    GlyphColor = "azure",
                     Scale = 1.0,
                     UseIconFonts = true,
                 },

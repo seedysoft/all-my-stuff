@@ -23,9 +23,7 @@ public class LatLngBoundsLiteral
         South = latLng1.Lat;
         North = latLng1.Lat;
         if (latLng2 != null)
-        {
             Extend(latLng2);
-        }
     }
 
     /// <summary>
@@ -36,13 +34,9 @@ public class LatLngBoundsLiteral
     public static void CreateOrExtend(ref LatLngBoundsLiteral? latLngBoundsLiteral, LatLngLiteral latLng)
     {
         if (latLngBoundsLiteral == null)
-        {
             latLngBoundsLiteral = new LatLngBoundsLiteral(latLng);
-        }
         else
-        {
             latLngBoundsLiteral.Extend(latLng);
-        }
     }
 
     /// <summary>
@@ -82,24 +76,16 @@ public class LatLngBoundsLiteral
     public void Extend(double lng, double lat)
     {
         if (lng < West)
-        {
             West = lng;
-        }
 
         if (lng > East)
-        {
             East = lng;
-        }
 
         if (lat < South)
-        {
             South = lat;
-        }
 
         if (lat > North)
-        {
             North = lat;
-        }
     }
 
     /// <summary>
