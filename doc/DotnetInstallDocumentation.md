@@ -32,13 +32,14 @@ WSL (PowerShell):
 ```PowerShell
 [Environment]::SetEnvironmentVariable("WSLENV", $env:WSLENV + "SEEDY_MASTER_KEY:", [System.EnvironmentVariableTarget]::User)
 ```
-
+```bash
 sudo apt-get install chromium-chromedriver
+```
 
 **Dotnet downloads:** \
 <https://dotnet.microsoft.com/en-us/download/dotnet>
 ```bash
-wget -O 
+wget 
 DOTNET_FILE=
 ```
 
@@ -49,7 +50,7 @@ tar zxvf "$DOTNET_FILE" -C "$DOTNET_ROOT"
 
 **Help commands:**
 ```bash
-dotnet --list-sdks; dotnet --list-runtimes;
+./dotnet --list-sdks; ./dotnet --list-runtimes;
 ```
 
 **Remove old versions:**
@@ -62,16 +63,16 @@ find . -type d -name "8.0.1" -exec rm -rf "{}" \;
 ```bash
 # ./dotnet workload search [<SEARCH_STRING>] [-v|--verbosity <LEVEL>]
 # ./dotnet workload search -?|-h|--help
-dotnet workload install wasm-tools
-dotnet workload update
+./dotnet workload install wasm-tools
+./dotnet workload update
 ```
 
 **Update Entity Framework global tools:**
 ```bash
-dotnet tool update --global dotnet-ef
+./dotnet tool update --global dotnet-ef
 ```
 
 **MudBlazor Templates
 ```bash
-dotnet new install MudBlazor.Templates
+./dotnet new install MudBlazor.Templates
 ```
