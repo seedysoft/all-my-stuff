@@ -4,7 +4,7 @@ namespace Seedysoft.Libs.Cryptography;
 
 public static class Crypto
 {
-    private static readonly System.Text.Encoding Encoding = System.Text.Encoding.Latin1;
+    internal static readonly System.Text.Encoding Encoding = System.Text.Encoding.Latin1;
 
     public static string EncryptText(string textToEncrypt, string key, CipherMode cipherMode = CipherMode.CBC)
     {

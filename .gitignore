@@ -402,3 +402,6 @@ databases
 
 # WinMerge backups
 *.bak
+
+# global packages folder
+globalPackages
