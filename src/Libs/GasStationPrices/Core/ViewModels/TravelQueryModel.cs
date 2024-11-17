@@ -17,15 +17,6 @@ public record class TravelQueryModel
         South = Libs.Core.Constants.Earth.MinLatitudeInDegrees,
         West = Libs.Core.Constants.Earth.MinLongitudeInDegrees,
     };
-    public GoogleMapsRazorClassLib.Directions.LatLngBoundsLiteral Bounds
-    {
-        get => bounds;
-        set
-        {
-            if (value != null)
-                bounds = value;
-        }
-    }
 
     public GasStationModel? IsInsideBounds(Json.Minetur.EstacionTerrestre estacionTerrestre)
     {
@@ -34,18 +25,13 @@ public record class TravelQueryModel
         double GasStationLat = Math.Round(estacionTerrestre.Lat, decimals);
         double GasStationLon = Math.Round(estacionTerrestre.Lon, decimals);
 
-        // TODO                         Expand
-        //double N = Utils.Helpers.GeometricHelper.ExpandLatitude(Bounds.North, Bounds.West, MaxDistanceInKm);
-        //double S = Utils.Helpers.GeometricHelper.ExpandLatitude(Bounds.South, Bounds.East, MaxDistanceInKm);
-        //double E = Utils.Helpers.GeometricHelper.ExpandLongitude(Bounds.South, Bounds.East, MaxDistanceInKm);
-        //double W = Utils.Helpers.GeometricHelper.ExpandLongitude(Bounds.North, Bounds.West, MaxDistanceInKm);
-        double N = Bounds.North;
-        double S = Bounds.South;
-        double E = Bounds.East;
-        double W = Bounds.West;
-
-        return GasStationLat < N && GasStationLat > S && GasStationLon < E && GasStationLon > W
-            ? GasStationModel.Map(estacionTerrestre)
-            : null;
+        return
+            GasStationLat < (double)bounds.North &&
+            GasStationLat > (double)bounds.South &&
+            GasStationLon < (double)bounds.East &&
+            GasStationLon > (double)bounds.West ? GasStationModel.Map(estacionTerrestre) : null;
     }
+
+    public void SetBounds(GoogleMapsRazorClassLib.Directions.LatLngBoundsLiteral latLngBoundsLiteral)
+        => bounds = latLngBoundsLiteral;
 }

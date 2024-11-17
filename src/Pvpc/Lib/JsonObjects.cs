@@ -1,4 +1,4 @@
-﻿// TODO:                 Remove warning disable and use attributes
+﻿// TODO                 Remove warning disable and use attributes
 
 #pragma warning disable CA1050 // Declare types in namespaces
 #pragma warning disable IDE1006 // Naming Styles
