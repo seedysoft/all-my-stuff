@@ -46,7 +46,7 @@ public sealed class Program : Libs.Core.ProgramBase
             Logger.LogInformation("End {ApplicationName}", AppName);
         }
         catch (TaskCanceledException) { /* ignored */  }
-        catch (Exception e) { Logger.LogError(e, "Unexpected Error"); }
+        catch (Exception e) { _ = Logger.LogAndHandle(e, "Unexpected Error"); }
         finally { await Task.CompletedTask; }
 
         if (System.Diagnostics.Debugger.IsAttached)

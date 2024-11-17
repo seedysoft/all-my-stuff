@@ -36,7 +36,8 @@ public partial class TravelSearch
     };
     private readonly Libs.GasStationPrices.Core.ViewModels.TravelQueryModelFluentValidator travelQueryModelFluentValidator = new();
 
-    private IEnumerable<Libs.GasStationPrices.Core.Json.Minetur.ProductoPetrolifero> PetroleumProducts = [];
+    private readonly IEnumerable<Libs.GasStationPrices.Core.Json.Minetur.ProductoPetrolifero> PetroleumProducts =
+         Libs.GasStationPrices.Core.Json.Minetur.ProductoPetrolifero.All;
 
     protected override async Task OnInitializedAsync()
     {
@@ -47,10 +48,9 @@ public partial class TravelSearch
 
         await base.OnInitializedAsync();
 
-        // TODO         Take only from Libs.GasStationPrices.Core.Json.Minetur.ProductoPetrolifero
-
-        string FromUri = $"{NavManager.BaseUri}{Constants.PetroleumProductsUris.Controller}/{Constants.PetroleumProductsUris.Actions.ForFilter}";
-        PetroleumProducts = await Http.GetFromJsonAsync<IEnumerable<Libs.GasStationPrices.Core.Json.Minetur.ProductoPetrolifero>>(FromUri) ?? [];
+        // Take only from Libs.GasStationPrices.Core.Json.Minetur.ProductoPetrolifero, as properties are fixed
+        //string FromUri = $"{NavManager.BaseUri}{Constants.PetroleumProductsUris.Controller}/{Constants.PetroleumProductsUris.Actions.ForFilter}";
+        //PetroleumProducts = await Http.GetFromJsonAsync<IEnumerable<Libs.GasStationPrices.Core.Json.Minetur.ProductoPetrolifero>>(FromUri) ?? [];
 
         //PetroleumProducts = File.ReadAllText("C:\\Users\\alfon\\Downloads\\RouteResponse.json").FromJson<IEnumerable<Libs.GasStationPrices.Core.Json.Minetur.ProductoPetrolifero>>();
 
@@ -94,8 +94,7 @@ public partial class TravelSearch
     {
         try
         {
-            // TODO             CACHE
-            // TODO Validation
+            // TODO             CACHE?
             if (string.IsNullOrWhiteSpace(textToFind))
                 return [];
 
@@ -113,6 +112,7 @@ public partial class TravelSearch
     private void UnSelectAllChips()
         => travelQueryModel.PetroleumProductsSelectedIds = [];
 
+    [System.Runtime.Versioning.UnsupportedOSPlatform("browser")]
     private async Task LoadDataAsync()
     {
         FluentValidation.Results.ValidationResult validationResult = await travelQueryModelFluentValidator.ValidateAsync(travelQueryModel);
@@ -151,7 +151,7 @@ public partial class TravelSearch
             //],
         };
         directionsService ??= new(JSRuntime, TravelGoogleMap.Id);
-        travelQueryModel.Bounds = await directionsService.RouteAsync(directionsRequest);
+        travelQueryModel.SetBounds(await directionsService.RouteAsync(directionsRequest));
 
         // TODO             Show alternatives
 
@@ -162,9 +162,8 @@ public partial class TravelSearch
             System.Net.Mime.MediaTypeNames.Application.Json);
         string FromUri = $"{NavManager.BaseUri}{Constants.TravelUris.Controller}/{Constants.TravelUris.Actions.GetGasStations}";
         HttpRequestMessage requestMessage = new(HttpMethod.Post, FromUri) { Content = requestContent, };
-#pragma warning disable CA1416 // Validate platform compatibility
+
         HttpResponseMessage response = Http.Send(requestMessage);
-#pragma warning restore CA1416 // Validate platform compatibility
 
         if (!response.IsSuccessStatusCode)
             return;

@@ -2,9 +2,17 @@
 
 public record class ProductoPetrolifero
 {
-    [J("IDProducto"), K(typeof(Utils.Extensions.ParseStringConverter))] public required long IdProducto { get; init; }
-    [J("NombreProducto")] public required string Nombre { get; init; }
-    [J("NombreProductoAbreviatura")] public required string Abreviatura { get; init; }
+    [J("IDProducto"), K(typeof(Utils.Extensions.ParseStringConverter))]
+    public required long IdProducto { get; init; }
+
+    [J("NombreProducto")]
+    public required string Nombre { get; init; }
+
+    [J("NombreProductoAbreviatura")]
+    public required string Abreviatura { get; init; }
+
+    public static System.Collections.ObjectModel.ReadOnlyCollection<ProductoPetrolifero> All
+        => new([G95E5, G95E10, G95E5Plus, G98E5, G98E10, GOA, GOAPlus, GOB, BIE, BIO, GLP, GNC, GNL, H2]);
 
     public override string ToString() => Nombre ?? "Unknown";
 

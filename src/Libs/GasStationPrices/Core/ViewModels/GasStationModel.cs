@@ -19,7 +19,8 @@ public record class GasStationModel
         Rotulo = estacionTerrestre.Rotulo,
     };
 
-    private static IEnumerable<ProductPrice> MapPrices(Json.Minetur.EstacionTerrestre estacionTerrestre)
+    private static System.Collections.ObjectModel.ReadOnlyCollection<ProductPrice> MapPrices(
+        Json.Minetur.EstacionTerrestre estacionTerrestre)
     {
         IEnumerable<ProductPrice> values = [
             new(Json.Minetur.ProductoPetrolifero.G95E5, estacionTerrestre.PrecioGasolina95E5.ParseWithNumberFormatInfoES()),
@@ -38,6 +39,6 @@ public record class GasStationModel
             new(Json.Minetur.ProductoPetrolifero.H2, estacionTerrestre.PrecioHidrogeno.ParseWithNumberFormatInfoES()),
         ];
 
-        return values.Where(static x => x.Price.HasValue);
+        return values.Where(static x => x.Price.HasValue).ToList().AsReadOnly();
     }
 }

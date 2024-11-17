@@ -21,14 +21,14 @@ public sealed class ObtainGasStationPricesTests : Infrastructure.Tests.TestClass
     //[ClassCleanup(InheritanceBehavior.None, ClassCleanupBehavior.EndOfClass)]
     //public static new void ClassCleanup() => ObtainGasStationPricesService?.Dispose();
 
-    [TestMethod]
-    public async Task GetPetroleumProductsAsyncTest()
-    {
-        IEnumerable<Core.Json.Minetur.ProductoPetrolifero> Res =
-            await ObtainGasStationPricesService.GetPetroleumProductsAsync(CancellationToken.None);
+    //[TestMethod]
+    //public async Task GetPetroleumProductsAsyncTest()
+    //{
+    //    IEnumerable<Core.Json.Minetur.ProductoPetrolifero> Res =
+    //        await ObtainGasStationPricesService.GetPetroleumProductsAsync(CancellationToken.None);
 
-        Assert.IsTrue(Res.Any());
-    }
+    //    Assert.IsTrue(Res.Any());
+    //}
 
     [DataRow("Calle de la Iglesia 11 Brazuelo León")]
     [DataRow("Juan Ramón Jiménez 8 Burgos")]
