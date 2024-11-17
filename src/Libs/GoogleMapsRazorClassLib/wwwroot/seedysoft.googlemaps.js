@@ -5,7 +5,6 @@ window.seedysoft.scriptLoader = window.window.seedysoft.scriptLoader || {};
 window.seedysoft = {
   googleMaps: {
     instances: {},
-    directionsRenderers: {},
 
     create: (elementId, map, zoom, center, markers, clickable) => {
       window.seedysoft.googleMaps.instances[elementId] = {
@@ -13,19 +12,22 @@ window.seedysoft = {
         zoom: zoom,
         center: center,
         markers: markers,
-        clickable: clickable
+        clickable: clickable,
+        directionsRenderers: [],
+        directionsService: new google.maps.DirectionsService()
       };
+
+      return window.seedysoft.googleMaps.get(elementId);
     },
     get: (elementId) => { return window.seedysoft.googleMaps.instances[elementId]; },
     initialize: (elementId, zoom, center, markers, clickable, dotNetHelper) => {
-      window.seedysoft.googleMaps.markerEls[elementId] = window.seedysoft.googleMaps.markerEls[elementId] ?? [];
+      let mapOptions = { center: center, mapId: elementId, zoom: zoom };
 
-      let mapOptions = { center: center, zoom: zoom, mapId: elementId };
       let map = new google.maps.Map(document.getElementById(elementId), mapOptions);
 
-      window.seedysoft.googleMaps.create(elementId, map, zoom, center, markers, clickable);
+      let mapInstance = window.seedysoft.googleMaps.create(elementId, map, zoom, center, markers, clickable);
 
-      window.seedysoft.googleMaps.directionsRenderers[elementId] = new google.maps.DirectionsRenderer({ map: map });
+      mapInstance.directionsRenderers.push(new google.maps.DirectionsRenderer({ map: map }));
 
       if (markers) {
         for (const marker of markers) {
@@ -34,7 +36,6 @@ window.seedysoft = {
       }
     },
 
-    markerEls: {},
     addMarker: (elementId, marker, dotNetHelper) => {
       debugger;
       let mapInstance = window.seedysoft.googleMaps.get(elementId);
@@ -50,7 +51,8 @@ window.seedysoft = {
             const icon = document.createElement("div");
             icon.innerHTML = `<i class="${marker.pinElement.glyph}"></i>`;
             _glyph = icon;
-          } else {
+          }
+          else {
             _glyph = marker.pinElement.glyph;
           }
 
@@ -77,7 +79,7 @@ window.seedysoft = {
           gmpClickable: clickable
         });
 
-        window.seedysoft.googleMaps.markerEls[elementId].push(markerEl);
+        mapInstance.markers.push(markerEl);
 
         // add a click listener for each marker, and set up the info window.
         if (clickable) {
@@ -94,11 +96,10 @@ window.seedysoft = {
     },
     updateMarkers: (elementId, markers, dotNetHelper) => {
       debugger;
-      let markerEls = window.seedysoft.googleMaps.markerEls[elementId] ?? [];
-
+      let mapInstance = window.seedysoft.googleMaps.get(elementId);
       // delete the markers
-      if (markerEls.length > 0) {
-        for (const markerEl of markerEls) {
+      if (mapInstance.markers.length > 0) {
+        for (const markerEl of mapInstance.markers) {
           markerEl.setMap(null);
         }
       }
@@ -111,14 +112,32 @@ window.seedysoft = {
     },
 
     directionsRoute: (elementId, request) => {
-      let directionsService = new google.maps.DirectionsService();
+      let mapInstance = window.seedysoft.googleMaps.get(elementId);
 
-      return directionsService
+      return mapInstance.directionsService
         .route(request)
         .then((response) => {
-          window.seedysoft.googleMaps.directionsRenderers[elementId].setDirections(response);
+          for (var i = 0, len = mapInstance.directionsRenderers.length; i < len; i++) {
+            mapInstance.directionsRenderers[i].setMap(null);
+            mapInstance.directionsRenderers[i] = null;
+          }
 
-          return window.seedysoft.googleMaps.get(elementId).map.getBounds();
+          mapInstance.directionsRenderers = [];
+
+          for (var i = 0, len = response.routes.length; i < len; i++) {
+            mapInstance.directionsRenderers.push(new google.maps.DirectionsRenderer({
+              directions: response,
+              map: mapInstance.map,
+              routeIndex: i,
+              polylineOptions: {
+                strokeColor: getColorFromMag(i),
+                strokeWeight: 10,
+                strokeOpacity: 1
+              }
+            }));
+          }
+
+          return mapInstance.map.getBounds();
         })
         .catch((e) => { window.alert("Directions request failed: '" + e + "'"); });
     }
@@ -164,6 +183,27 @@ window.seedysoft = {
       }
     }
   }
+}
+
+function getColorFromMag(mag) {
+  var low = [151, 83, 34];
+  var high = [5, 69, 54];
+  var minMag = 0.0;
+  var maxMag = 1000.0;
+
+  var fraction = (Math.min(mag, maxMag) - minMag) / (maxMag - minMag);
+
+  return (interpolateHsl(low, high, fraction));
+}
+
+function interpolateHsl(lowHsl, highHsl, fraction) {
+  var color = [];
+
+  for (var i = 0; i < 3; i++) {
+    color[i] = (highHsl[i] - lowHsl[i]) * fraction + lowHsl[i];
+  }
+
+  return 'hsl(' + color[0] + ',' + color[1] + '%,' + color[2] + '%)';
 }
 
 //// global function
