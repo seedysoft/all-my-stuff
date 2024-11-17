@@ -113,25 +113,25 @@ public sealed class ObtainGasStationPricesService(IConfiguration configuration, 
         }
     }
 
-    private static IEnumerable<Core.Json.Minetur.ProductoPetrolifero>? Res;
-    public async Task<IEnumerable<Core.Json.Minetur.ProductoPetrolifero>> GetPetroleumProductsAsync(
-        CancellationToken cancellationToken)
-    {
-        try
-        {
-            if (Res == null)
-            {
-                RestRequest restRequest = new(string.Format(Settings.Minetur.Uris.ListadosBase, "ProductosPetroliferos"));
-                RestClient restClient = new(Settings.Minetur.Uris.Base) { AcceptedContentTypes = [System.Net.Mime.MediaTypeNames.Application.Json,], };
-                RestResponse restResponse = await restClient.ExecuteGetAsync(restRequest, cancellationToken);
-                if (restResponse.IsSuccessStatusCode)
-                    Res = restResponse.Content!.FromJson<IEnumerable<Core.Json.Minetur.ProductoPetrolifero>>();
-            }
+    //private static IEnumerable<Core.Json.Minetur.ProductoPetrolifero>? Res;
+    //public async Task<IEnumerable<Core.Json.Minetur.ProductoPetrolifero>> GetPetroleumProductsAsync(
+    //    CancellationToken cancellationToken)
+    //{
+    //    try
+    //    {
+    //        if (Res == null)
+    //        {
+    //            RestRequest restRequest = new(string.Format(Settings.Minetur.Uris.ListadosBase, "ProductosPetroliferos"));
+    //            RestClient restClient = new(Settings.Minetur.Uris.Base) { AcceptedContentTypes = [System.Net.Mime.MediaTypeNames.Application.Json,], };
+    //            RestResponse restResponse = await restClient.ExecuteGetAsync(restRequest, cancellationToken);
+    //            if (restResponse.IsSuccessStatusCode)
+    //                Res = restResponse.Content!.FromJson<IEnumerable<Core.Json.Minetur.ProductoPetrolifero>>();
+    //        }
 
-            return Res ?? [];
-        }
-        catch (Exception e) when (logger.LogAndHandle(e, "Unexpected error")) { }
+    //        return Res ?? [];
+    //    }
+    //    catch (Exception e) when (logger.LogAndHandle(e, "Unexpected error")) { }
 
-        return [];
-    }
+    //    return [];
+    //}
 }

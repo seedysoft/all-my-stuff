@@ -35,7 +35,7 @@ public sealed class Program : Libs.Core.ProgramBase
             //    Logger.LogDebug($"{item.Key}: {item.Value ?? "<<NULL>>"}");
 
             // Migrate and seed the database during startup. Must be synchronous.
-            using IServiceScope Scope = host.Services.CreateAsyncScope();
+            using AsyncServiceScope Scope = host.Services.CreateAsyncScope();
             await Scope.ServiceProvider.GetRequiredService<Libs.Infrastructure.DbContexts.DbCxt>().Database.MigrateAsync();
 
             DateTime ForDate = DateTime.MinValue;
@@ -60,7 +60,7 @@ public sealed class Program : Libs.Core.ProgramBase
             Logger.LogInformation("End {ApplicationName}", AppName);
         }
         catch (TaskCanceledException) { /* ignored */ }
-        catch (Exception e) { Logger.LogError(e, "Unexpected Error"); }
+        catch (Exception e) { _ = Logger.LogAndHandle(e, "Unexpected Error"); }
         finally { await Task.CompletedTask; }
 
         if (System.Diagnostics.Debugger.IsAttached)

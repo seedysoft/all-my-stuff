@@ -32,54 +32,12 @@ public class OneOfJsonConverterFactory : JsonConverterFactory
             if (type.IsGenericType)
             {
                 Type genericTypeDefinition = type.GetGenericTypeDefinition();
-                if (genericTypeDefinition == typeof(OneOf<,>) ||
-                    genericTypeDefinition == typeof(OneOf<,>))
-                {
+
+                if (genericTypeDefinition == typeof(OneOf<,>) || genericTypeDefinition == typeof(OneOf<,>))
                     return (type, typeof(OneOf2JsonConverter<,>));
-                }
 
-                if (genericTypeDefinition == typeof(OneOf<,,>) ||
-                    genericTypeDefinition == typeof(OneOf<,,>))
-                {
+                if (genericTypeDefinition == typeof(OneOf<,,>) || genericTypeDefinition == typeof(OneOf<,,>))
                     return (type, typeof(OneOf3JsonConverter<,,>));
-                }
-
-                // TODO: Not supported (yet).
-                // if (genericTypeDefinition == typeof(OneOfBase<,,,>) ||
-                //     genericTypeDefinition == typeof(OneOf<,,,>))
-                // {
-                //   return (type, typeof(OneOfJson<,,,>));
-                // }
-                //
-                // if (genericTypeDefinition == typeof(OneOfBase<,,,,>) ||
-                //     genericTypeDefinition == typeof(OneOf<,,,,>))
-                // {
-                //   return (type, typeof(OneOfJson<,,,,>));
-                // }
-                //
-                // if (genericTypeDefinition == typeof(OneOfBase<,,,,,>) ||
-                //     genericTypeDefinition == typeof(OneOf<,,,,,>))
-                // {
-                //   return (type, typeof(OneOfJson<,,,,,>));
-                // }
-                //
-                // if (genericTypeDefinition == typeof(OneOfBase<,,,,,,>) ||
-                //     genericTypeDefinition == typeof(OneOf<,,,,,,>))
-                // {
-                //   return (type, typeof(OneOfJson<,,,,,,>));
-                // }
-                //
-                // if (genericTypeDefinition == typeof(OneOfBase<,,,,,,,>) ||
-                //     genericTypeDefinition == typeof(OneOf<,,,,,,,>))
-                // {
-                //   return (type, typeof(OneOfJson<,,,,,,,>));
-                // }
-                //
-                // if (genericTypeDefinition == typeof(OneOfBase<,,,,,,,,>) ||
-                //     genericTypeDefinition == typeof(OneOf<,,,,,,,,>))
-                // {
-                //   return (type, typeof(OneOfJson<,,,,,,,,>));
-                // }
             }
 
             type = type.BaseType;
