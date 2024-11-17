@@ -50,7 +50,7 @@ public class OneOfJsonConverterFactory : JsonConverterFactory
     {
         object[] args = new object[types.Length + 1];
         args[0] = index;
-        args[index + 1] = doc.Deserialize(types[index], options);
+        args[index + 1] = doc.Deserialize(types[index], options)!;
 
         object? oneOf = Activator.CreateInstance(
             oneOfType,
@@ -60,7 +60,7 @@ public class OneOfJsonConverterFactory : JsonConverterFactory
             null
         );
 
-        return oneOf as IOneOf;
+        return (oneOf as IOneOf)!;
     }
 
     private const string IndexKey = "$index";
