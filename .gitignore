@@ -402,3 +402,6 @@ databases
 
 # WinMerge backups
 *.bak
+
+# Nuget Packages cache folder
+globalPackages
