@@ -106,8 +106,6 @@ public sealed class ObtainGasStationPricesService(IConfiguration configuration, 
 
             Core.ViewModels.GasStationModel? gasStationModel = travelQueryModel.IsInsideBounds(estacionTerrestre);
 
-            // TODO     Filtrar por los productos seleccionados.
-            // TODO             ¿Cómo "mapear" ProductosPetroliferos con las propiedades? ¿Switch?
             if (gasStationModel != null)
                 yield return gasStationModel;
         }

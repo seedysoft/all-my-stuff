@@ -37,72 +37,73 @@ window.seedysoft = {
     },
 
     addMarker: (elementId, marker, dotNetHelper) => {
-      debugger;
       let mapInstance = window.seedysoft.googleMaps.get(elementId);
-      if (mapInstance) {
-        let map = mapInstance.map;
-        let clickable = mapInstance.clickable;
-        let _content;
 
-        if (marker.pinElement) {
-          let _glyph;
+      let map = mapInstance.map;
+      let clickable = mapInstance.clickable;
+      let _content;
 
-          if (marker.pinElement.useIconFonts) {
-            const icon = document.createElement("div");
-            icon.innerHTML = `<i class="${marker.pinElement.glyph}"></i>`;
-            _glyph = icon;
-          }
-          else {
-            _glyph = marker.pinElement.glyph;
-          }
+      if (marker.pinElement) {
+        let _glyph;
 
-          const pin = new google.maps.marker.PinElement({
-            background: marker.pinElement.background,
-            borderColor: marker.pinElement.borderColor,
-            glyph: _glyph,
-            glyphColor: marker.pinElement.glyphColor,
-            scale: marker.pinElement.scale,
-          });
-          _content = pin.element;
+        if (marker.pinElement.useIconFonts) {
+          const icon = document.createElement("div");
+          icon.innerHTML = `<i class="${marker.pinElement.glyph}"></i>`;
+          _glyph = icon;
         }
-        else if (marker.content) {
-          _content = document.createElement("div");
-          _content.classList.add("bb-google-marker-content");
-          _content.innerHTML = marker.content;
+        else {
+          _glyph = marker.pinElement.glyph;
         }
 
-        const markerEl = new google.maps.marker.AdvancedMarkerElement({
-          map,
-          content: _content,
-          position: marker.position,
-          title: marker.title,
-          gmpClickable: clickable
+        const pin = new google.maps.marker.PinElement({
+          background: marker.pinElement.background,
+          borderColor: marker.pinElement.borderColor,
+          glyph: _glyph,
+          glyphColor: marker.pinElement.glyphColor,
+          scale: marker.pinElement.scale,
         });
+        _content = pin.element;
+      }
+      else if (marker.content) {
+        _content = document.createElement("div");
+        _content.classList.add("bb-google-marker-content");
+        _content.innerHTML = marker.content;
+      }
 
-        mapInstance.markers.push(markerEl);
+      const markerEl = new google.maps.marker.AdvancedMarkerElement({
+        map,
+        content: _content,
+        position: marker.position,
+        title: marker.title,
+        gmpClickable: clickable
+      });
 
-        // add a click listener for each marker, and set up the info window.
-        if (clickable) {
-          markerEl.addListener("click", ({ domEvent, latLng }) => {
-            const { target } = domEvent;
-            const infoWindow = new google.maps.InfoWindow();
-            infoWindow.close();
-            infoWindow.setContent(markerEl.title);
-            infoWindow.open(markerEl.map, markerEl);
-            dotNetHelper.invokeMethodAsync('OnMarkerClickJS', marker);
-          });
-        }
+      mapInstance.markers.push(markerEl);
+
+      // add a click listener for each marker, and set up the info window.
+      if (clickable) {
+        markerEl.addListener("click", ({ domEvent, latLng }) => {
+          const { target } = domEvent;
+          const infoWindow = new google.maps.InfoWindow();
+          infoWindow.close();
+          infoWindow.setContent(markerEl.title);
+          infoWindow.open(markerEl.map, markerEl);
+          dotNetHelper.invokeMethodAsync('OnMarkerClickJS', marker);
+        });
       }
     },
-    updateMarkers: (elementId, markers, dotNetHelper) => {
-      debugger;
+    removeAllMarkers: (elementId) => {
       let mapInstance = window.seedysoft.googleMaps.get(elementId);
       // delete the markers
       if (mapInstance.markers.length > 0) {
         for (const markerEl of mapInstance.markers) {
           markerEl.setMap(null);
         }
+        mapInstance.markers = [];
       }
+    },
+    updateMarkers: (elementId, markers, dotNetHelper) => {
+      window.seedysoft.googleMaps.removeAllMarkers(elementId);
 
       if (markers) {
         for (const marker of markers) {
@@ -130,8 +131,8 @@ window.seedysoft = {
               map: mapInstance.map,
               routeIndex: i,
               polylineOptions: {
-                strokeColor: getColorFromMag(i),
-                strokeWeight: 10,
+                strokeColor: Colors[i],
+                strokeWeight: 5,
                 strokeOpacity: 1
               }
             }));
@@ -185,26 +186,16 @@ window.seedysoft = {
   }
 }
 
-function getColorFromMag(mag) {
-  var low = [151, 83, 34];
-  var high = [5, 69, 54];
-  var minMag = 0.0;
-  var maxMag = 1000.0;
-
-  var fraction = (Math.min(mag, maxMag) - minMag) / (maxMag - minMag);
-
-  return (interpolateHsl(low, high, fraction));
-}
-
-function interpolateHsl(lowHsl, highHsl, fraction) {
-  var color = [];
-
-  for (var i = 0; i < 3; i++) {
-    color[i] = (highHsl[i] - lowHsl[i]) * fraction + lowHsl[i];
-  }
-
-  return 'hsl(' + color[0] + ',' + color[1] + '%,' + color[2] + '%)';
-}
+const Colors = [
+  "#004f6f",
+  "#031a1f",
+  "#4c7c9b",
+  "#2a4052",
+  "#4d7a85",
+  "#234660",
+  "#274f58",
+  "#005d7d"
+];
 
 //// global function
 //invokeMethodAsync: (callbackEventName, dotNetHelper) => {

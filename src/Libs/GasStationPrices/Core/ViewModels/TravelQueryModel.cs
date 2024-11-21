@@ -10,28 +10,21 @@ public record class TravelQueryModel
 
     public required IReadOnlyCollection<long> PetroleumProductsSelectedIds { get; set; } = [];
 
-    private GoogleMapsRazorClassLib.Directions.LatLngBoundsLiteral bounds = new()
-    {
-        East = Libs.Core.Constants.Earth.MaxLongitudeInDegrees,
-        North = Libs.Core.Constants.Earth.MaxLatitudeInDegrees,
-        South = Libs.Core.Constants.Earth.MinLatitudeInDegrees,
-        West = Libs.Core.Constants.Earth.MinLongitudeInDegrees,
-    };
+    public GoogleMapsRazorClassLib.Directions.LatLngBoundsLiteral Bounds { get; set; } = new();
 
     public GasStationModel? IsInsideBounds(Json.Minetur.EstacionTerrestre estacionTerrestre)
     {
+        // TODO     Filtrar por los productos seleccionados.
+        // TODO             ¿Cómo "mapear" ProductosPetroliferos con las propiedades? ¿Switch?
         const int decimals = 5;
 
         double GasStationLat = Math.Round(estacionTerrestre.Lat, decimals);
         double GasStationLon = Math.Round(estacionTerrestre.Lon, decimals);
 
         return
-            GasStationLat < (double)bounds.North &&
-            GasStationLat > (double)bounds.South &&
-            GasStationLon < (double)bounds.East &&
-            GasStationLon > (double)bounds.West ? GasStationModel.Map(estacionTerrestre) : null;
+            GasStationLat < Bounds.North &&
+            GasStationLat > Bounds.South &&
+            GasStationLon < Bounds.East &&
+            GasStationLon > Bounds.West ? GasStationModel.Map(estacionTerrestre) : null;
     }
-
-    public void SetBounds(GoogleMapsRazorClassLib.Directions.LatLngBoundsLiteral latLngBoundsLiteral)
-        => bounds = latLngBoundsLiteral;
 }
