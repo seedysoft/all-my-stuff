@@ -10,6 +10,8 @@ public partial class Map : SeedysoftComponentBase
 {
     private DotNetObjectReference<Map>? objRef;
 
+    private readonly List<Marker> Markers = [];
+
     private string GoogleMapsJsFileUrl
         => $"https://maps.googleapis.com/maps/api/js?key={ApiKey}&loading=async&v=beta&libraries=maps,marker,routes";
 
@@ -33,7 +35,15 @@ public partial class Map : SeedysoftComponentBase
     /// <param name="marker">The marker to add to the map.</param>
     /// <returns>A completed task.</returns>
     public async ValueTask AddMarkerAsync(Marker marker)
-        => await JSRuntime.InvokeVoidAsync($"{Constants.SeedysoftGoogleMaps}.addMarker", Id, marker, objRef);
+    {
+        await JSRuntime.InvokeVoidAsync($"{Constants.SeedysoftGoogleMaps}.addMarker", Id, marker, objRef);
+        Markers.Add(marker);
+    }
+    public async ValueTask RemoveAllMarkersAsync()
+    {
+        await JSRuntime.InvokeVoidAsync($"{Constants.SeedysoftGoogleMaps}.removeAllMarkers", Id, objRef);
+        Markers.Clear();
+    }
 
     [JSInvokable]
     public async Task OnMarkerClickJS(Marker marker)
@@ -85,11 +95,6 @@ public partial class Map : SeedysoftComponentBase
     /// Makes the marker clickable if set to <see langword="true" />.
     /// </summary>
     [Parameter] public bool IsClickable { get; set; }
-
-    /// <summary>
-    /// Gets or sets the markers.
-    /// </summary>
-    [Parameter] public IEnumerable<Marker>? Markers { get; set; }
 
     /// <summary>
     /// Gets or sets the width of the <see cref="GoogleMap" />.

@@ -20,7 +20,6 @@ public partial class TravelSearch
     private Libs.GoogleMapsRazorClassLib.GoogleMap.Map TravelGoogleMap { get; set; } = default!;
 
     private Libs.GoogleMapsRazorClassLib.Directions.Service directionsService = default!;
-    private readonly List<Libs.GoogleMapsRazorClassLib.GoogleMap.Marker> markers = [];
 
     private readonly Libs.GasStationPrices.Core.ViewModels.TravelQueryModel travelQueryModel = new()
     {
@@ -123,7 +122,7 @@ public partial class TravelSearch
             return;
         }
 
-        RemoveAllMarkers();
+        await TravelGoogleMap.RemoveAllMarkersAsync();
 
         //Direction Request
         Libs.GoogleMapsRazorClassLib.Directions.Request directionsRequest = new()
@@ -151,9 +150,7 @@ public partial class TravelSearch
             //],
         };
         directionsService ??= new(JSRuntime, TravelGoogleMap.Id);
-        travelQueryModel.SetBounds(await directionsService.RouteAsync(directionsRequest));
-
-        // TODO             Show alternatives
+        travelQueryModel.Bounds = await directionsService.RouteAsync(directionsRequest);
 
         // Load GasStations
         StringContent requestContent = new(
@@ -163,7 +160,7 @@ public partial class TravelSearch
         string FromUri = $"{NavManager.BaseUri}{Constants.TravelUris.Controller}/{Constants.TravelUris.Actions.GetGasStations}";
         HttpRequestMessage requestMessage = new(HttpMethod.Post, FromUri) { Content = requestContent, };
 
-        HttpResponseMessage response = Http.Send(requestMessage);
+        HttpResponseMessage response = await Http.SendAsync(requestMessage);
 
         if (!response.IsSuccessStatusCode)
             return;
@@ -176,7 +173,7 @@ public partial class TravelSearch
 
             // TODO             Fix markers
 
-            Libs.GoogleMapsRazorClassLib.GoogleMap.Marker marker = new()
+            await TravelGoogleMap.AddMarkerAsync(new Libs.GoogleMapsRazorClassLib.GoogleMap.Marker()
             {
                 Content = $"<div style='background-color:blue'>{gasStationModel.Rotulo}</div>",
                 PinElement = new()
@@ -190,11 +187,7 @@ public partial class TravelSearch
                 },
                 Position = new(gasStationModel.Lat, gasStationModel.Lng),
                 Title = gasStationModel.Rotulo,
-            };
-
-            _ = markers.Append(marker);
+            });
         }
     }
-
-    private void RemoveAllMarkers() => markers?.Clear();
 }
