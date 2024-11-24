@@ -4,30 +4,34 @@ window.seedysoft.scriptLoader = window.window.seedysoft.scriptLoader || {};
 
 window.seedysoft = {
   googleMaps: {
-    instances: {},
+    instanceArray: {},
 
     create: (elementId, map, zoom, center, markers, clickable) => {
-      window.seedysoft.googleMaps.instances[elementId] = {
+      window.seedysoft.googleMaps.instanceArray[elementId] = {
         map: map,
         zoom: zoom,
         center: center,
-        markers: markers,
+        markerArray: markers,
         clickable: clickable,
-        directionsRenderers: [],
-        directionsService: new google.maps.DirectionsService()
+        directionRendererArray: [],
+        directionsService: new google.maps.DirectionsService(),
+        infoWindow: new google.maps.InfoWindow({
+          content: "",
+          disableAutoPan: true,
+        }),
       };
 
       return window.seedysoft.googleMaps.get(elementId);
     },
-    get: (elementId) => { return window.seedysoft.googleMaps.instances[elementId]; },
+    get: (elementId) => { return window.seedysoft.googleMaps.instanceArray[elementId]; },
     initialize: (elementId, zoom, center, markers, clickable, dotNetHelper) => {
-      let mapOptions = { center: center, mapId: elementId, zoom: zoom };
+      let mapOptions = { center: center, disableDefaultUI: true, mapId: elementId, zoom: zoom };
 
       let map = new google.maps.Map(document.getElementById(elementId), mapOptions);
 
       let mapInstance = window.seedysoft.googleMaps.create(elementId, map, zoom, center, markers, clickable);
 
-      mapInstance.directionsRenderers.push(new google.maps.DirectionsRenderer({ map: map }));
+      mapInstance.directionRendererArray.push(new google.maps.DirectionsRenderer({ map: map }));
 
       if (markers) {
         for (const marker of markers) {
@@ -78,7 +82,7 @@ window.seedysoft = {
         gmpClickable: clickable
       });
 
-      mapInstance.markers.push(markerEl);
+      mapInstance.markerArray.push(markerEl);
 
       // add a click listener for each marker, and set up the info window.
       if (clickable) {
@@ -95,11 +99,11 @@ window.seedysoft = {
     removeAllMarkers: (elementId) => {
       let mapInstance = window.seedysoft.googleMaps.get(elementId);
       // delete the markers
-      if (mapInstance.markers.length > 0) {
-        for (const markerEl of mapInstance.markers) {
+      if (mapInstance.markerArray.length > 0) {
+        for (const markerEl of mapInstance.markerArray) {
           markerEl.setMap(null);
         }
-        mapInstance.markers = [];
+        mapInstance.markerArray = [];
       }
     },
     updateMarkers: (elementId, markers, dotNetHelper) => {
@@ -118,15 +122,22 @@ window.seedysoft = {
       return mapInstance.directionsService
         .route(request)
         .then((response) => {
-          for (var i = 0, len = mapInstance.directionsRenderers.length; i < len; i++) {
-            mapInstance.directionsRenderers[i].setMap(null);
-            mapInstance.directionsRenderers[i] = null;
+          for (var i = 0, len = mapInstance.directionRendererArray.length; i < len; i++) {
+            mapInstance.directionRendererArray[i].setMap(null);
+            mapInstance.directionRendererArray[i] = null;
           }
+          mapInstance.directionRendererArray = [];
 
-          mapInstance.directionsRenderers = [];
+          // Route the directions and pass the response to a function to create markers for each step.
+          let warnings = '';
+          document.getElementById("warnings-panel").innerHTML = warnings;
 
           for (var i = 0, len = response.routes.length; i < len; i++) {
-            mapInstance.directionsRenderers.push(new google.maps.DirectionsRenderer({
+            if (response.routes[i].warnings.length > 0) {
+              warnings += "<li><b>" + response.routes[i].warnings + "</b></li>";
+            }
+
+            mapInstance.directionRendererArray.push(new google.maps.DirectionsRenderer({
               directions: response,
               map: mapInstance.map,
               routeIndex: i,
@@ -136,6 +147,12 @@ window.seedysoft = {
                 strokeOpacity: 1
               }
             }));
+
+            showSteps(response.routes[i], mapInstance.markerArray, mapInstance.infoWindow, mapInstance.map);
+          }
+
+          if (warnings.length > 0) {
+            document.getElementById("warnings-panel").innerHTML = "<ul>" + warnings + "</ul>";
           }
 
           return mapInstance.map.getBounds();
@@ -196,6 +213,27 @@ const Colors = [
   "#274f58",
   "#005d7d"
 ];
+
+function showSteps(route, markerArray, stepDisplay, map) {
+  // For each step, place a marker, and add the text to the marker's infowindow.
+  // Also attach the marker to an array so we can keep track of it and remove it when calculating new routes.
+  const myRoute = route.legs[0];
+
+  for (let i = 0; i < myRoute.steps.length; i++) {
+    const advancedMarker = new google.maps.marker.AdvancedMarkerElement({
+      gmpDraggable: false,
+      map: map,
+      position: myRoute.steps[i].start_location,
+    });
+    markerArray[i] = advancedMarker;
+
+    advancedMarker.addEventListener("gmp-click", async () => {
+      // Open an info window when the marker is clicked on, containing the text of the step.
+      stepDisplay.setContent(myRoute.steps[i].instructions);
+      stepDisplay.open(map, marker);
+    });
+  }
+}
 
 //// global function
 //invokeMethodAsync: (callbackEventName, dotNetHelper) => {

@@ -121,12 +121,14 @@
         <Map @ref="@TravelGoogleMap"
              Id="@(nameof(TravelGoogleMap))"
              ApiKey="@(Settings.GoogleMapsPlatform.ApiKey)"
-             Center="@(new Center(Seedysoft.Libs.Core.Constants.Earth.Home.Lat, Seedysoft.Libs.Core.Constants.Earth.Home.Lng))"
+             Center="@(new Libs.GoogleMapsRazorClassLib.Directions.LatLngLiteral(Seedysoft.Libs.Core.Constants.Earth.Home.Lat, Seedysoft.Libs.Core.Constants.Earth.Home.Lng))"
              Height="450" HeightUnit="@Libs.Core.Enums.Unit.Px"
              Width="100" WidthUnit="@Libs.Core.Enums.Unit.Percentage"
              Zoom="14"
              IsClickable="true"
              OnMarkerClick="@OnGoogleMapMarkerClick" />
+        &nbsp;
+        <div id="warnings-panel"></div>
 
     </MudContainer>
 
