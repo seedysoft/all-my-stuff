@@ -6,7 +6,7 @@ public record class Marker
 
     public PinElement? PinElement { get; set; }
 
-    public MarkerPosition? Position { get; set; }
+    public Directions.LatLngLiteral? Position { get; set; }
 
     [I(Condition = C.WhenWritingNull)] public string? Title { get; set; }
 }

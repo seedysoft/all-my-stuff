@@ -7,11 +7,6 @@
 public class LatLngBoundsLiteral
 {
     /// <summary>
-    /// Default constructor. Set East, North, South and West explicitely because here they are initialized to zero.
-    /// </summary>
-    public LatLngBoundsLiteral() { }
-
-    /// <summary>
     /// East longitude in degrees. Values outside the range [-180, 180] will be wrapped to the range [-180, 180). 
     /// For example, a value of -190 will be converted to 170. 
     /// A value of 190 will be converted to -170. 

@@ -54,8 +54,14 @@ public partial class Map : SeedysoftComponentBase
 
     private void OnScriptLoad()
     {
-        _ = Task.Run(
-            async () => await JSRuntime.InvokeVoidAsync($"{Constants.SeedysoftGoogleMaps}.initialize", Id, Zoom, Center, Markers, IsClickable, objRef));
+        _ = Task.Run(async () => await JSRuntime.InvokeVoidAsync(
+            $"{Constants.SeedysoftGoogleMaps}.initialize",
+            Id,
+            Zoom,
+            Center,
+            Markers,
+            IsClickable,
+            objRef));
     }
     private static void OnScriptError(string errorMessage) => throw new Exception(errorMessage);
 
@@ -68,7 +74,7 @@ public partial class Map : SeedysoftComponentBase
     /// <summary>
     /// Gets or sets the center parameter.
     /// </summary>
-    [Parameter] public Center Center { get; set; } = default!;
+    [Parameter] public Directions.LatLngLiteral Center { get; set; } = default!;
 
     /// <summary>
     /// Gets or sets the height of the <see cref="GoogleMap" />.

@@ -98,6 +98,7 @@ public class Request
     ///// Optional.
     ///// </summary>
     //[I(Condition = C.WhenWritingNull)]
+    //[DO_NOT_USE]
     //public UnitSystem? UnitSystem { get; set; }
 
     ///// <summary>
