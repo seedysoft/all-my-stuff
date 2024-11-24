@@ -1,6 +1,4 @@
-﻿using System.Text.Json.Serialization;
-
-namespace Seedysoft.Libs.GoogleMapsRazorClassLib.Directions;
+﻿namespace Seedysoft.Libs.GoogleMapsRazorClassLib.Directions;
 
 /// <summary>
 /// Object literals are accepted in place of LatLng objects, as a convenience, in many places. 
