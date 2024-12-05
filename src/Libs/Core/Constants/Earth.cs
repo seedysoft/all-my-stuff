@@ -27,5 +27,8 @@ public static class Earth
     {
         public const double Lat = 42.354397413084406d;
         public const double Lng = -3.6628374207940815d;
+
+        //"Latitud":  42.364111
+        //"Longitud": -3.622139
     }
 }
