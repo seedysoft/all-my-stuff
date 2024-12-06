@@ -9,8 +9,8 @@ public sealed class Configurator : Libs.Utils.Dependencies.ConfiguratorBase
         string CurrentEnvironmentName = hostApplicationBuilder.Environment.EnvironmentName;
 
         _ = hostApplicationBuilder.Configuration
-            .AddJsonFile($"appsettings.BlazorWebApp.Server.json", optional: false, reloadOnChange: true)
-            .AddJsonFile($"appsettings.BlazorWebApp.Server.{CurrentEnvironmentName}.json", optional: false, reloadOnChange: true);
+            .AddJsonFile($"appsettings.{nameof(BlazorWebApp)}.{nameof(Server)}.json", optional: false, reloadOnChange: true)
+            .AddJsonFile($"appsettings.{nameof(BlazorWebApp)}.{nameof(Server)}.{CurrentEnvironmentName}.json", optional: false, reloadOnChange: true);
     }
 
     protected override void AddDbContexts(IHostApplicationBuilder hostApplicationBuilder) { /* No DbContexts */ }

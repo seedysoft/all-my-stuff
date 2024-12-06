@@ -10,8 +10,8 @@ internal sealed class Configurator : Utils.Dependencies.ConfiguratorBase
         string CurrentEnvironmentName = hostApplicationBuilder.Environment.EnvironmentName;
 
         _ = hostApplicationBuilder.Configuration
-            .AddJsonFile($"appsettings.Libs.GasStationPrices.json", optional: false, reloadOnChange: true)
-            .AddJsonFile($"appsettings.Libs.GasStationPrices.{CurrentEnvironmentName}.json", optional: false, reloadOnChange: true);
+            .AddJsonFile($"appsettings.{nameof(Settings.GasStationPricesSettings)}.json", optional: false, reloadOnChange: true)
+            .AddJsonFile($"appsettings.{nameof(Settings.GasStationPricesSettings)}.{CurrentEnvironmentName}.json", optional: false, reloadOnChange: true);
     }
 
     protected override void AddDbContexts(Microsoft.Extensions.Hosting.IHostApplicationBuilder hostApplicationBuilder) { /* No DbContexts */ }
@@ -19,7 +19,7 @@ internal sealed class Configurator : Utils.Dependencies.ConfiguratorBase
     protected override void AddMyServices(Microsoft.Extensions.Hosting.IHostApplicationBuilder hostApplicationBuilder)
     {
         hostApplicationBuilder.Services.TryAddSingleton(
-            hostApplicationBuilder.Configuration.GetSection(nameof(Core.Settings.SettingsRoot)).Get<Core.Settings.SettingsRoot>()!);
+            hostApplicationBuilder.Configuration.GetSection(nameof(Settings.GasStationPricesSettings)).Get<Settings.GasStationPricesSettings>()!);
 
         hostApplicationBuilder.Services.TryAddScoped<Services.ObtainGasStationPricesService>();
     }

@@ -14,14 +14,15 @@ public partial class TravelSearch
     [Inject] private MudBlazor.ISnackbar Snackbar { get; set; } = default!;
     [Inject] private IConfiguration Configuration { get; set; } = default!;
 
-    private Libs.GasStationPrices.Core.Settings.SettingsRoot Settings;
+    private Libs.GasStationPrices.Settings.GasStationPricesSettings gasStationPricesSettings = default!;
+    private Libs.GoogleApis.Settings.GoogleApisSettings googleApisSettings = default!;
 
     private MudBlazor.MudForm TravelQueryMudForm { get; set; } = default!;
     private Libs.GoogleMapsRazorClassLib.GoogleMap.Map TravelGoogleMap { get; set; } = default!;
 
-    private Libs.GoogleMapsRazorClassLib.Directions.Service directionsService = default!;
+    private Libs.GoogleMapsRazorClassLib.DirectionsService directionsService = default!;
 
-    private readonly Libs.GasStationPrices.Core.ViewModels.TravelQueryModel travelQueryModel = new()
+    private readonly Libs.GasStationPrices.ViewModels.TravelQueryModel travelQueryModel = new()
     {
 #if DEBUG
         Origin = "Calle Juan Ramon Jimenez, 8, Burgos, Spain",
@@ -33,17 +34,21 @@ public partial class TravelSearch
         MaxDistanceInKm = 5,
         PetroleumProductsSelectedIds = [],
     };
-    private readonly Libs.GasStationPrices.Core.ViewModels.TravelQueryModelFluentValidator travelQueryModelFluentValidator = new();
+    private readonly Libs.GasStationPrices.ViewModels.TravelQueryModelFluentValidator travelQueryModelFluentValidator = new();
 
-    private readonly IEnumerable<Libs.GasStationPrices.Core.Json.Minetur.ProductoPetrolifero> PetroleumProducts =
-         Libs.GasStationPrices.Core.Json.Minetur.ProductoPetrolifero.All;
+    private readonly IEnumerable<Libs.GasStationPrices.Json.Minetur.ProductoPetrolifero> PetroleumProducts =
+         Libs.GasStationPrices.Json.Minetur.ProductoPetrolifero.All;
 
     protected override async Task OnInitializedAsync()
     {
         Logger.LogInformation($"Called {nameof(OnInitializedAsync)}");
 
-        Settings =
-            Configuration.GetSection(nameof(Libs.GasStationPrices.Core.Settings.SettingsRoot)).Get<Libs.GasStationPrices.Core.Settings.SettingsRoot>()!;
+        gasStationPricesSettings = Configuration
+            .GetSection(nameof(Libs.GasStationPrices.Settings.GasStationPricesSettings))
+            .Get<Libs.GasStationPrices.Settings.GasStationPricesSettings>()!;
+        googleApisSettings = Configuration
+            .GetSection(nameof(Libs.GoogleApis.Settings.GoogleApisSettings))
+            .Get<Libs.GoogleApis.Settings.GoogleApisSettings>()!;
 
         await base.OnInitializedAsync();
 
@@ -125,11 +130,11 @@ public partial class TravelSearch
         await TravelGoogleMap.RemoveAllMarkersAsync();
 
         //Direction Request
-        Libs.GoogleMapsRazorClassLib.Directions.Request directionsRequest = new()
+        Libs.GoogleApis.Json.Directions.Request.Body directionsRequest = new()
         {
             Origin = travelQueryModel.Origin,
             Destination = travelQueryModel.Destination,
-            TravelMode = Libs.GoogleMapsRazorClassLib.Directions.TravelMode.Driving,
+            TravelMode = Libs.GoogleApis.Json.Shared.TravelMode.Driving,
             //AvoidFerries = false,
             //AvoidHighways = false,
             //AvoidTolls = false,
@@ -165,8 +170,8 @@ public partial class TravelSearch
         if (!response.IsSuccessStatusCode)
             return;
 
-        await foreach (Libs.GasStationPrices.Core.ViewModels.GasStationModel? gasStationModel in
-            response.Content.ReadFromJsonAsAsyncEnumerable<Libs.GasStationPrices.Core.ViewModels.GasStationModel>()!)
+        await foreach (Libs.GasStationPrices.ViewModels.GasStationModel? gasStationModel in
+            response.Content.ReadFromJsonAsAsyncEnumerable<Libs.GasStationPrices.ViewModels.GasStationModel>()!)
         {
             if (gasStationModel == null)
                 continue;

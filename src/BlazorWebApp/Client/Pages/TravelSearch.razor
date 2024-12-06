@@ -3,7 +3,6 @@
 @attribute [StreamRendering(true)]
 
 @using MudBlazor
-@using Seedysoft.Libs.GasStationPrices.Core.ViewModels
 @using Seedysoft.Libs.GoogleMapsRazorClassLib.GoogleMap
 
 @{
@@ -75,7 +74,7 @@
                                 SelectionMode="SelectionMode.MultiSelection"
                                 T="long"
                                 Variant="Variant.Text">
-                        @foreach (Seedysoft.Libs.GasStationPrices.Core.Json.Minetur.ProductoPetrolifero item in PetroleumProducts)
+                        @foreach (Seedysoft.Libs.GasStationPrices.Json.Minetur.ProductoPetrolifero item in PetroleumProducts)
                         {
                             <MudTooltip Text="@item.Nombre">
                                 <MudChip Default="@item.Abreviatura.StartsWith("G9")" Text="@item.Abreviatura" Value="@item.IdProducto"></MudChip>
@@ -120,10 +119,10 @@
 
         <Map @ref="@TravelGoogleMap"
              Id="@(nameof(TravelGoogleMap))"
-             ApiKey="@(Settings.GoogleMapsPlatform.ApiKey)"
-             Center="@(new Libs.GoogleMapsRazorClassLib.Directions.LatLngLiteral(Seedysoft.Libs.Core.Constants.Earth.Home.Lat, Seedysoft.Libs.Core.Constants.Earth.Home.Lng))"
-             Height="450" HeightUnit="@Libs.Core.Enums.Unit.Px"
-             Width="100" WidthUnit="@Libs.Core.Enums.Unit.Percentage"
+             ApiKey="@(googleApisSettings.GoogleMapsPlatform.ApiKey)"
+             Center="@(new Libs.GoogleApis.Json.Shared.LatLngLiteral(Seedysoft.Libs.Core.Constants.Earth.Home.Lat, Seedysoft.Libs.Core.Constants.Earth.Home.Lng))"
+             Height="450" HeightUnit="@Libs.Core.Enums.CssUnit.Px"
+             Width="100" WidthUnit="@Libs.Core.Enums.CssUnit.Percentage"
              Zoom="14"
              IsClickable="true"
              OnMarkerClick="@OnGoogleMapMarkerClick" />
