@@ -1,26 +1,29 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <IsPackable>false</IsPackable>
+        <IsPublishable>False</IsPublishable>
+        <RuntimeIdentifiers>linux-arm64;linux-x64;win-x64</RuntimeIdentifiers>
+    </PropertyGroup>
 
-  <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-    <IsPackable>false</IsPackable>
-    <IsPublishable>False</IsPublishable>
-    <RuntimeIdentifiers>linux-arm64;linux-x64;win-x64</RuntimeIdentifiers>
-  </PropertyGroup>
+    <ItemGroup>
+        <Compile Include="..\..\Usings.cs" Link="Usings.cs" />
+    </ItemGroup>
 
-  <ItemGroup>
-    <SupportedPlatform Include="browser" />
-  </ItemGroup>
+    <ItemGroup>
+        <SupportedPlatform Include="browser" />
+    </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.10" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="8.0.0" />
-    <PackageReference Include="OneOf" Version="3.0.271" />
-  </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.10" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="8.0.0" />
+        <PackageReference Include="OneOf" Version="3.0.271" />
+    </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Utils\Seedysoft.Libs.Utils.csproj" />
-  </ItemGroup>
-
+    <ItemGroup>
+        <ProjectReference Include="..\GoogleApis\Seedysoft.Libs.GoogleApis.csproj" />
+        <ProjectReference Include="..\Utils\Seedysoft.Libs.Utils.csproj" />
+    </ItemGroup>
 </Project>

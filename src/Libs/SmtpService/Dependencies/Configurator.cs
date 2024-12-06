@@ -9,7 +9,7 @@ public sealed class Configurator : Utils.Dependencies.ConfiguratorBase
     protected override void AddJsonFiles(IHostApplicationBuilder hostApplicationBuilder)
     {
         _ = hostApplicationBuilder.Configuration
-            .AddJsonFile($"appsettings.SmtpServiceSettings.json", optional: false, reloadOnChange: true);
+            .AddJsonFile($"appsettings.{nameof(Settings.SmtpServiceSettings)}.json", optional: false, reloadOnChange: true);
     }
 
     protected override void AddDbContexts(IHostApplicationBuilder hostApplicationBuilder) { /* No DbContexts */ }

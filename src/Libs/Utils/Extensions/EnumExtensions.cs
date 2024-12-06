@@ -20,18 +20,18 @@ public static class EnumExtensions
         return false;
     }
 
-    public static string ToCssString(this Core.Enums.Unit unit) =>
+    public static string ToCssString(this Core.Enums.CssUnit unit) =>
         unit switch
         {
-            Core.Enums.Unit.Em => "em",
-            Core.Enums.Unit.Percentage => "%",
-            Core.Enums.Unit.Pt => "pt",
-            Core.Enums.Unit.Px => "px",
-            Core.Enums.Unit.Rem => "rem",
-            Core.Enums.Unit.Vh => "vh",
-            Core.Enums.Unit.VMax => "vmax",
-            Core.Enums.Unit.VMin => "vmin",
-            Core.Enums.Unit.Vw => "vw",
+            Core.Enums.CssUnit.Em => "em",
+            Core.Enums.CssUnit.Percentage => "%",
+            Core.Enums.CssUnit.Pt => "pt",
+            Core.Enums.CssUnit.Px => "px",
+            Core.Enums.CssUnit.Rem => "rem",
+            Core.Enums.CssUnit.Vh => "vh",
+            Core.Enums.CssUnit.VMax => "vmax",
+            Core.Enums.CssUnit.VMin => "vmin",
+            Core.Enums.CssUnit.Vw => "vw",
             _ => string.Empty
     };
 }

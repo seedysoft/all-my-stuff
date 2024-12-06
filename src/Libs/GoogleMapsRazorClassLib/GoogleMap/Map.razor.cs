@@ -74,7 +74,7 @@ public partial class Map : SeedysoftComponentBase
     /// <summary>
     /// Gets or sets the center parameter.
     /// </summary>
-    [Parameter] public Directions.LatLngLiteral Center { get; set; } = default!;
+    [Parameter] public GoogleApis.Json.Shared.LatLngLiteral Center { get; set; } = default!;
 
     /// <summary>
     /// Gets or sets the height of the <see cref="GoogleMap" />.
@@ -87,9 +87,9 @@ public partial class Map : SeedysoftComponentBase
     /// Gets or sets the units for the <see cref="Height" />.
     /// </summary>
     /// <remarks>
-    /// Default value is <see cref="Unit.Px" />.
+    /// Default value is <see cref="CssUnit.Px" />.
     /// </remarks>
-    [Parameter] public Unit HeightUnit { get; set; } = Unit.Px;
+    [Parameter] public CssUnit HeightUnit { get; set; } = CssUnit.Px;
 
     /// <summary>
     /// Event fired when a user clicks on a marker.
@@ -113,9 +113,9 @@ public partial class Map : SeedysoftComponentBase
     /// Gets or sets the units for the <see cref="Width" />.
     /// </summary>
     /// <remarks>
-    /// Default value is <see cref="Unit.Percentage" />.
+    /// Default value is <see cref="CssUnit.Percentage" />.
     /// </remarks>
-    [Parameter] public Unit WidthUnit { get; set; } = Unit.Percentage;
+    [Parameter] public CssUnit WidthUnit { get; set; } = CssUnit.Percentage;
 
     /// <summary>
     /// Gets or sets the zoom level of the <see cref="GoogleMap" />.

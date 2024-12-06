@@ -11,8 +11,8 @@ public sealed class Configurator : Utils.Dependencies.ConfiguratorBase
         string CurrentEnvironmentName = hostApplicationBuilder.Environment.EnvironmentName;
 
         _ = hostApplicationBuilder.Configuration
-            .AddJsonFile($"appsettings.TelegramSettings.json", optional: false, reloadOnChange: true)
-            .AddJsonFile($"appsettings.TelegramSettings.{CurrentEnvironmentName}.json", optional: false, reloadOnChange: true);
+            .AddJsonFile($"appsettings.{nameof(Settings.TelegramBotSettings)}.json", optional: false, reloadOnChange: true)
+            .AddJsonFile($"appsettings.{nameof(Settings.TelegramBotSettings)}.{CurrentEnvironmentName}.json", optional: false, reloadOnChange: true);
     }
 
     protected override void AddDbContexts(IHostApplicationBuilder hostApplicationBuilder) { /* No DbContexts */ }
@@ -20,7 +20,7 @@ public sealed class Configurator : Utils.Dependencies.ConfiguratorBase
     protected override void AddMyServices(IHostApplicationBuilder hostApplicationBuilder)
     {
         hostApplicationBuilder.Services.TryAddSingleton(
-            hostApplicationBuilder.Configuration.GetSection(nameof(Settings.TelegramSettings)).Get<Settings.TelegramSettings>()!);
+            hostApplicationBuilder.Configuration.GetSection(nameof(Settings.TelegramBotSettings)).Get<Settings.TelegramBotSettings>()!);
         hostApplicationBuilder.Services.TryAddSingleton<Services.TelegramHostedService>();
     }
 }
