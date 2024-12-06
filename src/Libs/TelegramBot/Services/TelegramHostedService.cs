@@ -16,17 +16,17 @@ namespace Seedysoft.Libs.TelegramBot.Services;
 public class TelegramHostedService : Core.NonBackgroundServiceBase, IHostedService
 {
     private readonly ILogger<TelegramHostedService> Logger;
-    private readonly Settings.TelegramSettings TelegramSettings;
+    private readonly Settings.TelegramBotSettings Settings;
     private readonly TelegramBotClient LocalTelegramBotClient;
 
     public TelegramHostedService(IServiceProvider serviceProvider) : base(serviceProvider)
     {
         Logger = ServiceProvider.GetRequiredService<ILogger<TelegramHostedService>>();
 
-        TelegramSettings = ServiceProvider.GetRequiredService<Settings.TelegramSettings>();
+        Settings = ServiceProvider.GetRequiredService<Settings.TelegramBotSettings>();
 
         TelegramBotClientOptions telegramBotClientOptions = new(
-            token: $"{TelegramSettings.CurrentBot.Id}:{TelegramSettings.CurrentBot.Token}");
+            token: $"{Settings.CurrentBot.Id}:{Settings.CurrentBot.Token}");
 
         LocalTelegramBotClient = new TelegramBotClient(telegramBotClientOptions);
     }
@@ -63,7 +63,7 @@ public class TelegramHostedService : Core.NonBackgroundServiceBase, IHostedServi
         IEnumerable<BotCommand>? myCommands,
         CancellationToken stoppingToken)
     {
-        TelegramSettings.CurrentBot.SetMe(await LocalTelegramBotClient.GetMe(stoppingToken));
+        Settings.CurrentBot.SetMe(await LocalTelegramBotClient.GetMe(stoppingToken));
 
         if (myCommands != null)
             //TelegramBotClient.DeleteMyCommandsAsync
@@ -150,7 +150,7 @@ public class TelegramHostedService : Core.NonBackgroundServiceBase, IHostedServi
         CancellationToken cancellationToken)
     {
         if (System.Diagnostics.Debugger.IsAttached)
-            to = long.Parse(TelegramSettings.Users.UserTest.Id);
+            to = long.Parse(Settings.Users.UserTest.Id);
 
         text = text[..Math.Min(text.Length, Core.Constants.Telegram.MessageLengthLimit)];
         ChatId ToChatId = new(to);
@@ -185,7 +185,7 @@ public class TelegramHostedService : Core.NonBackgroundServiceBase, IHostedServi
         CancellationToken cancellationToken)
     {
         if (System.Diagnostics.Debugger.IsAttached)
-            to = long.Parse(TelegramSettings.Users.UserTest.Id);
+            to = long.Parse(Settings.Users.UserTest.Id);
 
         text = text[..Math.Min(text.Length, Core.Constants.Telegram.MessageLengthLimit)];
         ChatId ToChatId = new(to);
