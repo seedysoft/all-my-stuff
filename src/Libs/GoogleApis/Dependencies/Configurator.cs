@@ -22,5 +22,6 @@ internal sealed class Configurator : Utils.Dependencies.ConfiguratorBase
             hostApplicationBuilder.Configuration.GetSection(nameof(Settings.GoogleApisSettings)).Get<Settings.GoogleApisSettings>()!);
 
         hostApplicationBuilder.Services.TryAddScoped<Services.PlacesService>();
+        hostApplicationBuilder.Services.TryAddScoped<Services.RoutesService>();
     }
 }

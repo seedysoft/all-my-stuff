@@ -119,7 +119,7 @@ window.seedysoft = {
     directionsRoute: (elementId, request) => {
       let mapInstance = window.seedysoft.googleMaps.get(elementId);
 
-      return mapInstance.directionsService
+      /*return*/ mapInstance.directionsService
         .route(request)
         .then((response) => {
           for (var i = 0, len = mapInstance.directionRendererArray.length; i < len; i++) {
@@ -155,7 +155,7 @@ window.seedysoft = {
             document.getElementById("warnings-panel").innerHTML = "<ul>" + warnings + "</ul>";
           }
 
-          return mapInstance.map.getBounds();
+          /*return mapInstance.map.getBounds();*/
         })
         .catch((e) => { window.alert("Directions request failed: '" + e + "'"); });
     }

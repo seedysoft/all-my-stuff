@@ -5,7 +5,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 
-[assembly: SuppressMessage("Naming", "CA1707:Identifiers should not contain underscores", Justification = "API definitions", Scope = "namespaceanddescendants", Target = "~N:Seedysoft.Libs.GoogleApis.Json")]
+[assembly: SuppressMessage("Naming", "CA1707:Identifiers should not contain underscores", Justification = "API definitions", Scope = "namespaceanddescendants", Target = $"~N:{nameof(Seedysoft)}.{nameof(Seedysoft.Libs)}.{nameof(Seedysoft.Libs.GoogleApis)}.{nameof(Seedysoft.Libs.GoogleApis.Models)}")]
 //[assembly: SuppressMessage("Style", "IDE0053:Use expression body for lambda expression", Justification = "auto-generated", Scope = "namespaceanddescendants", Target = "~N:Seedysoft.Libs.GasStationPrices.Infrastructure.Migrations")]
 //[assembly: SuppressMessage("Style", "IDE0058:Expression value is never used", Justification = "auto-generated", Scope = "namespaceanddescendants", Target = "~N:Seedysoft.Libs.GasStationPrices.Infrastructure.Migrations")]
 //[assembly: SuppressMessage("Style", "IDE0161:Convert to file-scoped namespace", Justification = "auto-generated", Scope = "namespaceanddescendants", Target = "~N:Seedysoft.Libs.GasStationPrices.Infrastructure.Migrations")]

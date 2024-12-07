@@ -12,17 +12,19 @@ public class DirectionsService(IJSRuntime jSRuntime, string elementId)
     /// </summary>
     /// <param name="request"></param>
     /// <returns></returns>
-    public async Task<GoogleApis.Json.Shared.LatLngBoundsLiteral> RouteAsync(GoogleApis.Json.Directions.Request.Body request)
+    //public async Task<GoogleApis.Models.Shared.LatLngBoundsLiteral> RouteAsync(GoogleApis.Models.Directions.Request.Body request)
+    public async Task RouteAsync(GoogleApis.Models.Directions.Request.Body request)
     {
         try
         {
-            return await jSRuntime.InvokeAsync<GoogleApis.Json.Shared.LatLngBoundsLiteral>(
+            /*return await jSRuntime.InvokeAsync<GoogleApis.Models.Shared.LatLngBoundsLiteral>(*/
+            await jSRuntime.InvokeVoidAsync(
                 $"{Constants.SeedysoftGoogleMaps}.directionsRoute",
                 TimeSpan.FromSeconds(2),
                 [elementId, request]);
         }
         catch (Exception e) { Console.WriteLine("Error parsing DirectionsResult Object. Message: " + e.Message); }
 
-        return default!;
+        //return default!;
     }
 }

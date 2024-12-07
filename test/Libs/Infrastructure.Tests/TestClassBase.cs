@@ -16,6 +16,9 @@ public abstract class TestClassBase
 
         Options = new DbContextOptionsBuilder<DbContexts.DbCxt>().UseSqlite(SqliteConnection).Options;
 
+        if (System.Diagnostics.Debugger.IsAttached)
+            Environment.SetEnvironmentVariable("DOTNET_ENVIRONMENT", "Development");
+
         // Gives error... Maybe not necessary
         //using DbContexts.DbCxt dbCxt = GetDbCxt();
         //dbCxt.Database.Migrate();
