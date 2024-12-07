@@ -33,8 +33,8 @@ public sealed class Configurator : Libs.Utils.Dependencies.ConfiguratorBase
 
         // Add services to the container.
         _ = hostApplicationBuilder.Services
-            .AddRazorComponents(razorComponentsServiceOptions => { })
-            .AddInteractiveServerComponents(circuitOptions => { })
+            .AddRazorComponents(static razorComponentsServiceOptions => { })
+            .AddInteractiveServerComponents(static circuitOptions => { })
             .AddInteractiveWebAssemblyComponents();
 
         _ = hostApplicationBuilder.Services

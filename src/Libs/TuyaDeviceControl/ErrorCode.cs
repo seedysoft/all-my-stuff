@@ -1,6 +1,5 @@
 ﻿namespace Seedysoft.Libs.TuyaDeviceControl;
 
-[System.Diagnostics.CodeAnalysis.SuppressMessage("Naming", "CA1707:Identifiers should not contain underscores", Justification = "<Pending>")]
 public enum ErrorCode : uint
 {
     NoError = 0,
