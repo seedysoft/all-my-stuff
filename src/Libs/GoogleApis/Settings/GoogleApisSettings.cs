@@ -2,5 +2,16 @@
 
 public record class GoogleApisSettings
 {
-    public required GoogleMapsPlatform GoogleMapsPlatform { get; init; }
+    private string apiKey = default!;
+    public required string ApiKey
+    {
+        get => apiKey;
+        init => apiKey = Cryptography.Crypto.DecryptText(value, Utils.Helpers.EnvironmentHelper.GetMasterKey());
+    }
+
+    public required MapsApi MapsApi { get; init; }
+
+    public required PlacesApi PlacesApi { get; init; }
+
+    public required RoutesApi RoutesApi { get; init; }
 }

@@ -74,7 +74,7 @@ public partial class Map : SeedysoftComponentBase
     /// <summary>
     /// Gets or sets the center parameter.
     /// </summary>
-    [Parameter] public GoogleApis.Json.Shared.LatLngLiteral Center { get; set; } = default!;
+    [Parameter] public GoogleApis.Models.Shared.LatLngLiteral Center { get; set; } = default!;
 
     /// <summary>
     /// Gets or sets the height of the <see cref="GoogleMap" />.

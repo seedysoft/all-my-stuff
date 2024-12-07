@@ -36,8 +36,8 @@ public partial class TravelSearch
     };
     private readonly Libs.GasStationPrices.ViewModels.TravelQueryModelFluentValidator travelQueryModelFluentValidator = new();
 
-    private readonly IEnumerable<Libs.GasStationPrices.Json.Minetur.ProductoPetrolifero> PetroleumProducts =
-         Libs.GasStationPrices.Json.Minetur.ProductoPetrolifero.All;
+    private readonly IEnumerable<Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero> PetroleumProducts =
+         Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.All;
 
     protected override async Task OnInitializedAsync()
     {
@@ -130,11 +130,11 @@ public partial class TravelSearch
         await TravelGoogleMap.RemoveAllMarkersAsync();
 
         //Direction Request
-        Libs.GoogleApis.Json.Directions.Request.Body directionsRequest = new()
+        Libs.GoogleApis.Models.Directions.Request.Body directionsRequest = new()
         {
             Origin = travelQueryModel.Origin,
             Destination = travelQueryModel.Destination,
-            TravelMode = Libs.GoogleApis.Json.Shared.TravelMode.Driving,
+            TravelMode = Libs.GoogleApis.Models.Directions.Shared.TravelMode.Driving,
             //AvoidFerries = false,
             //AvoidHighways = false,
             //AvoidTolls = false,
@@ -155,7 +155,8 @@ public partial class TravelSearch
             //],
         };
         directionsService ??= new(JSRuntime, TravelGoogleMap.Id);
-        travelQueryModel.Bounds = await directionsService.RouteAsync(directionsRequest);
+        //travelQueryModel.Bounds = await directionsService.RouteAsync(directionsRequest);
+        await directionsService.RouteAsync(directionsRequest);
 
         // Load GasStations
         StringContent requestContent = new(

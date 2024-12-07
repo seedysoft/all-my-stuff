@@ -28,6 +28,23 @@ internal static class Converter
     };
 }
 
+public class EnumMemberJsonConverter<T> : System.Text.Json.Serialization.JsonConverter<T> where T : Enum
+{
+    public override bool CanConvert(Type t) => t == typeof(T);
+
+    public override T? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        string? value = reader.GetString();
+
+        return string.IsNullOrWhiteSpace(value)
+            ? default
+            : EnumExtensions.ToEnum<T>(value);
+    }
+
+    public override void Write(Utf8JsonWriter writer, T value, JsonSerializerOptions options)
+        => JsonSerializer.Serialize(writer, value.GetEnumMember(), options);
+}
+
 //public class DateOnlyConverter(string? serializationFormat) : JsonConverter<DateOnly>
 //{
 //    private readonly string serializationFormat = serializationFormat ?? "yyyy-MM-dd";

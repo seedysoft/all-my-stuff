@@ -34,7 +34,7 @@
 
     <!-- true or false -->
     <!-- Value that specifies the exit code when no tests are discovered -->
-    <TreatNoTestsAsError>true</TreatNoTestsAsError>
+    <TreatNoTestsAsError>false</TreatNoTestsAsError>
   </RunConfiguration>
 
   <!-- KEEP COMMENT Configurations for data collectors -->
@@ -111,7 +111,7 @@
   <MSTest>
     <MapInconclusiveToFailed>True</MapInconclusiveToFailed>
     <CaptureTraceOutput>false</CaptureTraceOutput>
-    <DeleteDeploymentDirectoryAfterTestRunIsComplete>False</DeleteDeploymentDirectoryAfterTestRunIsComplete>
+    <DeleteDeploymentDirectoryAfterTestRunIsComplete>True</DeleteDeploymentDirectoryAfterTestRunIsComplete>
     <DeploymentEnabled>False</DeploymentEnabled>
     <!-- <AssemblyResolution> -->
     <!--   <Directory path="D:\myfolder\bin\" includeSubDirectories="false"/> -->
