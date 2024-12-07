@@ -3,18 +3,25 @@
 namespace Seedysoft.Libs.GoogleApis.Models.Routes.Request;
 
 /// <summary>
-/// The valid unit systems that can be specified in a DirectionsRequest.
+/// A set of values that specify the unit of measure used in the display.
 /// </summary>
 public enum Units
 {
     /// <summary>
-    /// Specifies that distances in the DirectionsResult should be expressed in imperial units.
+    /// Units of measure not specified.
+    /// Defaults to the unit of measure inferred from the request.
+    /// </summary>
+    [EnumMember(Value = "UNITS_UNSPECIFIED")]
+    UnitsUnspecified,
+
+    /// <summary>
+    /// Imperial (English) units of measure.
     /// </summary>
     [EnumMember(Value = "IMPERIAL")]
     Imperial,
 
     /// <summary>
-    /// Specifies that distances in the DirectionsResult should be expressed in metric units.
+    /// Metric units of measure.
     /// </summary>
     [EnumMember(Value = "METRIC")]
     Metric,

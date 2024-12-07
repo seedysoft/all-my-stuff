@@ -3,12 +3,18 @@
 namespace Seedysoft.Libs.GoogleApis.Models.Routes.Request;
 
 /// <summary>
-/// Vehicle Emission Type.
 /// A set of values describing the vehicle's emission type.
-/// Applies only to the DRIVE RouteTravelMode.
+/// Applies only to the <see cref="Shared.RouteTravelMode.Drive"></see> <see cref="Shared.RouteTravelMode"></see>.
 /// </summary>
 public enum VehicleEmissionType
 {
+    /// <summary>
+    /// No emission type specified.
+    /// Default to GASOLINE.
+    /// </summary>
+    [EnumMember(Value = "VEHICLE_EMISSION_TYPE_UNSPECIFIED")]
+    VehicleEmissionTypeUnspecified,
+
     /// <summary>
     /// Gasoline/petrol fueled vehicle.
     /// </summary>

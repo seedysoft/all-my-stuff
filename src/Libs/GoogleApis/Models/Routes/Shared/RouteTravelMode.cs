@@ -8,19 +8,26 @@ namespace Seedysoft.Libs.GoogleApis.Models.Routes.Shared;
 public enum RouteTravelMode
 {
     /// <summary>
-    /// Travel by passenger car..
+    /// No travel mode specified.
+    /// Defaults to <see cref="Drive"/>.
+    /// </summary>
+    [EnumMember(Value = "TRAVEL_MODE_UNSPECIFIED")]
+    TravelModeUnspecified,
+
+    /// <summary>
+    /// Travel by passenger car.
     /// </summary>
     [EnumMember(Value = "DRIVE")]
     Drive,
 
     /// <summary>
-    /// Requests distance calculation for bicycling via bicycle paths and preferred streets (where available).
+    /// Travel by bicycle.
     /// </summary>
     [EnumMember(Value = "BICYCLE")]
     Bicycle,
 
     /// <summary>
-    /// Requests distance calculation for walking via pedestrian paths and sidewalks (where available).
+    /// Travel by walking.
     /// </summary>
     [EnumMember(Value = "WALK")]
     Walk,
@@ -28,7 +35,7 @@ public enum RouteTravelMode
     /// <summary>
     /// Two-wheeled, motorized vehicle.
     /// For example, motorcycle.
-    /// Be aware that this differs from the BICYCLE travel mode which covers human-powered mode.
+    /// Note that this differs from the <see cref="Bicycle"/> travel mode which covers human-powered mode.
     /// </summary>
     [EnumMember(Value = "TWO_WHEELER")]
     TwoWheeler,
@@ -37,5 +44,5 @@ public enum RouteTravelMode
     /// Travel by public transit routes, where available.
     /// </summary>
     [EnumMember(Value = "TRANSIT")]
-    Transit
+    Transit,
 }

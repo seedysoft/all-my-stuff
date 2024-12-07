@@ -10,12 +10,12 @@ public class TravelQueryModelFluentValidator : AbstractValidator<TravelQueryMode
 {
     public TravelQueryModelFluentValidator()
     {
-        _ = RuleFor(x => x.Origin)
-            .Must(x => !string.IsNullOrWhiteSpace(x))
+        _ = RuleFor(static x => x.Origin)
+            .Must(static x => !string.IsNullOrWhiteSpace(x))
             .WithMessage($"{nameof(TravelQueryModel.Origin)} must not be empty");
 
-        _ = RuleFor(x => x.Destination)
-            .Must(x => !string.IsNullOrWhiteSpace(x))
+        _ = RuleFor(static x => x.Destination)
+            .Must(static x => !string.IsNullOrWhiteSpace(x))
             .WithMessage($"{nameof(TravelQueryModel.Destination)} must not be empty");
 
         _ = RuleFor(static x => x.MaxDistanceInKm)

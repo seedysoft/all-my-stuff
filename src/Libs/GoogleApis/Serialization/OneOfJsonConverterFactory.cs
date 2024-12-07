@@ -82,7 +82,7 @@ public class OneOfJsonConverterFactory : JsonConverterFactory
 
             IOneOf oneOf = CreateOneOf(options, index, doc, OneOfType, Types);
 
-            return (OneOf<T0, T1>)Activator.CreateInstance(typeToConvert, oneOf);
+            return (OneOf<T0, T1>)Activator.CreateInstance(typeToConvert, oneOf)!;
         }
 
         public override void Write(Utf8JsonWriter writer, OneOf<T0, T1> value, JsonSerializerOptions options)
@@ -127,7 +127,7 @@ public class OneOfJsonConverterFactory : JsonConverterFactory
 
             IOneOf oneOfBase = CreateOneOf(options, index, doc, OneOfType, Types);
 
-            return (OneOf<T0, T1, T2>)Activator.CreateInstance(typeToConvert, oneOfBase);
+            return (OneOf<T0, T1, T2>)Activator.CreateInstance(typeToConvert, oneOfBase)!;
         }
 
         public override void Write(Utf8JsonWriter writer, OneOf<T0, T1, T2> value, JsonSerializerOptions options)

@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using System.Runtime.Serialization;
 
 namespace Seedysoft.Libs.Utils.Extensions;
 
@@ -21,27 +22,15 @@ public static class EnumExtensions
         return false;
     }
 
-    //public static T? FromEnumValue<T>(string enumMemberValue) where T : Enum
-    //{
-    //    MemberInfo? memberInfo = typeof(T)
-    //        .GetTypeInfo()
-    //        .DeclaredMembers
-    //        .FirstOrDefault(x => x.GetCustomAttribute<System.Runtime.Serialization.EnumMemberAttribute>()?.Value == enumMemberValue);
-
-    //    return memberInfo == null ? default : (T)typeof(T).GetField(memberInfo.Name).GetValue(null);
-    //}
     public static T? ToEnum<T>(string str)
     {
         Type enumType = typeof(T);
         foreach (string name in Enum.GetNames(enumType))
         {
-            System.Runtime.Serialization.EnumMemberAttribute enumMemberAttribute = 
-                (enumType.GetField(name).GetCustomAttributes(typeof(System.Runtime.Serialization.EnumMemberAttribute), true) as System.Runtime.Serialization.EnumMemberAttribute[]).Single();
-            
-            if (enumMemberAttribute.Value == str)
-                return (T)Enum.Parse(enumType, name);
+            EnumMemberAttribute enumMemberAttribute =
+                (enumType.GetField(name)!.GetCustomAttributes(typeof(EnumMemberAttribute), true) as EnumMemberAttribute[])!.Single();
 
-            if (string.Equals(name, str, StringComparison.InvariantCultureIgnoreCase))
+            if (enumMemberAttribute.Value == str || string.Equals(name, str, StringComparison.InvariantCultureIgnoreCase))
                 return (T)Enum.Parse(enumType, name);
         }
 
@@ -55,7 +44,7 @@ public static class EnumExtensions
         FieldInfo? fieldInfo = enumValue.GetType().GetField(enumValue.ToString());
 
         if (fieldInfo != null &&
-            Attribute.GetCustomAttribute(fieldInfo, typeof(System.Runtime.Serialization.EnumMemberAttribute)) is System.Runtime.Serialization.EnumMemberAttribute EnumMemberAttrb)
+            Attribute.GetCustomAttribute(fieldInfo, typeof(EnumMemberAttribute)) is EnumMemberAttribute EnumMemberAttrb)
         {
             member = EnumMemberAttrb.Value;
             return true;

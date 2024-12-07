@@ -8,7 +8,7 @@ public class Route
     /// <summary>
     /// Labels for the Route that are useful to identify specific properties of the route to compare against others.
     /// </summary>
-    [J("routeLabels"), I(Condition = C.WhenWritingNull)]
+    [J("routeLabels"), I(Condition = C.WhenWritingNull), K(typeof(Utils.Extensions.EnumMemberArrayJsonConverter<RouteLabel>))]
     public RouteLabel[]? RouteLabels { get; set; }
 
     /// <summary>
