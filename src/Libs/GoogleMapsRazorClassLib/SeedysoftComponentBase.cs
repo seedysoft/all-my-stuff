@@ -25,8 +25,8 @@ public abstract class SeedysoftComponentBase : ComponentBase, IDisposable, IAsyn
     public static string BuildClassNames(string? userDefinedCssClass, params (string? cssClass, bool when)[] cssClassList)
     {
         var list = cssClassList
-            .Where(x => x.when && !string.IsNullOrWhiteSpace(x.cssClass))
-            .Select(x => x.cssClass)
+            .Where(static x => x.when && !string.IsNullOrWhiteSpace(x.cssClass))
+            .Select(static x => x.cssClass)
             .ToHashSet();
 
         if (!string.IsNullOrWhiteSpace(userDefinedCssClass))
@@ -38,8 +38,8 @@ public abstract class SeedysoftComponentBase : ComponentBase, IDisposable, IAsyn
     public static string BuildStyleNames(string? userDefinedCssStyle, params (string? cssStyle, bool when)[] cssStyleList)
     {
         var list = cssStyleList
-            .Where(x => x.when && !string.IsNullOrWhiteSpace(x.cssStyle))
-            .Select(x => x.cssStyle)
+            .Where(static x => x.when && !string.IsNullOrWhiteSpace(x.cssStyle))
+            .Select(static x => x.cssStyle)
             .ToHashSet();
 
         if (!string.IsNullOrWhiteSpace(userDefinedCssStyle))

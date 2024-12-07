@@ -1,6 +1,5 @@
 ﻿namespace Seedysoft.Libs.TuyaDeviceControl;
 
-[System.Diagnostics.CodeAnalysis.SuppressMessage("Naming", "CA1707:Identifiers should not contain underscores", Justification = "<Pending>")]
 public sealed class Constants
 {
     private Constants() { }
@@ -147,7 +146,7 @@ public sealed class Constants
         },
     };
 
-    public static readonly Dictionary<ErrorCode, string> ERROR_CODES = new() {
+    public static readonly Dictionary<ErrorCode, string> ErrorCodes = new() {
         { ErrorCode.ERR_JSON,       "Invalid JSON Response from Device"},
         { ErrorCode.ERR_CONNECT,    "Network Error: Unable to Connect"},
         { ErrorCode.ERR_TIMEOUT,    "Timeout Waiting for Device"},
@@ -166,7 +165,7 @@ public sealed class Constants
         { default,                  "Unknown Error"},
     };
 
-    public static readonly uint[] HEADER_COMMANDS_WITHOUT_PROTOCOL = [
+    public static readonly uint[] HeaderCommandsWithoutProtocol = [
         (uint)TuyaCommandTypes.DP_QUERY,
         (uint)TuyaCommandTypes.DP_QUERY_NEW,
         (uint)TuyaCommandTypes.UPDATEDPS,

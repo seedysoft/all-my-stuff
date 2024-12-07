@@ -8,6 +8,13 @@ namespace Seedysoft.Libs.GoogleApis.Models.Routes.Request;
 public enum RoutingPreference
 {
     /// <summary>
+    /// No routing preference specified.
+    /// Default to <see cref="TrafficUnaware"/>.
+    /// </summary>
+    [EnumMember(Value = "ROUTING_PREFERENCE_UNSPECIFIED")]
+    RoutingPreferenceUnspecified,
+
+    /// <summary>
     /// Computes routes without taking live traffic conditions into consideration.
     /// Suitable when traffic conditions don't matter or are not applicable. Using this value produces the lowest latency.
     /// Be aware for RouteTravelMode DRIVE and TWO_WHEELER choice of route and duration are based on road network and
@@ -20,7 +27,7 @@ public enum RoutingPreference
 
     /// <summary>
     /// Calculates routes taking live traffic conditions into consideration.
-    /// In contrast to TRAFFIC_AWARE_OPTIMAL, some optimizations are applied to significantly reduce latency.
+    /// In contrast to <see cref="TrafficAwareOptimal"/>, some optimizations are applied to significantly reduce latency.
     /// </summary>
     [EnumMember(Value = "TRAFFIC_AWARE")]
     TrafficAware,
@@ -30,5 +37,5 @@ public enum RoutingPreference
     /// Using this value produces the highest latency.
     /// </summary>
     [EnumMember(Value = "TRAFFIC_AWARE_OPTIMAL")]
-    TrafficAwareOptimal
+    TrafficAwareOptimal,
 }

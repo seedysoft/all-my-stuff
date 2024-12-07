@@ -1,14 +1,14 @@
 ﻿namespace Seedysoft.Libs.GoogleApis.Models.Routes.Request;
 
 /// <summary>
-/// Vehicle Info.
-/// Encapsulates the vehicle information, such as the license plate last character.
+/// Contains the vehicle information, such as the vehicle emission type.
 /// </summary>
 public class VehicleInfo
 {
     /// <summary>
-    ///Emission Type.
-    /// Describes the vehicle's emission type. Applies only to the DRIVE travel mode.
+    /// Describes the vehicle's emission type. 
+    /// Applies only to the <see cref="Shared.RouteTravelMode.Drive"></see> <see cref="Shared.RouteTravelMode"></see>.
     /// </summary>
+    [J("emissionType"), K(typeof(Utils.Extensions.EnumMemberJsonConverter<VehicleEmissionType>))]
     public virtual VehicleEmissionType EmissionType { get; set; } = VehicleEmissionType.Gasoline;
 }

@@ -1,6 +1,4 @@
 ﻿using OneOf;
-using Seedysoft.Libs.GoogleApis.Serialization;
-using Seedysoft.Libs.Utils.Extensions;
 
 namespace Seedysoft.Libs.GoogleApis.Models.Directions.Request;
 
@@ -14,7 +12,7 @@ public class Body
     /// This can be specified as either a string to be geocoded, or a LatLng, or a Place. 
     /// Required.
     /// </summary>
-    [K(typeof(OneOfJsonConverterFactory))]
+    [K(typeof(Serialization.OneOfJsonConverterFactory))]
     public required OneOf<string, Models.Shared.LatLngLiteral, Place> Destination { get; set; }
 
     /// <summary>
@@ -22,14 +20,14 @@ public class Body
     /// This can be specified as either a string to be geocoded, or a LatLng, or a Place. 
     /// Required.
     /// </summary>
-    [K(typeof(OneOfJsonConverterFactory))]
+    [K(typeof(Serialization.OneOfJsonConverterFactory))]
     public required OneOf<string, Models.Shared.LatLngLiteral, Place> Origin { get; set; }
 
     /// <summary>
     /// Type of routing requested. 
     /// Required.
     /// </summary>
-    [K(typeof(EnumMemberJsonConverter<Shared.TravelMode>))]
+    [K(typeof(Utils.Extensions.EnumMemberJsonConverter<Shared.TravelMode>))]
     public required Shared.TravelMode TravelMode { get; set; }
 
     ///// <summary>
