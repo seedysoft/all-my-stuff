@@ -1,6 +1,6 @@
 ﻿//using System.Text.Json;
 
-//namespace Seedysoft.Libs.GoogleMapsRazorClassLib.Serialization;
+//namespace Seedysoft.Libs.GoogleApis.Serialization;
 
 //internal static class Helper
 //{

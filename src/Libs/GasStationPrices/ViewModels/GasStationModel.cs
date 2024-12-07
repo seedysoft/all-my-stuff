@@ -11,7 +11,7 @@ public record class GasStationModel
 
     public required IEnumerable<ProductPrice> Prices { get; init; }
 
-    internal static GasStationModel Map(Json.Minetur.EstacionTerrestre estacionTerrestre) => new()
+    internal static GasStationModel Map(Models.Minetur.EstacionTerrestre estacionTerrestre) => new()
     {
         Lat = estacionTerrestre.Lat,
         Lng = estacionTerrestre.Lon,
@@ -20,23 +20,23 @@ public record class GasStationModel
     };
 
     private static System.Collections.ObjectModel.ReadOnlyCollection<ProductPrice> MapPrices(
-        Json.Minetur.EstacionTerrestre estacionTerrestre)
+        Models.Minetur.EstacionTerrestre estacionTerrestre)
     {
         IEnumerable<ProductPrice> values = [
-            new(Json.Minetur.ProductoPetrolifero.G95E5, estacionTerrestre.PrecioGasolina95E5.ParseWithNumberFormatInfoES()),
-            new(Json.Minetur.ProductoPetrolifero.G95E10, estacionTerrestre.PrecioGasolina95E10.ParseWithNumberFormatInfoES()),
-            new(Json.Minetur.ProductoPetrolifero.G95E5Plus, estacionTerrestre.PrecioGasolina95E5Premium.ParseWithNumberFormatInfoES()),
-            new(Json.Minetur.ProductoPetrolifero.G98E5, estacionTerrestre.PrecioGasolina98E5.ParseWithNumberFormatInfoES()),
-            new(Json.Minetur.ProductoPetrolifero.G98E10, estacionTerrestre.PrecioGasolina98E10.ParseWithNumberFormatInfoES()),
-            new(Json.Minetur.ProductoPetrolifero.GOA, estacionTerrestre.PrecioGasoleoA.ParseWithNumberFormatInfoES()),
-            new(Json.Minetur.ProductoPetrolifero.GOAPlus, estacionTerrestre.PrecioGasoleoPremium.ParseWithNumberFormatInfoES()),
-            new(Json.Minetur.ProductoPetrolifero.GOB, estacionTerrestre.PrecioGasoleoB.ParseWithNumberFormatInfoES()),
-            new(Json.Minetur.ProductoPetrolifero.BIE, estacionTerrestre.PrecioBioetanol.ParseWithNumberFormatInfoES()),
-            new(Json.Minetur.ProductoPetrolifero.BIO, estacionTerrestre.PrecioBiodiesel.ParseWithNumberFormatInfoES()),
-            new(Json.Minetur.ProductoPetrolifero.GLP, estacionTerrestre.PrecioGasesLicuadosDelPetróleo.ParseWithNumberFormatInfoES()),
-            new(Json.Minetur.ProductoPetrolifero.GNC, estacionTerrestre.PrecioGasNaturalComprimido.ParseWithNumberFormatInfoES()),
-            new(Json.Minetur.ProductoPetrolifero.GNL, estacionTerrestre.PrecioGasNaturalLicuado.ParseWithNumberFormatInfoES()),
-            new(Json.Minetur.ProductoPetrolifero.H2, estacionTerrestre.PrecioHidrogeno.ParseWithNumberFormatInfoES()),
+            new(Models.Minetur.ProductoPetrolifero.G95E5, estacionTerrestre.PrecioGasolina95E5.ParseWithNumberFormatInfoES()),
+            new(Models.Minetur.ProductoPetrolifero.G95E10, estacionTerrestre.PrecioGasolina95E10.ParseWithNumberFormatInfoES()),
+            new(Models.Minetur.ProductoPetrolifero.G95E5Plus, estacionTerrestre.PrecioGasolina95E5Premium.ParseWithNumberFormatInfoES()),
+            new(Models.Minetur.ProductoPetrolifero.G98E5, estacionTerrestre.PrecioGasolina98E5.ParseWithNumberFormatInfoES()),
+            new(Models.Minetur.ProductoPetrolifero.G98E10, estacionTerrestre.PrecioGasolina98E10.ParseWithNumberFormatInfoES()),
+            new(Models.Minetur.ProductoPetrolifero.GOA, estacionTerrestre.PrecioGasoleoA.ParseWithNumberFormatInfoES()),
+            new(Models.Minetur.ProductoPetrolifero.GOAPlus, estacionTerrestre.PrecioGasoleoPremium.ParseWithNumberFormatInfoES()),
+            new(Models.Minetur.ProductoPetrolifero.GOB, estacionTerrestre.PrecioGasoleoB.ParseWithNumberFormatInfoES()),
+            new(Models.Minetur.ProductoPetrolifero.BIE, estacionTerrestre.PrecioBioetanol.ParseWithNumberFormatInfoES()),
+            new(Models.Minetur.ProductoPetrolifero.BIO, estacionTerrestre.PrecioBiodiesel.ParseWithNumberFormatInfoES()),
+            new(Models.Minetur.ProductoPetrolifero.GLP, estacionTerrestre.PrecioGasesLicuadosDelPetróleo.ParseWithNumberFormatInfoES()),
+            new(Models.Minetur.ProductoPetrolifero.GNC, estacionTerrestre.PrecioGasNaturalComprimido.ParseWithNumberFormatInfoES()),
+            new(Models.Minetur.ProductoPetrolifero.GNL, estacionTerrestre.PrecioGasNaturalLicuado.ParseWithNumberFormatInfoES()),
+            new(Models.Minetur.ProductoPetrolifero.H2, estacionTerrestre.PrecioHidrogeno.ParseWithNumberFormatInfoES()),
         ];
 
         return values.Where(static x => x.Price.HasValue).ToList().AsReadOnly();

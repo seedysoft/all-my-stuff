@@ -5,13 +5,10 @@ using Seedysoft.Libs.Utils.Extensions;
 
 namespace Seedysoft.Libs.GoogleApis.Services;
 
-public class PlacesService(IConfiguration configuration, ILogger<PlacesService> logger)
+public class PlacesService(IConfiguration configuration, ILogger<PlacesService> logger) : GoogleApisService(configuration)
 {
-    private readonly Settings.GoogleApisSettings Settings
-        = configuration.GetSection(nameof(GoogleApis.Settings.GoogleApisSettings)).Get<Settings.GoogleApisSettings>()!;
-
     public async Task<string> GetMapId(CancellationToken cancellationToken)
-        => await Task.FromResult(Settings.GoogleMapsPlatform.Maps.MapId);
+        => await Task.FromResult(GoogleApisSettings.MapsApi.MapId);
 
     public async Task<IEnumerable<string>> FindPlacesAsync(
         string textToFind,
@@ -23,11 +20,11 @@ public class PlacesService(IConfiguration configuration, ILogger<PlacesService> 
                 return [];
 
             RestRequest restRequest = BuildFindPlacesRequest(textToFind);
-            RestClient restClient = new(Settings.GoogleMapsPlatform.PlacesApi.UriFormat);
-            Json.Places.Response.Body? body = null;
+            RestClient restClient = new(GoogleApisSettings.PlacesApi.UriFormat);
+            Models.Places.Response.Body? body = null;
             RestResponse restResponse = await restClient.ExecutePostAsync(restRequest, cancellationToken);
             if (restResponse.IsSuccessStatusCode)
-                body = restResponse.Content!.FromJson<Json.Places.Response.Body>();
+                body = restResponse.Content!.FromJson<Models.Places.Response.Body>();
             if (body == null)
                 return [];
 
@@ -45,9 +42,9 @@ public class PlacesService(IConfiguration configuration, ILogger<PlacesService> 
         RestRequest BuildFindPlacesRequest(string textToFind)
         {
             RestRequest restRequest = new();
-            restRequest = restRequest.AddHeader("X-Goog-Api-Key", Settings.GoogleMapsPlatform.ApiKey);
+            restRequest = restRequest.AddHeader("X-Goog-Api-Key", GoogleApisSettings.ApiKey);
 
-            Json.Places.Request.Body PlacesRequestBody = new()
+            Models.Places.Request.Body PlacesRequestBody = new()
             {
                 // Required
                 Input = textToFind,
