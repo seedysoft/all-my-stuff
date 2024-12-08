@@ -1,8 +1,13 @@
 ﻿@inherits LayoutComponentBase
 
+@* Required *@
 <MudThemeProvider Theme="@_theme" IsDarkMode="_isDarkMode" />
 <MudPopoverProvider />
+
+@* Needed for dialogs *@
 <MudDialogProvider />
+
+@* Needed for snackbars *@
 <MudSnackbarProvider />
 
 <MudLayout>
