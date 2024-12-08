@@ -36,38 +36,26 @@ public sealed class ObtainGasStationPricesService(
         if (MineturResponse == null)
             yield break;
 
-        List<GoogleApis.Models.Shared.LatLngLiteral> RoutePoints = await googleApisServicesRoutesService.GetRoutesAsync(
-            travelQueryModel.Origin,
-            travelQueryModel.Destination,
-            cancellationToken);
+        List<GoogleApis.Models.Shared.LatLngLiteral> RoutePoints = await
+            googleApisServicesRoutesService.GetRoutesAsync(travelQueryModel.Origin, travelQueryModel.Destination, cancellationToken);
 
         if (RoutePoints.Count < 1)
             throw new ApplicationException($"{nameof(GoogleApis.Services.RoutesService.GetRoutesAsync)} does not finds route points");
 
         GoogleApis.Models.Shared.LatLngBoundsLiteral boundsLiteral = new()
         {
-            East = RoutePoints.Select(x => x.Lng).Max(),
             North = RoutePoints.Select(x => x.Lat).Max(),
             South = RoutePoints.Select(x => x.Lat).Min(),
+            East = RoutePoints.Select(x => x.Lng).Max(),
             West = RoutePoints.Select(x => x.Lng).Min(),
         };
 
-        Models.Minetur.EstacionTerrestre[] GasStationsInsideBounds = MineturResponse.EstacionesTerrestres
-            .Where(x => x.IsInsideBounds(boundsLiteral))
-            .ToArray();
+        IEnumerable<Models.Minetur.EstacionTerrestre> NearStations = MineturResponse.EstacionesTerrestres
+            .AsParallel()
+            .Where(x => x.IsInsideBounds(boundsLiteral) && RoutePoints.Any(y => x.IsNear(y, travelQueryModel.MaxDistanceInKm)));
 
-        for (int i = 0; i < RoutePoints.Count; i++)
-        {
-            for (int j = 0; j < GasStationsInsideBounds.Length; j++)
-            {
-                Models.Minetur.EstacionTerrestre estacionTerrestre = GasStationsInsideBounds[j];
-
-                var gasStationModel = ViewModels.GasStationModel.Map(estacionTerrestre);
-
-                if (gasStationModel != null)
-                    yield return gasStationModel;
-            }
-        }
+        foreach (Models.Minetur.EstacionTerrestre et in NearStations)
+            yield return ViewModels.GasStationModel.Map(et);
     }
 
     //private static IEnumerable<Core.Json.Minetur.ProductoPetrolifero>? Res;
