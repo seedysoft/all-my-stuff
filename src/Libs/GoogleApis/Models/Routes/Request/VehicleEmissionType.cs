@@ -37,5 +37,5 @@ public enum VehicleEmissionType
     /// Diesel fueled vehicle.
     /// </summary>
     [EnumMember(Value = "DIESEL")]
-    Diesel
+    Diesel,
 }
