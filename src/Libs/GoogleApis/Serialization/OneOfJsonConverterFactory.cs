@@ -65,7 +65,9 @@ public class OneOfJsonConverterFactory : JsonConverterFactory
 
     private const string IndexKey = "$index";
 
+#pragma warning disable CS9113 // Parameter is unread.
     private class OneOf2JsonConverter<T0, T1>(JsonSerializerOptions _) : JsonConverter<OneOf<T0, T1>>
+#pragma warning restore CS9113 // Parameter is unread.
     {
         private static readonly Type OneOfType = typeof(OneOf<,>).MakeGenericType(typeof(T0), typeof(T1));
         private static readonly Type[] Types = [typeof(T0), typeof(T1)];
@@ -109,7 +111,9 @@ public class OneOfJsonConverterFactory : JsonConverterFactory
         }
     }
 
+#pragma warning disable CS9113 // Parameter is unread.
     private class OneOf3JsonConverter<T0, T1, T2>(JsonSerializerOptions _) : JsonConverter<OneOf<T0, T1, T2>>
+#pragma warning restore CS9113 // Parameter is unread.
     {
         private static readonly Type OneOfType = typeof(OneOf<,,>).MakeGenericType(typeof(T0), typeof(T1), typeof(T2));
         private static readonly Type[] Types = [typeof(T0), typeof(T1), typeof(T2)];

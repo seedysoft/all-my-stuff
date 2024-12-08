@@ -20,5 +20,5 @@ public enum TransitRoutingPreference
     /// Indicates that the calculated route should prefer a limited number of transfers.
     /// </summary>
     [EnumMember(Value = "FEWER_TRANSFERS")]
-    FewerTransfers = 2
+    FewerTransfers = 2,
 }

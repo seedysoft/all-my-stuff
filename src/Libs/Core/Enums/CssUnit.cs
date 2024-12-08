@@ -53,5 +53,5 @@ public enum CssUnit
     /// <summary>
     /// Viewport width.
     /// </summary>
-    Vw
+    Vw,
 }

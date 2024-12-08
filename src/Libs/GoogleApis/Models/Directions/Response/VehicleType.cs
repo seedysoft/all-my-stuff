@@ -109,5 +109,5 @@
 //    /// Trolleybus.
 //    /// </summary>
 //    [EnumMember(Value = "BUS")]
-//    TrolleyBus
+//    TrolleyBus,
 //}

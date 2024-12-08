@@ -13,5 +13,5 @@
 //    /// <summary>
 //    /// Specifies that the calculated route should prefer limited amounts of walking.
 //    /// </summary>
-//    LessWalking
+//    LessWalking,
 //}
