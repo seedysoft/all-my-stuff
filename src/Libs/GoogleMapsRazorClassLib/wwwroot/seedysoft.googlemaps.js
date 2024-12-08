@@ -23,7 +23,9 @@ window.seedysoft = {
 
       return window.seedysoft.googleMaps.get(elementId);
     },
-    get: (elementId) => { return window.seedysoft.googleMaps.instanceArray[elementId]; },
+    get: (elementId) => {
+      return window.seedysoft.googleMaps.instanceArray[elementId];
+    },
     initialize: (elementId, zoom, center, markers, clickable, dotNetHelper) => {
       let mapOptions = { center: center, disableDefaultUI: true, mapId: elementId, zoom: zoom };
 
@@ -215,24 +217,24 @@ const Colors = [
 ];
 
 function showSteps(route, markerArray, stepDisplay, map) {
-  // For each step, place a marker, and add the text to the marker's infowindow.
-  // Also attach the marker to an array so we can keep track of it and remove it when calculating new routes.
-  const myRoute = route.legs[0];
+  //// For each step, place a marker, and add the text to the marker's infowindow.
+  //// Also attach the marker to an array so we can keep track of it and remove it when calculating new routes.
+  //const myRoute = route.legs[0];
 
-  for (let i = 0; i < myRoute.steps.length; i++) {
-    const advancedMarker = new google.maps.marker.AdvancedMarkerElement({
-      gmpDraggable: false,
-      map: map,
-      position: myRoute.steps[i].start_location,
-    });
-    markerArray[i] = advancedMarker;
+  //for (let i = 0; i < myRoute.steps.length; i++) {
+  //  const advancedMarker = new google.maps.marker.AdvancedMarkerElement({
+  //    gmpDraggable: false,
+  //    map: map,
+  //    position: myRoute.steps[i].start_location,
+  //  });
+  //  markerArray[i] = advancedMarker;
 
-    advancedMarker.addEventListener("gmp-click", async () => {
-      // Open an info window when the marker is clicked on, containing the text of the step.
-      stepDisplay.setContent(myRoute.steps[i].instructions);
-      stepDisplay.open(map, marker);
-    });
-  }
+  //  advancedMarker.addEventListener("gmp-click", async () => {
+  //    // Open an info window when the marker is clicked on, containing the text of the step.
+  //    stepDisplay.setContent(myRoute.steps[i].instructions);
+  //    stepDisplay.open(map, marker);
+  //  });
+  //}
 }
 
 //// global function

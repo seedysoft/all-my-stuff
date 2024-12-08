@@ -2,7 +2,7 @@
 
 namespace Seedysoft.Libs.Infrastructure.Tests;
 
-//                  TODO                CHANGE TEST FRAMEWORK!!!!
+// TODO                           CHANGE TEST FRAMEWORK!!!!
 public abstract class TestClassBase
 {
     private static Microsoft.Data.Sqlite.SqliteConnection SqliteConnection => new("Filename=:memory:");
