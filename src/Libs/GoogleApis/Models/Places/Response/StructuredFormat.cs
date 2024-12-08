@@ -3,8 +3,8 @@
 public record class StructuredFormat
 {
     [J("mainText")]
-    public TextAndMatches? MainText { get; set; }
+    public TextAndMatches? MainText { get; init; }
 
     [J("secondaryText")]
-    public TextAndMatches? SecondaryText { get; set; }
+    public TextAndMatches? SecondaryText { get; init; }
 }

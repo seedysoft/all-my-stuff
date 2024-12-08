@@ -3,7 +3,7 @@
 /// <summary>
 /// Additional information for the <see cref="RouteLegStep"/> related to <see cref="Transit"/> routes.
 /// </summary>
-public class RouteLegStepTransitDetails
+public record RouteLegStepTransitDetails
 {
     //   "stopDetails": {
     //     object (TransitStopDetails)

@@ -12,7 +12,7 @@ public sealed class TuyaManagerCronBackgroundService : Libs.BackgroundServices.C
 
     public TuyaManagerCronBackgroundService(
         IServiceProvider serviceProvider,
-        Microsoft.Extensions.Hosting.IHostApplicationLifetime hostApplicationLifetime) 
+        Microsoft.Extensions.Hosting.IHostApplicationLifetime hostApplicationLifetime)
         : base(serviceProvider, hostApplicationLifetime)
     {
         Logger = ServiceProvider.GetRequiredService<ILogger<TuyaManagerCronBackgroundService>>();
@@ -50,7 +50,7 @@ public sealed class TuyaManagerCronBackgroundService : Libs.BackgroundServices.C
             Libs.Core.Entities.Pvpc[] PricesForDayPvpcs = await dbCxt.Pvpcs.AsNoTracking()
                 .Where(x => x.AtDateTimeOffset >= dateToQueryDateTimeOffset)
                 .Where(x => x.AtDateTimeOffset < dateToQueryDateTimeOffset.AddDays(1))
-                .ToArrayAsync( stoppingToken);
+                .ToArrayAsync(stoppingToken);
 
             bool IsTimeToCharge = PvpcCronBackgroundService.IsTimeToCharge(PricesForDayPvpcs, timeToCheckDateTimeOffset, Settings);
 

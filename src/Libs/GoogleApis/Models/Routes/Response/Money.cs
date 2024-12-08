@@ -3,19 +3,19 @@
 /// <summary>
 /// Represents an amount of money with its currency type.
 /// </summary>
-public class Money
+public record Money
 {
     /// <summary>
     /// The three-letter currency code defined in ISO 4217.
     /// </summary>
     [J("currencyCode"), I(Condition = C.WhenWritingNull)]
-    public string? CurrencyCode { get; set; }
+    public string? CurrencyCode { get; init; }
 
     /// <summary>
     /// The whole units of the amount. For example if currencyCode is "USD", then 1 unit is one US dollar.
     /// </summary>
     [J("units"), I(Condition = C.WhenWritingNull)]
-    public string? Units { get; set; }
+    public string? Units { get; init; }
 
     /// <summary>
     /// Number of nano (10^-9) units of the amount.
@@ -26,5 +26,5 @@ public class Money
     /// For example $-1.75 is represented as units=-1 and nanos=-750,000,000.
     /// </summary>
     [J("nanos"), I(Condition = C.WhenWritingNull)]
-    public int? Nanos { get; set; }
+    public int? Nanos { get; init; }
 }

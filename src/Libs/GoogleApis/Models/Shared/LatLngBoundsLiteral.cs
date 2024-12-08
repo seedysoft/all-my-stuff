@@ -4,6 +4,7 @@
 /// Object literals are accepted in place of LatLngBounds objects throughout the API.
 /// These are automatically converted to LatLngBounds objects. All south, west, north and east must be set, otherwise an exception is thrown.
 /// </summary>
+[System.Diagnostics.DebuggerDisplay("{GetDebuggerDisplay,nq}")]
 public class LatLngBoundsLiteral
 {
     /// <summary>
@@ -40,5 +41,10 @@ public class LatLngBoundsLiteral
     /// </summary>
     public double West { get; set; }
 
-    public override string ToString() => $"Bounds N:{North} S:{South} E:{East} W:{West}";
+    private string GetDebuggerDisplay =>
+        $"Bounds: {Environment.NewLine}" +
+        $"N: {North} {Environment.NewLine}" +
+        $"S: {South} {Environment.NewLine}" +
+        $"E: {East} {Environment.NewLine}" +
+        $"W: {West}";
 }

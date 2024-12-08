@@ -3,13 +3,13 @@
 /// <summary>
 /// Contains a route, which consists of a series of connected road segments that join beginning, ending, and intermediate waypoints.
 /// </summary>
-public class Route
+public record Route
 {
     /// <summary>
     /// Labels for the Route that are useful to identify specific properties of the route to compare against others.
     /// </summary>
     [J("routeLabels"), I(Condition = C.WhenWritingNull), K(typeof(Utils.Extensions.EnumMemberArrayJsonConverter<RouteLabel>))]
-    public RouteLabel[]? RouteLabels { get; set; }
+    public RouteLabel[]? RouteLabels { get; init; }
 
     /// <summary>
     /// A collection of legs (path segments between waypoints) that make up the route.
@@ -20,38 +20,38 @@ public class Route
     /// The order of the legs matches the order of waypoints from origin to intermediates to destination.
     /// </summary>
     [J("legs")]
-    public required RouteLeg[] Legs { get; set; }
+    public required RouteLeg[] Legs { get; init; }
 
     /// <summary>
     /// The travel distance of the route, in meters.
     /// </summary>
     [J("distanceMeters"), I(Condition = C.WhenWritingNull)]
-    public int? DistanceMeters { get; set; }
+    public int? DistanceMeters { get; init; }
 
     [J("duration"), I(Condition = C.WhenWritingNull)]
-    public string? Duration { get; set; }
+    public string? Duration { get; init; }
 
     [J("staticDuration"), I(Condition = C.WhenWritingNull)]
-    public string? StaticDuration { get; set; }
+    public string? StaticDuration { get; init; }
 
     [J("polyline"), I(Condition = C.WhenWritingNull)]
-    public Polyline? Polyline { get; set; }
+    public Polyline? Polyline { get; init; }
 
     [J("description"), I(Condition = C.WhenWritingNull)]
-    public string? Description { get; set; }
+    public string? Description { get; init; }
 
     [J("warnings"), I(Condition = C.WhenWritingNull)]
-    public string[]? Warnings { get; set; }
+    public string[]? Warnings { get; init; }
 
     [J("viewport"), I(Condition = C.WhenWritingNull)]
-    public Viewport? Viewport { get; set; }
+    public Viewport? Viewport { get; init; }
 
     [J("travelAdvisory"), I(Condition = C.WhenWritingNull)]
-    public RouteTravelAdvisory? TravelAdvisory { get; set; }
+    public RouteTravelAdvisory? TravelAdvisory { get; init; }
 
     [J("localizedValues"), I(Condition = C.WhenWritingNull)]
-    public RouteLocalizedValues? LocalizedValues { get; set; }
+    public RouteLocalizedValues? LocalizedValues { get; init; }
 
     [J("routeToken"), I(Condition = C.WhenWritingNull)]
-    public string? RouteToken { get; set; }
+    public string? RouteToken { get; init; }
 }

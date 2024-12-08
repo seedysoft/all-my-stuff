@@ -3,17 +3,17 @@
 /// <summary>
 /// Text representations of certain properties.
 /// </summary>
-public class RouteLegStepLocalizedValues
+public record RouteLegStepLocalizedValues
 {
     /// <summary>
     /// Travel distance represented in text form.
     /// </summary>
     [J("distance"), I(Condition = C.WhenWritingNull)]
-    public LocalizedText? Distance { get; set; }
+    public LocalizedText? Distance { get; init; }
 
     /// <summary>
     /// Duration without taking traffic conditions into consideration, represented in text form.
     /// </summary>
     [J("staticDuration"), I(Condition = C.WhenWritingNull)]
-    public LocalizedText? StaticDuration { get; set; }
+    public LocalizedText? StaticDuration { get; init; }
 }

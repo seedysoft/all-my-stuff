@@ -13,7 +13,7 @@ public abstract class OutboxBase
     public DateTimeOffset? SentAtDateTimeOffset { get; set; }
 }
 
-[System.Diagnostics.DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
+[System.Diagnostics.DebuggerDisplay("{GetDebuggerDisplay,nq}")]
 public sealed class Outbox : OutboxBase
 {
     public Outbox(Enums.SubscriptionName subscriptionName, string payload)
@@ -22,7 +22,7 @@ public sealed class Outbox : OutboxBase
         Payload = payload;
     }
 
-    private string GetDebuggerDisplay() 
+    private string GetDebuggerDisplay
         => $"{SubscriptionName} {SubscriptionId} {(SentAtDateTimeOffset.HasValue ? "sent on " + SentAtDateTimeOffset.ToString() : "pending")}";
 }
 

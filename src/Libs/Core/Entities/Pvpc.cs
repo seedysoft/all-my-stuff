@@ -10,13 +10,13 @@ public abstract class PvpcBase
 
     public decimal KWhPriceInEuros => decimal.Divide(MWhPriceInEuros, 1_000M);
 
-    protected internal string GetDebuggerDisplay() => $"{UtcDateTime:yy.MM.dd HHzz} @ {KWhPriceInEuros:N5} €/kWh";
+    protected internal string GetDebuggerDisplay => $"{UtcDateTime:yy.MM.dd HHzz} @ {KWhPriceInEuros:N5} €/kWh";
 }
 
 /// <summary>
 /// Precio Voluntario para el Pequeño Consumidor
 /// </summary>
-[System.Diagnostics.DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
+[System.Diagnostics.DebuggerDisplay("{GetDebuggerDisplay,nq}")]
 public sealed class Pvpc : PvpcBase
 {
     public Pvpc(DateTimeOffset atDateTimeOffset, decimal mWhPriceInEuros)

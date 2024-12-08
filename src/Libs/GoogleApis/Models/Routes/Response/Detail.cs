@@ -1,7 +1,7 @@
 ﻿namespace Seedysoft.Libs.GoogleApis.Models.Routes.Response;
 
-public class Detail
+public record Detail
 {
     [J("@type")]
-    public string? Type { get; set; }
+    public string? Type { get; init; }
 }
