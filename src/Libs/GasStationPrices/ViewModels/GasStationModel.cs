@@ -14,7 +14,7 @@ public record class GasStationModel
     internal static GasStationModel Map(Models.Minetur.EstacionTerrestre estacionTerrestre) => new()
     {
         Lat = estacionTerrestre.Lat,
-        Lng = estacionTerrestre.Lon,
+        Lng = estacionTerrestre.Lng,
         Prices = MapPrices(estacionTerrestre),
         Rotulo = estacionTerrestre.Rotulo,
     };
