@@ -23,7 +23,7 @@ public abstract class WebDataBase
     public bool UseHttpClient { get; set; }
 }
 
-[System.Diagnostics.DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
+[System.Diagnostics.DebuggerDisplay("{GetDebuggerDisplay,nq}")]
 public sealed partial class WebData : WebDataBase
 {
     public WebData(string webUrl, string description)
@@ -32,7 +32,7 @@ public sealed partial class WebData : WebDataBase
         Description = description;
     }
 
-    private string GetDebuggerDisplay() => $"{WebUrl}";
+    private string GetDebuggerDisplay => $"{WebUrl}";
 }
 
 /// <summary>

@@ -15,17 +15,17 @@
 /// For example, this viewport fully encloses New York City:
 /// { "low": { "latitude": 40.477398, "longitude": -74.259087 }, "high": { "latitude": 40.91618, "longitude": -73.70018 } }
 /// </summary>
-public class Viewport
+public record Viewport
 {
     /// <summary>
     /// Required. The high point of the viewport.
     /// </summary>
     [J("high")]
-    public required Models.Shared.LatitudeLongitude High { get; set; }
+    public required Models.Shared.LatitudeLongitude High { get; init; }
 
     /// <summary>
     /// Required. The low point of the viewport.
     /// </summary>
     [J("low")]
-    public required Models.Shared.LatitudeLongitude Low { get; set; }
+    public required Models.Shared.LatitudeLongitude Low { get; init; }
 }

@@ -3,5 +3,5 @@
 public record class Body
 {
     [J("suggestions")]
-    public required Suggestion[] Suggestions { get; set; }
+    public required Suggestion[] Suggestions { get; init; }
 }

@@ -3,8 +3,8 @@
 public record class Match
 {
     [J("endOffset")]
-    public long EndOffset { get; set; }
+    public long EndOffset { get; init; }
 
     [J("startOffset"), I(Condition = C.WhenWritingNull)]
-    public long? StartOffset { get; set; }
+    public long? StartOffset { get; init; }
 }

@@ -13,7 +13,7 @@ public sealed class WebComparerCronBackgroundService : Libs.BackgroundServices.C
 
     public WebComparerCronBackgroundService(
         IServiceProvider serviceProvider,
-        Microsoft.Extensions.Hosting.IHostApplicationLifetime hostApplicationLifetime) 
+        Microsoft.Extensions.Hosting.IHostApplicationLifetime hostApplicationLifetime)
         : base(serviceProvider, hostApplicationLifetime)
     {
         Logger = ServiceProvider.GetRequiredService<ILogger<WebComparerCronBackgroundService>>();

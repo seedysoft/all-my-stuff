@@ -3,5 +3,5 @@
 public record class Suggestion
 {
     [J("placePrediction")]
-    public required PlacePrediction PlacePrediction { get; set; }
+    public required PlacePrediction PlacePrediction { get; init; }
 }
