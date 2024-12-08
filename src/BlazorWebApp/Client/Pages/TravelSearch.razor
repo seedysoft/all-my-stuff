@@ -21,7 +21,7 @@
             <MudGrid>
                 <MudItem xs="12" md="6" xl="3">
                     <MudAutocomplete @bind-Value="@(travelQueryModel.Origin)"
-                                     AutoFocus="true"
+                                     AutoFocus="@(!System.Diagnostics.Debugger.IsAttached)"
                                      Class="d-inline-flex flex-md-auto"
                                      Clearable="true"
                                      DebounceInterval="450"

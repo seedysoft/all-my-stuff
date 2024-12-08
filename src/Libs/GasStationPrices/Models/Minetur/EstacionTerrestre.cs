@@ -17,8 +17,6 @@ public record class Body
 
 public record class EstacionTerrestre
 {
-    private const int decimals = 5;
-
     //[J("C.P.")]
     //public required string CodigoPostal { get; init; }
 
@@ -33,11 +31,11 @@ public record class EstacionTerrestre
 
     [J("Latitud")]
     public required string Latitud { get; init; }
-    public double Lat => Math.Round(double.Parse(Latitud, Core.Constants.Globalization.NumberFormatInfoES), decimals);
+    public double Lat => double.Parse(Latitud, Core.Constants.Globalization.NumberFormatInfoES);
 
     [J("Longitud (WGS84)")]
     public required string Longitud { get; init; }
-    public double Lon => Math.Round(double.Parse(Longitud, Core.Constants.Globalization.NumberFormatInfoES), decimals);
+    public double Lng => double.Parse(Longitud, Core.Constants.Globalization.NumberFormatInfoES);
 
     public required string Margen { get; init; }
 
@@ -117,7 +115,10 @@ public record class EstacionTerrestre
         return
             Lat < boundsLiteral.North &&
             Lat > boundsLiteral.South &&
-            Lon < boundsLiteral.East &&
-            Lon > boundsLiteral.West;
+            Lng < boundsLiteral.East &&
+            Lng > boundsLiteral.West;
     }
+
+    internal bool IsNear(GoogleApis.Models.Shared.LatLngLiteral routePoint, int maxDistanceInKm)
+        => IsInsideBounds(routePoint.Expand(maxDistanceInKm));
 }

@@ -21,7 +21,7 @@ public class RoutesService(IConfiguration configuration, ILogger<RoutesService> 
         if (restResponse.IsSuccessStatusCode)
             body = restResponse.Content!.FromJson<Models.Routes.Response.Body>();
         else
-            _ = logger.LogAndHandle(restResponse.ErrorException, restResponse.StatusDescription ?? "ERROR", []);
+            _ = logger.LogAndHandle(restResponse.ErrorException, restResponse.Content ?? "ERROR", []);
 
         if (body == null)
             return [];
