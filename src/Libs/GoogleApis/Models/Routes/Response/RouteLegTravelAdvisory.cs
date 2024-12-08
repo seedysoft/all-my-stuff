@@ -3,7 +3,7 @@
 /// <summary>
 /// Contains the additional information that the user should be informed about on a leg step, such as possible traffic zone restrictions.
 /// </summary>
-public class RouteLegTravelAdvisory
+public record RouteLegTravelAdvisory
 {
     /// <summary>
     /// Contains information about tolls on the specific RouteLeg.
@@ -12,7 +12,7 @@ public class RouteLegTravelAdvisory
     /// If this field does not exist, then there is no toll on the RouteLeg.
     /// </summary>
     [J("tollInfo"), I(Condition = C.WhenWritingNull)]
-    public TollInfo? TollInfo { get; set; }
+    public TollInfo? TollInfo { get; init; }
 
     /// <summary>
     /// Speed reading intervals detailing traffic density.
@@ -21,5 +21,5 @@ public class RouteLegTravelAdvisory
     /// The start point of a specified interval is the same as the end point of the preceding interval.
     /// </summary>
     [J("speedReadingIntervals"), I(Condition = C.WhenWritingNull)]
-    public SpeedReadingInterval[]? SpeedReadingIntervals { get; set; }
+    public SpeedReadingInterval[]? SpeedReadingIntervals { get; init; }
 }

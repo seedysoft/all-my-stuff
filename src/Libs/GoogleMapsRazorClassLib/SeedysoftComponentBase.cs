@@ -20,7 +20,7 @@ public abstract class SeedysoftComponentBase : ComponentBase, IDisposable, IAsyn
         await base.OnAfterRenderAsync(firstRender);
     }
 
-    public static string BuildClassNames(params (string? cssClass, bool when)[] cssClassList) 
+    public static string BuildClassNames(params (string? cssClass, bool when)[] cssClassList)
         => BuildClassNames(null, cssClassList);
     public static string BuildClassNames(string? userDefinedCssClass, params (string? cssClass, bool when)[] cssClassList)
     {

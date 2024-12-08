@@ -3,8 +3,8 @@
 public record class TextAndMatches
 {
     [J("text")]
-    public string? Text { get; set; }
+    public string? Text { get; init; }
 
     [J("matches")]
-    public Match[]? Matches { get; set; }
+    public Match[]? Matches { get; init; }
 }

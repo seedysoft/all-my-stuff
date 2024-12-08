@@ -4,7 +4,7 @@
 /// Object literals are accepted in place of LatLng objects, as a convenience, in many places. 
 /// These are converted to LatLng objects when the Maps API encounters them.
 /// </summary>
-[System.Diagnostics.DebuggerDisplay("{Lat}, {Lng}")]
+[System.Diagnostics.DebuggerDisplay("{GetDebuggerDisplay,nq}")]
 public class LatLngLiteral
 {
     /// <summary>
@@ -29,5 +29,21 @@ public class LatLngLiteral
         Lat = lat;
         Lng = lng;
     }
-    public LatLngLiteral(decimal lat, decimal lng) : this(Convert.ToDouble(lat), Convert.ToDouble(lng)) { }
+    //public LatLngLiteral(decimal lat, decimal lng) : this(Convert.ToDouble(lat), Convert.ToDouble(lng)) { }
+
+    public LatLngBoundsLiteral Expand(int maxDistanceInKm)
+    {
+        double LatExpanded = Helpers.GeometricHelper.ExpandLatitude(Lat, Lng, maxDistanceInKm);
+        double LngExpanded = Helpers.GeometricHelper.ExpandLongitude(Lat, Lng, maxDistanceInKm);
+
+        return new LatLngBoundsLiteral()
+        {
+            North = LatExpanded,
+            South = Lat - (LatExpanded - Lat),
+            East = LngExpanded,
+            West = Lng - (LngExpanded - Lng),
+        };
+    }
+
+    private string GetDebuggerDisplay => $"Lat:{Lat} {Environment.NewLine} Lon:{Lng}";
 }

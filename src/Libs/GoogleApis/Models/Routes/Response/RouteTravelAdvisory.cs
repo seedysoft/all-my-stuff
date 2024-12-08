@@ -3,7 +3,7 @@
 /// <summary>
 /// Contains the additional information that the user should be informed about, such as possible traffic zone restrictions.
 /// </summary>
-public class RouteTravelAdvisory
+public record RouteTravelAdvisory
 {
     //   "tollInfo": {
     //     object (TollInfo)
