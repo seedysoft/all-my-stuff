@@ -21,7 +21,7 @@
         <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite.Core" Version="8.0.10" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.2" />
         <PackageReference Include="Microsoft.Testing.Extensions.VSTestBridge" Version="1.4.3" />
-        <PackageReference Include="MSTest" Version="3.6.3" />
+        <PackageReference Include="MSTest" Version="3.6.4" />
     </ItemGroup>
 
     <ItemGroup>
