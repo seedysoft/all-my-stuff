@@ -35,7 +35,7 @@ public sealed class Program : Libs.Core.ProgramBase
             //    Logger.LogDebug($"{item.Key}: {item.Value ?? "<<NULL>>"}");
 
             // Migrate and seed the database during startup. Must be synchronous.
-            using IServiceScope Scope = host.Services.CreateAsyncScope();
+            using AsyncServiceScope Scope = host.Services.CreateAsyncScope();
             await Scope.ServiceProvider.GetRequiredService<Libs.Infrastructure.DbContexts.DbCxt>().Database.MigrateAsync();
 
             using CancellationTokenSource CancelTokenSource = new();

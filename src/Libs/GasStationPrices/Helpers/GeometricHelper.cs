@@ -1,4 +1,4 @@
-﻿namespace Seedysoft.Libs.Utils.Helpers;
+﻿namespace Seedysoft.Libs.GasStationPrices.Helpers;
 
 public static class GeometricHelper
 {
@@ -17,9 +17,9 @@ public static class GeometricHelper
         static double GetOneDegreeLonKilometers(double latDegrees)
         {
             // Compute spherical coordinates
-            double EarthCircumferenceOnEquator = Core.Constants.Earth.RadiusMeanInMeters / 1_000d * 2 * Math.PI;
+            double EarthCircumferenceOnEquator = Libs.Core.Constants.Earth.RadiusMeanInMeters / 1_000d * 2 * Math.PI;
 
-            return (double)(Math.Cos(DegreesToRadians(latDegrees)) * EarthCircumferenceOnEquator / Core.Constants.Earth.Degrees);
+            return (double)(Math.Cos(DegreesToRadians(latDegrees)) * EarthCircumferenceOnEquator / Libs.Core.Constants.Earth.Degrees);
         }
     }
     public static double ExpandLatitude(double latDegrees, double lonDegrees, double kilometers)
@@ -45,7 +45,7 @@ public static class GeometricHelper
             double halfSideInKm = 0)
         {
             // Radius of Earth at given latitude
-            double radius = Core.Constants.Earth.RadiusMeanInMeters / 1_000;
+            double radius = Libs.Core.Constants.Earth.RadiusMeanInMeters / 1_000;
 
             double latRadians = DegreesToRadians(latDegrees);
             // Radius of the parallel at given latitude
@@ -88,7 +88,7 @@ public static class GeometricHelper
 
             double c = 2 * Math.Asin(Math.Min(1, Math.Sqrt(a)));
 
-            return (double)(Core.Constants.Earth.RadiusMeanInMeters / 1_000 * c);
+            return (double)(Libs.Core.Constants.Earth.RadiusMeanInMeters / 1_000 * c);
         }
     }
 }

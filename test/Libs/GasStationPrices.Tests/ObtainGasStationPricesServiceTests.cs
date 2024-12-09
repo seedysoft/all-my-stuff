@@ -12,7 +12,7 @@ public sealed class ObtainGasStationPricesTests : Infrastructure.Tests.TestClass
     [ClassInitialize(InheritanceBehavior.None)]
     public static void ClassInitialize(TestContext testContext)
     {
-        IHostApplicationBuilder appBuilder = new HostApplicationBuilder();
+        HostApplicationBuilder appBuilder = new();
         _ = appBuilder.AddAllMyDependencies();
         ServiceProvider serviceProvider = appBuilder.Services.BuildServiceProvider();
 

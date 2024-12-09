@@ -15,13 +15,13 @@ public class GeoLocation
     public double LongitudeInDegrees { get; private set; }
 
     private static readonly double MaxLatitudeInRadians =
-        Utils.Helpers.GeometricHelper.DegreesToRadians(Libs.Core.Constants.Earth.MaxLatitudeInDegrees); //  PI/2
+        Helpers.GeometricHelper.DegreesToRadians(Libs.Core.Constants.Earth.MaxLatitudeInDegrees); //  PI/2
     private static readonly double MinLatitudeInRadians =
-        Utils.Helpers.GeometricHelper.DegreesToRadians(Libs.Core.Constants.Earth.MinLatitudeInDegrees); // -PI/2
+        Helpers.GeometricHelper.DegreesToRadians(Libs.Core.Constants.Earth.MinLatitudeInDegrees); // -PI/2
     private static readonly double MaxLongitudeInRadians =
-        Utils.Helpers.GeometricHelper.DegreesToRadians(Libs.Core.Constants.Earth.MaxLongitudeInDegrees); //  PI
+        Helpers.GeometricHelper.DegreesToRadians(Libs.Core.Constants.Earth.MaxLongitudeInDegrees); //  PI
     private static readonly double MinLongitudeInRadians =
-        Utils.Helpers.GeometricHelper.DegreesToRadians(Libs.Core.Constants.Earth.MinLongitudeInDegrees); // -PI
+        Helpers.GeometricHelper.DegreesToRadians(Libs.Core.Constants.Earth.MinLongitudeInDegrees); // -PI
 
     /// <summary>
     /// Avoid creating instances outside.
@@ -38,8 +38,8 @@ public class GeoLocation
     {
         GeoLocation result = new()
         {
-            LatitudeInRadians = Utils.Helpers.GeometricHelper.DegreesToRadians(latitude),
-            LongitudeInRadians = Utils.Helpers.GeometricHelper.DegreesToRadians(longitude),
+            LatitudeInRadians = Helpers.GeometricHelper.DegreesToRadians(latitude),
+            LongitudeInRadians = Helpers.GeometricHelper.DegreesToRadians(longitude),
             LatitudeInDegrees = latitude,
             LongitudeInDegrees = longitude
         };
@@ -60,8 +60,8 @@ public class GeoLocation
         {
             LatitudeInRadians = latitude,
             LongitudeInRadians = longitude,
-            LatitudeInDegrees = Utils.Helpers.GeometricHelper.RadiansToDegrees(latitude),
-            LongitudeInDegrees = Utils.Helpers.GeometricHelper.RadiansToDegrees(longitude)
+            LatitudeInDegrees = Helpers.GeometricHelper.RadiansToDegrees(latitude),
+            LongitudeInDegrees = Helpers.GeometricHelper.RadiansToDegrees(longitude)
         };
         result.CheckBounds();
 
