@@ -5,7 +5,7 @@ public static class Earth
     /// <summary>
     /// North Pole: 90d
     /// </summary>
-    public const double MaxLatitudeInDegrees = TotalDegrees / 4;
+    public const double MaxLatitudeInDegrees = TotalDegrees / 4d;
     /// <summary>
     /// South Pole: -90d
     /// </summary>
@@ -13,7 +13,7 @@ public static class Earth
     /// <summary>
     /// East from Prime Meridian: 180d
     /// </summary>
-    public const double MaxLongitudeInDegrees = TotalDegrees / 2;
+    public const double MaxLongitudeInDegrees = TotalDegrees / 2d;
     /// <summary>
     /// West from Prime Meridian: -180d
     /// </summary>

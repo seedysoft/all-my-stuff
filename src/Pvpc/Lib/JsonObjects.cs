@@ -1,62 +1,106 @@
-﻿// TODO                           Remove warning disable and use attributes
+﻿#pragma warning disable CA1050 // Declare types in namespaces
 
-#pragma warning disable CA1050 // Declare types in namespaces
-#pragma warning disable IDE1006 // Naming Styles
 public sealed class Rootobject
 {
-    public Data? data { get; set; }
-    public Included[]? included { get; set; }
+    [J("data")]
+    public Data? Data { get; set; }
+
+    [J("included")]
+    public Included[]? Included { get; set; }
 }
 
 public sealed class Data
 {
-    public string? type { get; set; }
-    public string? id { get; set; }
-    public Attributes? attributes { get; set; }
-    public Meta? meta { get; set; }
+    [J("type")]
+    public string? Type { get; set; }
+
+    [J("id")]
+    public string? Id { get; set; }
+
+    [J("attributes")]
+    public Attributes? Attributes { get; set; }
+
+    [J("meta")]
+    public Meta? Meta { get; set; }
 }
 
 public sealed class Attributes
 {
-    public string? title { get; set; }
-    public DateTime lastupdate { get; set; }
-    public object? description { get; set; }
+    [J("title")]
+    public string? Title { get; set; }
+
+    [J("lastupdate")]
+    public DateTime LastUpdate { get; set; }
+
+    [J("description")]
+    public object? Description { get; set; }
 }
 
 public sealed class Meta
 {
-    public CacheControl? cachecontrol { get; set; }
+    [J("cachecontrol")]
+    public CacheControl? CacheControl { get; set; }
 }
 
 public sealed class CacheControl
 {
-    public string? cache { get; set; }
-    public DateTime? expireAt { get; set; }
+    [J("cache")]
+    public string? Cache { get; set; }
+
+    [J("expireAt")]
+    public DateTime? ExpireAt { get; set; }
 }
 
 public sealed class Included
 {
-    public string? type { get; set; }
-    public string? id { get; set; }
-    public object? groupId { get; set; }
-    public Attributes1? attributes { get; set; }
+    [J("type")]
+    public string? Type { get; set; }
+
+    [J("id")]
+    public string? Id { get; set; }
+
+    [J("groupId")]
+    public object? GroupId { get; set; }
+
+    [J("attributes")]
+    public Attributes1? Attributes { get; set; }
 }
 
 public sealed class Attributes1
 {
-    public string? title { get; set; }
-    public object? description { get; set; }
-    public string? color { get; set; }
-    public object? type { get; set; }
-    public string? magnitude { get; set; }
-    public bool? composite { get; set; }
-    public DateTime? lastupdate { get; set; }
-    public Value[]? values { get; set; }
+    [J("title")]
+    public string? Title { get; set; }
+
+    [J("description")]
+    public object? Description { get; set; }
+
+    [J("color")]
+    public string? Color { get; set; }
+
+    [J("type")]
+    public object? Type { get; set; }
+
+    [J("magnitude")]
+    public string? Magnitude { get; set; }
+
+    [J("composite")]
+    public bool? Composite { get; set; }
+
+    [J("lastupdate")]
+    public DateTime? LastUpdate { get; set; }
+
+    [J("values")]
+    public Value[]? Values { get; set; }
 }
 
 public sealed class Value
 {
-    public float? value { get; set; }
-    public float? percentage { get; set; }
-    public DateTimeOffset? datetime { get; set; }
+    [J("value")]
+    public float? Val { get; set; }
+
+    [J("percentage")]
+    public float? Percentage { get; set; }
+
+    [J("datetime")]
+    public DateTimeOffset? Datetime { get; set; }
 }

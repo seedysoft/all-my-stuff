@@ -49,10 +49,10 @@ public sealed class PvpcCronBackgroundService : Libs.BackgroundServices.Cron
         {
             Rootobject? Response = await client.GetFromJsonAsync<Rootobject>(UrlString, stoppingToken);
 
-            Included? PvpcIncluded = Response?.included?.FirstOrDefault(x => x.id == Settings.PvpcId);
+            Included? PvpcIncluded = Response?.Included?.FirstOrDefault(x => x.Id == Settings.PvpcId);
 
-            Libs.Core.Entities.Pvpc[]? NewEntities = PvpcIncluded?.attributes?.values?
-                .Select(x => new Libs.Core.Entities.Pvpc(x.datetime.GetValueOrDefault(), (decimal)x.value.GetValueOrDefault()))
+            Libs.Core.Entities.Pvpc[]? NewEntities = PvpcIncluded?.Attributes?.Values?
+                .Select(x => new Libs.Core.Entities.Pvpc(x.Datetime.GetValueOrDefault(), (decimal)x.Val.GetValueOrDefault()))
                 .ToArray();
 
             int? HowManyPricesObtained = await ProcessPricesAsync(NewEntities, stoppingToken);
