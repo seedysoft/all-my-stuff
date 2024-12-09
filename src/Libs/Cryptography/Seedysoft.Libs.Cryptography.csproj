@@ -1,13 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-    <IsPackable>false</IsPackable>
-    <IsPublishable>False</IsPublishable>
-    <RuntimeIdentifiers>linux-arm64;linux-x64;win-x64</RuntimeIdentifiers>
-  </PropertyGroup>
-  <ItemGroup>
-    <InternalsVisibleTo Include="Seedysoft.Libs.Cryptography.Tests" />
-  </ItemGroup>
+    <PropertyGroup>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <IsPackable>false</IsPackable>
+        <IsPublishable>False</IsPublishable>
+        <Nullable>enable</Nullable>
+        <RuntimeIdentifiers>linux-arm64;linux-x64;win-x64</RuntimeIdentifiers>
+        <TargetFramework>net8.0</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <InternalsVisibleTo Include="Seedysoft.Libs.Cryptography.Tests" />
+    </ItemGroup>
 </Project>

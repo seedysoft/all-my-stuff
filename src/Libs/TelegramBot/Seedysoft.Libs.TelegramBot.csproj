@@ -1,48 +1,53 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-    <IsPackable>false</IsPackable>
-    <IsPublishable>False</IsPublishable>
-    <RuntimeIdentifiers>linux-arm64;linux-x64;win-x64</RuntimeIdentifiers>
-  </PropertyGroup>
-  <ItemGroup>
-    <None Remove="appsettings.TelegramSettings.Development.json" />
-    <Content Include="appsettings.TelegramSettings.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <None Remove="appsettings.TelegramSettings.Production.json" />
-  </ItemGroup>
-  <ItemGroup Condition="'$(Configuration)' == 'Debug'">
-    <Content Include="appsettings.TelegramSettings.Development.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <DependentUpon>appsettings.TelegramSettings.json</DependentUpon>
-    </Content>
-    <None Include="appsettings.TelegramSettings.Production.json">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-      <DependentUpon>appsettings.TelegramSettings.json</DependentUpon>
-    </None>
-  </ItemGroup>
-  <ItemGroup Condition="'$(Configuration)' == 'Release'">
-    <None Include="appsettings.TelegramSettings.Development.json">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-      <DependentUpon>appsettings.TelegramSettings.json</DependentUpon>
-    </None>
-    <Content Include="appsettings.TelegramSettings.Production.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <DependentUpon>appsettings.TelegramSettings.json</DependentUpon>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="EFCore.BulkExtensions.Sqlite" Version="8.1.1" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.2" />
-    <PackageReference Include="Telegram.Bot" Version="22.2.0" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\Pvpc\Lib\Seedysoft.Pvpc.Lib.csproj" />
-    <ProjectReference Include="..\BackgroundServices\Seedysoft.Libs.BackgroundServices.csproj" />
-    <ProjectReference Include="..\Core\Seedysoft.Libs.Core.csproj" />
-    <ProjectReference Include="..\Cryptography\Seedysoft.Libs.Cryptography.csproj" />
-  </ItemGroup>
+    <PropertyGroup>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <IsPackable>false</IsPackable>
+        <IsPublishable>False</IsPublishable>
+        <Nullable>enable</Nullable>
+        <RuntimeIdentifiers>linux-arm64;linux-x64;win-x64</RuntimeIdentifiers>
+        <TargetFramework>net8.0</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <None Remove="appsettings.TelegramSettings.Development.json" />
+        <Content Include="appsettings.TelegramSettings.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+        <None Remove="appsettings.TelegramSettings.Production.json" />
+    </ItemGroup>
+
+    <ItemGroup Condition="'$(Configuration)' == 'Debug'">
+        <Content Include="appsettings.TelegramSettings.Development.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <DependentUpon>appsettings.TelegramSettings.json</DependentUpon>
+        </Content>
+        <None Include="appsettings.TelegramSettings.Production.json">
+            <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+            <DependentUpon>appsettings.TelegramSettings.json</DependentUpon>
+        </None>
+    </ItemGroup>
+
+    <ItemGroup Condition="'$(Configuration)' == 'Release'">
+        <None Include="appsettings.TelegramSettings.Development.json">
+            <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+            <DependentUpon>appsettings.TelegramSettings.json</DependentUpon>
+        </None>
+        <Content Include="appsettings.TelegramSettings.Production.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <DependentUpon>appsettings.TelegramSettings.json</DependentUpon>
+        </Content>
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="EFCore.BulkExtensions.Sqlite" Version="8.1.1" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.2" />
+        <PackageReference Include="Telegram.Bot" Version="22.2.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\Pvpc\Lib\Seedysoft.Pvpc.Lib.csproj" />
+        <ProjectReference Include="..\BackgroundServices\Seedysoft.Libs.BackgroundServices.csproj" />
+        <ProjectReference Include="..\Core\Seedysoft.Libs.Core.csproj" />
+        <ProjectReference Include="..\Cryptography\Seedysoft.Libs.Cryptography.csproj" />
+    </ItemGroup>
 </Project>
