@@ -9,35 +9,34 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Content Include="appsettings.Libs.GasStationPrices.json">
+        <Content Include="appsettings.GasStationPricesSettings.json">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
     </ItemGroup>
 
     <ItemGroup Condition="'$(Configuration)' == 'Debug'">
-        <Content Include="appsettings.Libs.GasStationPrices.Development.json">
+        <Content Include="appsettings.GasStationPricesSettings.Development.json">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-            <DependentUpon>appsettings.Libs.GasStationPrices.json</DependentUpon>
+            <DependentUpon>appsettings.GasStationPricesSettings.json</DependentUpon>
         </Content>
-        <None Include="appsettings.Libs.GasStationPrices.Production.json">
+        <None Include="appsettings.GasStationPricesSettings.Production.json">
             <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-            <DependentUpon>appsettings.Libs.GasStationPrices.json</DependentUpon>
+            <DependentUpon>appsettings.GasStationPricesSettings.json</DependentUpon>
         </None>
     </ItemGroup>
 
     <ItemGroup Condition="'$(Configuration)' == 'Release'">
-        <None Include="appsettings.Libs.GasStationPrices.Development.json">
+        <None Include="appsettings.GasStationPricesSettings.Development.json">
             <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-            <DependentUpon>appsettings.Libs.GasStationPrices.json</DependentUpon>
+            <DependentUpon>appsettings.GasStationPricesSettings.json</DependentUpon>
         </None>
-        <Content Include="appsettings.Libs.GasStationPrices.Production.json">
+        <Content Include="appsettings.GasStationPricesSettings.Production.json">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-            <DependentUpon>appsettings.Libs.GasStationPrices.json</DependentUpon>
+            <DependentUpon>appsettings.GasStationPricesSettings.json</DependentUpon>
         </Content>
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="BlazorGoogleMaps" Version="4.9.1" />
         <PackageReference Include="CommandLineParser" Version="2.9.1" />
         <PackageReference Include="EfCore.SchemaCompare" Version="[8.*,9)" />
         <PackageReference Include="FluentValidation" Version="11.11.0" />
@@ -62,6 +61,7 @@
     <ItemGroup>
         <ProjectReference Include="..\..\Libs\Infrastructure\Seedysoft.Libs.Infrastructure.csproj" />
         <ProjectReference Include="..\Cryptography\Seedysoft.Libs.Cryptography.csproj" />
+        <ProjectReference Include="..\GoogleApis\Seedysoft.Libs.GoogleApis.csproj" />
     </ItemGroup>
 
     <ItemGroup>

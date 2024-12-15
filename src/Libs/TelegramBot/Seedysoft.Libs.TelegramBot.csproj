@@ -9,32 +9,32 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <None Remove="appsettings.TelegramSettings.Development.json" />
-        <Content Include="appsettings.TelegramSettings.json">
+        <None Remove="appsettings.TelegramBotSettings.Development.json" />
+        <Content Include="appsettings.TelegramBotSettings.json">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
-        <None Remove="appsettings.TelegramSettings.Production.json" />
+        <None Remove="appsettings.TelegramBotSettings.Production.json" />
     </ItemGroup>
 
     <ItemGroup Condition="'$(Configuration)' == 'Debug'">
-        <Content Include="appsettings.TelegramSettings.Development.json">
+        <Content Include="appsettings.TelegramBotSettings.Development.json">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-            <DependentUpon>appsettings.TelegramSettings.json</DependentUpon>
+            <DependentUpon>appsettings.TelegramBotSettings.json</DependentUpon>
         </Content>
-        <None Include="appsettings.TelegramSettings.Production.json">
+        <None Include="appsettings.TelegramBotSettings.Production.json">
             <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-            <DependentUpon>appsettings.TelegramSettings.json</DependentUpon>
+            <DependentUpon>appsettings.TelegramBotSettings.json</DependentUpon>
         </None>
     </ItemGroup>
 
     <ItemGroup Condition="'$(Configuration)' == 'Release'">
-        <None Include="appsettings.TelegramSettings.Development.json">
+        <None Include="appsettings.TelegramBotSettings.Development.json">
             <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-            <DependentUpon>appsettings.TelegramSettings.json</DependentUpon>
+            <DependentUpon>appsettings.TelegramBotSettings.json</DependentUpon>
         </None>
-        <Content Include="appsettings.TelegramSettings.Production.json">
+        <Content Include="appsettings.TelegramBotSettings.Production.json">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-            <DependentUpon>appsettings.TelegramSettings.json</DependentUpon>
+            <DependentUpon>appsettings.TelegramBotSettings.json</DependentUpon>
         </Content>
     </ItemGroup>
 
