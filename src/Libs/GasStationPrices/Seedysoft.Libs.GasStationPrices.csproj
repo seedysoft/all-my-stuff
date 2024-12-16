@@ -37,7 +37,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="BlazorGoogleMaps" Version="4.9.1" />
+        <PackageReference Include="BlazorGoogleMaps" Version="4.9.2" />
         <PackageReference Include="CommandLineParser" Version="2.9.1" />
         <PackageReference Include="EfCore.SchemaCompare" Version="[8.*,9)" />
         <PackageReference Include="FluentValidation" Version="11.11.0" />
