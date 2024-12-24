@@ -195,5 +195,7 @@ public partial class TravelSearch
                 Title = gasStationModel.Rotulo,
             });
         }
+
+       await TravelGoogleMap.ShowDataAsync();
     }
 }

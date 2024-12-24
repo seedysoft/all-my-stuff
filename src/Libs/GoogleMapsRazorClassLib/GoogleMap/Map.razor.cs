@@ -52,6 +52,13 @@ public partial class Map : SeedysoftComponentBase
             await OnMarkerClick.InvokeAsync(marker);
     }
 
+    public async Task ShowDataAsync()
+    {
+        // TODO
+        //var asdfasdf = Markers.FirstOrDefault();
+        //asdfasdf.PinElement.
+    }
+
     private void OnScriptLoad()
     {
         _ = Task.Run(async () => await JSRuntime.InvokeVoidAsync(
