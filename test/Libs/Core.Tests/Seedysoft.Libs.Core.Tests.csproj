@@ -17,15 +17,21 @@
         <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="[8.*,9)" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="[8.*,9)" />
         <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="[8.*,9)" />
-        <PackageReference Include="Microsoft.Testing.Extensions.VSTestBridge" Version="1.4.3" />
-        <PackageReference Include="MSTest" Version="3.6.4" />
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
+        <PackageReference Include="xunit" Version="2.9.2" />
+        <PackageReference Include="xunit.runner.visualstudio" Version="3.0.0">
+          <PrivateAssets>all</PrivateAssets>
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
     </ItemGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\..\..\src\Libs\Core\Seedysoft.Libs.Core.csproj" />
     </ItemGroup>
-
-    <ItemGroup>
-        <Using Include="Microsoft.VisualStudio.TestTools.UnitTesting" />
+	
+	<ItemGroup>
+      <Content Include="..\..\..\xunit.runner.json" Link="xunit.runner.json">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
     </ItemGroup>
 </Project>

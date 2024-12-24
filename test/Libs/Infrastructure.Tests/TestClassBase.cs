@@ -2,16 +2,14 @@
 
 namespace Seedysoft.Libs.Infrastructure.Tests;
 
-// TODO                           CHANGE TEST FRAMEWORK!!!!
-public abstract class TestClassBase
+public abstract class TestClassBase : IDisposable
 {
+    private bool disposedValue;
+
     private static Microsoft.Data.Sqlite.SqliteConnection SqliteConnection => new("Filename=:memory:");
-    private static DbContextOptions<DbContexts.DbCxt> Options { get; set; } = default!;
+    private DbContextOptions<DbContexts.DbCxt> Options { get; set; } = default!;
 
-    protected static DbContexts.DbCxt GetDbCxt() => new(Options);
-
-    [ClassInitialize(InheritanceBehavior.BeforeEachDerivedClass)]
-    public static void BaseClassInitialize(TestContext context)
+    protected TestClassBase()
     {
         SqliteConnection.Open();
 
@@ -25,6 +23,31 @@ public abstract class TestClassBase
         //dbCxt.Database.Migrate();
     }
 
-    [ClassCleanup(InheritanceBehavior.BeforeEachDerivedClass, ClassCleanupBehavior.EndOfClass)]
-    public static void BaseClassCleanup() => SqliteConnection?.Dispose();
+    protected DbContexts.DbCxt GetDbCxt() => new(Options);
+
+    protected abstract void Dispose(bool disposing);
+
+    // // override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
+    // ~TestClassBase()
+    // {
+    //     // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+    //     Dispose(disposing: false);
+    // }
+
+    public void Dispose()
+    {
+        if (!disposedValue)
+        {
+            // dispose managed state (managed objects)
+            SqliteConnection?.Dispose();
+
+            // free unmanaged resources (unmanaged objects) and override finalizer
+
+            // set large fields to null
+
+            disposedValue = true;
+        }
+
+        GC.SuppressFinalize(this);
+    }
 }

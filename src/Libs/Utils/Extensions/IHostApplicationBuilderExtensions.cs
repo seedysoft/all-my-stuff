@@ -31,7 +31,7 @@ public static class IHostApplicationBuilderExtensions
         return hostApplicationBuilder;
     }
 
-    public static IEnumerable<System.Reflection.Assembly> GetAllReferencedAssembliesSorted(System.Reflection.Assembly source)
+    private static IEnumerable<System.Reflection.Assembly> GetAllReferencedAssembliesSorted(System.Reflection.Assembly source)
     {
         var results = new List<System.Reflection.Assembly> { source, };
 

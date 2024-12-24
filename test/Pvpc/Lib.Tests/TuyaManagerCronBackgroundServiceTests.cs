@@ -1,16 +1,15 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting.Internal;
 using Microsoft.Extensions.Logging.Abstractions;
+using Xunit;
 
 namespace Seedysoft.Pvpc.Lib.Tests;
 
-[TestClass]
 public sealed class TuyaManagerCronBackgroundServiceTests : Libs.Infrastructure.Tests.TestClassBase
 {
-    private static Services.TuyaManagerCronBackgroundService TuyaManagerService = default!;
+    private readonly Services.TuyaManagerCronBackgroundService TuyaManagerService = default!;
 
-    [ClassInitialize(InheritanceBehavior.None)]
-    public static void ClassInitialize(TestContext context)
+    public TuyaManagerCronBackgroundServiceTests() : base()
     {
         Settings.TuyaManagerSettings tuyaManagerSettings = new()
         {
@@ -28,9 +27,11 @@ public sealed class TuyaManagerCronBackgroundServiceTests : Libs.Infrastructure.
             new ApplicationLifetime(new NullLogger<ApplicationLifetime>()));
     }
 
-    [ClassCleanup(InheritanceBehavior.None, ClassCleanupBehavior.EndOfClass)]
-    public static void ClassCleanup() => TuyaManagerService?.Dispose();
-
-    [TestMethod]
+    [Fact]
     public async Task DoWorkAsyncTest() => await TuyaManagerService.DoWorkAsync(default);
+    protected override void Dispose(bool disposing)
+    {
+        TuyaManagerService?.Dispose();
+        Dispose();
+    }
 }

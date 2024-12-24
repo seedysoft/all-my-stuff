@@ -1,16 +1,15 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Seedysoft.Libs.Utils.Extensions;
+using Xunit;
 
 namespace Seedysoft.Libs.GoogleApis.Tests;
 
-[TestClass]
 public sealed class PlacesServiceTests : Infrastructure.Tests.TestClassBase
 {
-    private static Services.PlacesService PlacesService = default!;
+    private readonly Services.PlacesService PlacesService = default!;
 
-    [ClassInitialize(InheritanceBehavior.None)]
-    public static void ClassInitialize(TestContext testContext)
+    public PlacesServiceTests() : base()
     {
         HostApplicationBuilder appBuilder = new();
         _ = appBuilder.AddAllMyDependencies();
@@ -19,14 +18,16 @@ public sealed class PlacesServiceTests : Infrastructure.Tests.TestClassBase
         PlacesService = serviceProvider.GetRequiredService<Services.PlacesService>();
     }
 
-    [DataRow("Calle de la Iglesia 11 Brazuelo León")]
-    [DataRow("Juan Ramón Jiménez 8 Burgos")]
-    [TestMethod]
+    [InlineData("Calle de la Iglesia 11 Brazuelo León")]
+    [InlineData("Juan Ramón Jiménez 8 Burgos")]
+    [Theory]
     public async Task FindPlacesAsyncTest(string textToFind)
     {
         IEnumerable<string> Res =
             await PlacesService.FindPlacesAsync(textToFind, CancellationToken.None);
 
-        Assert.IsTrue(Res.Any());
+        Assert.True(Res.Any());
     }
+
+    protected override void Dispose(bool disposing) => Dispose();
 }

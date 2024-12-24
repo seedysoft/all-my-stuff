@@ -1,16 +1,15 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Seedysoft.Libs.Utils.Extensions;
+using Xunit;
 
 namespace Seedysoft.Libs.GasStationPrices.Tests;
 
-[TestClass]
-public sealed class ObtainGasStationPricesTests : Infrastructure.Tests.TestClassBase
+public sealed class ObtainGasStationPricesServiceTests : Infrastructure.Tests.TestClassBase
 {
-    private static Services.ObtainGasStationPricesService ObtainGasStationPricesService = default!;
+    private readonly Services.ObtainGasStationPricesService ObtainGasStationPricesService = default!;
 
-    [ClassInitialize(InheritanceBehavior.None)]
-    public static void ClassInitialize(TestContext testContext)
+    public ObtainGasStationPricesServiceTests() : base()
     {
         HostApplicationBuilder appBuilder = new();
         _ = appBuilder.AddAllMyDependencies();
@@ -18,19 +17,20 @@ public sealed class ObtainGasStationPricesTests : Infrastructure.Tests.TestClass
 
         ObtainGasStationPricesService = serviceProvider.GetRequiredService<Services.ObtainGasStationPricesService>();
     }
+
     //[ClassCleanup(InheritanceBehavior.None, ClassCleanupBehavior.EndOfClass)]
     //public static new void ClassCleanup() => ObtainGasStationPricesService?.Dispose();
 
-    //[TestMethod]
+    //[Fact]
     //public async Task GetPetroleumProductsAsyncTest()
     //{
     //    IEnumerable<Core.Json.Minetur.ProductoPetrolifero> Res =
     //        await ObtainGasStationPricesService.GetPetroleumProductsAsync(CancellationToken.None);
 
-    //    Assert.IsTrue(Res.Any());
+    //    Assert.True(Res.Any());
     //}
 
-    [TestMethod]
+    [Fact]
     public async Task GetGasStationsAsyncTest()
     {
         ViewModels.TravelQueryModel travelQueryModel = new()
@@ -46,6 +46,8 @@ public sealed class ObtainGasStationPricesTests : Infrastructure.Tests.TestClass
 
         _ = await gasStationModels.MoveNextAsync();
 
-        Assert.IsTrue(gasStationModels.Current != null && !string.IsNullOrWhiteSpace(gasStationModels.Current?.Rotulo));
+        Assert.True(gasStationModels.Current != null && !string.IsNullOrWhiteSpace(gasStationModels.Current?.Rotulo));
     }
+
+    protected override void Dispose(bool disposing) => Dispose();
 }

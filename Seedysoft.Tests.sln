@@ -27,6 +27,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_SolutionItems", "_Solution
 		src\Directory.Build.props = src\Directory.Build.props
 		nuget.config = nuget.config
 		testEnvironments.json = testEnvironments.json
+		xunit.runner.json = xunit.runner.json
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Seedysoft.Libs.Infrastructure", "src\Libs\Infrastructure\Seedysoft.Libs.Infrastructure.csproj", "{733108C1-F3A2-4AE7-AB43-BADCB4161169}"

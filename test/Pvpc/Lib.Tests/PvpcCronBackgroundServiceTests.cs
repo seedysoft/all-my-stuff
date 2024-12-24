@@ -1,19 +1,18 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting.Internal;
 using Microsoft.Extensions.Logging.Abstractions;
+using Xunit;
 
 namespace Seedysoft.Pvpc.Lib.Tests;
 
-[TestClass]
 public sealed class PvpcCronBackgroundServiceTests : Libs.Infrastructure.Tests.TestClassBase
 {
-    private static Services.PvpcCronBackgroundService PvpcService = default!;
-    private static Libs.Core.Entities.Pvpc[] Prices = default!;
-    private static DateTimeOffset TimeToQuery = default!;
-    private static decimal MinPriceAllowed = default!;
+    private readonly Services.PvpcCronBackgroundService PvpcService = default!;
+    private readonly Libs.Core.Entities.Pvpc[] Prices = default!;
+    private readonly DateTimeOffset TimeToQuery = default!;
+    private readonly decimal MinPriceAllowed = default!;
 
-    [ClassInitialize(InheritanceBehavior.None)]
-    public static void ClassInitialize(TestContext testContext)
+    public PvpcCronBackgroundServiceTests() : base()
     {
         Settings.PvpcSettings pvpcSettings = new()
         {
@@ -28,24 +27,21 @@ public sealed class PvpcCronBackgroundServiceTests : Libs.Infrastructure.Tests.T
             .AddSingleton(GetDbCxt())
             .AddSingleton<Microsoft.Extensions.Logging.ILogger<Services.PvpcCronBackgroundService>>(new NullLogger<Services.PvpcCronBackgroundService>());
 
-        PvpcService = new(
-            services.BuildServiceProvider(),
-            new ApplicationLifetime(new NullLogger<ApplicationLifetime>()));
+        //PvpcService = new(
+        //    services.BuildServiceProvider(),
+        //    new ApplicationLifetime(new NullLogger<ApplicationLifetime>()));
 
         TimeToQuery = DateTimeOffset.UtcNow;
         MinPriceAllowed = 0.05M;
         Prices = Enumerable.Range(0, 24)
-            .Select(static i => new Libs.Core.Entities.Pvpc(
+            .Select(i => new Libs.Core.Entities.Pvpc(
                 TimeToQuery.UtcDateTime.AddHours(i),
                 decimal.Divide(Random.Shared.Next(40_000, 220_000), 1_000M)))
             .ToArray();
-        Prices.Last(static x => x.AtDateTimeOffset <= TimeToQuery).MWhPriceInEuros = 49M; // 0.049 KWhPriceInEuros
+        Prices.Last(x => x.AtDateTimeOffset <= TimeToQuery).MWhPriceInEuros = 49M; // 0.049 KWhPriceInEuros
     }
 
-    [ClassCleanup(InheritanceBehavior.None, ClassCleanupBehavior.EndOfClass)]
-    public static void ClassCleanup() => PvpcService?.Dispose();
-
-    [TestMethod]
+    [Fact]
     public void IsTimeToChargeNoPricesTest()
     {
         Settings.TuyaManagerSettings tuyaManagerSettings = new()
@@ -60,10 +56,10 @@ public sealed class PvpcCronBackgroundServiceTests : Libs.Infrastructure.Tests.T
             TimeToQuery,
             tuyaManagerSettings);
 
-        Assert.IsFalse(res);
+        Assert.False(res);
     }
 
-    [TestMethod]
+    [Fact]
     public void IsTimeToChargeAllowBelowDecimalMaxValueTest()
     {
         Settings.TuyaManagerSettings tuyaManagerSettings = new()
@@ -78,10 +74,10 @@ public sealed class PvpcCronBackgroundServiceTests : Libs.Infrastructure.Tests.T
             TimeToQuery,
             tuyaManagerSettings);
 
-        Assert.IsTrue(res);
+        Assert.True(res);
     }
 
-    [TestMethod]
+    [Fact]
     public void IsTimeToChargeIfAnyPriceBelowTest()
     {
         Settings.TuyaManagerSettings tuyaManagerSettings = new()
@@ -95,6 +91,12 @@ public sealed class PvpcCronBackgroundServiceTests : Libs.Infrastructure.Tests.T
             TimeToQuery,
             tuyaManagerSettings);
 
-        Assert.AreEqual(res, Prices.Any(static x => x.KWhPriceInEuros <= MinPriceAllowed));
+        Assert.Equal(res, Prices.Any(x => x.KWhPriceInEuros <= MinPriceAllowed));
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        PvpcService?.Dispose();
+        Dispose();
     }
 }
