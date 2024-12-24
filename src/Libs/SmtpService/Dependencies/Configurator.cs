@@ -4,12 +4,12 @@ using Microsoft.Extensions.Hosting;
 
 namespace Seedysoft.Libs.SmtpService.Dependencies;
 
-internal sealed class Configurator : Utils.Dependencies.ConfiguratorBase
+public sealed class Configurator : Utils.Dependencies.ConfiguratorBase
 {
     protected override void AddJsonFiles(IHostApplicationBuilder hostApplicationBuilder)
     {
         _ = hostApplicationBuilder.Configuration
-            .AddJsonFile($"appsettings.SmtpServiceSettings.json", optional: false, reloadOnChange: true);
+            .AddJsonFile($"appsettings.{nameof(Settings.SmtpServiceSettings)}.json", optional: false, reloadOnChange: true);
     }
 
     protected override void AddDbContexts(IHostApplicationBuilder hostApplicationBuilder) { /* No DbContexts */ }

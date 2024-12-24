@@ -4,11 +4,45 @@ namespace Seedysoft.Libs.Utils.Extensions;
 
 public static class JsonExtensions
 {
-    public static T FromJson<T>(this string json) 
+    public static T FromJson<T>(this string json)
         => JsonSerializer.Deserialize<T>(json, Converter.Settings) ?? throw new InvalidOperationException();
 
-    public static string ToJson<T>(this T self) 
+    public static string ToJson<T>(this T self)
         => JsonSerializer.Serialize(self, Converter.Settings);
+}
+
+public class EnumMemberJsonConverter<T> : System.Text.Json.Serialization.JsonConverter<T> where T : Enum
+{
+    public override bool CanConvert(Type t) => t == typeof(T);
+
+    public override T? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        => EnumExtensions.ToEnum<T>(reader.GetString()!);
+
+    public override void Write(Utf8JsonWriter writer, T value, JsonSerializerOptions options)
+        => JsonSerializer.Serialize(writer, value.GetEnumMember(), options);
+}
+public class EnumMemberArrayJsonConverter<T> : System.Text.Json.Serialization.JsonConverter<T[]> where T : Enum
+{
+    public override bool CanConvert(Type t) => t == typeof(T[]);
+
+    public override T[]? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        => reader.GetString()!.Split(',')!.Select(static x => EnumExtensions.ToEnum<T>(x)!).ToArray();
+
+    public override void Write(Utf8JsonWriter writer, T[] value, JsonSerializerOptions options)
+        => JsonSerializer.Serialize(writer, string.Join(",", value.Select(static x => x.GetEnumMember())), options);
+}
+
+public class ParseStringConverter : System.Text.Json.Serialization.JsonConverter<long>
+{
+    public override bool CanConvert(Type t) => t == typeof(long);
+
+    public override long Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        => long.TryParse(reader.GetString(), out long l) ? l : throw new Exception("Cannot unmarshal type long");
+
+    public override void Write(Utf8JsonWriter writer, long value, JsonSerializerOptions options)
+        => JsonSerializer.Serialize(writer, value.ToString(), options);
+
+    public static readonly ParseStringConverter Singleton = new();
 }
 
 internal static class Converter
@@ -89,19 +123,6 @@ internal static class Converter
 
 //    public static readonly IsoDateTimeOffsetConverter Singleton = new();
 //}
-
-public class ParseStringConverter : System.Text.Json.Serialization.JsonConverter<long>
-{
-    public override bool CanConvert(Type t) => t == typeof(long);
-
-    public override long Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-        => long.TryParse(reader.GetString(), out long l) ? l : throw new Exception("Cannot unmarshal type long");
-
-    public override void Write(Utf8JsonWriter writer, long value, JsonSerializerOptions options)
-        => JsonSerializer.Serialize(writer, value.ToString(), options);
-
-    public static readonly ParseStringConverter Singleton = new();
-}
 
 //public class TimeOnlyConverter(string? serializationFormat) : JsonConverter<TimeOnly>
 //{

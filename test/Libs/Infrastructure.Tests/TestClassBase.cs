@@ -2,6 +2,7 @@
 
 namespace Seedysoft.Libs.Infrastructure.Tests;
 
+// TODO                           CHANGE TEST FRAMEWORK!!!!
 public abstract class TestClassBase
 {
     private static Microsoft.Data.Sqlite.SqliteConnection SqliteConnection => new("Filename=:memory:");
@@ -16,7 +17,10 @@ public abstract class TestClassBase
 
         Options = new DbContextOptionsBuilder<DbContexts.DbCxt>().UseSqlite(SqliteConnection).Options;
 
-        // Gives error... Maybe not necessary
+        if (System.Diagnostics.Debugger.IsAttached)
+            Environment.SetEnvironmentVariable("DOTNET_ENVIRONMENT", "Development");
+
+        // Throws error... Maybe not necessary
         //using DbContexts.DbCxt dbCxt = GetDbCxt();
         //dbCxt.Database.Migrate();
     }

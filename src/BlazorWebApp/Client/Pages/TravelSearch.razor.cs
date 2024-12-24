@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
 using Seedysoft.Libs.Utils.Extensions;
 using System.Net.Http.Json;
 
@@ -6,20 +7,22 @@ namespace Seedysoft.BlazorWebApp.Client.Pages;
 
 public partial class TravelSearch
 {
+    [Inject] private IJSRuntime JSRuntime { get; set; } = default!;
     [Inject] private HttpClient Http { get; set; } = default!;
     [Inject] private ILogger<TravelSearch> Logger { get; set; } = default!;
     [Inject] private NavigationManager NavManager { get; set; } = default!;
     [Inject] private MudBlazor.ISnackbar Snackbar { get; set; } = default!;
+    [Inject] private IConfiguration Configuration { get; set; } = default!;
+
+    private Libs.GasStationPrices.Settings.GasStationPricesSettings gasStationPricesSettings = default!;
+    private Libs.GoogleApis.Settings.GoogleApisSettings googleApisSettings = default!;
 
     private MudBlazor.MudForm TravelQueryMudForm { get; set; } = default!;
+    private Libs.GoogleMapsRazorClassLib.GoogleMap.Map TravelGoogleMap { get; set; } = default!;
 
-    private GoogleMapsComponents.GoogleMap TravelGoogleMap { get; set; } = default!;
-    private GoogleMapsComponents.Maps.MapOptions mapOptions = default!;
-    private GoogleMapsComponents.Maps.DirectionsRenderer directionsRenderer = default!;
-    private readonly Stack<GoogleMapsComponents.Maps.AdvancedMarkerElement> advancedMarkerElements = new();
+    private Libs.GoogleMapsRazorClassLib.DirectionsService directionsService = default!;
 
-    private readonly Libs.GasStationPrices.Core.ViewModels.TravelQueryModelFluentValidator travelQueryModelFluentValidator = new();
-    private readonly Libs.GasStationPrices.Core.ViewModels.TravelQueryModel travelQueryModel = new()
+    private readonly Libs.GasStationPrices.ViewModels.TravelQueryModel travelQueryModel = new()
     {
 #if DEBUG
         Origin = "Calle Juan Ramon Jimenez, 8, Burgos, Spain",
@@ -31,19 +34,27 @@ public partial class TravelSearch
         MaxDistanceInKm = 5,
         PetroleumProductsSelectedIds = [],
     };
+    private readonly Libs.GasStationPrices.ViewModels.TravelQueryModelFluentValidator travelQueryModelFluentValidator = new();
 
-    private IEnumerable<Libs.GasStationPrices.Core.Json.Minetur.ProductoPetrolifero> PetroleumProducts = [];
+    private readonly IEnumerable<Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero> PetroleumProducts =
+         Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.All;
 
     protected override async Task OnInitializedAsync()
     {
         Logger.LogInformation($"Called {nameof(OnInitializedAsync)}");
 
+        gasStationPricesSettings = Configuration
+            .GetSection(nameof(Libs.GasStationPrices.Settings.GasStationPricesSettings))
+            .Get<Libs.GasStationPrices.Settings.GasStationPricesSettings>()!;
+        googleApisSettings = Configuration
+            .GetSection(nameof(Libs.GoogleApis.Settings.GoogleApisSettings))
+            .Get<Libs.GoogleApis.Settings.GoogleApisSettings>()!;
+
         await base.OnInitializedAsync();
 
-        // TODO         Take only from Libs.GasStationPrices.Core.Json.Minetur.ProductoPetrolifero
-
-        string FromUri = $"{NavManager.BaseUri}{Constants.PetroleumProductsUris.Controller}/{Constants.PetroleumProductsUris.Actions.ForFilter}";
-        PetroleumProducts = await Http.GetFromJsonAsync<IEnumerable<Libs.GasStationPrices.Core.Json.Minetur.ProductoPetrolifero>>(FromUri) ?? [];
+        // Take only from Libs.GasStationPrices.Core.Json.Minetur.ProductoPetrolifero, as properties are fixed
+        //string FromUri = $"{NavManager.BaseUri}{Constants.PetroleumProductsUris.Controller}/{Constants.PetroleumProductsUris.Actions.ForFilter}";
+        //PetroleumProducts = await Http.GetFromJsonAsync<IEnumerable<Libs.GasStationPrices.Core.Json.Minetur.ProductoPetrolifero>>(FromUri) ?? [];
 
         //PetroleumProducts = File.ReadAllText("C:\\Users\\alfon\\Downloads\\RouteResponse.json").FromJson<IEnumerable<Libs.GasStationPrices.Core.Json.Minetur.ProductoPetrolifero>>();
 
@@ -53,63 +64,8 @@ public partial class TravelSearch
             .ToArray()
             .AsReadOnly();
 
-        FromUri = $"{NavManager.BaseUri}{Constants.TravelUris.Controller}/{Constants.TravelUris.Actions.GetMapId}";
-        string MapId = await Http.GetStringAsync(FromUri);
-
-        mapOptions = new()
-        {
-            //ApiLoadOptions = new() { Language = "en-US", },
-            //BackgroundColor = "",
-            //CameraControl = false,
-            //CameraControlOptions = new() { Position = GoogleMapsComponents.Maps.ControlPosition.TopLeft, },
-            Center = new GoogleMapsComponents.Maps.LatLngLiteral()
-            {
-                Lat = Libs.Core.Constants.Earth.Home.Lat,
-                Lng = Libs.Core.Constants.Earth.Home.Lng,
-            },
-            //ClickableIcons = false,
-            ColorScheme = GoogleMapsComponents.Maps.ColorScheme.FollowSystem,
-            //ControlSize = 10,
-            //DisableDefaultUI = true,
-            //DisableDoubleClickZoom = false,
-            //Draggable = false,
-            //DraggableCursor = "",
-            //DraggingCursor = "",
-            //FullscreenControl = false,
-            //FullscreenControlOptions = new() { Position = GoogleMapsComponents.Maps.ControlPosition.TopCenter, },
-            //Heading = 5,
-            //HeadingInteractionEnabled = false,
-            //IsFractionalZoomEnabled = false,
-            //KeyboardShortcuts = false,
-            MapId = MapId,
-            //MapTypeControl = false,
-            //MapTypeControlOptions = new()
-            //{
-            //    MapTypeIds = [GoogleMapsComponents.Maps.MapTypeId.Hybrid, GoogleMapsComponents.Maps.MapTypeId.Terrain,],
-            //    Position = GoogleMapsComponents.Maps.ControlPosition.TopRight,
-            //    Style = GoogleMapsComponents.Maps.MapTypeControlStyle.Default,
-            //},
-            MapTypeId = GoogleMapsComponents.Maps.MapTypeId.Roadmap,
-            //MaxZoom = 30,
-            //MinZoom = 0,
-            //NoClear = true,
-            //PanControl = false,
-            //PanControlOptions = new() { Position = GoogleMapsComponents.Maps.ControlPosition.LeftTop, },
-            ////RenderingType = GoogleMapsComponents.Maps.RenderingType.Uninitialized,
-            ////Restriction = new() { latLngBounds = new() { }, strictBounds = false, },
-            //RotateControl = false,
-            //RotateControlOptions = new() { Position = GoogleMapsComponents.Maps.ControlPosition.LeftCenter, },
-            //ScaleControl = false,
-            //ScaleControlOptions = new() { Style = GoogleMapsComponents.Maps.ScaleControlStyle.Default, },
-            //Scrollwheel = false,
-            StreetViewControl = false,
-            //StreetViewControlOptions = new() { Position = GoogleMapsComponents.Maps.ControlPosition.BottomCenter, },
-            //Styles = [new() { elementType = "", featureType = "", stylers = [new GoogleMapsComponents.Maps.GoogleMapStyleColor() { color = "", }] }],
-            //Tilt = 10,
-            Zoom = 14,
-            ZoomControl = true,
-            //ZoomControlOptions = new() { Position = GoogleMapsComponents.Maps.ControlPosition.BottomRight, },
-        };
+        //FromUri = $"{NavManager.BaseUri}{Constants.TravelUris.Controller}/{Constants.TravelUris.Actions.GetMapId}";
+        //string MapId = await Http.GetStringAsync(FromUri);
     }
 
     //protected override Task OnAfterRenderAsync(bool firstRender)
@@ -133,17 +89,8 @@ public partial class TravelSearch
     //    return shouldRender;
     //}
 
-    private async Task GoogleMapOnAfterInitAsync()
-    {
-        GoogleMapsComponents.Maps.LatLngBounds _bounds = await GoogleMapsComponents.Maps.LatLngBounds.CreateAsync(TravelGoogleMap.JsRuntime);
-        Console.WriteLine($"Bounds: {_bounds.ToJson()}");
-
-        //Create instance of DirectionRenderer
-        directionsRenderer = await GoogleMapsComponents.Maps.DirectionsRenderer.CreateAsync(
-            TravelGoogleMap!.JsRuntime,
-            new() { Map = TravelGoogleMap.InteropObject }
-        );
-    }
+    private void OnGoogleMapMarkerClick(Libs.GoogleMapsRazorClassLib.GoogleMap.Marker marker)
+        => _ = Snackbar.Add($"Clicked into {marker.Content}. DateTime: {DateTime.Now}", MudBlazor.Severity.Success);
 
     private async Task<IEnumerable<string>> FindPlacesAsync(
         string textToFind,
@@ -151,8 +98,7 @@ public partial class TravelSearch
     {
         try
         {
-            // TODO             CACHE
-            // TODO Validation
+            // TODO             CACHE?
             if (string.IsNullOrWhiteSpace(textToFind))
                 return [];
 
@@ -170,6 +116,7 @@ public partial class TravelSearch
     private void UnSelectAllChips()
         => travelQueryModel.PetroleumProductsSelectedIds = [];
 
+    [System.Runtime.Versioning.UnsupportedOSPlatform("browser")]
     private async Task LoadDataAsync()
     {
         FluentValidation.Results.ValidationResult validationResult = await travelQueryModelFluentValidator.ValidateAsync(travelQueryModel);
@@ -180,98 +127,75 @@ public partial class TravelSearch
             return;
         }
 
-        await RemoveAllMarkersAsync();
-
-        if (await directionsRenderer.GetMap() is null)
-            await directionsRenderer.SetMap(TravelGoogleMap!.InteropObject);
+        await TravelGoogleMap.RemoveAllMarkersAsync();
 
         //Direction Request
-        GoogleMapsComponents.Maps.DirectionsRequest directionsRequest = new()
+        Libs.GoogleApis.Models.Directions.Request.Body directionsRequest = new()
         {
             Origin = travelQueryModel.Origin,
             Destination = travelQueryModel.Destination,
-            AvoidFerries = false,
-            AvoidHighways = false,
-            AvoidTolls = false,
-            DrivingOptions = new() { DepartureTime = DateTime.UtcNow, TrafficModel = GoogleMapsComponents.Maps.TrafficModel.bestguess, },
-            OptimizeWaypoints = false,
+            TravelMode = Libs.GoogleApis.Models.Directions.Shared.TravelMode.Driving,
+            //AvoidFerries = false,
+            //AvoidHighways = false,
+            //AvoidTolls = false,
+            //DrivingOptions = new() { DepartureTime = DateTime.UtcNow, TrafficModel = Libs.GoogleMapsRazorClassLib.Directions.TrafficModel.bestguess, },
+            //OptimizeWaypoints = false,
             ProvideRouteAlternatives = true,
-            //Region = "es",
-            //TransitOptions = new()
-            //{
-            //    ArrivalTime = DateTime.UtcNow,
-            //    DepartureTime = DateTime.UtcNow,
-            //    Modes = [GoogleMapsComponents.Maps.TransitMode.Bus, GoogleMapsComponents.Maps.TransitMode.Train],
-            //    RoutingPreference = GoogleMapsComponents.Maps.TransitRoutePreference.FewerTransfers,
-            //},
-            TravelMode = GoogleMapsComponents.Maps.TravelMode.Driving,
-            //UnitSystem = GoogleMapsComponents.Maps.UnitSystem.Metric, // InvalidValueError: in property unitSystem: metric is not an accepted value
-            Waypoints = [
-                //new GoogleMapsComponents.Maps.DirectionsWaypoint() { Location = "Bethlehem, PA", Stopover = true }
-            ],
+            ////Region = "es",
+            ////TransitOptions = new()
+            ////{
+            ////    ArrivalTime = DateTime.UtcNow,
+            ////    DepartureTime = DateTime.UtcNow,
+            ////    Modes = [GoogleMapsComponents.Maps.TransitMode.Bus, GoogleMapsComponents.Maps.TransitMode.Train],
+            ////    RoutingPreference = GoogleMapsComponents.Maps.TransitRoutePreference.FewerTransfers,
+            ////},
+            ////UnitSystem = Libs.GoogleMapsRazorClassLib.Directions.UnitSystem.Metric, // InvalidValueError: in property unitSystem: metric is not an accepted value
+            //Waypoints = [
+            //    //new GoogleMapsComponents.Maps.DirectionsWaypoint() { Location = "Bethlehem, PA", Stopover = true }
+            //],
         };
+        directionsService ??= new(JSRuntime, TravelGoogleMap.Id);
+        //travelQueryModel.Bounds = await directionsService.RouteAsync(directionsRequest);
+        await directionsService.RouteAsync(directionsRequest);
 
-        //Calculate Route
-        GoogleMapsComponents.Maps.DirectionsResult? directionsResult = await directionsRenderer.Route(directionsRequest);
-        if (directionsResult == null)
-            return;
-
-        travelQueryModel.Bounds.North =
-            directionsResult.Routes.Select(static x => x.Bounds?.North ?? Libs.Core.Constants.Earth.MaxLatitudeInDegrees).Max();
-        travelQueryModel.Bounds.South =
-            directionsResult.Routes.Select(static x => x.Bounds?.South ?? Libs.Core.Constants.Earth.MinLatitudeInDegrees).Min();
-        travelQueryModel.Bounds.East =
-            directionsResult.Routes.Select(static x => x.Bounds?.East ?? Libs.Core.Constants.Earth.MaxLongitudeInDegrees).Max();
-        travelQueryModel.Bounds.West =
-            directionsResult.Routes.Select(static x => x.Bounds?.West ?? Libs.Core.Constants.Earth.MinLongitudeInDegrees).Min();
-
+        // Load GasStations
         StringContent requestContent = new(
             System.Text.Json.JsonSerializer.Serialize(travelQueryModel),
             System.Text.Encoding.UTF8,
             System.Net.Mime.MediaTypeNames.Application.Json);
         string FromUri = $"{NavManager.BaseUri}{Constants.TravelUris.Controller}/{Constants.TravelUris.Actions.GetGasStations}";
         HttpRequestMessage requestMessage = new(HttpMethod.Post, FromUri) { Content = requestContent, };
-#pragma warning disable CA1416 // Validate platform compatibility
-        HttpResponseMessage response = Http.Send(requestMessage);
-#pragma warning restore CA1416 // Validate platform compatibility
+
+        HttpResponseMessage response = await Http.SendAsync(requestMessage);
 
         if (!response.IsSuccessStatusCode)
             return;
 
-        await foreach (Libs.GasStationPrices.Core.ViewModels.GasStationModel? gasStationModel in
-            response.Content.ReadFromJsonAsAsyncEnumerable<Libs.GasStationPrices.Core.ViewModels.GasStationModel>()!)
+        await foreach (Libs.GasStationPrices.ViewModels.GasStationModel? gasStationModel in
+            response.Content.ReadFromJsonAsAsyncEnumerable<Libs.GasStationPrices.ViewModels.GasStationModel>()!)
         {
             if (gasStationModel == null)
                 continue;
 
-            GoogleMapsComponents.Maps.AdvancedMarkerElementOptions advancedMarkerElementOptions = new()
+            // TODO                             Fix markers
+
+            await TravelGoogleMap.AddMarkerAsync(new Libs.GoogleMapsRazorClassLib.GoogleMap.Marker()
             {
-                CollisionBehavior = GoogleMapsComponents.Maps.CollisionBehavior.REQUIRED,
                 Content = $"<div style='background-color:blue'>{gasStationModel.Rotulo}</div>",
-                //Content = new GoogleMapsComponents.Maps.PinElement() { },
-                GmpClickable = true,
-                GmpDraggable = false,
-                Map = TravelGoogleMap.InteropObject,
-                Position = gasStationModel.LatLon,
+                PinElement = new()
+                {
+                    Background = "",
+                    BorderColor = "",
+                    Glyph = null,
+                    GlyphColor = "azure",
+                    Scale = 1.0,
+                    UseIconFonts = true,
+                },
+                Position = new(gasStationModel.Lat, gasStationModel.Lng),
                 Title = gasStationModel.Rotulo,
-                ZIndex = 0,
-            };
-
-            GoogleMapsComponents.Maps.AdvancedMarkerElement advancedMarkerElement =
-                await GoogleMapsComponents.Maps.AdvancedMarkerElement.CreateAsync(TravelGoogleMap!.JsRuntime, advancedMarkerElementOptions);
-
-            _ = advancedMarkerElements.Append(advancedMarkerElement);
+            });
         }
-    }
 
-    private async Task RemoveAllMarkersAsync()
-    {
-        if (advancedMarkerElements == null)
-            return;
-
-        foreach (GoogleMapsComponents.Maps.AdvancedMarkerElement markerListMarker in advancedMarkerElements)
-            await markerListMarker.SetMap(null);
-
-        advancedMarkerElements.Clear();
+       await TravelGoogleMap.ShowDataAsync();
     }
 }

@@ -5,128 +5,78 @@ using Seedysoft.Libs.Utils.Extensions;
 
 namespace Seedysoft.Libs.GasStationPrices.Services;
 
-public sealed class ObtainGasStationPricesService(IConfiguration configuration, ILogger<ObtainGasStationPricesService> logger)
+public sealed class ObtainGasStationPricesService(
+    IConfiguration configuration,
+    GoogleApis.Services.RoutesService googleApisServicesRoutesService,
+    ILogger<ObtainGasStationPricesService> logger)
 {
-    private readonly Core.Settings.SettingsRoot Settings
-        = configuration.GetSection(nameof(Core.Settings.SettingsRoot)).Get<Core.Settings.SettingsRoot>()!;
+    private readonly Settings.GasStationPricesSettings GasStationPricesSettings
+        = configuration.GetSection(nameof(Settings.GasStationPricesSettings)).Get<Settings.GasStationPricesSettings>()!;
 
-    public async Task<string> GetMapId(CancellationToken cancellationToken)
-        => await Task.FromResult(Settings.GoogleMapsPlatform.Maps.MapId);
-
-    public async Task<IEnumerable<string>> FindPlacesAsync(
-        string textToFind,
-        CancellationToken cancellationToken)
-    {
-        try
-        {
-            if (string.IsNullOrWhiteSpace(textToFind))
-                return [];
-
-            RestRequest restRequest = BuildFindPlacesRequest(textToFind);
-            RestClient restClient = new(Settings.GoogleMapsPlatform.PlacesApi.UriFormat);
-            Core.Json.Google.Places.Response.Body? body = null;
-            RestResponse restResponse = await restClient.ExecutePostAsync(restRequest, cancellationToken);
-            if (restResponse.IsSuccessStatusCode)
-                body = restResponse.Content!.FromJson<Core.Json.Google.Places.Response.Body>();
-            if (body == null)
-                return [];
-
-            IEnumerable<string> places =
-                from p in body.Suggestions.Select(x => x.PlacePrediction)
-                where !string.IsNullOrWhiteSpace(p.Text?.Text)
-                select p.Text!.Text;
-
-            return places.ToArray();
-        }
-        catch (Exception e) when (logger.LogAndHandle(e, "Unexpected error")) { }
-
-        return [];
-
-        RestRequest BuildFindPlacesRequest(string textToFind)
-        {
-            RestRequest restRequest = new();
-            restRequest = restRequest.AddHeader("X-Goog-Api-Key", Settings.GoogleMapsPlatform.ApiKey);
-
-            Core.Json.Google.Places.Request.Body PlacesRequestBody = new()
-            {
-                Input = textToFind,
-                //LocationBias = new()
-                //{
-                //    Rectangle = new()
-                //    {
-                //        High = new() { Latitude = 1.1, Longitude = 1.1, },
-                //        Low = new() { Latitude = 2.2, Longitude = 2.2, },
-                //    }
-                //},
-                //LocationRestriction = new()
-                //{
-                //    Circle = new() { Center = new() { Latitude = 3.3, Longitude = 3.3, }, }
-                //},
-                IncludedPrimaryTypes = ["geocode", "locality", "route", "street_address"],
-                //IncludedRegionCodes = [""],
-                //LanguageCode = "",
-                //RegionCode = "",
-                //Origin = new() { Latitude = 5.5, Longitude = 5.5, },
-                IncludeQueryPredictions = false,
-                //SessionToken = string.Empty,
-            };
-
-            return restRequest.AddJsonBody(PlacesRequestBody.ToJson(), ContentType.Json);
-        }
-    }
-
-    public async IAsyncEnumerable<Core.ViewModels.GasStationModel> GetGasStationsAsync(
-        Core.ViewModels.TravelQueryModel travelQueryModel,
+    public async IAsyncEnumerable<ViewModels.GasStationModel> GetGasStationsAsync(
+        ViewModels.TravelQueryModel travelQueryModel,
         [System.Runtime.CompilerServices.EnumeratorCancellation] CancellationToken cancellationToken)
     {
         // Obtain Gas Stations with Prices from Minetur
-        Core.Json.Minetur.Body? gasStations = null;
+        Models.Minetur.Body? MineturResponse = null;
 
         try
         {
-            RestRequest restRequest = new(Settings.Minetur.Uris.EstacionesTerrestres);
-            RestClient restClient = new(Settings.Minetur.Uris.Base) { AcceptedContentTypes = [System.Net.Mime.MediaTypeNames.Application.Json,], };
+            RestRequest restRequest = new(GasStationPricesSettings.Minetur.Uris.EstacionesTerrestres);
+            RestClient restClient = new(GasStationPricesSettings.Minetur.Uris.Base)
+            {
+                AcceptedContentTypes = [System.Net.Mime.MediaTypeNames.Application.Json,],
+            };
             RestResponse restResponse = await restClient.ExecuteGetAsync(restRequest, cancellationToken);
             if (restResponse.IsSuccessStatusCode)
-                gasStations = restResponse.Content!.FromJson<Core.Json.Minetur.Body>();
+                MineturResponse = restResponse.Content!.FromJson<Models.Minetur.Body>();
         }
         catch (Exception e) when (logger.LogAndHandle(e, "Unexpected error")) { }
 
-        if (gasStations == null)
+        if (MineturResponse == null)
             yield break;
 
-        for (int i = 0; i < gasStations.EstacionesTerrestres.Length; i++)
+        List<GoogleApis.Models.Shared.LatLngLiteral> RoutePoints = await
+            googleApisServicesRoutesService.GetRoutesAsync(travelQueryModel.Origin, travelQueryModel.Destination, cancellationToken);
+
+        if (RoutePoints.Count < 1)
+            throw new ApplicationException($"{nameof(GoogleApis.Services.RoutesService.GetRoutesAsync)} does not finds route points");
+
+        GoogleApis.Models.Shared.LatLngBoundsLiteral boundsLiteral = new()
         {
-            Core.Json.Minetur.EstacionTerrestre estacionTerrestre = gasStations.EstacionesTerrestres[i];
+            North = RoutePoints.Select(x => x.Lat).Max(),
+            South = RoutePoints.Select(x => x.Lat).Min(),
+            East = RoutePoints.Select(x => x.Lng).Max(),
+            West = RoutePoints.Select(x => x.Lng).Min(),
+        };
 
-            Core.ViewModels.GasStationModel? gasStationModel = travelQueryModel.IsInsideBounds(estacionTerrestre);
+        IEnumerable<Models.Minetur.EstacionTerrestre> NearStations = MineturResponse.EstacionesTerrestres
+            .AsParallel()
+            .Where(x => x.IsInsideBounds(boundsLiteral) && RoutePoints.Any(y => x.IsNear(y, travelQueryModel.MaxDistanceInKm)));
 
-            // TODO     Filtrar por los productos seleccionados.
-            // TODO             ¿Cómo "mapear" ProductosPetroliferos con las propiedades? ¿Switch?
-            if (gasStationModel != null)
-                yield return gasStationModel;
-        }
+        foreach (Models.Minetur.EstacionTerrestre et in NearStations)
+            yield return ViewModels.GasStationModel.Map(et);
     }
 
-    private static IEnumerable<Core.Json.Minetur.ProductoPetrolifero>? Res;
-    public async Task<IEnumerable<Core.Json.Minetur.ProductoPetrolifero>> GetPetroleumProductsAsync(
-        CancellationToken cancellationToken)
-    {
-        try
-        {
-            if (Res == null)
-            {
-                RestRequest restRequest = new(string.Format(Settings.Minetur.Uris.ListadosBase, "ProductosPetroliferos"));
-                RestClient restClient = new(Settings.Minetur.Uris.Base) { AcceptedContentTypes = [System.Net.Mime.MediaTypeNames.Application.Json,], };
-                RestResponse restResponse = await restClient.ExecuteGetAsync(restRequest, cancellationToken);
-                if (restResponse.IsSuccessStatusCode)
-                    Res = restResponse.Content!.FromJson<IEnumerable<Core.Json.Minetur.ProductoPetrolifero>>();
-            }
+    //private static IEnumerable<Core.Json.Minetur.ProductoPetrolifero>? Res;
+    //public async Task<IEnumerable<Core.Json.Minetur.ProductoPetrolifero>> GetPetroleumProductsAsync(
+    //    CancellationToken cancellationToken)
+    //{
+    //    try
+    //    {
+    //        if (Res == null)
+    //        {
+    //            RestRequest restRequest = new(string.Format(Settings.Minetur.Uris.ListadosBase, "ProductosPetroliferos"));
+    //            RestClient restClient = new(Settings.Minetur.Uris.Base) { AcceptedContentTypes = [System.Net.Mime.MediaTypeNames.Application.Json,], };
+    //            RestResponse restResponse = await restClient.ExecuteGetAsync(restRequest, cancellationToken);
+    //            if (restResponse.IsSuccessStatusCode)
+    //                Res = restResponse.Content!.FromJson<IEnumerable<Core.Json.Minetur.ProductoPetrolifero>>();
+    //        }
 
-            return Res ?? [];
-        }
-        catch (Exception e) when (logger.LogAndHandle(e, "Unexpected error")) { }
+    //        return Res ?? [];
+    //    }
+    //    catch (Exception e) when (logger.LogAndHandle(e, "Unexpected error")) { }
 
-        return [];
-    }
+    //    return [];
+    //}
 }

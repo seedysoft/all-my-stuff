@@ -1,6 +1,6 @@
 ﻿namespace Seedysoft.Libs.Core.Entities;
 
-[System.Diagnostics.DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
+[System.Diagnostics.DebuggerDisplay("{GetDebuggerDisplay,nq}")]
 public sealed class Subscriber
 {
     public long SubscriberId { get; set; }
@@ -14,6 +14,6 @@ public sealed class Subscriber
     public ICollection<Subscription> Subscriptions { get; set; } = [];
 
     // Coalesce expression raises "Error CS0019  Operator '??' cannot be applied to operands of type 'long?' and 'string'".
-    private string GetDebuggerDisplay()
+    private string GetDebuggerDisplay
         => $"{Firstname} - {(TelegramUserId.HasValue ? TelegramUserId : "Sin Telegram")} - {MailAddress ?? "Sin correo electrónico"}";
 }

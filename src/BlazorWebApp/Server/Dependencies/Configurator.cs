@@ -2,15 +2,15 @@
 
 namespace Seedysoft.BlazorWebApp.Server.Dependencies;
 
-internal sealed class Configurator : Libs.Utils.Dependencies.ConfiguratorBase
+public sealed class Configurator : Libs.Utils.Dependencies.ConfiguratorBase
 {
     protected override void AddJsonFiles(IHostApplicationBuilder hostApplicationBuilder)
     {
         string CurrentEnvironmentName = hostApplicationBuilder.Environment.EnvironmentName;
 
         _ = hostApplicationBuilder.Configuration
-            .AddJsonFile($"appsettings.BlazorWebApp.Server.json", optional: false, reloadOnChange: true)
-            .AddJsonFile($"appsettings.BlazorWebApp.Server.{CurrentEnvironmentName}.json", optional: false, reloadOnChange: true);
+            .AddJsonFile($"appsettings.{nameof(BlazorWebApp)}.{nameof(Server)}.json", optional: false, reloadOnChange: true)
+            .AddJsonFile($"appsettings.{nameof(BlazorWebApp)}.{nameof(Server)}.{CurrentEnvironmentName}.json", optional: false, reloadOnChange: true);
     }
 
     protected override void AddDbContexts(IHostApplicationBuilder hostApplicationBuilder) { /* No DbContexts */ }
@@ -33,8 +33,8 @@ internal sealed class Configurator : Libs.Utils.Dependencies.ConfiguratorBase
 
         // Add services to the container.
         _ = hostApplicationBuilder.Services
-            .AddRazorComponents()
-            .AddInteractiveServerComponents()
+            .AddRazorComponents(static razorComponentsServiceOptions => { })
+            .AddInteractiveServerComponents(static circuitOptions => { })
             .AddInteractiveWebAssemblyComponents();
 
         _ = hostApplicationBuilder.Services

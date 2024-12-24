@@ -9,12 +9,11 @@ namespace Seedysoft.WebComparer.Lib.Services;
 public sealed class WebComparerCronBackgroundService : Libs.BackgroundServices.Cron
 {
     private static readonly TimeSpan FiveSecondsTimeSpan = TimeSpan.FromSeconds(5);
-    private static readonly CancellationTokenSource cancellationTokenSource = new();
     private readonly ILogger<WebComparerCronBackgroundService> Logger;
 
     public WebComparerCronBackgroundService(
         IServiceProvider serviceProvider,
-        Microsoft.Extensions.Hosting.IHostApplicationLifetime hostApplicationLifetime) 
+        Microsoft.Extensions.Hosting.IHostApplicationLifetime hostApplicationLifetime)
         : base(serviceProvider, hostApplicationLifetime)
     {
         Logger = ServiceProvider.GetRequiredService<ILogger<WebComparerCronBackgroundService>>();

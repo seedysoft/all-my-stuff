@@ -519,7 +519,7 @@ public class TuyaDeviceBase
         if (Version >= 3.4f)
         {
             hmacKey = LocalKey;
-            if (!Constants.HEADER_COMMANDS_WITHOUT_PROTOCOL.Contains(msg.Cmd))
+            if (!Constants.HeaderCommandsWithoutProtocol.Contains(msg.Cmd))
                 // add the 3.x header
                 payload = [.. VersionHeader, .. payload];
             Debug.WriteLine($"final payload='{Convert.ToHexString(payload)}'");
@@ -551,7 +551,7 @@ public class TuyaDeviceBase
         {
             // expect to connect and then disconnect to set new
             payload = Cipher.Encrypt(payload, useBase64: false);
-            if (!Constants.HEADER_COMMANDS_WITHOUT_PROTOCOL.Contains(msg.Cmd))
+            if (!Constants.HeaderCommandsWithoutProtocol.Contains(msg.Cmd))
                 // add the 3.x header
                 payload = [.. VersionHeader, .. payload];
         }
@@ -1248,6 +1248,6 @@ public class TuyaDeviceBase
         }
         catch (Exception) { spayload = string.Empty; }
 
-        return new Dictionary<string, object>() { { "error", Constants.ERROR_CODES[number] }, { "err", (uint)number }, { "payload", spayload } };
+        return new Dictionary<string, object>() { { "error", Constants.ErrorCodes[number] }, { "err", (uint)number }, { "payload", spayload } };
     }
 }

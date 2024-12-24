@@ -3,7 +3,7 @@ using Microsoft.Extensions.Hosting;
 
 namespace Seedysoft.Outbox.Lib.Dependencies;
 
-internal sealed class Configurator : Libs.Utils.Dependencies.ConfiguratorBase
+public sealed class Configurator : Libs.Utils.Dependencies.ConfiguratorBase
 {
     protected override void AddJsonFiles(IHostApplicationBuilder hostApplicationBuilder) { /* No JsonFiles */ }
 

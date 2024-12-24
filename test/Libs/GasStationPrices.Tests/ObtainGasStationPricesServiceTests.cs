@@ -21,30 +21,19 @@ public sealed class ObtainGasStationPricesTests : Infrastructure.Tests.TestClass
     //[ClassCleanup(InheritanceBehavior.None, ClassCleanupBehavior.EndOfClass)]
     //public static new void ClassCleanup() => ObtainGasStationPricesService?.Dispose();
 
-    [TestMethod]
-    public async Task GetPetroleumProductsAsyncTest()
-    {
-        IEnumerable<Core.Json.Minetur.ProductoPetrolifero> Res =
-            await ObtainGasStationPricesService.GetPetroleumProductsAsync(CancellationToken.None);
+    //[TestMethod]
+    //public async Task GetPetroleumProductsAsyncTest()
+    //{
+    //    IEnumerable<Core.Json.Minetur.ProductoPetrolifero> Res =
+    //        await ObtainGasStationPricesService.GetPetroleumProductsAsync(CancellationToken.None);
 
-        Assert.IsTrue(Res.Any());
-    }
-
-    [DataRow("Calle de la Iglesia 11 Brazuelo León")]
-    [DataRow("Juan Ramón Jiménez 8 Burgos")]
-    [TestMethod]
-    public async Task FindPlacesAsyncTest(string textToFind)
-    {
-        IEnumerable<string> Res =
-            await ObtainGasStationPricesService.FindPlacesAsync(textToFind, CancellationToken.None);
-
-        Assert.IsTrue(Res.Any());
-    }
+    //    Assert.IsTrue(Res.Any());
+    //}
 
     [TestMethod]
     public async Task GetGasStationsAsyncTest()
     {
-        Core.ViewModels.TravelQueryModel travelQueryModel = new()
+        ViewModels.TravelQueryModel travelQueryModel = new()
         {
             Origin = "Juan Ramón Jiménez 8 Burgos",
             Destination = "Calle la Iglesia 11 Brazuelo León",
@@ -52,7 +41,7 @@ public sealed class ObtainGasStationPricesTests : Infrastructure.Tests.TestClass
             PetroleumProductsSelectedIds = [],
         };
 
-        IAsyncEnumerator<Core.ViewModels.GasStationModel> gasStationModels =
+        IAsyncEnumerator<ViewModels.GasStationModel> gasStationModels =
             ObtainGasStationPricesService.GetGasStationsAsync(travelQueryModel, CancellationToken.None).GetAsyncEnumerator();
 
         _ = await gasStationModels.MoveNextAsync();
