@@ -90,10 +90,9 @@ window.seedysoft = {
       if (clickable) {
         markerEl.addListener("click", ({ domEvent, latLng }) => {
           const { target } = domEvent;
-          const infoWindow = new google.maps.InfoWindow();
-          infoWindow.close();
-          infoWindow.setContent(markerEl.title);
-          infoWindow.open(markerEl.map, markerEl);
+          mapInstance.infoWindow.close();
+          mapInstance.infoWindow.setContent(markerEl.title);
+          mapInstance.infoWindow.open(markerEl.map, markerEl);
           dotNetHelper.invokeMethodAsync('OnMarkerClickJS', marker);
         });
       }
