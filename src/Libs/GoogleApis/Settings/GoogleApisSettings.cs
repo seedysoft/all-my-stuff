@@ -6,7 +6,7 @@ public record class GoogleApisSettings
     public required string ApiKey
     {
         get => apiKey;
-        init => apiKey = Cryptography.Crypto.DecryptText(value, Utils.Helpers.EnvironmentHelper.GetMasterKey());
+        init => apiKey = Cryptography.Crypto.DecryptText(value, Core.Helpers.EnvironmentHelper.GetMasterKey());
     }
 
     public required MapsApi MapsApi { get; init; }

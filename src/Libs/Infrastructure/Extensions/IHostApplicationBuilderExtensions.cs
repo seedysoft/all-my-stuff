@@ -1,7 +1,8 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Seedysoft.Libs.Core.Dependencies;
 
-namespace Seedysoft.Libs.Utils.Extensions;
+namespace Seedysoft.Libs.Infrastructure.Extensions;
 
 public static class IHostApplicationBuilderExtensions
 {
@@ -21,12 +22,12 @@ public static class IHostApplicationBuilderExtensions
 
         IEnumerable<System.Reflection.Assembly> referencedAssemblies = GetAllReferencedAssembliesSorted(entryAssembly);
 
-        Type[] typesToRegister = referencedAssemblies.SelectMany(static (System.Reflection.Assembly n) => n.GetTypes())
-            .Where(static (Type t) => t is not null && t.IsSubclassOf(typeof(Dependencies.ConfiguratorBase)))
+        Type[] typesToRegister = referencedAssemblies.SelectMany(static (n) => n.GetTypes())
+            .Where(static (t) => t is not null && t.IsSubclassOf(typeof(ConfiguratorBase)))
             .ToArray();
 
         foreach (Type? type in typesToRegister)
-            (Activator.CreateInstance(type) as Dependencies.ConfiguratorBase)?.AddDependencies(hostApplicationBuilder);
+            (Activator.CreateInstance(type) as ConfiguratorBase)?.AddDependencies(hostApplicationBuilder);
 
         return hostApplicationBuilder;
     }
@@ -35,11 +36,11 @@ public static class IHostApplicationBuilderExtensions
     {
         var results = new List<System.Reflection.Assembly> { source, };
 
-        results.InsertRange(0, source.GetReferencedAssemblies().SelectMany(static (System.Reflection.AssemblyName name) =>
+        results.InsertRange(0, source.GetReferencedAssemblies().SelectMany(static (name) =>
         {
             var loaded = System.Reflection.Assembly.Load(name);
 
-            return loaded.DefinedTypes.Any(static (Type t) => t is not null && t.IsSubclassOf(typeof(Dependencies.ConfiguratorBase)))
+            return loaded.DefinedTypes.Any(static (Type t) => t is not null && t.IsSubclassOf(typeof(ConfiguratorBase)))
                 ? GetAllReferencedAssembliesSorted(loaded)
                 : [];
         }).Distinct());

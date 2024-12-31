@@ -6,7 +6,7 @@ public record class TelegramBotUser : TelegramUserBase
     public string Token
     {
         get => token;
-        init => token = Cryptography.Crypto.DecryptText(value, Utils.Helpers.EnvironmentHelper.GetMasterKey());
+        init => token = Cryptography.Crypto.DecryptText(value, Core.Helpers.EnvironmentHelper.GetMasterKey());
     }
 
     public Telegram.Bot.Types.User? SenderUser { get; protected set; }

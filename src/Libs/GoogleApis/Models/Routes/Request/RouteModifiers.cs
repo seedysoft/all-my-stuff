@@ -45,6 +45,6 @@ public class RouteModifiers
     /// If toll passes are not provided, the API treats the toll pass as unknown and tries to return the cash price.
     /// Applies only to the <see cref="Shared.RouteTravelMode.Drive"/> and <see cref="Shared.RouteTravelMode.TwoWheeler"/>.
     /// </summary>
-    [J("tollPasses"), I(Condition = C.WhenWritingNull), K(typeof(Utils.Extensions.EnumMemberArrayJsonConverter<TollPass>))]
+    [J("tollPasses"), I(Condition = C.WhenWritingNull), K(typeof(Core.Extensions.EnumMemberArrayJsonConverter<TollPass>))]
     public TollPass[]? TollPasses { get; set; }
 }

@@ -8,7 +8,7 @@ public record NavigationInstruction
     /// <summary>
     /// Encapsulates the navigation instructions for the current step (for example, turn left, merge, or straight). This field determines which icon to display.
     /// </summary>
-    [J("maneuver"), I(Condition = C.WhenWritingNull), K(typeof(Utils.Extensions.EnumMemberJsonConverter<Maneuver>))]
+    [J("maneuver"), I(Condition = C.WhenWritingNull), K(typeof(Core.Extensions.EnumMemberJsonConverter<Maneuver>))]
     public Maneuver? Maneuver { get; init; }
 
     /// <summary>

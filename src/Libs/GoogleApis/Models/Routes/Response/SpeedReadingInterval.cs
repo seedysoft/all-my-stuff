@@ -20,6 +20,6 @@ public record SpeedReadingInterval
     /// <summary>
     /// Traffic speed in this interval.
     /// </summary>
-    [J("speed"), I(Condition = C.WhenWritingNull), K(typeof(Utils.Extensions.EnumMemberJsonConverter<Speed>))]
+    [J("speed"), I(Condition = C.WhenWritingNull), K(typeof(Core.Extensions.EnumMemberJsonConverter<Speed>))]
     public Speed? Speed { get; init; }
 }

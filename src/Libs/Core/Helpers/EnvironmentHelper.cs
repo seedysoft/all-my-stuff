@@ -1,4 +1,4 @@
-﻿namespace Seedysoft.Libs.Utils.Helpers;
+﻿namespace Seedysoft.Libs.Core.Helpers;
 
 public static class EnvironmentHelper
 {

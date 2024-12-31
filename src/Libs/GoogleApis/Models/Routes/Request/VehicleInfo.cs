@@ -9,6 +9,6 @@ public class VehicleInfo
     /// Describes the vehicle's emission type. 
     /// Applies only to the <see cref="Shared.RouteTravelMode.Drive"></see> <see cref="Shared.RouteTravelMode"></see>.
     /// </summary>
-    [J("emissionType"), K(typeof(Utils.Extensions.EnumMemberJsonConverter<VehicleEmissionType>))]
+    [J("emissionType"), K(typeof(Core.Extensions.EnumMemberJsonConverter<VehicleEmissionType>))]
     public virtual VehicleEmissionType EmissionType { get; set; } = VehicleEmissionType.Gasoline;
 }

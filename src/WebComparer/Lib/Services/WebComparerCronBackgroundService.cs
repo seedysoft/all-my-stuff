@@ -2,7 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OpenQA.Selenium.Support.Extensions;
-using Seedysoft.Libs.Utils.Extensions;
+using Seedysoft.Libs.Core.Extensions;
 
 namespace Seedysoft.WebComparer.Lib.Services;
 

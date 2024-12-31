@@ -1,7 +1,7 @@
 ﻿using System.Reflection;
 using System.Runtime.Serialization;
 
-namespace Seedysoft.Libs.Utils.Extensions;
+namespace Seedysoft.Libs.Core.Extensions;
 
 public static class EnumExtensions
 {
@@ -54,18 +54,18 @@ public static class EnumExtensions
         return false;
     }
 
-    public static string ToCssString(this Core.Enums.CssUnit unit) =>
+    public static string ToCssString(this Enums.CssUnit unit) =>
         unit switch
         {
-            Core.Enums.CssUnit.Em => "em",
-            Core.Enums.CssUnit.Percentage => "%",
-            Core.Enums.CssUnit.Pt => "pt",
-            Core.Enums.CssUnit.Px => "px",
-            Core.Enums.CssUnit.Rem => "rem",
-            Core.Enums.CssUnit.Vh => "vh",
-            Core.Enums.CssUnit.VMax => "vmax",
-            Core.Enums.CssUnit.VMin => "vmin",
-            Core.Enums.CssUnit.Vw => "vw",
+            Enums.CssUnit.Em => "em",
+            Enums.CssUnit.Percentage => "%",
+            Enums.CssUnit.Pt => "pt",
+            Enums.CssUnit.Px => "px",
+            Enums.CssUnit.Rem => "rem",
+            Enums.CssUnit.Vh => "vh",
+            Enums.CssUnit.VMax => "vmax",
+            Enums.CssUnit.VMin => "vmin",
+            Enums.CssUnit.Vw => "vw",
             _ => string.Empty
         };
 }

@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using Seedysoft.Libs.Core.Enums;
-using Seedysoft.Libs.Utils.Extensions;
+using Seedysoft.Libs.Core.Extensions;
 using System.Globalization;
 
 namespace Seedysoft.Libs.GoogleMapsRazorClassLib.GoogleMap;

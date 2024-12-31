@@ -55,8 +55,8 @@
     </ItemGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\Core\Seedysoft.Libs.Core.csproj" />
         <ProjectReference Include="..\Cryptography\Seedysoft.Libs.Cryptography.csproj" />
-        <ProjectReference Include="..\Utils\Seedysoft.Libs.Utils.csproj" />
     </ItemGroup>
 
     <ItemGroup>

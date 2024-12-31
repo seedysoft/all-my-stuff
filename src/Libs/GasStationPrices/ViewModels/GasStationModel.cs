@@ -1,4 +1,4 @@
-﻿using Seedysoft.Libs.Utils.Extensions;
+﻿using Seedysoft.Libs.Core.Extensions;
 
 namespace Seedysoft.Libs.GasStationPrices.ViewModels;
 

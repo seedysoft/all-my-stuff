@@ -48,7 +48,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\Libs\Utils\Seedysoft.Libs.Utils.csproj" />
         <ProjectReference Include="..\Lib\Seedysoft.WebComparer.Lib.csproj" />
     </ItemGroup>
 </Project>

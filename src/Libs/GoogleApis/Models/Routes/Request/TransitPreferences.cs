@@ -9,12 +9,12 @@ public class TransitPreferences
     /// A set of travel modes to use when getting a TRANSIT route.
     /// Defaults to all supported modes of travel.
     /// </summary>
-    [J("allowedTravelModes"), I(Condition = C.WhenWritingDefault), K(typeof(Utils.Extensions.EnumMemberJsonConverter<TransitTravelMode>))]
+    [J("allowedTravelModes"), I(Condition = C.WhenWritingDefault), K(typeof(Core.Extensions.EnumMemberJsonConverter<TransitTravelMode>))]
     public TransitTravelMode AllowedTravelModes { get; set; }
 
     /// <summary>
     /// A routing preference that, when specified, influences the TRANSIT route returned.
     /// </summary>
-    [J("routingPreference"), I(Condition = C.WhenWritingDefault), K(typeof(Utils.Extensions.EnumMemberJsonConverter<TransitRoutingPreference>))]
+    [J("routingPreference"), I(Condition = C.WhenWritingDefault), K(typeof(Core.Extensions.EnumMemberJsonConverter<TransitRoutingPreference>))]
     public TransitRoutingPreference RoutingPreference { get; set; }
 }

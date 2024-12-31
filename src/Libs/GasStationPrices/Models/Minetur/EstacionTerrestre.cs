@@ -50,16 +50,16 @@ public record class EstacionTerrestre
     //[J("Tipo Venta")]
     //public required string TipoVenta { get; init; }
 
-    //[J("IDEESS"), K(typeof(Utils.Extensions.ParseStringConverter))]
+    //[J("IDEESS"), K(typeof(Core.Extensions.ParseStringConverter))]
     //public long IdEstacionServicio { get; init; }
 
-    //[J("IDMunicipio"), K(typeof(Utils.Extensions.ParseStringConverter))]
+    //[J("IDMunicipio"), K(typeof(Core.Extensions.ParseStringConverter))]
     //public long IdMunicipio { get; init; }
 
     [J("IDProvincia")]
     public required string IdProvincia { get; init; }
 
-    //[J("IDCCAA"), K(typeof(Utils.Extensions.ParseStringConverter))]
+    //[J("IDCCAA"), K(typeof(Core.Extensions.ParseStringConverter))]
     //public long IdComunidad { get; init; }
 
     [J("Precio Biodiesel")]

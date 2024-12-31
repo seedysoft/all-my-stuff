@@ -12,6 +12,6 @@ public record class SmtpServiceSettings
     public string Password
     {
         get => password;
-        init => password = Cryptography.Crypto.DecryptText(value, Utils.Helpers.EnvironmentHelper.GetMasterKey());
+        init => password = Cryptography.Crypto.DecryptText(value, Core.Helpers.EnvironmentHelper.GetMasterKey());
     }
 }

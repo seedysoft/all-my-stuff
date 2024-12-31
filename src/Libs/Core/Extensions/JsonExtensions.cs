@@ -1,6 +1,6 @@
 ﻿using System.Text.Json;
 
-namespace Seedysoft.Libs.Utils.Extensions;
+namespace Seedysoft.Libs.Core.Extensions;
 
 public static class JsonExtensions
 {

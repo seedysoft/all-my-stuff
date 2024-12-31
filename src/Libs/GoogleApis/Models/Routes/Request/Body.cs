@@ -24,7 +24,7 @@ public class Body
     /// <summary>
     /// Optional. Specifies the mode of transportation.
     /// </summary>
-    [J("travelMode"), I(Condition = C.WhenWritingNull), K(typeof(Utils.Extensions.EnumMemberJsonConverter<Shared.RouteTravelMode>))]
+    [J("travelMode"), I(Condition = C.WhenWritingNull), K(typeof(Core.Extensions.EnumMemberJsonConverter<Shared.RouteTravelMode>))]
     public Shared.RouteTravelMode? TravelMode { get; set; }
 
     /// <summary>
@@ -32,19 +32,19 @@ public class Body
     /// If the routing preference results in an error or an extra long latency, then an error is returned.
     /// You can specify this option only when the <see cref="TravelMode"/> is <see cref="Shared.RouteTravelMode.Drive"/> or <see cref="RouteTravelMode.TWO_WHEELER"/>, otherwise the request fails.
     /// </summary>
-    [J("routingPreference"), I(Condition = C.WhenWritingNull), K(typeof(Utils.Extensions.EnumMemberJsonConverter<RoutingPreference>))]
+    [J("routingPreference"), I(Condition = C.WhenWritingNull), K(typeof(Core.Extensions.EnumMemberJsonConverter<RoutingPreference>))]
     public RoutingPreference? RoutingPreference { get; set; }
 
     /// <summary>
     /// Optional. Specifies your preference for the quality of the polyline.
     /// </summary>
-    [J("polylineQuality"), I(Condition = C.WhenWritingNull), K(typeof(Utils.Extensions.EnumMemberJsonConverter<PolylineQuality>))]
+    [J("polylineQuality"), I(Condition = C.WhenWritingNull), K(typeof(Core.Extensions.EnumMemberJsonConverter<PolylineQuality>))]
     public PolylineQuality? PolylineQuality { get; set; }
 
     /// <summary>
     /// Optional. Specifies the preferred encoding for the polyline.
     /// </summary>
-    [J("polylineEncoding"), I(Condition = C.WhenWritingNull), K(typeof(Utils.Extensions.EnumMemberJsonConverter<PolylineEncoding>))]
+    [J("polylineEncoding"), I(Condition = C.WhenWritingNull), K(typeof(Core.Extensions.EnumMemberJsonConverter<PolylineEncoding>))]
     public PolylineEncoding? PolylineEncoding { get; set; }
 
     /// <summary>
@@ -103,7 +103,7 @@ public class Body
     /// The units of measure used for the route, leg, step distance, and duration are not affected by this value.
     /// If you don't provide this value, then the display units are inferred from the location of the first origin.
     /// </summary>
-    [J("units"), I(Condition = C.WhenWritingNull), K(typeof(Utils.Extensions.EnumMemberJsonConverter<Units>))]
+    [J("units"), I(Condition = C.WhenWritingNull), K(typeof(Core.Extensions.EnumMemberJsonConverter<Units>))]
     public Units? Units { get; set; }
 
     /// <summary>
@@ -122,7 +122,7 @@ public class Body
     /// A reference route is a route with a different route calculation objective than the default route.
     /// For example a FUEL_EFFICIENT reference route calculation takes into account various parameters that would generate an optimal fuel efficient route.
     /// </summary>
-    [J("requestedReferenceRoutes"), I(Condition = C.WhenWritingNull), K(typeof(Utils.Extensions.EnumMemberJsonConverter<ReferenceRoute>))]
+    [J("requestedReferenceRoutes"), I(Condition = C.WhenWritingNull), K(typeof(Core.Extensions.EnumMemberJsonConverter<ReferenceRoute>))]
     public ReferenceRoute? RequestedReferenceRoutes { get; set; }
 
     /// <summary>
@@ -130,7 +130,7 @@ public class Body
     /// Note: These extra computations may return extra fields on the response.
     /// These extra fields must also be specified in the field mask to be returned in the response.
     /// </summary>
-    [J("extraComputations"), I(Condition = C.WhenWritingNull), K(typeof(Utils.Extensions.EnumMemberArrayJsonConverter<ExtraComputation>))]
+    [J("extraComputations"), I(Condition = C.WhenWritingNull), K(typeof(Core.Extensions.EnumMemberArrayJsonConverter<ExtraComputation>))]
     public ExtraComputation[]? ExtraComputations { get; set; }
 
     /// <summary>
@@ -139,7 +139,7 @@ public class Body
     /// <see cref="Models.Shared.TrafficModel"/> is only available for requests that have set <see cref="Request.RoutingPreference"/> to <see cref="RoutingPreference.TrafficAwareOptimal"/> and <see cref="Shared.RouteTravelMode"/> to <see cref="Shared.RouteTravelMode.Drive"/>.
     /// Defaults to <see cref="Models.Shared.TrafficModel.BestGuess"/> if traffic is requested and <see cref="Models.Shared.TrafficModel"/> is not specified.
     /// </summary>
-    [J("trafficModel"), I(Condition = C.WhenWritingNull), K(typeof(Utils.Extensions.EnumMemberJsonConverter<Models.Shared.TrafficModel>))]
+    [J("trafficModel"), I(Condition = C.WhenWritingNull), K(typeof(Core.Extensions.EnumMemberJsonConverter<Models.Shared.TrafficModel>))]
     public Models.Shared.TrafficModel? TrafficModel { get; set; }
 
     /// <summary>

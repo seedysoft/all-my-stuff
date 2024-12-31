@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Seedysoft.Libs.GoogleApis.Dependencies;
 
-internal sealed class Configurator : Utils.Dependencies.ConfiguratorBase
+internal sealed class Configurator : Core.Dependencies.ConfiguratorBase
 {
     protected override void AddJsonFiles(Microsoft.Extensions.Hosting.IHostApplicationBuilder hostApplicationBuilder)
     {

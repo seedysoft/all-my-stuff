@@ -1,4 +1,4 @@
-﻿namespace Seedysoft.Libs.Utils.Dependencies;
+﻿namespace Seedysoft.Libs.Core.Dependencies;
 
 public abstract class ConfiguratorBase
 {

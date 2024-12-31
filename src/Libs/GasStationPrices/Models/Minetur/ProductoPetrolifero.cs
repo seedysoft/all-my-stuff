@@ -2,7 +2,7 @@
 
 public record class ProductoPetrolifero
 {
-    [J("IDProducto"), K(typeof(Utils.Extensions.ParseStringConverter))]
+    [J("IDProducto"), K(typeof(Core.Extensions.ParseStringConverter))]
     public required long IdProducto { get; init; }
 
     [J("NombreProducto")]

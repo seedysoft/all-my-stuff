@@ -48,8 +48,8 @@
     </ItemGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\..\Libs\Infrastructure\Seedysoft.Libs.Infrastructure.csproj" />
         <ProjectReference Include="..\..\Libs\SmtpService\Seedysoft.Libs.SmtpService.csproj" />
-        <ProjectReference Include="..\..\Libs\Utils\Seedysoft.Libs.Utils.csproj" />
         <ProjectReference Include="..\Lib\Seedysoft.Outbox.Lib.csproj" />
     </ItemGroup>
 </Project>

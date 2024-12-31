@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Seedysoft.Libs.Utils.Extensions;
+using Seedysoft.Libs.Infrastructure.Extensions;
 using Xunit;
 
 namespace Seedysoft.Libs.GasStationPrices.Tests;

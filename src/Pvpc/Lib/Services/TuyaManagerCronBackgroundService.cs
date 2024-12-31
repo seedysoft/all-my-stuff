@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Seedysoft.Libs.Utils.Extensions;
+using Seedysoft.Libs.Core.Extensions;
 using Seedysoft.Pvpc.Lib.Extensions;
 
 namespace Seedysoft.Pvpc.Lib.Services;

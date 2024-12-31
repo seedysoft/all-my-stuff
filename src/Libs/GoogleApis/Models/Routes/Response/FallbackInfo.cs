@@ -10,13 +10,13 @@ public record FallbackInfo
     /// Routing mode used for the response.
     /// If fallback was triggered, the mode may be different from routing preference set in the original client request.
     /// </summary>
-    [J("routingMode"), I(Condition = C.WhenWritingDefault), K(typeof(Utils.Extensions.EnumMemberJsonConverter<FallbackRoutingMode>))]
+    [J("routingMode"), I(Condition = C.WhenWritingDefault), K(typeof(Core.Extensions.EnumMemberJsonConverter<FallbackRoutingMode>))]
     public required FallbackRoutingMode RoutingMode { get; init; }
 
     /// <summary>
     /// The reason why fallback response was used instead of the original response.
     /// This field is only populated when the fallback mode is triggered and the fallback response is returned.
     /// </summary>
-    [J("reason"), I(Condition = C.WhenWritingDefault), K(typeof(Utils.Extensions.EnumMemberJsonConverter<FallbackReason>))]
+    [J("reason"), I(Condition = C.WhenWritingDefault), K(typeof(Core.Extensions.EnumMemberJsonConverter<FallbackReason>))]
     public required FallbackReason Reason { get; init; }
 }

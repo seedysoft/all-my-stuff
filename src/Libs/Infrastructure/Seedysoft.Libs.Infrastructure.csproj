@@ -74,7 +74,6 @@
 
     <ItemGroup>
         <ProjectReference Include="..\Core\Seedysoft.Libs.Core.csproj" />
-        <ProjectReference Include="..\Utils\Seedysoft.Libs.Utils.csproj" />
     </ItemGroup>
 
     <ItemGroup>

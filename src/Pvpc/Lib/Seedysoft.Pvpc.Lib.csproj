@@ -53,7 +53,6 @@
         <ProjectReference Include="..\..\Libs\BackgroundServices\Seedysoft.Libs.BackgroundServices.csproj" />
         <ProjectReference Include="..\..\Libs\Infrastructure\Seedysoft.Libs.Infrastructure.csproj" />
         <ProjectReference Include="..\..\Libs\TuyaDeviceControl\Seedysoft.Libs.TuyaDeviceControl.csproj" />
-        <ProjectReference Include="..\..\Libs\Utils\Seedysoft.Libs.Utils.csproj" />
     </ItemGroup>
 
     <ItemGroup>

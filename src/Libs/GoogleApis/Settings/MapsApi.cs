@@ -6,7 +6,7 @@ public record class MapsApi
     public required string MapId
     {
         get => mapId;
-        init => mapId = Cryptography.Crypto.DecryptText(value, Utils.Helpers.EnvironmentHelper.GetMasterKey());
+        init => mapId = Cryptography.Crypto.DecryptText(value, Core.Helpers.EnvironmentHelper.GetMasterKey());
     }
 
     public required string UriFormat { get; init; }

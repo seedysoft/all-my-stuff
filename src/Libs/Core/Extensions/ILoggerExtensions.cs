@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 
-namespace Seedysoft.Libs.Utils.Extensions;
+namespace Seedysoft.Libs.Core.Extensions;
 
 public static class ILoggerExtensions
 {

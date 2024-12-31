@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Seedysoft.Libs.Utils.Extensions;
+using Seedysoft.Libs.Core.Extensions;
 
 namespace Seedysoft.Outbox.Lib.Services;
 

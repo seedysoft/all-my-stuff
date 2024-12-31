@@ -27,7 +27,7 @@ public class Body
     /// Type of routing requested. 
     /// Required.
     /// </summary>
-    [K(typeof(Utils.Extensions.EnumMemberJsonConverter<Shared.TravelMode>))]
+    [K(typeof(Core.Extensions.EnumMemberJsonConverter<Shared.TravelMode>))]
     public required Shared.TravelMode TravelMode { get; set; }
 
     ///// <summary>

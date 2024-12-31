@@ -32,6 +32,5 @@
 
     <ItemGroup>
         <ProjectReference Include="..\GoogleApis\Seedysoft.Libs.GoogleApis.csproj" />
-        <ProjectReference Include="..\Utils\Seedysoft.Libs.Utils.csproj" />
     </ItemGroup>
 </Project>

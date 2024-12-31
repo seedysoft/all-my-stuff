@@ -1,4 +1,4 @@
-using Seedysoft.Libs.Utils.Extensions;
+using Seedysoft.Libs.Infrastructure.Extensions;
 
 namespace Seedysoft.BlazorWebApp.Server;
 

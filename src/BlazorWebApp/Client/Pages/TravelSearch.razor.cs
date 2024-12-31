@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
-using Seedysoft.Libs.Utils.Extensions;
+using Seedysoft.Libs.Core.Extensions;
 using System.Net.Http.Json;
 
 namespace Seedysoft.BlazorWebApp.Client.Pages;
