@@ -1,14 +1,31 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <IsPackable>false</IsPackable>
+        <IsPublishable>False</IsPublishable>
+        <Nullable>enable</Nullable>
+        <RuntimeIdentifiers>linux-arm64;linux-x64;win-x64</RuntimeIdentifiers>
+        <TargetFramework>net8.0</TargetFramework>
+    </PropertyGroup>
 
-  <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
+    <ItemGroup>
+        <Content Include="appsettings.UpdateSettings.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+    </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\BackgroundServices\Seedysoft.Libs.BackgroundServices.csproj" />
-    <ProjectReference Include="..\Core\Seedysoft.Libs.Core.csproj" />
-  </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="[8.*,9)" />
+        <PackageReference Include="Octokit" Version="13.0.1" />
+    </ItemGroup>
 
+    <ItemGroup>
+        <ProjectReference Include="..\BackgroundServices\Seedysoft.Libs.BackgroundServices.csproj" />
+        <ProjectReference Include="..\Core\Seedysoft.Libs.Core.csproj" />
+        <ProjectReference Include="..\Cryptography\Seedysoft.Libs.Cryptography.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <InternalsVisibleTo Include="Seedysoft.Libs.Update.Tests" />
+    </ItemGroup>
 </Project>

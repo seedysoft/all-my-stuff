@@ -97,6 +97,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Seedysoft.Libs.GoogleApis.T
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Seedysoft.Libs.Update", "src\Libs\Update\Seedysoft.Libs.Update.csproj", "{A2E82442-F6AF-46EB-85B0-B4F19ADD2DB6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Seedysoft.Libs.Update.Tests", "test\Libs\Update.Tests\Seedysoft.Libs.Update.Tests.csproj", "{7BCCE992-3945-416A-AF69-79EBD6501402}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -203,6 +205,10 @@ Global
 		{A2E82442-F6AF-46EB-85B0-B4F19ADD2DB6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A2E82442-F6AF-46EB-85B0-B4F19ADD2DB6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A2E82442-F6AF-46EB-85B0-B4F19ADD2DB6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7BCCE992-3945-416A-AF69-79EBD6501402}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7BCCE992-3945-416A-AF69-79EBD6501402}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7BCCE992-3945-416A-AF69-79EBD6501402}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7BCCE992-3945-416A-AF69-79EBD6501402}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -235,6 +241,7 @@ Global
 		{18A2E16D-866D-4F4B-BBE2-F9886D8CA6EE} = {1B84AE05-2D2A-49BD-A067-883B8FA01D75}
 		{B2692CBD-0DFB-414A-91AF-A5B0F2F4A137} = {1B84AE05-2D2A-49BD-A067-883B8FA01D75}
 		{A2E82442-F6AF-46EB-85B0-B4F19ADD2DB6} = {1B84AE05-2D2A-49BD-A067-883B8FA01D75}
+		{7BCCE992-3945-416A-AF69-79EBD6501402} = {1B84AE05-2D2A-49BD-A067-883B8FA01D75}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {76CD9B0B-E4FA-4E83-9623-2163AE82F180}

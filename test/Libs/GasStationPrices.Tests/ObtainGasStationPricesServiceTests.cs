@@ -18,9 +18,6 @@ public sealed class ObtainGasStationPricesServiceTests : Infrastructure.Tests.Te
         ObtainGasStationPricesService = serviceProvider.GetRequiredService<Services.ObtainGasStationPricesService>();
     }
 
-    //[ClassCleanup(InheritanceBehavior.None, ClassCleanupBehavior.EndOfClass)]
-    //public static new void ClassCleanup() => ObtainGasStationPricesService?.Dispose();
-
     //[Fact]
     //public async Task GetPetroleumProductsAsyncTest()
     //{

@@ -29,6 +29,7 @@ public sealed class TuyaManagerCronBackgroundServiceTests : Libs.Infrastructure.
 
     [Fact]
     public async Task DoWorkAsyncTest() => await TuyaManagerService.DoWorkAsync(default);
+
     protected override void Dispose(bool disposing)
     {
         TuyaManagerService?.Dispose();
