@@ -88,32 +88,35 @@ public sealed class UpdaterCronBackgroundService : BackgroundServices.Cron
         return releases.Any() ? releases[0] : null;
     }
 
-    internal bool ExecuteUpdateScript(Uri assetUri)
+    internal async Task<string> DownloadReleaseFromGithubAsync(Octokit.Release release)
     {
-        System.Diagnostics.ProcessStartInfo processStartInfo = new()
+        foreach (Octokit.ReleaseAsset? asset in release.Assets)
         {
-            CreateNoWindow = false,
-            UseShellExecute = true,
-        };
+            if (!asset.Name.Contains($"{System.Runtime.InteropServices.RuntimeInformation.RuntimeIdentifier}", StringComparison.InvariantCultureIgnoreCase))
+                continue;
 
-        string runtimeIdentifier = System.Runtime.InteropServices.RuntimeInformation.RuntimeIdentifier;
-        switch (runtimeIdentifier)
-        {
-            case Core.Constants.SupportedRuntimeIdentifiers.LinuxArm64:
-                //case Core.Constants.SupportedRuntimeIdentifiers.LinuxX64:
-                processStartInfo.FileName = $"sudo ./update.sh {assetUri}";
-                break;
+            using HttpClient httpClient = new();
+            httpClient.DefaultRequestHeaders.Add("User-Agent", "Anything");
+            httpClient.DefaultRequestHeaders.Add("Accept", "application/octet-stream");
+            //httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Core.Constants.Github.Token);
 
-            //case Core.Constants.SupportedRuntimeIdentifiers.WinX64:
-            //    processStartInfo.FileName = $"update.bat {zipFileName}";
-            //    break;
+            Logger.LogInformation("Try to download {assetBrowserDownloadUrl}", asset.BrowserDownloadUrl);
 
-            default:
-                // TODO: use interpolated strings in all solution
-                Logger.LogError("RuntimeIdentifier {runtimeIdentifier} not supported", runtimeIdentifier);
-                return false;
+            HttpResponseMessage response = await httpClient.GetAsync(asset.BrowserDownloadUrl);
+
+            _ = response.EnsureSuccessStatusCode();
+
+            using (Stream stream = await response.Content.ReadAsStreamAsync())
+            {
+                using FileStream fileStream = File.Create(asset.Name);
+                await stream.CopyToAsync(fileStream);
+            }
+
+            Logger.LogInformation("Downloaded {assetName}", asset.Name);
+
+            return asset.Name;
         }
 
-        return System.Diagnostics.Process.Start(processStartInfo) != null;
+        return string.Empty;
     }
 }
