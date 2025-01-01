@@ -21,6 +21,7 @@ public sealed class Configurator : Core.Dependencies.ConfiguratorBase
     {
         hostApplicationBuilder.Services.TryAddSingleton(
             hostApplicationBuilder.Configuration.GetSection(nameof(Settings.TelegramBotSettings)).Get<Settings.TelegramBotSettings>()!);
+
         hostApplicationBuilder.Services.TryAddSingleton<Services.TelegramHostedService>();
     }
 }

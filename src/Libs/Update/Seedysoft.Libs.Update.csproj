@@ -15,7 +15,14 @@
     </ItemGroup>
 
     <ItemGroup>
+        <PackageReference Include="CommandLineParser" Version="2.9.1" />
+        <PackageReference Include="Cronos" Version="0.9.0" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="[8.*,9)" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="[8.*,9)" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="[8.*,9)" />
         <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="[8.*,9)" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="[8.*,9)" />
+        <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="[8.*,9)" />
         <PackageReference Include="Octokit" Version="13.0.1" />
     </ItemGroup>
 
@@ -23,6 +30,7 @@
         <ProjectReference Include="..\BackgroundServices\Seedysoft.Libs.BackgroundServices.csproj" />
         <ProjectReference Include="..\Core\Seedysoft.Libs.Core.csproj" />
         <ProjectReference Include="..\Cryptography\Seedysoft.Libs.Cryptography.csproj" />
+        <ProjectReference Include="..\Infrastructure\Seedysoft.Libs.Infrastructure.csproj" />
     </ItemGroup>
 
     <ItemGroup>

@@ -39,10 +39,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "doc", "doc", "{623B6345-334
 		doc\PublishCommands.md = doc\PublishCommands.md
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "bashScripts", "bashScripts", "{278EDAC9-2DDC-4F89-8C6F-6A8B66E01A2E}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", "scripts", "{278EDAC9-2DDC-4F89-8C6F-6A8B66E01A2E}"
 	ProjectSection(SolutionItems) = preProject
-		bashScripts\create-BlazorWebApp-daemon.sh = bashScripts\create-BlazorWebApp-daemon.sh
-		bashScripts\create-daemon.sh = bashScripts\create-daemon.sh
+		scripts\create-BlazorWebApp-daemon.sh = scripts\create-BlazorWebApp-daemon.sh
+		scripts\create-daemon.sh = scripts\create-daemon.sh
+		scripts\stop-BlazorWebApp-daemon.sh = scripts\stop-BlazorWebApp-daemon.sh
+		scripts\stop-daemon.sh = scripts\stop-daemon.sh
+		scripts\update.sh = scripts\update.sh
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Seedysoft.Libs.TuyaDeviceControl", "src\Libs\TuyaDeviceControl\Seedysoft.Libs.TuyaDeviceControl.csproj", "{B9DCB14B-43FC-4920-9829-E1AA7955CAB9}"
