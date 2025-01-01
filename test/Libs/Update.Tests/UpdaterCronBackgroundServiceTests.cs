@@ -19,10 +19,24 @@ public sealed class UpdaterCronBackgroundServiceTests : Infrastructure.Tests.Tes
     }
 
     [Fact]
-    public async Task GetLatestVersionFromGithubTest()
+    public async Task GetLatestReleaseFromGithubAsyncTest()
     {
-        Version? version = await updaterCronBackgroundService.GetLatestVersionFromGithubAsync();
+        Octokit.Release? release = await updaterCronBackgroundService.GetLatestReleaseFromGithubAsync();
+        Assert.NotNull(release);
 
-        Assert.NotNull(version);
+        var RelaseVersion = new Version(release.Name);
+        Assert.True(RelaseVersion < new Version(DateTime.UtcNow.ToString("yy.Mdd.Hmm")));
+    }
+
+    [Fact(Timeout = 60_000)]
+    public async Task DownloadReleaseFromGithubAsyncTest()
+    {
+        Octokit.Release? release = await updaterCronBackgroundService.GetLatestReleaseFromGithubAsync();
+        Assert.NotNull(release);
+
+        string fileName = await updaterCronBackgroundService.DownloadReleaseFromGithubAsync(release);
+        Assert.False(string.IsNullOrWhiteSpace(fileName));
+
+        File.Delete(fileName);
     }
 }

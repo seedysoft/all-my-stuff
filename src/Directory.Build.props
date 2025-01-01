@@ -13,7 +13,7 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)' == 'Release'">
-    <AssemblyVersion>$([System.DateTime]::UtcNow.ToString(yy.MMdd.HHmm))</AssemblyVersion>
+    <AssemblyVersion>$([System.DateTime]::UtcNow.ToString(yy.Mdd.Hmm))</AssemblyVersion>
     <FileVersion>$(AssemblyVersion)</FileVersion>
     <Version>$(AssemblyVersion)</Version>
   </PropertyGroup>
