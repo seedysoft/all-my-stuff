@@ -34,10 +34,10 @@ COLOR_GREEN_BOLD="$(printf '\033[1;32m')"
 COLOR_NO="$(printf '\033[0m')" # No Color
 
 # Check if the install script is running as root
-if [ "$EUID" -ne 0 ]; then
-  echo "${COLOR_RED_BOLD}ERROR${COLOR_NO}: Please run this script as root"
-  exit 1
-fi
+# if [ "$EUID" -ne 0 ]; then
+  # echo "${COLOR_RED_BOLD}ERROR${COLOR_NO}: Please run this script as root"
+  # exit 1
+# fi
 
 echo "${#} arguments"
 

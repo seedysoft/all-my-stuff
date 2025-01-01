@@ -1,6 +1,6 @@
-﻿using Microsoft.Extensions.DependencyInjection.Extensions;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Configuration;
 
 namespace Seedysoft.Libs.Update.Dependencies;
 
@@ -15,5 +15,12 @@ public sealed class Configurator : Core.Dependencies.ConfiguratorBase
     protected override void AddDbContexts(IHostApplicationBuilder hostApplicationBuilder) { /* No DbContexts */ }
 
     protected override void AddMyServices(IHostApplicationBuilder hostApplicationBuilder)
-        => hostApplicationBuilder.Services.TryAddSingleton<Services.UpdaterCronBackgroundService>();
+    {
+        hostApplicationBuilder.Services.TryAddSingleton(
+            hostApplicationBuilder.Configuration.GetSection(nameof(Settings.UpdateSettings)).Get<Settings.UpdateSettings>()!);
+
+        hostApplicationBuilder.Services.TryAddSingleton(new Octokit.GitHubClient(new Octokit.ProductHeaderValue(Core.Constants.Github.RepositoryName)));
+        
+        hostApplicationBuilder.Services.TryAddSingleton<Services.UpdaterCronBackgroundService>();
+    }
 }
