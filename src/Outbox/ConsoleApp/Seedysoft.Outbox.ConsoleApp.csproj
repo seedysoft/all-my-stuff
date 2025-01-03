@@ -45,6 +45,7 @@
         <PackageReference Include="Serilog.Sinks.File" Version="6.0.0" />
         <PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" Version="2.1.10" />
         <PackageReference Include="System.IO.Hashing" Version="[8.*,9)" />
+        <PackageReference Include="Telegram.Bot" Version="22.3.0" />
     </ItemGroup>
 
     <ItemGroup>
