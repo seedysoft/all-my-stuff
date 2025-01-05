@@ -8,8 +8,9 @@ public record class GasStationModel
     public double Lng { get; set; }
 
     public required string Rotulo { get; init; }
+    public string RotuloTrimed => Rotulo.Trim();
 
-    public required IEnumerable<ProductPrice> Prices { get; init; }
+    public required IReadOnlyCollection<ProductPrice> Prices { get; init; }
 
     internal static GasStationModel Map(Models.Minetur.EstacionTerrestre estacionTerrestre) => new()
     {

@@ -88,12 +88,8 @@ window.seedysoft = {
 
       // add a click listener for each marker, and set up the info window.
       if (clickable) {
-        markerEl.addListener("click", ({ domEvent, latLng }) => {
-          const { target } = domEvent;
-          mapInstance.infoWindow.close();
-          mapInstance.infoWindow.setContent(markerEl.title);
-          mapInstance.infoWindow.open(markerEl.map, markerEl);
-          dotNetHelper.invokeMethodAsync('OnMarkerClickJS', marker);
+        markerEl.addListener("click", () => {
+          window.seedysoft.openInfoWindow(elementId, marker, dotNetHelper);
         });
       }
     },
@@ -115,6 +111,17 @@ window.seedysoft = {
           window.seedysoft.googleMaps.addMarker(elementId, marker, dotNetHelper);
         }
       }
+    },
+
+    openInfoWindow: (elementId, marker, dotNetHelper) => {
+      let mapInstance = window.seedysoft.googleMaps.get(elementId);
+      mapInstance.map.panTo(marker.position);
+      mapInstance.map.setZoom(14);
+
+      mapInstance.infoWindow.close();
+      mapInstance.infoWindow.setContent(marker.title);
+      mapInstance.infoWindow.open(mapInstance.map, marker.position);
+      dotNetHelper.invokeMethodAsync('OnMarkerClickJS', marker);
     },
 
     directionsRoute: (elementId, request) => {

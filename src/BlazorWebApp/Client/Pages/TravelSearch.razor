@@ -9,125 +9,197 @@
     Variant variant = Variant.Outlined;
 }
 
-<MudContainer Class="mud-height-full" MaxWidth="MaxWidth.ExtraExtraLarge">
+<MudContainer Class="mud-height-full" MaxWidth="@MaxWidth.ExtraExtraLarge">
 
-    <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge">
+    <MudContainer MaxWidth="@MaxWidth.ExtraExtraLarge">
 
-        <MudForm @ref=@TravelQueryMudForm
-                 Class="d-inline-flex justify-space-between"
+        <MudForm Class="d-inline-flex justify-space-between"
                  Model="@travelQueryModel"
-                 SuppressImplicitSubmission="true"
-                 Validation="@(travelQueryModelFluentValidator.ValidateValue)">
+                 SuppressImplicitSubmission="@true"
+                 Validation="@travelQueryModelFluentValidator.ValidateValue">
             <MudGrid>
                 <MudItem xs="12" md="6" xl="3">
-                    <MudAutocomplete @bind-Value="@(travelQueryModel.Origin)"
+                    <MudAutocomplete @bind-Value="@travelQueryModel.Origin"
                                      AutoFocus="@(!System.Diagnostics.Debugger.IsAttached)"
                                      Class="d-inline-flex flex-md-auto"
-                                     Clearable="true"
+                                     Clearable="@true"
                                      DebounceInterval="450"
-                                     Dense="true"
+                                     Dense="@true"
                                      For="@(() => travelQueryModel.Origin)"
-                                     FullWidth="true"
+                                     FullWidth="@true"
                                      Label="Origin"
                                      MaxItems="20"
                                      MinCharacters="3"
                                      Placeholder="Select an origin place"
-                                     Required="true"
-                                     ResetValueOnEmptyText="true"
+                                     Required="@true"
+                                     ResetValueOnEmptyText="@true"
                                      SearchFunc="@FindPlacesAsync"
-                                     SelectOnActivation="true"
-                                     ShowProgressIndicator="true"
-                                     T="string"
-                                     Variant="variant" />
+                                     SelectOnActivation="@true"
+                                     ShowProgressIndicator="@true"
+                                     T="@string"
+                                     Variant="@variant" />
                 </MudItem>
                 <MudItem xs="12" md="6" xl="3">
-                    <MudAutocomplete @bind-Value="@(travelQueryModel.Destination)"
+                    <MudAutocomplete @bind-Value="@travelQueryModel.Destination"
                                      Class="d-inline-flex flex-md-auto"
-                                     Clearable="true"
+                                     Clearable="@true"
                                      DebounceInterval="450"
-                                     Dense="true"
+                                     Dense="@true"
                                      For="@(() => travelQueryModel.Destination)"
-                                     FullWidth="true"
+                                     FullWidth="@true"
                                      Label="Destination"
                                      MaxItems="20"
                                      MinCharacters="3"
                                      Placeholder="Select a destination place"
-                                     Required="true"
-                                     ResetValueOnEmptyText="true"
+                                     Required="@true"
+                                     ResetValueOnEmptyText="@true"
                                      SearchFunc="@FindPlacesAsync"
-                                     SelectOnActivation="true"
-                                     ShowProgressIndicator="true"
-                                     T="string"
-                                     Variant="variant" />
+                                     SelectOnActivation="@true"
+                                     ShowProgressIndicator="@true"
+                                     T="@string"
+                                     Variant="@variant" />
                 </MudItem>
 
-                <MudItem xs="12" Class="d-inline-flex gap-3">
-                    <MudButton ButtonType="ButtonType.Button"
+                <MudItem xs="12" Class="d-inline-flex justify-space-between">
+                    <MudButton ButtonType="@ButtonType.Button"
                                EndIcon="@Icons.Material.Filled.SelectAll"
-                               IconSize="Size.Large"
+                               IconSize="@Size.Large"
                                OnClick="@SelectAllChips"
-                               Variant="variant">All</MudButton>
+                               Variant="@variant">All</MudButton>
 
-                    <MudChipSet @bind-SelectedValues="@(travelQueryModel.PetroleumProductsSelectedIds)"
-                                CheckMark="false"
-                                Color="Color.Info"
-                                SelectionMode="SelectionMode.MultiSelection"
-                                T="long"
-                                Variant="Variant.Text">
+                    <MudChipSet @bind-SelectedValues="@travelQueryModel.PetroleumProductsSelectedIds"
+                                CheckMark="@false"
+                                Class="d-inline-block"
+                                Color="@Color.Info"
+                                SelectionMode="@SelectionMode.MultiSelection"
+                                T="@long"
+                                Variant="@Variant.Text">
                         @foreach (Seedysoft.Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero item in PetroleumProducts)
                         {
                             <MudTooltip Text="@item.Nombre">
-                                <MudChip Default="@item.Abreviatura.StartsWith("G9")" Text="@item.Abreviatura" Value="@item.IdProducto"></MudChip>
+                                <MudChip Default="@(travelQueryModel.PetroleumProductsSelectedIds.Contains(item.IdProducto))" Text="@item.Abreviatura" Value="@item.IdProducto" />
                             </MudTooltip>
                         }
                     </MudChipSet>
 
-                    <MudButton ButtonType="ButtonType.Button"
+                    <MudButton ButtonType="@ButtonType.Button"
                                EndIcon="@Icons.Material.Filled.Deselect"
-                               IconSize="Size.Large"
+                               IconSize="@Size.Large"
                                OnClick="@UnSelectAllChips"
-                               Variant="variant">None</MudButton>
+                               Variant="@variant">None</MudButton>
                 </MudItem>
 
                 <MudItem xs="12" Class="d-inline-flex gap-4">
-                    <MudItem Class="align-content-center d-inline-block" Style="white-space: nowrap;">
+                    <MudItem Class="align-content-center d-inline-block" Style="min-width: 90px;white-space: nowrap;">
                         @($"Km. max: {travelQueryModel.MaxDistanceInKm}")
                     </MudItem>
 
-                    <MudSlider @bind-Value="@(travelQueryModel.MaxDistanceInKm)"
-                               Immediate="false"
+                    <MudSlider @bind-Value="@travelQueryModel.MaxDistanceInKm"
+                               Immediate="@false"
                                Max="50"
                                Min="1"
-                               Size="Size.Large"
+                               Size="@Size.Large"
                                Step="1"
-                               T="int"
+                               T="@int"
                                TickMarkLabels="@(Enumerable.Range(1, 50).Select(x => x == 1 || x % 5 == 0 ? $"{x}" : " ").ToArray())"
-                               TickMarks="true" />
+                               TickMarks="@true" />
 
-                    <MudButton ButtonType="ButtonType.Button"
+                    <MudButton ButtonType="@ButtonType.Button"
                                EndIcon="@Icons.Material.Filled.Search"
-                               IconSize="Size.Large"
+                               IconSize="@Size.Large"
                                OnClick="@LoadDataAsync"
-                               Variant="variant">Search</MudButton>
+                               Variant="@variant">Search</MudButton>
                 </MudItem>
             </MudGrid>
         </MudForm>
 
     </MudContainer>
 
-    <MudContainer Class="mt-15" MaxWidth="MaxWidth.ExtraExtraLarge">
+    <MudContainer Class="mt-15" MaxWidth="@MaxWidth.ExtraExtraLarge">
 
         <Map @ref="@TravelGoogleMap"
              Id="@(nameof(TravelGoogleMap))"
-             ApiKey="@(googleApisSettings.ApiKey)"
+             ApiKey="@googleApisSettings.ApiKey"
              Center="@(new Libs.GoogleApis.Models.Shared.LatLngLiteral(Seedysoft.Libs.Core.Constants.Earth.Home.Lat, Seedysoft.Libs.Core.Constants.Earth.Home.Lng))"
              Height="450" HeightUnit="@Libs.Core.Enums.CssUnit.Px"
              Width="100" WidthUnit="@Libs.Core.Enums.CssUnit.Percentage"
              Zoom="14"
-             IsClickable="true"
+             IsClickable="@true"
              OnMarkerClick="@OnGoogleMapMarkerClick" />
-        &nbsp;
+        <MudSpacer />
         <div id="warnings-panel"></div>
+
+        <MudSpacer />
+
+        <MudDataGrid @ref="GasStationsDataGrid"
+                     ColumnResizeMode="@ResizeMode.None"
+                     Filterable="@true"
+                     FilterMode="@DataGridFilterMode.ColumnFilterRow"
+                     Height="450"
+                     Items="@GasStationsDataGridItems"
+                     SortMode="@SortMode.Single"
+                     T="@Libs.GasStationPrices.ViewModels.GasStationModel">
+
+            <Columns>
+                <PropertyColumn Property="@(x => x.RotuloTrimed)" Filterable="@true" Sortable="@true" Title="Rótulo">
+                    <FilterTemplate>
+                        <MudIconButton OnClick="@(() => IsRotuloFilterOpen = true)" Icon="@RotuloFilterIcon" Size="@Size.Small" />
+                        <MudOverlay Visible="@IsRotuloFilterOpen" OnClick="@(() => IsRotuloFilterOpen = false)" />
+                        <MudPopover Open="@IsRotuloFilterOpen" AnchorOrigin="@Origin.BottomCenter" TransformOrigin="@Origin.TopCenter">
+                            <MudStack Spacing="0">
+                                <MudCheckBox T="@bool" Label="Select All" Size="@Size.Small" Value="@IsRotuloFilterAllSelected" ValueChanged="@RotuloFilterSelectAll" />
+                                <MudStack Spacing="0" Style="overflow-y: auto; max-height: 250px">
+                                    @foreach (var item in context.Items.Select(x => x.RotuloTrimed).Distinct().Order())
+                                    {
+                                        <MudCheckBox Label="@($"{item}")"
+                                                     Size="@Size.Small"
+                                                     T="@bool"
+                                                     Value="@(RotuloFilterSelectedItems.Contains(item))"
+                                                     ValueChanged="@((value) => RotuloFilterSelectedChanged(value, item))" />
+                                    }
+                                </MudStack>
+                                <MudStack Row Class="justify-md-space-evenly">
+                                    <MudButton OnClick="@(() => RotuloFilterClearAsync(context))">Clear</MudButton>
+                                    <MudButton Color="@Color.Primary" OnClick="@(() => RotuloFilterApplyAsync(context))">Filter</MudButton>
+                                </MudStack>
+                            </MudStack>
+                        </MudPopover>
+                    </FilterTemplate>
+                </PropertyColumn>
+
+                @foreach (var item in PetroleumProducts)
+                {
+                    var IsHidden = !travelQueryModel.PetroleumProductsSelectedIds.Contains(item.IdProducto);
+                    <TemplateColumn CellClass="mud-table-cell-align-right"
+                                    Filterable="@false"
+                                    Hidden="@IsHidden"
+                                    SortBy="@(x => x.Prices.FirstOrDefault(y => y.Product.IdProducto == item.IdProducto)?.Price ?? null)"
+                                    Sortable="@true"
+                                    Title="@item.Abreviatura">
+                        <CellTemplate>
+                            @(context.Item.Prices.FirstOrDefault(y => y.Product.IdProducto == item.IdProducto)?.Price ?? null)
+                        </CellTemplate>
+                    </TemplateColumn>
+                }
+
+                <TemplateColumn Filterable="@false"
+                                Sortable="@false"
+                                StickyRight="@true"
+                                Title="@string.Empty">
+                    <CellTemplate>
+                        <MudButton Color="@Color.Primary"
+                                   OnClick="@(()=> ShowGasStationInMap(context.Item))"
+                                   Size="@Size.Small"
+                                   Variant="@Variant.Filled">Show in Map</MudButton>
+                    </CellTemplate>
+                </TemplateColumn>
+            </Columns>
+
+            <NoRecordsContent>
+                No data
+            </NoRecordsContent>
+
+        </MudDataGrid>
 
     </MudContainer>
 

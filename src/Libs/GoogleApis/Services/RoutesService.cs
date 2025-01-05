@@ -5,8 +5,7 @@ using Seedysoft.Libs.Core.Extensions;
 
 namespace Seedysoft.Libs.GoogleApis.Services;
 
-public class RoutesService(IConfiguration configuration, ILogger<RoutesService> logger)
-    : GoogleApisService(configuration)
+public class RoutesService(IConfiguration configuration, ILogger<RoutesService> logger) : GoogleApisService(configuration)
 {
     public async Task<List<Models.Shared.LatLngLiteral>> GetRoutesAsync(
         string origin,
