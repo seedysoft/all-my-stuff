@@ -4,6 +4,8 @@ using Seedysoft.Libs.Core.Enums;
 using Seedysoft.Libs.Core.Extensions;
 using System.Globalization;
 
+// TODO                             Place properties or files on new line when has attributes find all (] p)
+
 namespace Seedysoft.Libs.GoogleMapsRazorClassLib.GoogleMap;
 
 public partial class Map : SeedysoftComponentBase

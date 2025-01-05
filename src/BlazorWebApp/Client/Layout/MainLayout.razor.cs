@@ -61,7 +61,7 @@ public partial class MainLayout
         OverlayLight = "#1e1e2d80",
     };
 
-    public string DarkLightModeButtonIcon => _isDarkMode switch
+    private string DarkLightModeButtonIcon => _isDarkMode switch
     {
         true => MudBlazor.Icons.Material.Rounded.AutoMode,
         false => MudBlazor.Icons.Material.Outlined.DarkMode,
