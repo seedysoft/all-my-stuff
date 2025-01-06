@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -23,7 +24,8 @@ public class TelegramHostedService : Core.NonBackgroundServiceBase, IHostedServi
     {
         Logger = ServiceProvider.GetRequiredService<ILogger<TelegramHostedService>>();
 
-        Settings = ServiceProvider.GetRequiredService<Settings.TelegramBotSettings>();
+        Settings = ServiceProvider.GetRequiredService<IConfiguration>()
+            .GetSection(nameof(TelegramBot.Settings.TelegramBotSettings)).Get<Settings.TelegramBotSettings>()!;
 
         TelegramBotClientOptions telegramBotClientOptions = new(
             token: $"{Settings.CurrentBot.Id}:{Settings.CurrentBot.Token}");
@@ -31,7 +33,8 @@ public class TelegramHostedService : Core.NonBackgroundServiceBase, IHostedServi
         LocalTelegramBotClient = new TelegramBotClient(telegramBotClientOptions);
     }
 
-    public async Task StartAsync(CancellationToken cancellationToken)
+    public async Task StartAsync(
+        CancellationToken cancellationToken)
     {
         Logger.LogInformation("Called {ApplicationName} version {Version}", GetType().FullName, System.Reflection.Assembly.GetExecutingAssembly().GetName().Version);
 
@@ -41,7 +44,8 @@ public class TelegramHostedService : Core.NonBackgroundServiceBase, IHostedServi
 
         await Task.CompletedTask;
     }
-    public async Task StopAsync(CancellationToken cancellationToken)
+    public async Task StopAsync(
+        CancellationToken cancellationToken)
     {
         Logger.LogInformation("End {ApplicationName}", GetType().FullName);
 
@@ -764,7 +768,8 @@ parseMode: null,
         };
     }
 
-    private static string MessageGetMarkdownV2TextForPrices(Core.Entities.Pvpc[] prices)
+    private static string MessageGetMarkdownV2TextForPrices(
+        Core.Entities.Pvpc[] prices)
     {
         if (prices == null || prices.Length == 0)
             return "No hay datos";

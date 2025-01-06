@@ -14,9 +14,9 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Compile Include="..\..\Usings.cs" Link="Usings.cs" />
+        <Compile Include="..\..\Usings.cs" Link="Usings.cs" />
     </ItemGroup>
-    
+
     <ItemGroup>
         <Content Include="appsettings.PvpcSettings.json">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

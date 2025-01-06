@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OpenQA.Selenium.Support.Extensions;
@@ -10,6 +11,7 @@ public sealed class WebComparerCronBackgroundService : Libs.BackgroundServices.C
 {
     private static readonly TimeSpan FiveSecondsTimeSpan = TimeSpan.FromSeconds(5);
     private readonly ILogger<WebComparerCronBackgroundService> Logger;
+    private Settings.WebComparerSettings Settings => (Settings.WebComparerSettings)Config;
 
     public WebComparerCronBackgroundService(
         IServiceProvider serviceProvider,
@@ -18,7 +20,8 @@ public sealed class WebComparerCronBackgroundService : Libs.BackgroundServices.C
     {
         Logger = ServiceProvider.GetRequiredService<ILogger<WebComparerCronBackgroundService>>();
 
-        Config = new Libs.BackgroundServices.ScheduleConfig() { CronExpression = "7 * * * *" /*At every 7th minute*/ };
+        Config = ServiceProvider.GetRequiredService<IConfiguration>()
+            .GetSection(nameof(Lib.Settings.WebComparerSettings)).Get<Settings.WebComparerSettings>()!;
     }
 
     public override async Task DoWorkAsync(CancellationToken cancellationToken)

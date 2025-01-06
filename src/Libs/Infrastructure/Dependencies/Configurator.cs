@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Seedysoft.Libs.Infrastructure.Extensions;
 using Serilog;
 
@@ -23,21 +24,31 @@ internal sealed class Configurator : Core.Dependencies.ConfiguratorBase
     {
         _ = hostApplicationBuilder.Services.AddDbContext<DbContexts.DbCxt>(dbContextOptionsBuilder =>
         {
+            using ILoggerFactory loggerFactory = LoggerFactory.Create(builder =>
+            {
+                builder.SetMinimumLevel(LogLevel.Debug);
+                builder.AddConsole();
+            });
+            Microsoft.Extensions.Logging.ILogger logger = null!;
+
             string ConnectionStringName = nameof(DbContexts.DbCxt);
             string ConnectionString = hostApplicationBuilder.Configuration.GetConnectionString($"{ConnectionStringName}") ?? throw new KeyNotFoundException($"Connection string '{ConnectionStringName}' not found.");
             string FullFilePath = Path.GetFullPath(ConnectionString);
             while (!File.Exists(FullFilePath))
             {
+                logger ??= loggerFactory.CreateLogger(nameof(AddDbContexts));
 #if DEBUG
                 if (System.Diagnostics.Debugger.IsAttached)
                     System.Diagnostics.Debugger.Break();
 #endif
+                logger.LogDebug("Database file {FullFilePath} does not exists", FullFilePath);
                 FullFilePath = Path.GetFullPath(ConnectionString = ConnectionString.Insert(0, "../"));
             }
 
             if (!File.Exists(FullFilePath))
                 throw new FileNotFoundException("Database file not found.", FullFilePath);
 
+            logger.LogInformation("Using database file {FullFilePath}", FullFilePath);
             _ = dbContextOptionsBuilder.UseSqlite($"{Core.Constants.DatabaseStrings.DataSource}{FullFilePath}");
             dbContextOptionsBuilder.ConfigureDebugOptions();
         },

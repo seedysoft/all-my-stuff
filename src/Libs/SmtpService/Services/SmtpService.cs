@@ -1,14 +1,15 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace Seedysoft.Libs.SmtpService.Services;
 
-public sealed class SmtpService(Settings.SmtpServiceSettings smtpServiceSettings, ILogger<SmtpService> logger)
+public sealed class SmtpService(IServiceProvider serviceProvider, IConfiguration configuration)
 {
-    private readonly Settings.SmtpServiceSettings SmtpServiceSettings =
-        smtpServiceSettings ?? throw new ArgumentNullException(nameof(smtpServiceSettings));
+    private readonly Settings.SmtpServiceSettings SmtpServiceSettings = configuration
+        .GetSection(nameof(Settings.SmtpServiceSettings)).Get<Settings.SmtpServiceSettings>()!;
 
-    private readonly ILogger<SmtpService> Logger =
-        logger ?? throw new ArgumentNullException(nameof(logger));
+    private readonly ILogger<SmtpService> Logger = serviceProvider.GetRequiredService<ILogger<SmtpService>>();
 
     public async Task SendMailAsync(
         string? to,
@@ -42,22 +43,20 @@ public sealed class SmtpService(Settings.SmtpServiceSettings smtpServiceSettings
         if (!Message.Bcc.Any())
             Message.To.Add(Message.From);
 
-        await SendAsync(Message, SmtpServiceSettings, cancellationToken);
+        await SendAsync(Message, cancellationToken);
     }
 
     private async Task SendAsync(
         System.Net.Mail.MailMessage message,
-        Settings.SmtpServiceSettings smtpServiceSettings,
         CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(message);
-        ArgumentNullException.ThrowIfNull(smtpServiceSettings);
 
         System.Net.Mail.SmtpClient MailSender = new()
         {
-            Host = smtpServiceSettings.Host,
-            Port = smtpServiceSettings.Port,
-            Credentials = new System.Net.NetworkCredential(smtpServiceSettings.Username, smtpServiceSettings.Password),
+            Host = SmtpServiceSettings.Host,
+            Port = SmtpServiceSettings.Port,
+            Credentials = new System.Net.NetworkCredential(SmtpServiceSettings.Username, SmtpServiceSettings.Password),
             EnableSsl = true,
             UseDefaultCredentials = false,
         };

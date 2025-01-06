@@ -17,10 +17,5 @@ internal sealed class Configurator : Core.Dependencies.ConfiguratorBase
     protected override void AddDbContexts(Microsoft.Extensions.Hosting.IHostApplicationBuilder hostApplicationBuilder) { /* No DbContexts */ }
 
     protected override void AddMyServices(Microsoft.Extensions.Hosting.IHostApplicationBuilder hostApplicationBuilder)
-    {
-        hostApplicationBuilder.Services.TryAddSingleton(
-            hostApplicationBuilder.Configuration.GetSection(nameof(Settings.GasStationPricesSettings)).Get<Settings.GasStationPricesSettings>()!);
-
-        hostApplicationBuilder.Services.TryAddScoped<Services.ObtainGasStationPricesService>();
-    }
+        => hostApplicationBuilder.Services.TryAddScoped<Services.ObtainGasStationPricesService>();
 }

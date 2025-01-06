@@ -36,8 +36,8 @@
         <PackageReference Include="System.IO.Hashing" Version="[8.*,9)" />
         <PackageReference Include="xunit" Version="2.9.2" />
         <PackageReference Include="xunit.runner.visualstudio" Version="3.0.0">
-          <PrivateAssets>all</PrivateAssets>
-          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
     </ItemGroup>
 
@@ -46,10 +46,10 @@
         <ProjectReference Include="..\..\..\src\Pvpc\Lib\Seedysoft.Pvpc.Lib.csproj" />
         <ProjectReference Include="..\..\Libs\Infrastructure.Tests\Seedysoft.Libs.Infrastructure.Tests.csproj" />
     </ItemGroup>
-	
-	<ItemGroup>
-      <Content Include="..\..\..\xunit.runner.json" Link="xunit.runner.json">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content>
+
+    <ItemGroup>
+        <Content Include="..\..\..\xunit.runner.json" Link="xunit.runner.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
     </ItemGroup>
 </Project>
