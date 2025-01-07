@@ -77,7 +77,9 @@
                         @foreach (Seedysoft.Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero item in PetroleumProducts)
                         {
                             <MudTooltip Text="@item.Nombre">
-                                <MudChip Default="@(travelQueryModel.PetroleumProductsSelectedIds.Contains(item.IdProducto))" Text="@item.Abreviatura" Value="@item.IdProducto" />
+                                <MudChip Default="@(travelQueryModel.PetroleumProductsSelectedIds.Contains(item.IdProducto))"
+                                         Text="@item.Abreviatura"
+                                         Value="@item.IdProducto" />
                             </MudTooltip>
                         }
                     </MudChipSet>
@@ -117,6 +119,76 @@
 
     <MudContainer Class="mt-15" MaxWidth="@MaxWidth.ExtraExtraLarge">
 
+        <MudDataGrid @ref="RoutesDataGrid"
+                     ColumnResizeMode="@ResizeMode.None"
+                     Filterable="@true"
+                     FilterMode="@DataGridFilterMode.ColumnFilterRow"
+                     Height="450"
+                     Items="@GasStationsDataGridItems"
+                     SortMode="@SortMode.Single"
+                     T="@Libs.GasStationPrices.ViewModels.GasStationModel">
+
+            <Columns>
+                <PropertyColumn Property="@(x => x.RotuloTrimed)" Filterable="@true" Sortable="@true" Title="Rótulo">
+                    <FilterTemplate>
+                        <MudIconButton OnClick="@(() => IsRotuloFilterOpen = true)" Icon="@RotuloFilterIcon" Size="@Size.Small" />
+                        <MudOverlay Visible="@IsRotuloFilterOpen" OnClick="@(() => IsRotuloFilterOpen = false)" />
+                        <MudPopover Open="@IsRotuloFilterOpen" AnchorOrigin="@Origin.BottomCenter" TransformOrigin="@Origin.TopCenter">
+                            <MudStack Spacing="0">
+                                <MudCheckBox T="@bool" Label="Select All" Size="@Size.Small" Value="@IsRotuloFilterAllSelected" ValueChanged="@RotuloFilterSelectAll" />
+                                <MudStack Spacing="0" Style="overflow-y: auto; max-height: 250px">
+                                    @foreach (var item in context.Items.Select(x => x.RotuloTrimed).Distinct().Order())
+                                    {
+                                        <MudCheckBox Label="@($"{item}")"
+                                                     Size="@Size.Small"
+                                                     T="@bool"
+                                                     Value="@(RotuloFilterSelectedItems.Contains(item))"
+                                                     ValueChanged="@((value) => RotuloFilterSelectedChanged(value, item))" />
+                                    }
+                                </MudStack>
+                                <MudStack Row Class="justify-md-space-evenly">
+                                    <MudButton OnClick="@(() => RotuloFilterClearAsync(context))">Clear</MudButton>
+                                    <MudButton Color="@Color.Primary" OnClick="@(() => RotuloFilterApplyAsync(context))">Filter</MudButton>
+                                </MudStack>
+                            </MudStack>
+                        </MudPopover>
+                    </FilterTemplate>
+                </PropertyColumn>
+
+                @foreach (var item in PetroleumProducts)
+                {
+                    var IsHidden = !travelQueryModel.PetroleumProductsSelectedIds.Contains(item.IdProducto);
+                    <TemplateColumn CellClass="mud-table-cell-align-right"
+                                    Filterable="@false"
+                                    Hidden="@IsHidden"
+                                    SortBy="@(x => x.Prices.FirstOrDefault(y => y.Product.IdProducto == item.IdProducto)?.Price ?? null)"
+                                    Sortable="@true"
+                                    Title="@item.Abreviatura">
+                        <CellTemplate>
+                            @(context.Item.Prices.FirstOrDefault(y => y.Product.IdProducto == item.IdProducto)?.Price ?? null)
+                        </CellTemplate>
+                    </TemplateColumn>
+                }
+
+                <TemplateColumn Filterable="@false"
+                                Sortable="@false"
+                                StickyRight="@true"
+                                Title="@string.Empty">
+                    <CellTemplate>
+                        <MudButton Color="@Color.Primary"
+                                   OnClick="@(()=> ShowGasStationInMap(context.Item))"
+                                   Size="@Size.Small"
+                                   Variant="@Variant.Filled">Show in Map</MudButton>
+                    </CellTemplate>
+                </TemplateColumn>
+            </Columns>
+
+            <NoRecordsContent>
+                No data
+            </NoRecordsContent>
+
+        </MudDataGrid>
+
         <Map @ref="@TravelGoogleMap"
              Id="@(nameof(TravelGoogleMap))"
              ApiKey="@googleApisSettings.ApiKey"
@@ -126,7 +198,9 @@
              Zoom="14"
              IsClickable="@true"
              OnMarkerClick="@OnGoogleMapMarkerClick" />
+
         <MudSpacer />
+
         <div id="warnings-panel"></div>
 
         <MudSpacer />

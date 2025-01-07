@@ -11,8 +11,8 @@ public record class ProductoPetrolifero
     [J("NombreProductoAbreviatura")]
     public required string Abreviatura { get; init; }
 
-    public static System.Collections.ObjectModel.ReadOnlyCollection<ProductoPetrolifero> All
-        => new([G95E5, G95E10, G95E5Plus, G98E5, G98E10, GOA, GOAPlus, GOB, BIE, BIO, GLP, GNC, GNL, H2]);
+    public static System.Collections.Frozen.FrozenSet<ProductoPetrolifero> All
+        => System.Collections.Frozen.FrozenSet.ToFrozenSet([G95E5, G95E10, G95E5Plus, G98E5, G98E10, GOA, GOAPlus, GOB, BIE, BIO, GLP, GNC, GNL, H2]);
 
     public override string ToString() => Nombre ?? "Unknown";
 
