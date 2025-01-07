@@ -56,11 +56,6 @@ public partial class TravelSearch
         false => MudBlazor.Icons.Material.Filled.FilterAlt,
     };
 
-    private MudBlazor.MudDataGrid<Libs.GasStationPrices.ViewModels.GasStationModel> GasStationsDataGrid { get; set; } = default!;
-    private bool IsRotuloFilterOpen = false;
-
-    private MudBlazor.FilterDefinition<Libs.GasStationPrices.ViewModels.GasStationModel> RotuloFilterDefinition = default!;
-
     private MudBlazor.MudDataGrid<Libs.GasStationPrices.ViewModels.GasStationModel> RoutesDataGrid { get; set; } = default!;
     private MudBlazor.MudDataGrid<Libs.GasStationPrices.ViewModels.GasStationModel> GasStationsDataGrid { get; set; } = default!;
     
@@ -103,7 +98,6 @@ public partial class TravelSearch
         };
     }
 
-    private void OnGoogleMapMarkerClick(Libs.GoogleMapsRazorClassLib.GoogleMap.Marker marker)
     private void OnGoogleMapMarkerClick(
         Libs.GoogleMapsRazorClassLib.GoogleMap.Marker marker)
         => _ = Snackbar.Add($"Clicked into {marker.Content}. DateTime: {DateTime.Now}", MudBlazor.Severity.Success);
@@ -331,7 +325,6 @@ public partial class TravelSearch
         //RotuloFilterSelectedItems = [.. RotuloFilterAvailableItems];
     }
 
-    private void RotuloFilterSelectAll(bool value)
     private void RotuloFilterSelectAll(
         bool value)
     {
@@ -340,9 +333,6 @@ public partial class TravelSearch
         else
             RotuloFilterSelectedItems.Clear();
     }
-    private void RotuloFilterSelectedChanged(bool value, string item) =>
-        _ = value ? RotuloFilterSelectedItems.Add(item) : RotuloFilterSelectedItems.Remove(item);
-    private async Task RotuloFilterClearAsync(MudBlazor.FilterContext<Libs.GasStationPrices.ViewModels.GasStationModel> gasStationModel)
     private void RotuloFilterSelectedChanged(
         bool value, string item) =>
         _ = value ? RotuloFilterSelectedItems.Add(item) : RotuloFilterSelectedItems.Remove(item);
@@ -353,7 +343,6 @@ public partial class TravelSearch
         await gasStationModel.Actions.ClearFilterAsync(RotuloFilterDefinition);
         IsRotuloFilterOpen = false;
     }
-    private async Task RotuloFilterApplyAsync(MudBlazor.FilterContext<Libs.GasStationPrices.ViewModels.GasStationModel> gasStationModel)
     private async Task RotuloFilterApplyAsync(
         MudBlazor.FilterContext<Libs.GasStationPrices.ViewModels.GasStationModel> gasStationModel)
     {
@@ -361,7 +350,6 @@ public partial class TravelSearch
         IsRotuloFilterOpen = false;
     }
 
-    private void ShowGasStationInMap(Libs.GasStationPrices.ViewModels.GasStationModel gasStationModel)
     private void ShowGasStationInMap(
         Libs.GasStationPrices.ViewModels.GasStationModel gasStationModel)
         => TravelGoogleMap.ClickOnMarker(gasStationModel.ToMarker());
