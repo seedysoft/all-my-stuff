@@ -7,11 +7,11 @@ public sealed class TravelController : ApiControllerBase
 {
     public TravelController(ILogger<TravelController> logger) : base(logger) => Logger = logger;
 
-    [HttpGet(Client.Constants.TravelUris.Actions.GetMapId)]
-    public async Task<string> GetMapId(
-        [FromServices] Libs.GoogleApis.Services.PlacesService placesService,
-        CancellationToken cancellationToken)
-        => await placesService.GetMapId(cancellationToken);
+    //[HttpGet(Client.Constants.TravelUris.Actions.GetMapId)]
+    //public async Task<string> GetMapId(
+    //    [FromServices] Libs.GoogleApis.Services.PlacesService placesService,
+    //    CancellationToken cancellationToken)
+    //    => await placesService.GetMapId(cancellationToken);
 
     [HttpGet(Client.Constants.TravelUris.Actions.FindPlaces)]
     public async Task<IEnumerable<string>> FindPlacesAsync(
