@@ -19,7 +19,7 @@ public class DirectionsService(IJSRuntime jSRuntime, string elementId)
         {
             return await jSRuntime.InvokeAsync<GoogleApis.Models.DirectionsServiceRoutes[]>(
                 $"{Constants.SeedysoftGoogleMaps}.directionsRoute",
-                TimeSpan.FromSeconds(5),
+                TimeSpan.FromSeconds(15),
                 [elementId, request]);
         }
         catch (Exception e) { Console.WriteLine("Error parsing DirectionsResult Object. Message: " + e.Message); }

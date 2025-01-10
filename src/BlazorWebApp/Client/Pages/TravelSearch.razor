@@ -9,9 +9,9 @@
     Variant variant = Variant.Outlined;
 }
 
-<MudContainer Class="mud-height-full" MaxWidth="@MaxWidth.ExtraExtraLarge">
+<MudContainer MaxWidth="MaxWidth.ExtraExtraLarge">
 
-    <MudContainer MaxWidth="@MaxWidth.ExtraExtraLarge">
+    <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge">
 
         <MudStepper CompleteButtonIcon="@Icons.Material.Filled.FindInPage"
                     OnPreviewInteraction="OnPreviewInteractionAsync"
@@ -153,7 +153,7 @@
                                Min="1"
                                Size="@Size.Large"
                                Step="1"
-                               T="@int"
+                               T="int"
                                TickMarkLabels="@(Enumerable.Range(1, 50).Select(x => x == 1 || x % 5 == 0 ? $"{x}" : " ").ToArray())"
                                TickMarks />
                 </MudStep>
@@ -304,49 +304,49 @@
         <MudSpacer />
 
         <MudDataGrid @ref="GasStationsDataGrid"
-                     ColumnResizeMode="@ResizeMode.None"
-                     Filterable="@true"
-                     FilterMode="@DataGridFilterMode.ColumnFilterRow"
+                     ColumnResizeMode="ResizeMode.None"
+                     Filterable
+                     FilterMode="DataGridFilterMode.ColumnFilterRow"
                      Height="450"
-                     Items="@GasStationsDataGridItems"
-                     SortMode="@SortMode.Single"
-                     T="@Libs.GasStationPrices.ViewModels.GasStationModel">
+                     Items="GasStationsDataGridItems"
+                     SortMode="SortMode.Single"
+                     T="Libs.GasStationPrices.ViewModels.GasStationModel">
 
             <Columns>
-                <PropertyColumn Property="@(x => x.RotuloTrimed)" Filterable="@true" Sortable="@true" Title="Rótulo">
+                <PropertyColumn Property="@(x => x.RotuloTrimed)" Filterable="true" Sortable="true" Title="Rótulo">
                     <FilterTemplate>
-                        <MudIconButton OnClick="@(() => IsRotuloFilterOpen = true)" Icon="@RotuloFilterIcon" Size="@Size.Small" />
-                        <MudOverlay Visible="@IsRotuloFilterOpen" OnClick="@(() => IsRotuloFilterOpen = false)" />
-                        <MudPopover Open="@IsRotuloFilterOpen" AnchorOrigin="@Origin.BottomCenter" TransformOrigin="@Origin.TopCenter">
+                        <MudIconButton OnClick="@(() => IsRotuloFilterOpen = true)" Icon="RotuloFilterIcon" Size="Size.Small" />
+                        <MudOverlay Visible="IsRotuloFilterOpen" OnClick="@(() => IsRotuloFilterOpen = false)" />
+                        <MudPopover Open="IsRotuloFilterOpen" AnchorOrigin="Origin.BottomCenter" TransformOrigin="Origin.TopCenter">
                             <MudStack Spacing="0">
-                                <MudCheckBox T="@bool" Label="Select All" Size="@Size.Small" Value="@IsRotuloFilterAllSelected" ValueChanged="@RotuloFilterSelectAll" />
+                                <MudCheckBox T="bool" Label="Select All" Size="Size.Small" Value="IsRotuloFilterAllSelected" ValueChanged="RotuloFilterSelectAll" />
                                 <MudStack Spacing="0" Style="overflow-y: auto; max-height: 250px">
                                     @foreach (var item in context.Items.Select(x => x.RotuloTrimed).Distinct().Order())
                                     {
                                         <MudCheckBox Label="@($"{item}")"
-                                                     Size="@Size.Small"
-                                                     T="@bool"
-                                                     Value="@(RotuloFilterSelectedItems.Contains(item))"
+                                                     Size="Size.Small"
+                                                     T="bool"
+                                                     Value="@RotuloFilterSelectedItems.Contains(item)"
                                                      ValueChanged="@((value) => RotuloFilterSelectedChanged(value, item))" />
                                     }
                                 </MudStack>
                                 <MudStack Row Class="justify-md-space-evenly">
                                     <MudButton OnClick="@(() => RotuloFilterClearAsync(context))">Clear</MudButton>
-                                    <MudButton Color="@Color.Primary" OnClick="@(() => RotuloFilterApplyAsync(context))">Filter</MudButton>
+                                    <MudButton Color="Color.Primary" OnClick="@(() => RotuloFilterApplyAsync(context))">Filter</MudButton>
                                 </MudStack>
                             </MudStack>
                         </MudPopover>
                     </FilterTemplate>
                 </PropertyColumn>
 
-                @foreach (var item in PetroleumProducts)
+                @foreach (var item in Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.All)
                 {
                     var IsHidden = !travelQueryModel.PetroleumProductsSelectedIds.Contains(item.IdProducto);
                     <TemplateColumn CellClass="mud-table-cell-align-right"
-                                    Filterable="@false"
-                                    Hidden="@IsHidden"
+                                    Filterable="false"
+                                    Hidden="IsHidden"
                                     SortBy="@(x => x.Prices.FirstOrDefault(y => y.Product.IdProducto == item.IdProducto)?.Price ?? null)"
-                                    Sortable="@true"
+                                    Sortable="true"
                                     Title="@item.Abreviatura">
                         <CellTemplate>
                             @(context.Item.Prices.FirstOrDefault(y => y.Product.IdProducto == item.IdProducto)?.Price ?? null)
@@ -354,22 +354,20 @@
                     </TemplateColumn>
                 }
 
-                <TemplateColumn Filterable="@false"
-                                Sortable="@false"
-                                StickyRight="@true"
+                <TemplateColumn Filterable="false"
+                                Sortable="false"
+                                StickyRight
                                 Title="@string.Empty">
                     <CellTemplate>
-                        <MudButton Color="@Color.Primary"
-                                   OnClick="@(()=> ShowGasStationInMap(context.Item))"
-                                   Size="@Size.Small"
-                                   Variant="@Variant.Filled">Show in Map</MudButton>
+                        <MudButton Color="Color.Primary"
+                                   OnClick="@(async () => await ShowGasStationInMapAsync(context.Item))"
+                                   Size="Size.Small"
+                                   Variant="Variant.Filled">Show in Map</MudButton>
                     </CellTemplate>
                 </TemplateColumn>
             </Columns>
 
-            <NoRecordsContent>
-                No data
-            </NoRecordsContent>
+            <NoRecordsContent>No data</NoRecordsContent>
 
         </MudDataGrid>
 
