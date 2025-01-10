@@ -311,7 +311,16 @@
                      Items="GasStationsDataGridItems"
                      SortMode="SortMode.Single"
                      T="Libs.GasStationPrices.ViewModels.GasStationModel">
+            <ColGroup>
+                <col style="width: 50%;" />
+                @foreach (var item in Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.All)
+                {
+                    var IsHidden = !travelQueryModel.PetroleumProductsSelectedIds.Contains(item.IdProducto);
 
+                    <col hidden="@IsHidden" />
+                }
+                <col style="width: 50px;" />
+            </ColGroup>
             <Columns>
                 <PropertyColumn Property="@(x => x.RotuloTrimed)" Filterable="true" Sortable="true" Title="Rótulo">
                     <FilterTemplate>
@@ -360,9 +369,10 @@
                                 Title="@string.Empty">
                     <CellTemplate>
                         <MudButton Color="Color.Primary"
+                                   EndIcon="@Icons.Material.Filled.Map"
                                    OnClick="@(async () => await ShowGasStationInMapAsync(context.Item))"
                                    Size="Size.Small"
-                                   Variant="Variant.Filled">Show in Map</MudButton>
+                                   Variant="Variant.Filled">Show</MudButton>
                     </CellTemplate>
                 </TemplateColumn>
             </Columns>
