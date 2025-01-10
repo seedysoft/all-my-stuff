@@ -4,8 +4,6 @@ using Seedysoft.Libs.Core.Enums;
 using Seedysoft.Libs.Core.Extensions;
 using System.Globalization;
 
-// TODO                             Place properties or files on new line when has attributes find all (] p)
-
 namespace Seedysoft.Libs.GoogleMapsRazorClassLib.GoogleMap;
 
 public partial class Map : SeedysoftComponentBase
@@ -15,8 +13,7 @@ public partial class Map : SeedysoftComponentBase
     /// <summary>
     /// Gets or sets the Google Map API key.
     /// </summary>
-    [EditorRequired]
-    [Parameter] public required string ApiKey { get; set; }
+    [EditorRequired, Parameter] public required string ApiKey { get; set; }
 
     /// <summary>
     /// Gets or sets the center parameter.

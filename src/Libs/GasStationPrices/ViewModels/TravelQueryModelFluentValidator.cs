@@ -22,7 +22,7 @@ public class TravelQueryModelFluentValidator : AbstractValidator<TravelQueryMode
             .InclusiveBetween(1, 50);
 
         _ = RuleFor(static x => x.PetroleumProductsSelectedIds)
-            .Must(static x => x.Count != 0)
+            .Must(static x => x.Count > 0)
             .WithMessage("At least one product must be selected");
     }
 

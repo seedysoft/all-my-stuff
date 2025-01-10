@@ -6,7 +6,7 @@ public sealed class TravelUris : BaseUris
 
     public sealed class Actions
     {
-        public const string GetMapId = nameof(GetMapId);
+        //public const string GetMapId = nameof(GetMapId);
         public const string FindPlaces = nameof(FindPlaces);
         public const string GetGasStations = nameof(GetGasStations);
 
