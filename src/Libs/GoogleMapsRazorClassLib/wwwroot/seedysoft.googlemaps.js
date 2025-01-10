@@ -140,6 +140,10 @@ window.seedysoft = {
         .then((response) => {
           mapInstance.directionsRenderer.setDirections(response);
 
+          if (response.routes.length > 1) {
+            mapInstance.directionsRenderer.setRouteIndex(-1);
+          }
+
           return response.routes.map((route, index) => {
             return {
               index: index,
