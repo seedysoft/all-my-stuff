@@ -8,17 +8,20 @@ window.seedysoft = {
 
     create: (elementId, map, zoom, center, markers, clickable) => {
       window.seedysoft.googleMaps.instanceArray[elementId] = {
-        map: map,
-        zoom: zoom,
         center: center,
-        markerArray: markers,
         clickable: clickable,
-        directionRendererArray: [],
+        directionsRenderer: new google.maps.DirectionsRenderer({
+          draggable: false,
+          map: map
+        }),
         directionsService: new google.maps.DirectionsService(),
         infoWindow: new google.maps.InfoWindow({
           content: "",
-          disableAutoPan: true,
+          disableAutoPan: true
         }),
+        map: map,
+        markerArray: markers,
+        zoom: zoom
       };
 
       return window.seedysoft.googleMaps.get(elementId);
@@ -27,13 +30,17 @@ window.seedysoft = {
       return window.seedysoft.googleMaps.instanceArray[elementId];
     },
     initialize: (elementId, zoom, center, markers, clickable, dotNetHelper) => {
-      let mapOptions = { center: center, disableDefaultUI: true, mapId: elementId, zoom: zoom };
+      let mapOptions = {
+        center: center,
+        disableDefaultUI: true,
+        mapId: elementId,
+        zoom: zoom
+      };
 
       let map = new google.maps.Map(document.getElementById(elementId), mapOptions);
 
-      let mapInstance = window.seedysoft.googleMaps.create(elementId, map, zoom, center, markers, clickable);
-
-      mapInstance.directionRendererArray.push(new google.maps.DirectionsRenderer({ map: map }));
+      //let mapInstance =
+      window.seedysoft.googleMaps.create(elementId, map, zoom, center, markers, clickable);
 
       if (markers) {
         for (const marker of markers) {
@@ -95,7 +102,7 @@ window.seedysoft = {
     },
     removeAllMarkers: (elementId) => {
       let mapInstance = window.seedysoft.googleMaps.get(elementId);
-      // delete the markers
+
       if (mapInstance.markerArray.length > 0) {
         for (const markerEl of mapInstance.markerArray) {
           markerEl.setMap(null);
@@ -121,68 +128,51 @@ window.seedysoft = {
       mapInstance.infoWindow.close();
       mapInstance.infoWindow.setContent(marker.title);
       mapInstance.infoWindow.open(mapInstance.map, marker.position);
-      dotNetHelper.invokeMethodAsync('OnMarkerClickJS', marker);
+      dotNetHelper.invokeMethodAsync("OnMarkerClickJS", marker);
     },
 
     directionsRoute: (elementId, request) => {
       let mapInstance = window.seedysoft.googleMaps.get(elementId);
+      mapInstance.directionsRenderer.setDirections(null);
 
-      /*return*/ mapInstance.directionsService
+      return mapInstance.directionsService
         .route(request)
         .then((response) => {
-          for (var i = 0, len = mapInstance.directionRendererArray.length; i < len; i++) {
-            mapInstance.directionRendererArray[i].setMap(null);
-            mapInstance.directionRendererArray[i] = null;
-          }
-          mapInstance.directionRendererArray = [];
+          mapInstance.directionsRenderer.setDirections(response);
 
-          // Route the directions and pass the response to a function to create markers for each step.
-          let warnings = '';
-          document.getElementById("warnings-panel").innerHTML = warnings;
-
-          for (var i = 0, len = response.routes.length; i < len; i++) {
-            if (response.routes[i].warnings.length > 0) {
-              warnings += "<li><b>" + response.routes[i].warnings + "</b></li>";
-            }
-
-            mapInstance.directionRendererArray.push(new google.maps.DirectionsRenderer({
-              directions: response,
-              map: mapInstance.map,
-              routeIndex: i,
-              polylineOptions: {
-                strokeColor: Colors[i],
-                strokeWeight: 5,
-                strokeOpacity: 1
-              }
-            }));
-
-            showSteps(response.routes[i], mapInstance.markerArray, mapInstance.infoWindow, mapInstance.map);
-          }
-
-          if (warnings.length > 0) {
-            document.getElementById("warnings-panel").innerHTML = "<ul>" + warnings + "</ul>";
-          }
-
-          /*return mapInstance.map.getBounds();*/
+          return response.routes.map((route, index) => {
+            return {
+              index: index,
+              summary: route.summary,
+              distance: route.legs[0].distance.text,
+              duration: route.legs[0].duration.text,
+              warnings: route.warnings
+            };
+          });
         })
-        .catch((e) => { window.alert("Directions request failed: '" + e + "'"); });
+        .catch((e) => { window.alert(`Directions request failed: '${e}'`); });
+    },
+
+    highlightRoute: (elementId, routeIndex) => {
+      let mapInstance = window.seedysoft.googleMaps.get(elementId);
+      mapInstance.directionsRenderer.setRouteIndex(routeIndex);
     }
   },
 
   scriptLoader: {
     initialize: (elementId, async, defer, scriptId, source, type, dotNetHelper) => {
       if (source.length === 0) {
-        console.error(`Invalid source url.`);
+        console.error("Invalid source url.");
         return;
       }
 
       let scriptLoaderElement = document.getElementById(elementId);
 
       if (scriptLoaderElement == null) {
-        window.alert("Cannot find Element " + elementId);
+        window.alert(`Cannot find Element ${elementId}`);
       }
       else {
-        let scriptElement = document.createElement('script');
+        let scriptElement = document.createElement("script");
 
         scriptElement.async = async;
 
@@ -198,11 +188,11 @@ window.seedysoft = {
           scriptElement.type = type;
 
         scriptElement.addEventListener("error", (_event) => {
-          dotNetHelper.invokeMethodAsync('OnErrorJS', `An error occurred while loading the script: ${source}`);
+          dotNetHelper.invokeMethodAsync("OnErrorJS", `An error occurred while loading the script: ${source}`);
         });
 
         scriptElement.addEventListener("load", (_event) => {
-          dotNetHelper.invokeMethodAsync('OnLoadJS');
+          dotNetHelper.invokeMethodAsync("OnLoadJS");
         });
 
         scriptLoaderElement.appendChild(scriptElement);
@@ -211,37 +201,37 @@ window.seedysoft = {
   }
 }
 
-const Colors = [
-  "#004f6f",
-  "#031a1f",
-  "#4c7c9b",
-  "#2a4052",
-  "#4d7a85",
-  "#234660",
-  "#274f58",
-  "#005d7d"
-];
+//const Colors = [
+//  "#004f6f",
+//  "#031a1f",
+//  "#4c7c9b",
+//  "#2a4052",
+//  "#4d7a85",
+//  "#234660",
+//  "#274f58",
+//  "#005d7d"
+//];
 
-function showSteps(route, markerArray, stepDisplay, map) {
-  //// For each step, place a marker, and add the text to the marker's infowindow.
-  //// Also attach the marker to an array so we can keep track of it and remove it when calculating new routes.
-  //const myRoute = route.legs[0];
+//function showSteps(route, markerArray, stepDisplay, map) {
+//  // For each step, place a marker, and add the text to the marker's infowindow.
+//  // Also attach the marker to an array so we can keep track of it and remove it when calculating new routes.
+//  const myRoute = route.legs[0];
 
-  //for (let i = 0; i < myRoute.steps.length; i++) {
-  //  const advancedMarker = new google.maps.marker.AdvancedMarkerElement({
-  //    gmpDraggable: false,
-  //    map: map,
-  //    position: myRoute.steps[i].start_location,
-  //  });
-  //  markerArray[i] = advancedMarker;
+//  for (let i = 0; i < myRoute.steps.length; i++) {
+//    const advancedMarker = new google.maps.marker.AdvancedMarkerElement({
+//      gmpDraggable: false,
+//      map: map,
+//      position: myRoute.steps[i].start_location,
+//    });
+//    markerArray[i] = advancedMarker;
 
-  //  advancedMarker.addEventListener("gmp-click", async () => {
-  //    // Open an info window when the marker is clicked on, containing the text of the step.
-  //    stepDisplay.setContent(myRoute.steps[i].instructions);
-  //    stepDisplay.open(map, marker);
-  //  });
-  //}
-}
+//    advancedMarker.addEventListener("gmp-click", async () => {
+//      // Open an info window when the marker is clicked on, containing the text of the step.
+//      stepDisplay.setContent(myRoute.steps[i].instructions);
+//      stepDisplay.open(map, marker);
+//    });
+//  }
+//}
 
 //// global function
 //invokeMethodAsync: (callbackEventName, dotNetHelper) => {
@@ -251,7 +241,7 @@ function showSteps(route, markerArray, stepDisplay, map) {
 //    if (input.length <= 0 || validChars.length <= 0)
 //        return false;
 
-//    let inputCharArr = input.split('');
+//    let inputCharArr = input.split("");
 //    for (let i = 0; i < inputCharArr.length; i++) {
 //        if (!validChars.includes(inputCharArr[i]))
 //            return true;

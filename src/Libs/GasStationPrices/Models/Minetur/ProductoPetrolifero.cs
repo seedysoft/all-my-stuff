@@ -13,6 +13,10 @@ public record class ProductoPetrolifero
 
     public static System.Collections.Frozen.FrozenSet<ProductoPetrolifero> All
         => System.Collections.Frozen.FrozenSet.ToFrozenSet([G95E5, G95E10, G95E5Plus, G98E5, G98E10, GOA, GOAPlus, GOB, BIE, BIO, GLP, GNC, GNL, H2]);
+    public static System.Collections.Frozen.FrozenSet<ProductoPetrolifero> Gasoline
+        => System.Collections.Frozen.FrozenSet.ToFrozenSet([G95E5, G95E10, G95E5Plus, G98E5, G98E10]);
+    public static System.Collections.Frozen.FrozenSet<ProductoPetrolifero> Diesel
+        => System.Collections.Frozen.FrozenSet.ToFrozenSet([GOA, GOAPlus, GOB, BIO]);
 
     public override string ToString() => Nombre ?? "Unknown";
 

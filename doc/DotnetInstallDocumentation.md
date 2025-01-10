@@ -62,13 +62,13 @@ find . -type d -name "8.0.1" -exec rm -rf "{}" \;
 ```bash
 # ./dotnet workload search [<SEARCH_STRING>] [-v|--verbosity <LEVEL>]
 # ./dotnet workload search -?|-h|--help
-dotnet workload install wasm-tools
+dotnet workload install wasm-tools-net8
 dotnet workload update
 ```
 
 **Update Entity Framework global tools:**
 ```bash
-dotnet tool update --global dotnet-ef
+dotnet tool update --global dotnet-ef --version 8.* --allow-downgrade
 ```
 
 **MudBlazor Templates
