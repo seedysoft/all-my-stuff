@@ -22,7 +22,7 @@
             <ActionContent Context="stepper">
                 <MudButton ButtonType="@ButtonType.Button"
                            Color="@Color.Primary"
-                           OnClick="@(() => stepper.ResetAsync(true))"
+                           OnClick="@(() => { ClearDataAsync(); stepper.ResetAsync(true); })"
                            StartIcon="@Icons.Material.Filled.Search">Search again</MudButton>
 
                 @if (!stepper.IsCompleted)
@@ -40,6 +40,7 @@
                                    EndIcon="@stepper.SkipButtonIcon"
                                    OnClick="@(() => stepper.SkipCurrentStepAsync())">Skip</MudButton>
                     }
+                    <MudSpacer />
                     <MudButton ButtonType="@ButtonType.Button"
                                Color="@Color.Primary"
                                EndIcon="@Icons.Material.Filled.NavigateNext"
@@ -49,7 +50,6 @@
 
             <ChildContent>
                 <MudStep HasError="@(!IsStep1Complete())"
-                         Skippable="@IsStep1Complete()"
                          Title="@(IsStep1Complete() ? $"{travelQueryModel.Origin} -> {travelQueryModel.Destination}" : string.Empty)">
 
                     <MudGrid>
@@ -97,27 +97,23 @@
                 </MudStep>
 
                 <MudStep HasError="@(!IsStep2Complete())"
-                         Skippable="@(IsStep2Complete())"
                          Title="@(IsStep2Complete() ? $"Products ({travelQueryModel.PetroleumProductsSelectedIds.Count}): {string.Join(", ", Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.All.Where(x => travelQueryModel.PetroleumProductsSelectedIds.Contains(x.IdProducto)).Select(x => x.Abreviatura).Order())}" : string.Empty)">
 
                     <MudButtonGroup Class="gap-4 pa-4" FullWidth Size="@Size.Medium" Variant="variant">
 
                         <MudButton ButtonType="@ButtonType.Button"
-                                   Color="@(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.All.Count == travelQueryModel.PetroleumProductsSelectedIds.Count ? Color.Primary : Color.Secondary)"
                                    IconColor="@(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.All.Count == travelQueryModel.PetroleumProductsSelectedIds.Count ? Color.Primary : Color.Secondary)"
                                    EndIcon="@Icons.Material.Filled.SelectAll"
                                    IconSize="@Size.Large"
                                    OnClick="@(() => travelQueryModel.PetroleumProductsSelectedIds = Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.All.Select(static x => x.IdProducto).ToHashSet())">@nameof(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.All)</MudButton>
 
                         <MudButton ButtonType="@ButtonType.Button"
-                                   Color="@(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.Gasoline.Select(x => x.IdProducto).All(y => travelQueryModel.PetroleumProductsSelectedIds.Contains(y)) ? Color.Primary : Color.Secondary)"
                                    IconColor="@(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.Gasoline.Select(x => x.IdProducto).All(y => travelQueryModel.PetroleumProductsSelectedIds.Contains(y)) ? Color.Primary : Color.Secondary)"
                                    EndIcon="@Icons.Material.Filled.PropaneTank"
                                    IconSize="@Size.Large"
                                    OnClick="@(() => travelQueryModel.PetroleumProductsSelectedIds = Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.Gasoline.Select(static x => x.IdProducto).ToHashSet())">@nameof(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.Gasoline)</MudButton>
 
                         <MudButton ButtonType="@ButtonType.Button"
-                                   Color="@(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.Diesel.Select(x => x.IdProducto).All(y => travelQueryModel.PetroleumProductsSelectedIds.Contains(y)) ? Color.Primary : Color.Secondary)"
                                    IconColor="@(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.Diesel.Select(x => x.IdProducto).All(y => travelQueryModel.PetroleumProductsSelectedIds.Contains(y)) ? Color.Primary : Color.Secondary)"
                                    EndIcon="@Icons.Material.Filled.CarRepair"
                                    IconSize="@Size.Large"
@@ -136,7 +132,7 @@
                                 SelectionMode="@SelectionMode.MultiSelection"
                                 T="long"
                                 Variant="@Variant.Text">
-                        @foreach (var item in Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.All.OrderBy(x => x.Abreviatura))
+                        @foreach (var item in Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.All)
                         {
                             <MudTooltip Text="@item.Nombre">
                                 <MudChip Default="@(item.Abreviatura.StartsWith("G9") && !item.Abreviatura.EndsWith("E10"))"
@@ -160,7 +156,6 @@
                                T="int"
                                TickMarkLabels="@(Enumerable.Range(1, 50).Select(x => x == 1 || x % 5 == 0 ? $"{x}" : " ").ToArray())"
                                TickMarks />
-
                 </MudStep>
             </ChildContent>
 
@@ -175,31 +170,38 @@
 
         <MudDataGrid @ref="RoutesDataGrid"
                      ColumnResizeMode="@ResizeMode.None"
+                     Filterable="false"
                      Height="450"
+                     Hover
                      Items="RoutesDataGridItems"
+                     SortMode="@SortMode.None"
                      T="Libs.GoogleApis.Models.DirectionsServiceRoutes">
-
+            <ColGroup>
+                <col />
+                <col style="width: 50px;" />
+                <col style="width: 50px;" />
+                <col />
+                <col style="width: 50px;" />
+            </ColGroup>
             <Columns>
                 <PropertyColumn Property="@(x => x.Summary)" />
-                <PropertyColumn Property="@(x => x.Distance)" />
-                <PropertyColumn Property="@(x => x.Duration)" />
+                <PropertyColumn CellStyle="text-align: right; text-wrap-mode: nowrap;" Property="@(x => x.Distance)" />
+                <PropertyColumn CellStyle="text-align: right; text-wrap-mode: nowrap;" Property="@(x => x.Duration)" />
 
-                <TemplateColumn Sortable="false"
-                                StickyRight
-                                Title="Warnings">
+                <TemplateColumn Title="Warnings">
                     <CellTemplate>
                         @((MarkupString)$"{string.Join("<br />", context.Item.Warnings)}")
                     </CellTemplate>
                 </TemplateColumn>
 
-                <TemplateColumn Sortable="false"
-                                StickyRight
+                <TemplateColumn StickyRight
                                 Title="@string.Empty">
                     <CellTemplate>
                         <MudButton Color="@Color.Primary"
+                                   EndIcon="@Icons.Material.Filled.Map"
                                    OnClick="@(async () => await ShowDirectionsServiceRouteInMapAsync(context.Item.Index))"
                                    Size="@Size.Small"
-                                   Variant="Variant.Filled">Show in Map</MudButton>
+                                   Variant="Variant.Filled">Show</MudButton>
                     </CellTemplate>
                 </TemplateColumn>
             </Columns>
@@ -225,10 +227,20 @@
                      Filterable
                      FilterMode="DataGridFilterMode.ColumnFilterRow"
                      Height="450"
+                     Hover
                      Items="GasStationsDataGridItems"
                      SortMode="SortMode.Single"
                      T="Libs.GasStationPrices.ViewModels.GasStationModel">
+            <ColGroup>
+                <col style="width: 50%;" />
+                @foreach (var item in Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.All)
+                {
+                    var IsHidden = !travelQueryModel.PetroleumProductsSelectedIds.Contains(item.IdProducto);
 
+                    <col hidden="@IsHidden" />
+                }
+                <col style="width: 50px;" />
+            </ColGroup>
             <Columns>
                 <PropertyColumn Property="@(x => x.RotuloTrimed)" Filterable="true" Sortable="true" Title="Rótulo">
                     <FilterTemplate>
@@ -277,9 +289,10 @@
                                 Title="@string.Empty">
                     <CellTemplate>
                         <MudButton Color="Color.Primary"
+                                   EndIcon="@Icons.Material.Filled.Map"
                                    OnClick="@(async () => await ShowGasStationInMapAsync(context.Item))"
                                    Size="Size.Small"
-                                   Variant="Variant.Filled">Show in Map</MudButton>
+                                   Variant="Variant.Filled">Show</MudButton>
                     </CellTemplate>
                 </TemplateColumn>
             </Columns>
