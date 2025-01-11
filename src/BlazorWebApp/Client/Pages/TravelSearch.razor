@@ -22,9 +22,8 @@
             <ActionContent Context="stepper">
                 <MudButton ButtonType="@ButtonType.Button"
                            Color="@Color.Primary"
-                           OnClick="@(() => { ClearDataAsync(); stepper.ResetAsync(true); })"
+                           OnClick="@(async () => { await ClearDataAsync(); await stepper.ResetAsync(true); })"
                            StartIcon="@Icons.Material.Filled.Search">Search again</MudButton>
-
                 @if (!stepper.IsCompleted)
                 {
                     <MudButton ButtonType="@ButtonType.Button"
@@ -159,7 +158,7 @@
                 </MudStep>
             </ChildContent>
 
-            <CompletedContent></CompletedContent>
+            @* <CompletedContent>Click <MudIcon Icon="@Icons.Material.Filled.ArrowDownward" /> to start a new search</CompletedContent> *@
         </MudStepper>
 
     </MudContainer>
@@ -167,6 +166,8 @@
     <MudSpacer />
 
     <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge">
+
+        <GoogleRoutesViewer RoutesMudTableItems="RoutesDataGridItems" />
 
         <MudDataGrid @ref="RoutesDataGrid"
                      ColumnResizeMode="@ResizeMode.None"
