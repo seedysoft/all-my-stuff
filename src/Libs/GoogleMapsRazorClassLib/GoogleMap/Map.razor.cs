@@ -1,15 +1,13 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
-using Seedysoft.Libs.Core.Enums;
+using RestSharp;
 using Seedysoft.Libs.Core.Extensions;
-using System.Globalization;
+using System.Collections.Frozen;
 
 namespace Seedysoft.Libs.GoogleMapsRazorClassLib.GoogleMap;
 
 public partial class Map : SeedysoftComponentBase
 {
-    #region Parameters
-
     /// <summary>
     /// Gets or sets the Google Map API key.
     /// </summary>
@@ -33,13 +31,13 @@ public partial class Map : SeedysoftComponentBase
     /// <remarks>
     /// Default value is <see cref="CssUnit.Px" />.
     /// </remarks>
-    [Parameter] public CssUnit HeightUnit { get; set; } = CssUnit.Px;
+    [Parameter] public Core.Enums.CssUnit HeightUnit { get; set; } = Core.Enums.CssUnit.Px;
 
     /// <summary>
     /// Event fired when a user clicks on a marker.
     /// This event fires only when <see cref="Clickable" /> is set to <see langword="true" />.
     /// </summary>
-    [Parameter] public EventCallback<Marker> OnMarkerClick { get; set; }
+    [Parameter] public EventCallback<Marker> OnClickGoogleMapMarker { get; set; }
 
     /// <summary>
     /// Makes the marker clickable if set to <see langword="true" />.
@@ -59,7 +57,7 @@ public partial class Map : SeedysoftComponentBase
     /// <remarks>
     /// Default value is <see cref="CssUnit.Percentage" />.
     /// </remarks>
-    [Parameter] public CssUnit WidthUnit { get; set; } = CssUnit.Percentage;
+    [Parameter] public Core.Enums.CssUnit WidthUnit { get; set; } = Core.Enums.CssUnit.Percentage;
 
     /// <summary>
     /// Gets or sets the zoom level of the <see cref="GoogleMap" />.
@@ -69,11 +67,10 @@ public partial class Map : SeedysoftComponentBase
     /// </remarks>
     [Parameter] public int Zoom { get; set; } = 14;
 
-    #endregion
-
     private DotNetObjectReference<Map>? objRef;
 
-    private readonly List<Marker> Markers = [];
+    private readonly HashSet<Marker> markers = [];
+    //public System.Collections.ObjectModel.ReadOnlyCollection<Marker> Markers => markers.AsReadOnly();
 
     private string GoogleMapsJsFileUrl
         => $"https://maps.googleapis.com/maps/api/js?key={ApiKey}&loading=async&v=beta&libraries=maps,marker,routes";
@@ -81,8 +78,8 @@ public partial class Map : SeedysoftComponentBase
     protected override string? StyleNames =>
         BuildStyleNames(
             Style,
-            ($"width:{Width!.Value.ToString(CultureInfo.InvariantCulture)}{WidthUnit.ToCssString()}", Width.GetValueOrDefault() > 0),
-            ($"height:{Height!.Value.ToString(CultureInfo.InvariantCulture)}{HeightUnit.ToCssString()}", Height.GetValueOrDefault() > 0)
+            ($"width:{Width!.Value.ToString(System.Globalization.CultureInfo.InvariantCulture)}{WidthUnit.ToCssString()}", Width.GetValueOrDefault() > 0),
+            ($"height:{Height!.Value.ToString(System.Globalization.CultureInfo.InvariantCulture)}{HeightUnit.ToCssString()}", Height.GetValueOrDefault() > 0)
         );
 
     protected override async Task OnInitializedAsync()
@@ -92,12 +89,7 @@ public partial class Map : SeedysoftComponentBase
         await base.OnInitializedAsync();
     }
 
-    /// <summary>
-    /// Adds a marker to the GoogleMap.
-    /// </summary>
-    /// <param name="marker">The marker to add to the map.</param>
-    /// <returns>A completed task.</returns>
-    public async ValueTask AddMarkerAsync(Marker marker)
+    private async ValueTask AddMarkerAsync(Marker marker)
     {
         await JSRuntime.InvokeVoidAsync($"{Constants.SeedysoftGoogleMaps}.addMarker", Id, marker, objRef);
         Markers.Add(marker);
@@ -107,12 +99,34 @@ public partial class Map : SeedysoftComponentBase
         await JSRuntime.InvokeVoidAsync($"{Constants.SeedysoftGoogleMaps}.removeAllMarkers", Id, objRef);
         Markers.Clear();
     }
+    public async ValueTask ClickOnMarkerAsync(Marker marker)
+    {
+        if (!markers.Any(x => x.Id == marker.Id))
+            await AddMarkerAsync(marker);
+
+        await JSRuntime.InvokeVoidAsync($"{Constants.SeedysoftGoogleMaps}.openInfoWindow", Id, marker, objRef);
+    }
+
+    public async Task<IReadOnlySet<GoogleApis.Models.Shared.LatLngLiteral>> HighlightRouteAsync(int routeIndex)
+    {
+        var DirLeg = DotNetObjectReference.Create<string>(string.Empty);
+        var objects = await JSRuntime.InvokeAsync<GoogleApis.Models.Directions.Response.DirectionsLeg>(
+            $"{Constants.SeedysoftGoogleMaps}.highlightRoute",
+#if DEBUG
+                TimeSpan.FromSeconds(15),
+#else
+                TimeSpan.FromSeconds(2),
+#endif
+            [Id, routeIndex, DirLeg]);
+
+        return FrozenSet<GoogleApis.Models.Shared.LatLngLiteral>.Empty;
+    }
 
     [JSInvokable]
-    public async Task OnMarkerClickJS(Marker marker)
+    public async Task OnClickGoogleMapMarkerJS(Marker marker)
     {
-        if (OnMarkerClick.HasDelegate)
-            await OnMarkerClick.InvokeAsync(marker);
+        if (OnClickGoogleMapMarker.HasDelegate)
+            await OnClickGoogleMapMarker.InvokeAsync(marker);
     }
 
     private static void OnScriptError(string errorMessage) => throw new Exception(errorMessage);
@@ -126,5 +140,25 @@ public partial class Map : SeedysoftComponentBase
             Markers,
             IsClickable,
             objRef));
+    }
+    private static void OnScriptError(string errorMessage) => throw new Exception(errorMessage);
+
+    protected override void Dispose(bool disposing)
+    {
+        base.Dispose(disposing);
+        try
+        {
+            objRef?.Dispose();
+        }
+        catch (JSDisconnectedException) { }
+    }
+    protected override async ValueTask DisposeAsyncCore(bool disposing)
+    {
+        await base.DisposeAsyncCore(disposing);
+        try
+        {
+            objRef?.Dispose();
+        }
+        catch (JSDisconnectedException) { }
     }
 }

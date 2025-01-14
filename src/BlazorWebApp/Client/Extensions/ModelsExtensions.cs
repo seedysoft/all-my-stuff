@@ -2,9 +2,10 @@
 
 public static class ModelsExtensions
 {
-    public static Libs.GoogleMapsRazorClassLib.GoogleMap.Marker ToMarker(this Libs.GasStationPrices.ViewModels.GasStationModel gasStationModel)
+    public static Libs.GoogleMapsRazorClassLib.GoogleMap.Marker ToMarker(
+        this Libs.GasStationPrices.ViewModels.GasStationModel gasStationModel)
     {
-        return new Libs.GoogleMapsRazorClassLib.GoogleMap.Marker()
+        return new()
         {
             Content = $"<div style='background-color:blue'>{gasStationModel.RotuloTrimed}</div>",
             PinElement = new()

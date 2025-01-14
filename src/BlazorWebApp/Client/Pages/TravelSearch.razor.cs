@@ -1,7 +1,10 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
+using RestSharp;
 using Seedysoft.BlazorWebApp.Client.Extensions;
 using Seedysoft.Libs.Core.Extensions;
+using Seedysoft.Libs.GasStationPrices.Extensions;
+using System.Collections.Frozen;
 using System.Net.Http.Json;
 
 namespace Seedysoft.BlazorWebApp.Client.Pages;
@@ -17,8 +20,8 @@ public partial class TravelSearch
     [Inject] private MudBlazor.IDialogService DialogService { get; set; } = default!;
     [Inject] private MudBlazor.ISnackbar Snackbar { get; set; } = default!;
     [Inject] private IConfiguration Configuration { get; set; } = default!;
+    [Inject] private Libs.GasStationPrices.Services.GasStationPricesService GasStationPricesService { get; set; } = default!;
 
-    private Libs.GasStationPrices.Settings.GasStationPricesSettings gasStationPricesSettings = default!;
     private Libs.GoogleApis.Settings.GoogleApisSettings googleApisSettings = default!;
 
     private Libs.GoogleMapsRazorClassLib.GoogleMap.Map TravelGoogleMap { get; set; } = default!;
@@ -39,8 +42,7 @@ public partial class TravelSearch
     };
     private readonly Libs.GasStationPrices.ViewModels.TravelQueryModelFluentValidator travelQueryModelFluentValidator = new();
 
-    private MudBlazor.MudDataGrid<Libs.GoogleApis.Models.DirectionsServiceRoutes> RoutesDataGrid { get; set; } = default!;
-    private readonly List<Libs.GoogleApis.Models.DirectionsServiceRoutes> RoutesDataGridItems = [];
+    private Components.GoogleRoutesViewer GoogleRoutesViewer { get; set; } = default!;
 
     private MudBlazor.MudDataGrid<Libs.GasStationPrices.ViewModels.GasStationModel> GasStationsDataGrid { get; set; } = default!;
     private readonly List<Libs.GasStationPrices.ViewModels.GasStationModel> GasStationsDataGridItems = [];
@@ -50,7 +52,7 @@ public partial class TravelSearch
     private HashSet<string> RotuloFilterAvailableItems => [.. GasStationsDataGridItems.Select(static x => x.RotuloTrimed).Distinct().Order()];
     private HashSet<string> RotuloFilterSelectedItems = [];
     private bool IsRotuloFilterAllSelected => RotuloFilterAvailableItems.Count == RotuloFilterSelectedItems.Count;
-    private string RotuloFilterIcon => IsRotuloFilterAllSelected switch
+    public string RotuloFilterIcon => IsRotuloFilterAllSelected switch
     {
         true => MudBlazor.Icons.Material.Outlined.FilterAlt,
         false => MudBlazor.Icons.Material.Filled.FilterAlt,
@@ -77,10 +79,9 @@ public partial class TravelSearch
 
         Logger.LogInformation($"Called {nameof(OnInitializedAsync)}");
 
-        gasStationPricesSettings = Configuration
-            .GetSection(nameof(Libs.GasStationPrices.Settings.GasStationPricesSettings)).Get<Libs.GasStationPrices.Settings.GasStationPricesSettings>()!;
         googleApisSettings = Configuration
-            .GetSection(nameof(Libs.GoogleApis.Settings.GoogleApisSettings)).Get<Libs.GoogleApis.Settings.GoogleApisSettings>()!;
+            .GetSection(nameof(Libs.GoogleApis.Settings.GoogleApisSettings))
+            .Get<Libs.GoogleApis.Settings.GoogleApisSettings>()!;
 
         // Take only from Libs.GasStationPrices.Core.Json.Minetur.ProductoPetrolifero, as properties are fixed
         //string FromUri = $"{NavManager.BaseUri}{Constants.PetroleumProductsUris.Controller}/{Constants.PetroleumProductsUris.Actions.ForFilter}";
@@ -98,7 +99,7 @@ public partial class TravelSearch
         };
     }
 
-    private void OnGoogleMapMarkerClick(
+    private void OnClickGoogleMapMarker(
         Libs.GoogleMapsRazorClassLib.GoogleMap.Marker marker)
         => _ = Snackbar.Add($"Clicked into {marker.Content}. DateTime: {DateTime.Now}", MudBlazor.Severity.Success);
 
@@ -145,15 +146,12 @@ public partial class TravelSearch
         IsRotuloFilterOpen = false;
     }
 
-    private async Task ShowDirectionsServiceRouteInMapAsync(
-        int directionsServiceRouteIndex)
-        => await TravelGoogleMap.HighlightRouteAsync(directionsServiceRouteIndex);
-
     private async Task ShowGasStationInMapAsync(
         Libs.GasStationPrices.ViewModels.GasStationModel gasStationModel)
         => await TravelGoogleMap.ClickOnMarkerAsync(gasStationModel.ToMarker());
 
-    private async Task OnPreviewInteractionAsync(MudBlazor.StepperInteractionEventArgs arg)
+    private async Task OnPreviewInteractionAsync(
+        MudBlazor.StepperInteractionEventArgs arg)
     {
         switch (arg.Action)
         {
@@ -220,28 +218,31 @@ public partial class TravelSearch
         }
     }
 
-    private bool IsStep1Complete() => !string.IsNullOrWhiteSpace(travelQueryModel.Origin) && !string.IsNullOrWhiteSpace(travelQueryModel.Destination);
-    private bool IsStep2Complete() => travelQueryModel.PetroleumProductsSelectedIds.Count > 0;
+    private bool IsStep1Complete()
+        => !string.IsNullOrWhiteSpace(travelQueryModel.Origin) && !string.IsNullOrWhiteSpace(travelQueryModel.Destination);
+    private bool IsStep2Complete()
+        => travelQueryModel.PetroleumProductsSelectedIds.Count > 0;
 
     [System.Runtime.Versioning.UnsupportedOSPlatform("browser")]
-    private async Task OnCompletedChangedAsync(bool isCompleted)
+    private async Task OnCompletedChangedAsync(
+        bool isCompleted)
     {
         if (!isCompleted)
             return;
 
-        await LoadDataAsync();
+        await LoadGoogleRoutesAsync();
     }
 
     private async Task ClearDataAsync()
     {
         await TravelGoogleMap.RemoveAllMarkersAsync();
-        RoutesDataGridItems.Clear();
+        GoogleRoutesViewer.RoutesMudTableItems.Clear();
         GasStationsDataGridItems.Clear();
         RotuloFilterSelectedItems.Clear();
     }
 
     [System.Runtime.Versioning.UnsupportedOSPlatform("browser")]
-    private async Task LoadDataAsync()
+    private async Task LoadGoogleRoutesAsync()
     {
         FluentValidation.Results.ValidationResult validationResult = await travelQueryModelFluentValidator.ValidateAsync(travelQueryModel);
         if (!validationResult.IsValid)
@@ -253,7 +254,6 @@ public partial class TravelSearch
 
         await ClearDataAsync();
 
-        //Direction Request
         Libs.GoogleApis.Models.Directions.Request.Body directionsRequest = new()
         {
             Origin = travelQueryModel.Origin,
@@ -279,50 +279,20 @@ public partial class TravelSearch
             //],
         };
         directionsService ??= new(JSRuntime, TravelGoogleMap.Id);
+        GoogleRoutesViewer.RoutesMudTableItems.AddRange(await directionsService.RouteAsync(directionsRequest));
+    }
 
-        RoutesDataGridItems.AddRange(await directionsService.RouteAsync(directionsRequest));
+    private async Task RoutesDataGridItemSelectedAsync(
+        Libs.GoogleApis.Models.DirectionsServiceRoutes directionsServiceRoutes)
+    {
+        IReadOnlySet<Libs.GoogleApis.Models.Shared.LatLngLiteral> Points = await TravelGoogleMap.HighlightRouteAsync(directionsServiceRoutes.Index);
 
-        //// Load GasStations
-        //StringContent requestContent = new(
-        //    System.Text.Json.JsonSerializer.Serialize(travelQueryModel),
-        //    System.Text.Encoding.UTF8,
-        //    System.Net.Mime.MediaTypeNames.Application.Json);
-        //string FromUri = $"{NavManager.BaseUri}{Constants.TravelUris.Controller}/{Constants.TravelUris.Actions.GetGasStations}";
-        //HttpRequestMessage requestMessage = new(HttpMethod.Post, FromUri) { Content = requestContent, };
+        if (!Points.Any())
+            throw new ApplicationException($"{nameof(Libs.GoogleApis.Services.RoutesService.GetRoutesAsync)} does not finds route points");
 
-        //HttpResponseMessage response = await Http.SendAsync(requestMessage);
+        GasStationsDataGridItems.AddRange(await GasStationPricesService.GetNearGasStationsAsync(Points, travelQueryModel.MaxDistanceInKm));
 
-        //if (!response.IsSuccessStatusCode)
-        //    return;
-
-        //await foreach (Libs.GasStationPrices.ViewModels.GasStationModel? gasStationModel in
-        //    response.Content.ReadFromJsonAsAsyncEnumerable<Libs.GasStationPrices.ViewModels.GasStationModel>()!)
-        //{
-        //    if (gasStationModel == null)
-        //        continue;
-
-        //    GasStationsDataGridItems.Add(gasStationModel);
-
-        //    // TODO                             Fix markers
-
-        //    //await TravelGoogleMap.AddMarkerAsync(new Libs.GoogleMapsRazorClassLib.GoogleMap.Marker()
-        //    //{
-        //    //    Content = $"<div style='background-color:blue'>{gasStationModel.RotuloTrimed}</div>",
-        //    //    PinElement = new()
-        //    //    {
-        //    //        Background = "",
-        //    //        BorderColor = "",
-        //    //        Glyph = null,
-        //    //        GlyphColor = "azure",
-        //    //        Scale = 1.0,
-        //    //        UseIconFonts = true,
-        //    //    },
-        //    //    Position = new(gasStationModel.Lat, gasStationModel.Lng),
-        //    //    Title = gasStationModel.RotuloTrimed,
-        //    //});
-        //}
-
-        //RotuloFilterSelectedItems = [.. RotuloFilterAvailableItems];
+        RotuloFilterSelectedItems = [.. RotuloFilterAvailableItems];
     }
 
     private void RotuloFilterSelectAll(

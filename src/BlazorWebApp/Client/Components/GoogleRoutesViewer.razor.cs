@@ -4,44 +4,25 @@ namespace Seedysoft.BlazorWebApp.Client.Components;
 
 public partial class GoogleRoutesViewer
 {
-    [Parameter]
-    public List<Libs.GoogleApis.Models.DirectionsServiceRoutes> RoutesMudTableItems { get; set; } = [];
+    [Parameter] public List<Libs.GoogleApis.Models.DirectionsServiceRoutes> RoutesMudTableItems { get; set; } = [];
+
+    [Parameter] public Func<Libs.GoogleApis.Models.DirectionsServiceRoutes, Task>? OnRouteSelected { get; set; }
 
     private MudBlazor.MudTable<Libs.GoogleApis.Models.DirectionsServiceRoutes> RoutesMudTable { get; set; } = default!;
-    private int selectedRowNumber = -1;
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    private async Task RoutesMudTableOnRowClick(
+        MudBlazor.TableRowClickEventArgs<Libs.GoogleApis.Models.DirectionsServiceRoutes> tableRowClickEventArgs)
     {
-        await base.OnAfterRenderAsync(firstRender);
-
-        if (firstRender)
-        {
-            var i = 0;
-        }
+        if (OnRouteSelected != null && tableRowClickEventArgs.Item != null)
+            await OnRouteSelected.Invoke(tableRowClickEventArgs.Item);
     }
 
-    private Task RoutesMudTableOnRowClick(MudBlazor.TableRowClickEventArgs<Libs.GoogleApis.Models.DirectionsServiceRoutes> tableRowClickEventArgs)
+    private string SelectedRowClassFunc(
+        Libs.GoogleApis.Models.DirectionsServiceRoutes element,
+        int rowNumber)
     {
-        return Task.CompletedTask;
-    }
-
-    private string SelectedRowClassFunc(Libs.GoogleApis.Models.DirectionsServiceRoutes element, int rowNumber)
-    {
-        // Not allow to "unselect"
-        /*if (selectedRowNumber == rowNumber)
-        {
-            selectedRowNumber = -1;
-            return string.Empty;
-        }
-        else*/
-        if (RoutesMudTable.SelectedItem != null && RoutesMudTable.SelectedItem.Equals(element))
-        {
-            selectedRowNumber = rowNumber;
-            return "selected";
-        }
-        else
-        {
-            return string.Empty;
-        }
+        return (RoutesMudTable.SelectedItem != null && RoutesMudTable.SelectedItem.Equals(element))
+            ? "selected"
+            : string.Empty;
     }
 }

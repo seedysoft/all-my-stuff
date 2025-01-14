@@ -2,7 +2,7 @@
 
 @attribute [StreamRendering(true)]
 
-@using MudBlazor
+@using Seedysoft.BlazorWebApp.Client.Components
 @using Seedysoft.Libs.GoogleMapsRazorClassLib.GoogleMap
 
 @{
@@ -167,49 +167,7 @@
 
     <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge">
 
-        <GoogleRoutesViewer RoutesMudTableItems="RoutesDataGridItems" />
-
-        <MudDataGrid @ref="RoutesDataGrid"
-                     ColumnResizeMode="@ResizeMode.None"
-                     Filterable="false"
-                     Height="450"
-                     Hover
-                     Items="RoutesDataGridItems"
-                     SortMode="@SortMode.None"
-                     T="Libs.GoogleApis.Models.DirectionsServiceRoutes">
-            <ColGroup>
-                <col />
-                <col style="width: 50px;" />
-                <col style="width: 50px;" />
-                <col />
-                <col style="width: 50px;" />
-            </ColGroup>
-            <Columns>
-                <PropertyColumn Property="@(x => x.Summary)" />
-                <PropertyColumn CellStyle="text-align: right; text-wrap-mode: nowrap;" Property="@(x => x.Distance)" />
-                <PropertyColumn CellStyle="text-align: right; text-wrap-mode: nowrap;" Property="@(x => x.Duration)" />
-
-                <TemplateColumn Title="Warnings">
-                    <CellTemplate>
-                        @((MarkupString)$"{string.Join("<br />", context.Item.Warnings)}")
-                    </CellTemplate>
-                </TemplateColumn>
-
-                <TemplateColumn StickyRight
-                                Title="@string.Empty">
-                    <CellTemplate>
-                        <MudButton Color="@Color.Primary"
-                                   EndIcon="@Icons.Material.Filled.Map"
-                                   OnClick="@(async () => await ShowDirectionsServiceRouteInMapAsync(context.Item.Index))"
-                                   Size="@Size.Small"
-                                   Variant="Variant.Filled">Show</MudButton>
-                    </CellTemplate>
-                </TemplateColumn>
-            </Columns>
-
-            <NoRecordsContent>No data</NoRecordsContent>
-
-        </MudDataGrid>
+        <GoogleRoutesViewer @ref="GoogleRoutesViewer" OnRouteSelected="RoutesDataGridItemSelectedAsync" />
 
         <Map @ref="TravelGoogleMap"
              Id="@nameof(TravelGoogleMap)"
@@ -219,7 +177,7 @@
              Width="100" WidthUnit="Libs.Core.Enums.CssUnit.Percentage"
              Zoom="14"
              IsClickable
-             OnMarkerClick="OnGoogleMapMarkerClick" />
+             OnClickGoogleMapMarker="OnClickGoogleMapMarker" />
 
         <MudSpacer />
 
@@ -245,7 +203,7 @@
             <Columns>
                 <PropertyColumn Property="@(x => x.RotuloTrimed)" Filterable="true" Sortable="true" Title="Rótulo">
                     <FilterTemplate>
-                        <MudIconButton OnClick="@(() => IsRotuloFilterOpen = true)" Icon="RotuloFilterIcon" Size="Size.Small" />
+                        <MudIconButton OnClick="@(() => IsRotuloFilterOpen = true)" Icon="@RotuloFilterIcon" Size="Size.Small" />
                         <MudOverlay Visible="IsRotuloFilterOpen" OnClick="@(() => IsRotuloFilterOpen = false)" />
                         <MudPopover Open="IsRotuloFilterOpen" AnchorOrigin="Origin.BottomCenter" TransformOrigin="Origin.TopCenter">
                             <MudStack Spacing="0">
