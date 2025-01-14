@@ -110,15 +110,17 @@ public record class EstacionTerrestre
     [J("% Éster metílico")]
     public required string EsterMetilico { get; init; }
 
-    internal bool IsInsideBounds(GoogleApis.Models.Shared.LatLngBoundsLiteral boundsLiteral)
+    public bool IsNear(GoogleApis.Models.Shared.LatLngLiteral routePoint, int maxDistanceInKm)
     {
-        return
-            Lat < boundsLiteral.North &&
-            Lat > boundsLiteral.South &&
-            Lng < boundsLiteral.East &&
-            Lng > boundsLiteral.West;
-    }
+        return IsInsideBounds(routePoint.Expand(maxDistanceInKm));
 
-    internal bool IsNear(GoogleApis.Models.Shared.LatLngLiteral routePoint, int maxDistanceInKm)
-        => IsInsideBounds(routePoint.Expand(maxDistanceInKm));
+        bool IsInsideBounds(GoogleApis.Models.Shared.LatLngBoundsLiteral boundsLiteral)
+        {
+            return
+                Lat < boundsLiteral.North &&
+                Lat > boundsLiteral.South &&
+                Lng < boundsLiteral.East &&
+                Lng > boundsLiteral.West;
+        }
+    }
 }

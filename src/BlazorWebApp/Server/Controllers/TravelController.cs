@@ -20,10 +20,10 @@ public sealed class TravelController : ApiControllerBase
         CancellationToken cancellationToken)
         => await placesService.FindPlacesAsync(textToFind, cancellationToken);
 
-    [HttpPost(Client.Constants.TravelUris.Actions.GetGasStations)]
-    public IAsyncEnumerable<Libs.GasStationPrices.ViewModels.GasStationModel> GetGasStationsAsync(
-        [AsParameters] Libs.GasStationPrices.ViewModels.TravelQueryModel travelQueryModel,
-        [FromServices] Libs.GasStationPrices.Services.ObtainGasStationPricesService obtainGasStationPricesService,
-        CancellationToken cancellationToken)
-        => obtainGasStationPricesService.GetGasStationsAsync(travelQueryModel, cancellationToken);
+    //[HttpPost(Client.Constants.TravelUris.Actions.GetGasStations)]
+    //public IAsyncEnumerable<Libs.GasStationPrices.ViewModels.GasStationModel> GetGasStationsAsync(
+    //    [AsParameters] Libs.GasStationPrices.ViewModels.TravelQueryModel travelQueryModel,
+    //    [FromServices] Libs.GasStationPrices.Services.GasStationPricesService gasStationPricesService,
+    //    CancellationToken cancellationToken)
+    //    => gasStationPricesService.GetGasStationsAsync(travelQueryModel, cancellationToken);
 }
