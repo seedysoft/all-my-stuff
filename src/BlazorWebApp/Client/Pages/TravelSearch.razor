@@ -53,24 +53,33 @@
 
                     <MudGrid>
                         <MudItem xs="12" md="6" xl="3">
-                            <MudAutocomplete @bind-Value="@travelQueryModel.Origin"
-                                             AutoFocus="@(!System.Diagnostics.Debugger.IsAttached)"
-                                             Clearable
-                                             DebounceInterval="450"
-                                             Dense
-                                             For="@(() => travelQueryModel.Origin)"
-                                             FullWidth
-                                             Label="Origin"
-                                             MaxItems="20"
-                                             MinCharacters="3"
-                                             Placeholder="Select an origin place"
-                                             Required
-                                             ResetValueOnEmptyText
-                                             SearchFunc="FindPlacesAsync"
-                                             SelectOnActivation
-                                             ShowProgressIndicator
-                                             T="string"
-                                             Variant="variant" />
+                            <MudInput @bind-Value="@travelQueryModel.Origin"
+                                      AutoFocus="@(!System.Diagnostics.Debugger.IsAttached)"
+                                      Class="gAutocomplete"
+                                      Clearable
+                                      FullWidth
+                                      Label="Origin"
+                                      Placeholder="Select an origin place"
+                                      Required
+                                      Variant="variant" />
+                          @* <MudAutocomplete @bind-Value="@travelQueryModel.Origin"                 *@
+                          @*                  AutoFocus="@(!System.Diagnostics.Debugger.IsAttached)" *@
+                          @*                  Clearable                                              *@
+                          @*                  DebounceInterval="450"                                 *@
+                          @*                  Dense                                                  *@
+                          @*                  For="@(() => travelQueryModel.Origin)"                 *@
+                          @*                  FullWidth                                              *@
+                          @*                  Label="Origin"                                         *@
+                          @*                  MaxItems="20"                                          *@
+                          @*                  MinCharacters="3"                                      *@
+                          @*                  Placeholder="Select an origin place"                   *@
+                          @*                  Required                                               *@
+                          @*                  ResetValueOnEmptyText                                  *@
+                          @*                  SearchFunc="FindPlacesAsync"                           *@
+                          @*                  SelectOnActivation                                     *@
+                          @*                  ShowProgressIndicator                                  *@
+                          @*                  T="string"                                             *@
+                          @*                  Variant="variant" />                                   *@
                         </MudItem>
                         <MudItem xs="12" md="6" xl="3">
                             <MudAutocomplete @bind-Value="@travelQueryModel.Destination"

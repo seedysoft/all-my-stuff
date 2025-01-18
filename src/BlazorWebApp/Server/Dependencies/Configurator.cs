@@ -48,7 +48,7 @@ public sealed class Configurator : Libs.Core.Dependencies.ConfiguratorBase
 
             .AddHttpClient() // Needed for server rendering
 
-            .AddControllers()
+            //.AddControllers()
         ;
 
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

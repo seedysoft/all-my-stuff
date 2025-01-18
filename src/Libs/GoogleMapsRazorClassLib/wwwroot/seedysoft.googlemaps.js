@@ -5,7 +5,9 @@ window.seedysoft.scriptLoader = window.seedysoft.scriptLoader || {};
 window.seedysoft.googleMaps = {
   instanceArray: {},
 
-  initialize: (elementId, zoom, center, markers, clickable, dotNetHelper) => {
+  init: (elementId, zoom, center, markers, clickable, dotNetHelper) => {
+    let mapContainer = document.getElementById(elementId);
+
     let mapOptions = {
       center: center,
       disableDefaultUI: true,
@@ -13,40 +15,92 @@ window.seedysoft.googleMaps = {
       zoom: zoom
     };
 
-    let map = new google.maps.Map(document.getElementById(elementId), mapOptions);
+    let gMap = new google.maps.Map(mapContainer, mapOptions);
 
-    window.seedysoft.googleMaps.instanceArray[elementId] = {
+    let mapWrapper = {
       center: center,
       clickable: clickable,
       directionsRenderer: new google.maps.DirectionsRenderer({
         draggable: false,
-        map: map
+        map: gMap
       }),
       directionsService: new google.maps.DirectionsService(),
       infoWindow: new google.maps.InfoWindow({
         content: "",
         disableAutoPan: true
       }),
-      map: map,
+      gMap: gMap,
       markerArray: markers,
       zoom: zoom
     };
+    window.seedysoft.googleMaps.instanceArray[elementId] = mapWrapper;
 
     if (markers) {
       for (const marker of markers) {
         window.seedysoft.googleMaps.addMarker(elementId, marker, dotNetHelper);
       }
     }
+
+    window.seedysoft.googleMaps.mapEvents(mapWrapper);
   },
   get: (elementId) => {
     return window.seedysoft.googleMaps.instanceArray[elementId];
   },
+  mapEvents: (mapWrapper) => {
+
+    function clickGetLatLng() {
+      //let infowindowContainer = document.getElementById("infowindow-alert");
+      //let infoWindow = new google.maps.InfoWindow();
+      //let infoWindowAlert = document.getElementById("infowindow-alert");
+
+      //mapWrapper.gMap.addListener('click', (mapsMouseEvent) => {
+      //  let location = mapsMouseEvent.latLng.lat() + "," + mapsMouseEvent.latLng.lng();
+      //  infoWindowAlert.style.visibility = "visible";
+      //  infoWindow.close();
+      //  infoWindow.setContent(infowindowContainer);
+      //  infoWindow.setPosition({ lat: mapsMouseEvent.latLng.lat(), lng: mapsMouseEvent.latLng.lng() });
+      //  navigator.clipboard.writeText(location).then(function () {
+      //    infoWindow.open(myMapObj.gMap);
+      //    setTimeout(function () { infoWindow.close() }, 2000);
+      //  }, function () {
+
+      //  });
+      //});
+    }
+
+    function inputAutocomplete() {
+      let inputsAutocomplete = document.querySelectorAll(".gAutocomplete input");
+      let autocomplete = [];
+      let autocompleteLsr = [];
+
+      function autoComplete(elem, i) {
+        autocomplete[i] = new google.maps.places.Autocomplete(elem);
+        autocompleteLsr[i] = google.maps.event.addListener(autocomplete[i], "place_changed", () => {
+          let place = autocomplete[i].getPlace();
+          if (Object.keys(place).length > 0) {
+            if (!place.geometry || !place.geometry.location) {
+              window.alert("No details available for input: '" + place.name + "'");
+              return;
+            }
+          }
+        });
+      }
+
+      inputsAutocomplete.forEach((inputField, index) => {
+        // Address as waypoint and Autocomplete are enabled by default
+        autoComplete(inputField, index);
+      });
+    }
+
+    clickGetLatLng();
+    inputAutocomplete();
+  },
 
   addMarker: (elementId, marker, dotNetHelper) => {
-    let mapInstance = window.seedysoft.googleMaps.get(elementId);
+    let mapWrapper = window.seedysoft.googleMaps.get(elementId);
 
-    let map = mapInstance.map;
-    let clickable = mapInstance.clickable;
+    let gMap = mapWrapper.gMap;
+    let clickable = mapWrapper.clickable;
     let _content;
 
     if (marker.pinElement) {
@@ -77,14 +131,14 @@ window.seedysoft.googleMaps = {
     }
 
     const markerEl = new google.maps.marker.AdvancedMarkerElement({
-      map,
+      gMap,
       content: _content,
       position: marker.position,
       title: marker.title,
       gmpClickable: clickable
     });
 
-    mapInstance.markerArray.push(markerEl);
+    mapWrapper.markerArray.push(markerEl);
 
     // add a click listener for each marker, and set up the info window.
     if (clickable) {
@@ -94,13 +148,13 @@ window.seedysoft.googleMaps = {
     }
   },
   removeAllMarkers: (elementId) => {
-    let mapInstance = window.seedysoft.googleMaps.get(elementId);
+    let mapWrapper = window.seedysoft.googleMaps.get(elementId);
 
-    if (mapInstance.markerArray.length > 0) {
-      for (const markerEl of mapInstance.markerArray) {
+    if (mapWrapper.markerArray.length > 0) {
+      for (const markerEl of mapWrapper.markerArray) {
         markerEl.setMap(null);
       }
-      mapInstance.markerArray = [];
+      mapWrapper.markerArray = [];
     }
   },
   //updateMarkers: (elementId, markers, dotNetHelper) => {
@@ -114,65 +168,34 @@ window.seedysoft.googleMaps = {
   //},
 
   openInfoWindow: (elementId, marker, dotNetHelper) => {
-    let mapInstance = window.seedysoft.googleMaps.get(elementId);
-    mapInstance.map.panTo(marker.position);
-    mapInstance.map.setZoom(14);
+    let mapWrapper = window.seedysoft.googleMaps.get(elementId);
+    mapWrapper.gMap.panTo(marker.position);
+    mapWrapper.gMap.setZoom(14);
 
-    mapInstance.infoWindow.close();
-    mapInstance.infoWindow.setContent(marker.title);
-    mapInstance.infoWindow.open(mapInstance.map, marker.position);
+    mapWrapper.infoWindow.close();
+    mapWrapper.infoWindow.setContent(marker.title);
+    mapWrapper.infoWindow.open(mapWrapper.gMap, marker.position);
     dotNetHelper.invokeMethodAsync("OnClickGoogleMapMarkerJS", marker);
   },
 
-  directionsRoute: (elementId, request) => {
-    let mapInstance = window.seedysoft.googleMaps.get(elementId);
-    mapInstance.directionsRenderer.setDirections(null);
+  directionsRoute: (elementId, response) => {
+    let mapWrapper = window.seedysoft.googleMaps.get(elementId);
 
-    return mapInstance.directionsService
-      .route(request)
-      .then((response) => {
-        mapInstance.directionsRenderer.setDirections(response);
+    mapWrapper.directionsRenderer.setDirections(response);
 
-        if (response.routes.length > 1) {
-          mapInstance.directionsRenderer.setRouteIndex(-1);
-        }
-
-        return response.routes.map((route, index) => {
-          return {
-            index: index,
-            summary: route.summary,
-            distance: route.legs[0].distance.text,
-            duration: route.legs[0].duration.text,
-            warnings: route.warnings
-          };
-        });
-      })
-      .catch((e) => { window.alert(`Directions request failed: '${e}'`); });
+    if (response.routes.length > 1) {
+      mapWrapper.directionsRenderer.setRouteIndex(-1);
+    }
   },
 
-  highlightRoute: (elementId, routeIndex, dirLeg) => {
-    let mapInstance = window.seedysoft.googleMaps.get(elementId);
-    mapInstance.directionsRenderer.setRouteIndex(routeIndex);
-
-    var directionsResult = mapInstance.directionsRenderer.getDirections();
-    var highlightedDirectionsRoute = directionsResult.routes[routeIndex];
-    // A route with no stopover waypoints will contain one DirectionsLeg and a route with one stopover waypoint will contain two.
-    var directionsLeg = highlightedDirectionsRoute.legs[0];
-
-    dirLeg = JSON.stringify(highlightedDirectionsRoute.legs[0]);
-    return dirLeg;
-    var directionsSteps = directionsLeg.steps;
-
-    //return JSON.stringify(directionsSteps);
-    // Array<LatLng>
-    //return directionsSteps.map((step) => {
-    //  return { path: step.path };
-    //});
+  highlightRoute: (elementId, routeIndex) => {
+    let mapWrapper = window.seedysoft.googleMaps.get(elementId);
+    mapWrapper.directionsRenderer.setRouteIndex(routeIndex);
   }
 }
 
 window.seedysoft.scriptLoader = {
-  initialize: (elementId, async, defer, scriptId, source, type, dotNetHelper) => {
+  init: (elementId, async, defer, scriptId, source, type, dotNetHelper) => {
     if (source.length === 0) {
       console.error("Invalid source url.");
       return;

@@ -1,4 +1,6 @@
-﻿namespace Seedysoft.Libs.GoogleApis.Models;
+﻿using Seedysoft.Libs.GoogleApis.Models.Directions.Response;
+
+namespace Seedysoft.Libs.GoogleApis.Models;
 
 public class DirectionsServiceRoutes
 {
@@ -10,5 +12,7 @@ public class DirectionsServiceRoutes
 
     public required string Duration { get; init; }
 
-    public required string[] Warnings { get; init; } = [];
+    public required IEnumerable<string> Warnings { get; init; } = [];
+
+    public required DirectionsRoute Route { get; init; }
 }

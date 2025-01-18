@@ -5,5 +5,5 @@
 /// </summary>
 public record class Minetur
 {
-    public required Uris Uris { get; init; }
+    public required Urls Urls { get; init; }
 }

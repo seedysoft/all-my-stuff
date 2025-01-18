@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using RestSharp;
 using Seedysoft.Libs.Core.Extensions;
+using Seedysoft.Libs.GoogleApis.Models.Directions.Response;
 using System.Collections.Frozen;
 
 namespace Seedysoft.Libs.GoogleMapsRazorClassLib.GoogleMap;
@@ -72,8 +73,9 @@ public partial class Map : SeedysoftComponentBase
     private readonly HashSet<Marker> markers = [];
     //public System.Collections.ObjectModel.ReadOnlyCollection<Marker> Markers => markers.AsReadOnly();
 
+    //https://maps.googleapis.com/maps/api/js?key=AIzaSyAOWd855Jru-vGD_bVJqc6Qr-n8VpX0XsA&v=beta&libraries=marker,geometry,places&callback=initMap
     private string GoogleMapsJsFileUrl
-        => $"https://maps.googleapis.com/maps/api/js?key={ApiKey}&loading=async&v=beta&libraries=maps,marker,routes";
+        => $"https://maps.googleapis.com/maps/api/js?key={ApiKey}&loading=async&v=beta&libraries=geometry,maps,marker,places,routes";
 
     protected override string? StyleNames =>
         BuildStyleNames(
@@ -87,6 +89,13 @@ public partial class Map : SeedysoftComponentBase
         objRef ??= DotNetObjectReference.Create(this);
 
         await base.OnInitializedAsync();
+    }
+    protected override Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+            OnScriptLoad();
+
+        return base.OnAfterRenderAsync(firstRender);
     }
 
     private async ValueTask AddMarkerAsync(Marker marker)
@@ -107,19 +116,19 @@ public partial class Map : SeedysoftComponentBase
         await JSRuntime.InvokeVoidAsync($"{Constants.SeedysoftGoogleMaps}.openInfoWindow", Id, marker, objRef);
     }
 
-    public async Task<IReadOnlySet<GoogleApis.Models.Shared.LatLngLiteral>> HighlightRouteAsync(int routeIndex)
+    public async ValueTask SetDirectionsResponse(Body? directionsResponse)
     {
-        var DirLeg = DotNetObjectReference.Create<string>(string.Empty);
-        var objects = await JSRuntime.InvokeAsync<GoogleApis.Models.Directions.Response.DirectionsLeg>(
+        await JSRuntime.InvokeVoidAsync(
+          $"{Constants.SeedysoftGoogleMaps}.directionsRoute",
+          TimeSpan.FromSeconds(2),
+          [Id, directionsResponse]);
+    }
+    public async ValueTask HighlightRouteAsync(int routeIndex)
+    {
+        await JSRuntime.InvokeVoidAsync(
             $"{Constants.SeedysoftGoogleMaps}.highlightRoute",
-#if DEBUG
-                TimeSpan.FromSeconds(15),
-#else
-                TimeSpan.FromSeconds(2),
-#endif
-            [Id, routeIndex, DirLeg]);
-
-        return FrozenSet<GoogleApis.Models.Shared.LatLngLiteral>.Empty;
+            TimeSpan.FromSeconds(2),
+            [Id, routeIndex]);
     }
 
     [JSInvokable]
@@ -133,7 +142,7 @@ public partial class Map : SeedysoftComponentBase
     private void OnScriptLoad()
     {
         _ = Task.Run(async () => await JSRuntime.InvokeVoidAsync(
-            $"{Constants.SeedysoftGoogleMaps}.initialize",
+            $"{Constants.SeedysoftGoogleMaps}.init",
             Id,
             Zoom,
             Center,

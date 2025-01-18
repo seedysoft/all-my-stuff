@@ -5,10 +5,10 @@ using Seedysoft.Libs.Core.Extensions;
 
 namespace Seedysoft.Libs.GoogleApis.Services;
 
-public class PlacesService(IConfiguration configuration, ILogger<PlacesService> logger) : GoogleApisService(configuration)
+public class PlacesService(IConfiguration configuration, ILogger<PlacesService> logger) : GoogleApisServiceBase(configuration)
 {
-    public async Task<string> GetMapId(CancellationToken cancellationToken)
-        => await Task.FromResult(GoogleApisSettings.MapsApi.MapId);
+    //public async Task<string> GetMapId(CancellationToken cancellationToken)
+    //    => await Task.FromResult(GoogleApisSettings.MapsApi.MapId);
 
     public async Task<IEnumerable<string>> FindPlacesAsync(
         string textToFind,
@@ -20,7 +20,7 @@ public class PlacesService(IConfiguration configuration, ILogger<PlacesService> 
                 return [];
 
             RestRequest restRequest = BuildFindPlacesRequest(textToFind);
-            RestClient restClient = new(GoogleApisSettings.PlacesApi.UriFormat);
+            RestClient restClient = new(GoogleApisSettings.PlacesApi.UrlFormat);
             Models.Places.Response.Body? body = null;
             RestResponse restResponse = await restClient.ExecutePostAsync(restRequest, cancellationToken);
             if (restResponse.IsSuccessStatusCode)
