@@ -66,11 +66,6 @@ public abstract class SeedysoftComponentBase : ComponentBase, IDisposable, IAsyn
 
     protected bool IsRenderComplete { get; private set; }
 
-    [Parameter(CaptureUnmatchedValues = true)] public Dictionary<string, object> AdditionalAttributes { get; set; } = [];
-    [Parameter] public string? Class { get; set; }
-    [Parameter, EditorRequired] public required string Id { get; set; }
-    [Parameter] public string? Style { get; set; }
-
     protected virtual string? StyleNames => Style;
 
     ~SeedysoftComponentBase()
@@ -114,18 +109,5 @@ public abstract class SeedysoftComponentBase : ComponentBase, IDisposable, IAsyn
         }
 
         return ValueTask.CompletedTask;
-    }
-
-    protected virtual string? ClassNames => Class;
-
-    protected bool IsRenderComplete { get; private set; }
-
-    protected virtual string? StyleNames => Style;
-
-    public ElementReference Element { get; set; }
-
-    ~SeedysoftComponentBase()
-    {
-        Dispose(false);
     }
 }

@@ -13,7 +13,7 @@ window.seedysoft.googleMaps = {
       disableDefaultUI: true,
       mapId: elementId,
       zoom: zoom
-    };
+    }
 
     let gMap = new google.maps.Map(mapContainer, mapOptions);
 
@@ -41,7 +41,7 @@ window.seedysoft.googleMaps = {
       }
     }
 
-    window.seedysoft.googleMaps.mapEvents(mapWrapper);
+    //window.seedysoft.googleMaps.mapEvents(mapWrapper);
   },
   get: (elementId) => {
     return window.seedysoft.googleMaps.instanceArray[elementId];
@@ -92,8 +92,8 @@ window.seedysoft.googleMaps = {
       });
     }
 
-    clickGetLatLng();
-    inputAutocomplete();
+    //clickGetLatLng();
+    //inputAutocomplete();
   },
 
   addMarker: (elementId, marker, dotNetHelper) => {
