@@ -2,6 +2,10 @@
 
 name: CI
 
+concurrency:
+  cancel-in-progress: true
+  group: '**'
+
 defaults:
   run:
     shell: bash
@@ -13,6 +17,7 @@ on:
   pull_request:
   push:
     branches-ignore:
+      - 'dev/*'
       - 'feat/*'
   workflow_dispatch:
 
