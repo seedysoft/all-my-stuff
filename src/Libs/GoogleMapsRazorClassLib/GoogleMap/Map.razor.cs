@@ -101,12 +101,12 @@ public partial class Map : SeedysoftComponentBase
     private async ValueTask AddMarkerAsync(Marker marker)
     {
         await JSRuntime.InvokeVoidAsync($"{Constants.SeedysoftGoogleMaps}.addMarker", Id, marker, objRef);
-        Markers.Add(marker);
+        _ = markers.Add(marker);
     }
     public async ValueTask RemoveAllMarkersAsync()
     {
         await JSRuntime.InvokeVoidAsync($"{Constants.SeedysoftGoogleMaps}.removeAllMarkers", Id, objRef);
-        Markers.Clear();
+        markers.Clear();
     }
     public async ValueTask ClickOnMarkerAsync(Marker marker)
     {
@@ -146,11 +146,10 @@ public partial class Map : SeedysoftComponentBase
             Id,
             Zoom,
             Center,
-            Markers,
+            markers,
             IsClickable,
             objRef));
     }
-    private static void OnScriptError(string errorMessage) => throw new Exception(errorMessage);
 
     protected override void Dispose(bool disposing)
     {

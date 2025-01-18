@@ -67,13 +67,13 @@ public partial class ScriptsLoader : SeedysoftComponentBase
     {
         if (firstRender)
         {
-            await JSRuntime.InvokeVoidAsync($"{Constants.SeedysoftScriptLoader}.init", 
-                Id, 
-                Async, 
-                Defer, 
-                ScriptId, 
-                Source, 
-                ScriptType, 
+            await JSRuntime.InvokeVoidAsync($"{Constants.SeedysoftScriptLoader}.init",
+                Id,
+                Async,
+                Defer,
+                ScriptId,
+                Source,
+                ScriptType,
                 objRef);
         }
 
