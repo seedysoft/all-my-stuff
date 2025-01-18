@@ -3,9 +3,6 @@ using Microsoft.JSInterop;
 using RestSharp;
 using Seedysoft.BlazorWebApp.Client.Extensions;
 using Seedysoft.Libs.Core.Extensions;
-using Seedysoft.Libs.GasStationPrices.Extensions;
-using System.Collections.Frozen;
-using System.Net.Http.Json;
 
 namespace Seedysoft.BlazorWebApp.Client.Pages;
 
@@ -14,19 +11,18 @@ namespace Seedysoft.BlazorWebApp.Client.Pages;
 public partial class TravelSearch
 {
     [Inject] private IJSRuntime JSRuntime { get; set; } = default!;
-    [Inject] private HttpClient Http { get; set; } = default!;
     [Inject] private ILogger<TravelSearch> Logger { get; set; } = default!;
-    [Inject] private NavigationManager NavManager { get; set; } = default!;
+    //[Inject] private NavigationManager NavManager { get; set; } = default!;
     [Inject] private MudBlazor.IDialogService DialogService { get; set; } = default!;
     [Inject] private MudBlazor.ISnackbar Snackbar { get; set; } = default!;
     [Inject] private IConfiguration Configuration { get; set; } = default!;
     [Inject] private Libs.GasStationPrices.Services.GasStationPricesService GasStationPricesService { get; set; } = default!;
+    [Inject] private Libs.GoogleApis.Services.DirectionsService DirectionsService { get; set; } = default!;
+    [Inject] private Libs.GoogleApis.Services.PlacesService PlacesService { get; set; } = default!;
 
     private Libs.GoogleApis.Settings.GoogleApisSettings googleApisSettings = default!;
 
     private Libs.GoogleMapsRazorClassLib.GoogleMap.Map TravelGoogleMap { get; set; } = default!;
-
-    private Libs.GoogleMapsRazorClassLib.DirectionsService directionsService = default!;
 
     private readonly Libs.GasStationPrices.ViewModels.TravelQueryModel travelQueryModel = new()
     {
@@ -83,15 +79,6 @@ public partial class TravelSearch
             .GetSection(nameof(Libs.GoogleApis.Settings.GoogleApisSettings))
             .Get<Libs.GoogleApis.Settings.GoogleApisSettings>()!;
 
-        // Take only from Libs.GasStationPrices.Core.Json.Minetur.ProductoPetrolifero, as properties are fixed
-        //string FromUri = $"{NavManager.BaseUri}{Constants.PetroleumProductsUris.Controller}/{Constants.PetroleumProductsUris.Actions.ForFilter}";
-        //PetroleumProducts = await Http.GetFromJsonAsync<IEnumerable<Libs.GasStationPrices.Core.Json.Minetur.ProductoPetrolifero>>(FromUri) ?? [];
-
-        //PetroleumProducts = File.ReadAllText("C:\\Users\\alfon\\Downloads\\RouteResponse.json").FromJson<IEnumerable<Libs.GasStationPrices.Core.Json.Minetur.ProductoPetrolifero>>();
-
-        //FromUri = $"{NavManager.BaseUri}{Constants.TravelUris.Controller}/{Constants.TravelUris.Actions.GetMapId}";
-        //string MapId = await Http.GetStringAsync(FromUri);
-
         RotuloFilterSelectedItems = RotuloFilterAvailableItems;
         RotuloFilterDefinition = new MudBlazor.FilterDefinition<Libs.GasStationPrices.ViewModels.GasStationModel>()
         {
@@ -99,38 +86,29 @@ public partial class TravelSearch
         };
     }
 
-    private void OnClickGoogleMapMarker(
-        Libs.GoogleMapsRazorClassLib.GoogleMap.Marker marker)
+    private void OnClickGoogleMapMarker(Libs.GoogleMapsRazorClassLib.GoogleMap.Marker marker)
         => _ = Snackbar.Add($"Clicked into {marker.Content}. DateTime: {DateTime.Now}", MudBlazor.Severity.Success);
 
-    private async Task<IEnumerable<string>> FindPlacesAsync(
-        string textToFind,
-        CancellationToken cancellationToken)
+    private async Task<IEnumerable<string>> FindPlacesAsync(string textToFind, CancellationToken cancellationToken)
     {
         try
         {
-            if (string.IsNullOrWhiteSpace(textToFind))
-                return [];
-
-            string FromUri = $"{NavManager.BaseUri}{Constants.TravelUris.Controller}/{Constants.TravelUris.Actions.FindPlaces}?textToFind={textToFind}";
-
-            return await Http.GetFromJsonAsync<IEnumerable<string>>(FromUri, cancellationToken) ?? [];
+            if (!string.IsNullOrWhiteSpace(textToFind))
+                return await PlacesService.FindPlacesAsync(textToFind, cancellationToken) ?? [];
         }
         catch (Exception e) when (Logger.LogAndHandle(e, "Unexpected error")) { }
 
         return [];
     }
 
-    private void RotuloFilterSelectAll(
-        bool value)
+    private void RotuloFilterSelectAll(bool value)
     {
         if (value)
             RotuloFilterSelectedItems = [.. RotuloFilterAvailableItems];
         else
             RotuloFilterSelectedItems.Clear();
     }
-    private void RotuloFilterSelectedChanged(
-        bool value, string item) =>
+    private void RotuloFilterSelectedChanged(bool value, string item) =>
         _ = value ? RotuloFilterSelectedItems.Add(item) : RotuloFilterSelectedItems.Remove(item);
     private async Task RotuloFilterClearAsync(
         MudBlazor.FilterContext<Libs.GasStationPrices.ViewModels.GasStationModel> gasStationModel)
@@ -139,19 +117,16 @@ public partial class TravelSearch
         await gasStationModel.Actions.ClearFilterAsync(RotuloFilterDefinition);
         IsRotuloFilterOpen = false;
     }
-    private async Task RotuloFilterApplyAsync(
-        MudBlazor.FilterContext<Libs.GasStationPrices.ViewModels.GasStationModel> gasStationModel)
+    private async Task RotuloFilterApplyAsync(MudBlazor.FilterContext<Libs.GasStationPrices.ViewModels.GasStationModel> gasStationModel)
     {
         await gasStationModel.Actions.ApplyFilterAsync(RotuloFilterDefinition);
         IsRotuloFilterOpen = false;
     }
 
-    private async Task ShowGasStationInMapAsync(
-        Libs.GasStationPrices.ViewModels.GasStationModel gasStationModel)
+    private async Task ShowGasStationInMapAsync(Libs.GasStationPrices.ViewModels.GasStationModel gasStationModel)
         => await TravelGoogleMap.ClickOnMarkerAsync(gasStationModel.ToMarker());
 
-    private async Task OnPreviewInteractionAsync(
-        MudBlazor.StepperInteractionEventArgs arg)
+    private async Task OnPreviewInteractionAsync(MudBlazor.StepperInteractionEventArgs arg)
     {
         switch (arg.Action)
         {
@@ -224,13 +199,10 @@ public partial class TravelSearch
         => travelQueryModel.PetroleumProductsSelectedIds.Count > 0;
 
     [System.Runtime.Versioning.UnsupportedOSPlatform("browser")]
-    private async Task OnCompletedChangedAsync(
-        bool isCompleted)
+    private async Task OnCompletedChangedAsync(bool isCompleted)
     {
-        if (!isCompleted)
-            return;
-
-        await LoadGoogleRoutesAsync();
+        if (isCompleted)
+            await LoadGoogleRoutesAsync();
     }
 
     private async Task ClearDataAsync()
@@ -254,41 +226,33 @@ public partial class TravelSearch
 
         await ClearDataAsync();
 
-        Libs.GoogleApis.Models.Directions.Request.Body directionsRequest = new()
-        {
-            Origin = travelQueryModel.Origin,
-            Destination = travelQueryModel.Destination,
-            TravelMode = Libs.GoogleApis.Models.Directions.Shared.TravelMode.Driving,
-            //AvoidFerries = false,
-            //AvoidHighways = false,
-            //AvoidTolls = false,
-            //DrivingOptions = new() { DepartureTime = DateTime.UtcNow, TrafficModel = Libs.GoogleMapsRazorClassLib.Directions.TrafficModel.bestguess, },
-            //OptimizeWaypoints = false,
-            ProvideRouteAlternatives = true,
-            ////Region = "es",
-            ////TransitOptions = new()
-            ////{
-            ////    ArrivalTime = DateTime.UtcNow,
-            ////    DepartureTime = DateTime.UtcNow,
-            ////    Modes = [GoogleMapsComponents.Maps.TransitMode.Bus, GoogleMapsComponents.Maps.TransitMode.Train],
-            ////    RoutingPreference = GoogleMapsComponents.Maps.TransitRoutePreference.FewerTransfers,
-            ////},
-            ////UnitSystem = Libs.GoogleMapsRazorClassLib.Directions.UnitSystem.Metric, // InvalidValueError: in property unitSystem: metric is not an accepted value
-            //Waypoints = [
-            //    //new GoogleMapsComponents.Maps.DirectionsWaypoint() { Location = "Bethlehem, PA", Stopover = true }
-            //],
-        };
-        directionsService ??= new(JSRuntime, TravelGoogleMap.Id);
-        GoogleRoutesViewer.RoutesMudTableItems.AddRange(await directionsService.RouteAsync(directionsRequest));
+        Libs.GoogleApis.Models.Directions.Response.Body? directionsResponse
+            = await DirectionsService.RouteAsync(travelQueryModel.Origin, travelQueryModel.Destination);
+
+        await TravelGoogleMap.SetDirectionsResponse(directionsResponse);
+
+        IEnumerable<Libs.GoogleApis.Models.DirectionsServiceRoutes> directionsServiceRoutes =
+            directionsResponse?.Routes?.Select((x, i) => new Libs.GoogleApis.Models.DirectionsServiceRoutes()
+            {
+                Index = i,
+                Summary = x.Summary ?? string.Empty,
+                Distance = x.Legs.FirstOrDefault()?.Distance?.Text ?? string.Empty,
+                Duration = x.Legs.FirstOrDefault()?.Duration?.Text ?? string.Empty,
+                Warnings = x.Warnings,
+                Route = x,
+            }) ?? Array.Empty<Libs.GoogleApis.Models.DirectionsServiceRoutes>();
+
+        GoogleRoutesViewer.RoutesMudTableItems.AddRange(directionsServiceRoutes);
     }
 
-    private async Task RoutesDataGridItemSelectedAsync(
-        Libs.GoogleApis.Models.DirectionsServiceRoutes directionsServiceRoutes)
+    private async Task RoutesDataGridItemSelectedAsync(Libs.GoogleApis.Models.DirectionsServiceRoutes directionsServiceRoutes)
     {
-        IReadOnlySet<Libs.GoogleApis.Models.Shared.LatLngLiteral> Points = await TravelGoogleMap.HighlightRouteAsync(directionsServiceRoutes.Index);
+        await TravelGoogleMap.HighlightRouteAsync(directionsServiceRoutes.Index);
 
-        if (!Points.Any())
-            throw new ApplicationException($"{nameof(Libs.GoogleApis.Services.RoutesService.GetRoutesAsync)} does not finds route points");
+        IEnumerable<Libs.GoogleApis.Models.Shared.LatLngLiteral>? Points =
+            directionsServiceRoutes.Route.Legs.FirstOrDefault()?.Steps?.SelectMany(x => x.Path ?? []);
+        if (!Points?.Any() ?? false)
+            throw new ApplicationException($"{nameof(Libs.GoogleApis.Services.DirectionsService.RouteAsync)} does not finds route points");
 
         GasStationsDataGridItems.AddRange(await GasStationPricesService.GetNearGasStationsAsync(Points, travelQueryModel.MaxDistanceInKm));
 

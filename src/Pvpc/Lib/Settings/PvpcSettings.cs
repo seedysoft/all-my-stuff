@@ -3,7 +3,7 @@
 public record class PvpcSettings : Libs.BackgroundServices.ScheduleConfig
 {
     /// <summary>
-    /// Uri desde la que se obtendrán los datos. Tiene un elemento de formato para establecer la fecha que buscaremos.
+    /// Url desde la que se obtendrán los datos. Tiene un elemento de formato para establecer la fecha que buscaremos.
     /// </summary>
     public required string DataUrlTemplate { get; init; }
 
