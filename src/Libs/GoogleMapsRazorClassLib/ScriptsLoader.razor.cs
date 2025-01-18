@@ -5,6 +5,54 @@ namespace Seedysoft.Libs.GoogleMapsRazorClassLib;
 
 public partial class ScriptsLoader : SeedysoftComponentBase
 {
+    #region Parameters
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the script should be loaded asynchronously.
+    /// </summary>
+    /// <remarks>
+    /// Default value is <see langword="false" />.
+    /// </remarks>
+    [Parameter] public bool Async { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the script is meant to be executed 
+    /// after the document has been parsed, but before firing DOMContentLoaded event..
+    /// </summary>
+    /// <remarks>
+    /// Default value is <see langword="false" />.
+    /// </remarks>
+    [Parameter] public bool Defer { get; set; }
+
+    /// <summary>
+    /// An event that is fired when a script loading error occurs.
+    /// </summary>
+    [Parameter] public EventCallback<string> OnError { get; set; }
+
+    /// <summary>
+    /// An event that is fired when a script has been successfully loaded.
+    /// </summary>
+    [Parameter] public EventCallback OnLoad { get; set; }
+
+    /// <summary>
+    /// Gets or sets the ID of the script element.
+    /// </summary>
+    /// <remarks>
+    /// Default value is <see langword="null" />.
+    /// </remarks>
+    [Parameter] public string? ScriptId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the URI of the external script to load.
+    /// </summary>
+    /// <remarks>
+    /// Default value is <see langword="null" />.
+    /// </remarks>
+    [EditorRequired]
+    [Parameter] public string? Source { get; set; } = default!;
+
+    #endregion
+
     /// <summary>
     /// The default content type for scripts.
     /// </summary>
@@ -58,48 +106,4 @@ public partial class ScriptsLoader : SeedysoftComponentBase
         if (OnLoad.HasDelegate)
             _ = OnLoad.InvokeAsync();
     }
-
-    /// <summary>
-    /// Gets or sets a value indicating whether the script should be loaded asynchronously.
-    /// </summary>
-    /// <remarks>
-    /// Default value is <see langword="false" />.
-    /// </remarks>
-    [Parameter] public bool Async { get; set; }
-
-    /// <summary>
-    /// Gets or sets a value indicating whether the script is meant to be executed 
-    /// after the document has been parsed, but before firing DOMContentLoaded event..
-    /// </summary>
-    /// <remarks>
-    /// Default value is <see langword="false" />.
-    /// </remarks>
-    [Parameter] public bool Defer { get; set; }
-
-    /// <summary>
-    /// An event that is fired when a script loading error occurs.
-    /// </summary>
-    [Parameter] public EventCallback<string> OnError { get; set; }
-
-    /// <summary>
-    /// An event that is fired when a script has been successfully loaded.
-    /// </summary>
-    [Parameter] public EventCallback OnLoad { get; set; }
-
-    /// <summary>
-    /// Gets or sets the ID of the script element.
-    /// </summary>
-    /// <remarks>
-    /// Default value is <see langword="null" />.
-    /// </remarks>
-    [Parameter] public string? ScriptId { get; set; }
-
-    /// <summary>
-    /// Gets or sets the URI of the external script to load.
-    /// </summary>
-    /// <remarks>
-    /// Default value is <see langword="null" />.
-    /// </remarks>
-    [EditorRequired]
-    [Parameter] public string? Source { get; set; } = default!;
 }
