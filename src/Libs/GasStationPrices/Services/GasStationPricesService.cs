@@ -16,15 +16,15 @@ public sealed class GasStationPricesService(IServiceProvider serviceProvider)
     private readonly ILogger<GasStationPricesService> Logger = serviceProvider.GetRequiredService<ILogger<GasStationPricesService>>();
 
     public async Task<IReadOnlySet<ViewModels.GasStationModel>> GetNearGasStationsAsync(
-        IReadOnlySet<GoogleApis.Models.Shared.LatLngLiteral> routePoints,
+        IEnumerable<GoogleApis.Models.Shared.LatLngLiteral> routePoints,
         int maxDistanceInKm)
     {
         // Obtain Gas Stations with Prices from Minetur
         Models.Minetur.Body? MineturResponse = null;
         try
         {
-            RestRequest restRequest = new(GasStationPricesSettings.Minetur.Uris.EstacionesTerrestres);
-            RestClient restClient = new(GasStationPricesSettings.Minetur.Uris.Base)
+            RestRequest restRequest = new(GasStationPricesSettings.Minetur.Urls.EstacionesTerrestres);
+            RestClient restClient = new(GasStationPricesSettings.Minetur.Urls.Base)
             {
                 AcceptedContentTypes = [System.Net.Mime.MediaTypeNames.Application.Json,],
             };
@@ -52,8 +52,8 @@ public sealed class GasStationPricesService(IServiceProvider serviceProvider)
 
     //    try
     //    {
-    //        RestRequest restRequest = new(GasStationPricesSettings.Minetur.Uris.EstacionesTerrestres);
-    //        RestClient restClient = new(GasStationPricesSettings.Minetur.Uris.Base)
+    //        RestRequest restRequest = new(GasStationPricesSettings.Minetur.Urls.EstacionesTerrestres);
+    //        RestClient restClient = new(GasStationPricesSettings.Minetur.Urls.Base)
     //        {
     //            AcceptedContentTypes = [System.Net.Mime.MediaTypeNames.Application.Json,],
     //        };
@@ -85,8 +85,8 @@ public sealed class GasStationPricesService(IServiceProvider serviceProvider)
     //    {
     //        if (Res == null)
     //        {
-    //            RestRequest restRequest = new(string.Format(Settings.Minetur.Uris.ListadosBase, "ProductosPetroliferos"));
-    //            RestClient restClient = new(Settings.Minetur.Uris.Base) { AcceptedContentTypes = [System.Net.Mime.MediaTypeNames.Application.Json,], };
+    //            RestRequest restRequest = new(string.Format(Settings.Minetur.Urls.ListadosBase, "ProductosPetroliferos"));
+    //            RestClient restClient = new(Settings.Minetur.Urls.Base) { AcceptedContentTypes = [System.Net.Mime.MediaTypeNames.Application.Json,], };
     //            RestResponse restResponse = await restClient.ExecuteGetAsync(restRequest, cancellationToken);
     //            if (restResponse.IsSuccessStatusCode)
     //                Res = restResponse.Content!.FromJson<IEnumerable<Core.Json.Minetur.ProductoPetrolifero>>();

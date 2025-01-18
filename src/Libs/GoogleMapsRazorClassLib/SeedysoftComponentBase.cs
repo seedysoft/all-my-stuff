@@ -26,7 +26,6 @@ public abstract class SeedysoftComponentBase : ComponentBase, IDisposable, IAsyn
     [Inject] protected IConfiguration Configuration { get; set; } = default!;
     [Inject] protected IJSRuntime JSRuntime { get; set; } = default!;
 
-    /// <inheritdoc />
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         IsRenderComplete = true;
@@ -48,7 +47,6 @@ public abstract class SeedysoftComponentBase : ComponentBase, IDisposable, IAsyn
 
         return list.Count == 0 ? string.Empty : string.Join(" ", list);
     }
-
     public static string BuildStyleNames(string? userDefinedCssStyle, params (string? cssStyle, bool when)[] cssStyleList)
     {
         var list = cssStyleList
@@ -62,15 +60,28 @@ public abstract class SeedysoftComponentBase : ComponentBase, IDisposable, IAsyn
         return list.Count == 0 ? string.Empty : string.Join(';', list);
     }
 
-    /// <inheritdoc />
-    /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.idisposable?view=net-6.0" />
+    protected virtual string? ClassNames => Class;
+
+    public ElementReference Element { get; set; }
+
+    protected bool IsRenderComplete { get; private set; }
+
+    [Parameter(CaptureUnmatchedValues = true)] public Dictionary<string, object> AdditionalAttributes { get; set; } = [];
+    [Parameter] public string? Class { get; set; }
+    [Parameter, EditorRequired] public required string Id { get; set; }
+    [Parameter] public string? Style { get; set; }
+
+    protected virtual string? StyleNames => Style;
+
+    ~SeedysoftComponentBase()
+    {
+        Dispose(false);
+    }
     public void Dispose()
     {
         Dispose(true);
         GC.SuppressFinalize(this);
     }
-    /// <inheritdoc />
-    /// <see href="https://learn.microsoft.com/en-us/dotnet/standard/garbage-collection/implementing-disposeasync#implement-both-dispose-and-async-dispose-patterns" />
     public async ValueTask DisposeAsync()
     {
         await DisposeAsyncCore(true).ConfigureAwait(false);
