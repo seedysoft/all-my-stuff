@@ -185,7 +185,7 @@ window.seedysoft.googleMaps = {
 
     if (response.routes.length > 1) {
       mapWrapper.directionsRenderer.setRouteIndex(-1);
-    }
+    } 
   },
 
   highlightRoute: (elementId, routeIndex) => {
