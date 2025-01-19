@@ -1,5 +1,4 @@
 (function () {
-
   let myMapObj = {
     gMap: {},
     wayPoints: [],
@@ -66,6 +65,7 @@
           } else {
             google.maps.event.clearInstanceListeners(elem);
           }
+
         }
 
         inputToggleCheckbox.forEach((item, index) => {
@@ -166,7 +166,6 @@
           utcOutput.innerHTML = "UTC time: " + new Date(e.target.value).toUTCString();
         });
       }
-
       clickGetLatLng();
       travelModeToggle();
       closeAlertBox();
@@ -223,15 +222,16 @@
                 "longitude": origin_lat_lng[1].trim()
               }
             };
-          } else {
+          }
+          else {
             reqBody.origin.placeId = origin;
           }
         }
-      } else {
+      }
+      else {
         myMapObj.setErrorMsg("Origin must be set in a right format.");
         return false;
       }
-
       if (destination !== '') {
         if (myMapObj.isAddress.destination) {
           reqBody.destination.address = destination;
@@ -244,11 +244,13 @@
                 "longitude": destination_lat_lng[1].trim()
               }
             };
-          } else {
+          }
+          else {
             reqBody.destination.placeId = destination;
           }
         }
-      } else {
+      }
+      else {
         myMapObj.setErrorMsg("Destination must be set in a right format.");
         return false;
       }
@@ -310,14 +312,16 @@
         if ('error' in data) {
           myMapObj.setErrorMsg(data.error);
         } else if (!data.hasOwnProperty("routes")) {
-          myMapObj.setErrorMsg("No routes found. It's likely the waypoints location have problems or the travel mode is not supported in this location.");
+          myMapObj.setErrorMsg("No routes found. It's likely the waypoints location have problems or the travel mode is not supported in this location. ");
         } else {
           myMapObj.setRoute(data);
         }
       }).catch((error) => {
         console.log(error)
       });
+
       /****** End of Request ******/
+
     },
     setErrorMsg: function (err) {
       let alert = document.getElementById("alert");
@@ -326,7 +330,7 @@
       } else if (typeof err === 'object') {
         let msg = err.hasOwnProperty("code") ? err.code : '';
         msg += err.hasOwnProperty("message") ? " " + err.message : '';
-        alert.querySelector("p").innerHTML = msg.trim();
+        alert.querySelector("p").innerHTML = msg;
       }
       alert.style.display = 'block';
     },
@@ -364,13 +368,11 @@
         }
         content += '<div class="details">';
         if (route.hasOwnProperty("distanceMeters")) {
-          content += "<p>Distance: ";
           if (route.distanceMeters / 1000 >= 1) {
-            content += route.distanceMeters / 1000;
+            content += "<p>Distance: " + route.distanceMeters / 1000 + "KM</p>";
           } else {
-            content += route.distanceMeters;
+            content += "<p>Distance: " + route.distanceMeters + "M</p>";
           }
-          content += "m</p>";
         }
         if (route.hasOwnProperty("duration")) {
           let duration = route.duration.slice(0, -1);
@@ -404,7 +406,6 @@
         if (route.travelAdvisory && route.travelAdvisory.speedReadingIntervals) {
           speedIntervals.push(route.travelAdvisory.speedReadingIntervals);
         }
-
         if (route.hasOwnProperty("polyline")) {
           let routePath = google.maps.geometry.encoding.decodePath(route.polyline.encodedPolyline);
           decodedPaths.push(routePath);
@@ -447,7 +448,8 @@
             myMapObj.paths.push(polyline);
           });
         }
-      } else {
+      }
+      else {
         for (let i = decodedPaths.length - 1; i >= 0; i--) {
           let polyline = new google.maps.Polyline({
             map: myMapObj.gMap,
@@ -504,6 +506,7 @@
         if (type == 'advMarker') {
           obj.forEach(function (item) {
             item.map = null;
+            // item.setMap(null);
           });
         } else {
           obj.forEach(function (item) {
@@ -519,40 +522,4 @@
   }
 
   window.initMap = initMap;
-
 }());
-
-//<script nonce="54nAPDxT80kYV3XYGG8nRx02Z6AT9E">
-(function () {
-  window.framebox = window.framebox || function () {
-    (window.framebox.q = window.framebox.q || []).push(arguments)
-  };
-
-  var a = {}, b = function () {
-    (window.framebox.dq = window.framebox.dq || []).push(arguments)
-  };
-  ['getUrl', 'handleLinkClicksInParent', 'initAutoSize', 'navigate', 'pushState', 'replaceState', 'requestQueryAndFragment', 'sendEvent', 'updateSize', 'scrollParentWindow']
-    .forEach(function (x) {
-      a[x] = function () {
-        b(x, arguments)
-      }
-    });
-  window.devsite = {
-    framebox: {
-      AutoSizeClient: a
-    }
-  };
-})();
-
-(function (d, e, v, s, i, t, E) {
-  d['GoogleDevelopersObject'] = i;
-  t = e.createElement(v);
-  t.async = 1;
-  t.src = s;
-  E = e.getElementsByTagName(v)[0];
-  E.parentNode.insertBefore(t, E);
-})(window,
-  document,
-  'script',
-  'https://www.gstatic.com/devrel-devsite/prod/vda41147226ae308b24384f785d31d739107d2716272d99cd11c490ff3892954d/developers/js/app_loader.js',
-  '[1,"es",null,"/js/devsite_app_module.js","https://www.gstatic.com/devrel-devsite/prod/vda41147226ae308b24384f785d31d739107d2716272d99cd11c490ff3892954d","https://www.gstatic.com/devrel-devsite/prod/vda41147226ae308b24384f785d31d739107d2716272d99cd11c490ff3892954d/developers","https://developers-dot-devsite-v2-prod.appspot.com",null,1,null,1,null,[1, 6, 8, 12, 14, 17, 21, 25, 50, 52, 63, 70, 75, 76, 80, 87, 91, 92, 93, 97, 98, 100, 101, 102, 103, 104, 105, 107, 108, 109, 110, 112, 113, 117, 118, 120, 122, 124, 125, 126, 127, 129, 130, 131, 132, 133, 134, 135, 136, 138, 140, 141, 147, 148, 149, 151, 152, 156, 157, 158, 159, 161, 163, 164, 168, 169, 170, 179, 180, 182, 183, 186, 191, 193, 196], "AIzaSyAP-jjEJBzmIyKR4F-3XITp8yM9T1gEEI8", "AIzaSyB6xiKGDR5O3Ak2okS4rLkauxGUG7XP0hg", "developers.google.com", "AIzaSyAQk0fBONSGUqCNznf6Krs82Ap1-NV6J4o", "AIzaSyCCxcqdrZ_7QMeLCRY20bh_SXdAYqy70KY", null, null, null, ["Cloud__enable_legacy_calculator_redirect", "TpcFeatures__enable_unmirrored_page_left_nav", "MiscFeatureFlags__enable_variable_operator", "Profiles__enable_page_saving", "Concierge__enable_key_takeaways", "Search__enable_ai_search_summaries_restricted", "Cloud__enable_free_trial_server_call", "MiscFeatureFlags__developers_footer_dark_image", "Cloud__enable_cloud_dlp_service", "Profiles__enable_completecodelab_endpoint", "DevPro__enable_cloud_innovators_plus", "MiscFeatureFlags__enable_view_transitions", "MiscFeatureFlags__enable_project_variables", "Concierge__enable_concierge", "Profiles__enable_complete_playlist_endpoint", "CloudShell__cloud_code_overflow_menu", "Significatio__enable_by_tenant", "Cloud__enable_cloud_facet_chat", "MiscFeatureFlags__enable_firebase_utm", "MiscFeatureFlags__emergency_css", "Search__enable_ai_eligibility_checks", "Cloud__enable_cloudx_experiment_ids", "Search__enable_ai_search_summaries", "Concierge__enable_pushui", "Cloud__enable_cloudx_ping", "Profiles__enable_public_developer_profiles", "CloudShell__cloud_shell_button", "Experiments__reqs_query_experiments", "Profiles__enable_release_notes_notifications", "Profiles__require_profile_eligibility_for_signin", "DevPro__enable_developer_subscriptions", "Profiles__enable_recognition_badges", "Profiles__enable_dashboard_curated_recommendations", "Concierge__enable_concierge_restricted", "Profiles__enable_awarding_url", "MiscFeatureFlags__enable_explain_this_code", "Search__enable_suggestions_from_borg", "TpcFeatures__enable_mirror_tenant_redirects", "Cloud__enable_llm_concierge_chat", "Analytics__enable_clearcut_logging", "Profiles__enable_profile_collections", "Profiles__enable_completequiz_endpoint", "BookNav__enable_tenant_cache_key", "MiscFeatureFlags__developers_footer_image", "Search__enable_page_map", "EngEduTelemetry__enable_engedu_telemetry", "Cloud__enable_cloud_shell", "Search__enable_dynamic_content_confidential_banner", "Cloud__enable_cloud_shell_fte_user_flow", "Profiles__enable_join_program_group_endpoint", "Profiles__enable_developer_profiles_callout"], null, null, "AIzaSyBLEMok-5suZ67qRPzx0qUtbnLmyT_kCVE", "https://developerscontentserving-pa.googleapis.com", "AIzaSyCM4QpTRSqP5qI4Dvjt4OAScIN8sOUlO-k", "https://developerscontentsearch-pa.googleapis.com", 2, 4, null, "https://developerprofiles-pa.googleapis.com", [1, "developers", "Google for Developers", "developers.google.com", null, "developers-dot-devsite-v2-prod.appspot.com", null, null, [1, 1, [1], null, null, null, null, null, null, null, null, [1], null, null, null, null, null, null, [1], [1, null, null, [1, 20], "/recommendations/information"], null, null, null, [1, 1, 1], [1, 1, null, 1, 1]], null, [null, null, null, null, null, null, "/images/lockup-new.svg", "/images/touchicon-180-new.png", null, null, null, null, 1, null, null, null, null, null, null, null, null, 1, null, null, null, "/images/lockup-dark-theme-new.svg", []], [], null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, [6, 1, 14, 15, 20, 22, 23, 29, 32, 36], null, [[null, null, null, [3, 7, 10, 2, 39, 17, 4, 32, 24, 11, 12, 13, 34, 15, 25], null, null, [1, [["docType", "Choose a content type", [["Tutorial", null, null, null, null, null, null, null, null, "Tutorial"], ["Guide", null, null, null, null, null, null, null, null, "Guide"], ["Sample", null, null, null, null, null, null, null, null, "Sample"]]], ["product", "Choose a product", [["Android", null, null, null, null, null, null, null, null, "Android"], ["ARCore", null, null, null, null, null, null, null, null, "ARCore"], ["ChromeOS", null, null, null, null, null, null, null, null, "ChromeOS"], ["Firebase", null, null, null, null, null, null, null, null, "Firebase"], ["Flutter", null, null, null, null, null, null, null, null, "Flutter"], ["Assistant", null, null, null, null, null, null, null, null, "Google Assistant"], ["GoogleCloud", null, null, null, null, null, null, null, null, "Google Cloud"], ["GoogleMapsPlatform", null, null, null, null, null, null, null, null, "Google Maps Platform"], ["GooglePay", null, null, null, null, null, null, null, null, "Google Pay & Google Wallet"], ["GooglePlay", null, null, null, null, null, null, null, null, "Google Play"], ["Tensorflow", null, null, null, null, null, null, null, null, "TensorFlow"]]], ["category", "Choose a topic", [["AiAndMachineLearning", null, null, null, null, null, null, null, null, "AI and Machine Learning"], ["Data", null, null, null, null, null, null, null, null, "Data"], ["Enterprise", null, null, null, null, null, null, null, null, "Enterprise"], ["Gaming", null, null, null, null, null, null, null, null, "Gaming"], ["Mobile", null, null, null, null, null, null, null, null, "Mobile"], ["Web", null, null, null, null, null, null, null, null, "Web"]]]]]], [1, 1], null, 1], [[["UA-24532603-1"], ["UA-22084204-5"], null, null, ["UA-24532603-5"], null, null, [["G-272J68FCRF"], null, null, [["G-272J68FCRF", 2]]], [["UA-24532603-1", 2]], null, [["UA-24532603-5", 2]], null, 1], [[14, 11], [12, 9], [3, 2], [4, 3], [5, 4], [16, 13], [15, 12], [6, 5], [1, 1], [13, 10], [11, 8]], [[1, 1], [2, 2]]],null, 4, null, null, null, null, null, null, null, null, null, null, null, null, null, "developers.devsite.google"],null, "pk_live_5170syrHvgGVmSx9sBrnWtA5luvk9BwnVcvIi7HizpwauFG96WedXsuXh790rtij9AmGllqPtMLfhe2RSwD6Pn38V00uBCydV4m"]')
