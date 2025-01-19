@@ -9,7 +9,7 @@
     Variant variant = Variant.Outlined;
 }
 
-<MudContainer MaxWidth="MaxWidth.ExtraExtraLarge">
+<MudContainer id="demo" MaxWidth="MaxWidth.ExtraExtraLarge">
 
     <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge">
 
@@ -167,7 +167,7 @@
 
     <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge">
 
-        <GoogleRoutesViewer @ref="GoogleRoutesViewer" OnRouteSelected="RoutesDataGridItemSelectedAsync" />
+        @* <GoogleRoutesViewer @ref="GoogleRoutesViewer" OnRouteSelected="RoutesDataGridItemSelectedAsync" /> *@
 
         <Map @ref="TravelGoogleMap"
              Id="@nameof(TravelGoogleMap)"
@@ -177,7 +177,8 @@
              Width="100" WidthUnit="Libs.Core.Enums.CssUnit.Percentage"
              Zoom="14"
              IsClickable
-             OnClickGoogleMapMarker="OnClickGoogleMapMarker" />
+             OnClickGmapMarkerEventCallback="OnClickGmapMarker"
+             OnClickGmapRouteEventCallback="OnClickGmapRoute" />
 
         <MudSpacer />
 

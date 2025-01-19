@@ -9,10 +9,13 @@ namespace Seedysoft.Libs.GoogleMapsRazorClassLib.GoogleMap;
 
 public partial class Map : SeedysoftComponentBase
 {
+    #region Parameters
+
     /// <summary>
     /// Gets or sets the Google Map API key.
     /// </summary>
-    [EditorRequired, Parameter] public required string ApiKey { get; set; }
+    [EditorRequired]
+    [Parameter] public required string ApiKey { get; set; }
 
     /// <summary>
     /// Gets or sets the center parameter.
@@ -38,7 +41,11 @@ public partial class Map : SeedysoftComponentBase
     /// Event fired when a user clicks on a marker.
     /// This event fires only when <see cref="Clickable" /> is set to <see langword="true" />.
     /// </summary>
-    [Parameter] public EventCallback<Marker> OnClickGoogleMapMarker { get; set; }
+    [Parameter] public EventCallback<Marker> OnClickGmapMarkerEventCallback { get; set; }
+    /// <summary>
+    /// Event fired when a user clicks on a route.
+    /// </summary>
+    [Parameter] public EventCallback OnClickGmapRouteEventCallback { get; set; }
 
     /// <summary>
     /// Makes the marker clickable if set to <see langword="true" />.
@@ -68,14 +75,16 @@ public partial class Map : SeedysoftComponentBase
     /// </remarks>
     [Parameter] public int Zoom { get; set; } = 14;
 
+    #endregion
+
     private DotNetObjectReference<Map>? objRef;
 
     private readonly HashSet<Marker> markers = [];
     //public System.Collections.ObjectModel.ReadOnlyCollection<Marker> Markers => markers.AsReadOnly();
 
-    //https://maps.googleapis.com/maps/api/js?key=AIzaSyAOWd855Jru-vGD_bVJqc6Qr-n8VpX0XsA&v=beta&libraries=marker,geometry,places&callback=initMap
+    //  => $"https://maps.googleapis.com/maps/api/js?key=AIzaSyAOWd855Jru-vGD_bVJqc6Qr-n8VpX0XsA&v=beta&libraries=marker,geometry,places&callback=initMap
     private string GoogleMapsJsFileUrl
-        => $"https://maps.googleapis.com/maps/api/js?key={ApiKey}&loading=async&v=beta&libraries=geometry,maps,marker,places,routes";
+        => $"https://maps.googleapis.com/maps/api/js?key={ApiKey}&loading=async&v=beta&libraries=maps,geometry,marker,places,routes";
 
     protected override string? StyleNames =>
         BuildStyleNames(
@@ -89,13 +98,6 @@ public partial class Map : SeedysoftComponentBase
         objRef ??= DotNetObjectReference.Create(this);
 
         await base.OnInitializedAsync();
-    }
-    protected override Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-            OnScriptLoad();
-
-        return base.OnAfterRenderAsync(firstRender);
     }
 
     private async ValueTask AddMarkerAsync(Marker marker)
@@ -116,26 +118,40 @@ public partial class Map : SeedysoftComponentBase
         await JSRuntime.InvokeVoidAsync($"{Constants.SeedysoftGoogleMaps}.openInfoWindow", Id, marker, objRef);
     }
 
-    public async ValueTask SetDirectionsResponse(Body? directionsResponse)
+    //public async ValueTask SetDirectionsResponse(Body? directionsResponse)
+    //{
+    //    await JSRuntime.InvokeVoidAsync(
+    //      $"{Constants.SeedysoftGoogleMaps}.directionsRoute",
+    //      TimeSpan.FromSeconds(2),
+    //      [Id, directionsResponse]);
+    //}
+    //public async ValueTask HighlightRouteAsync(int routeIndex)
+    //{
+    //    await JSRuntime.InvokeVoidAsync(
+    //        $"{Constants.SeedysoftGoogleMaps}.highlightRoute",
+    //        TimeSpan.FromSeconds(2),
+    //        [Id, routeIndex]);
+    //}
+
+    public async Task SearchRoutesAsync(string origin, string destination)
     {
         await JSRuntime.InvokeVoidAsync(
-          $"{Constants.SeedysoftGoogleMaps}.directionsRoute",
-          TimeSpan.FromSeconds(2),
-          [Id, directionsResponse]);
-    }
-    public async ValueTask HighlightRouteAsync(int routeIndex)
-    {
-        await JSRuntime.InvokeVoidAsync(
-            $"{Constants.SeedysoftGoogleMaps}.highlightRoute",
-            TimeSpan.FromSeconds(2),
-            [Id, routeIndex]);
+            $"{Constants.SeedysoftGoogleMaps}.searchRoutes",
+            TimeSpan.FromSeconds(5),
+            [Id, origin, destination, ApiKey]);
     }
 
     [JSInvokable]
-    public async Task OnClickGoogleMapMarkerJS(Marker marker)
+    public async Task OnClickGmapMarkerJS(Marker marker)
     {
-        if (OnClickGoogleMapMarker.HasDelegate)
-            await OnClickGoogleMapMarker.InvokeAsync(marker);
+        if (OnClickGmapMarkerEventCallback.HasDelegate)
+            await OnClickGmapMarkerEventCallback.InvokeAsync(marker);
+    }
+    [JSInvokable]
+    public async Task OnClickGmapRouteJS()
+    {
+        if (OnClickGmapRouteEventCallback.HasDelegate)
+            await OnClickGmapRouteEventCallback.InvokeAsync();
     }
 
     private static void OnScriptError(string errorMessage) => throw new Exception(errorMessage);
