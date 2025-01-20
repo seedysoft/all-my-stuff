@@ -162,7 +162,6 @@ public partial class Map : SeedysoftComponentBase
             Id,
             Zoom,
             Center,
-            markers,
             IsClickable,
             objRef));
     }
