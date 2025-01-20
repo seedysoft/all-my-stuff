@@ -1,6 +1,7 @@
 ﻿window.seedysoft = window.seedysoft || {};
 
 class MapWrapper {
+
   constructor(googleMap, isClickable, dotNetHelper) {
     this.gMap = googleMap;
     this.isClickable = isClickable;
@@ -19,13 +20,13 @@ class MapWrapper {
       debugger
       let alert = document.getElementById("alert");
       if (typeof err === 'string') {
-        alert.querySelector("p").innerHTML = err
+        alert.querySelector("p").innerHTML = err;
       } else if (typeof err === 'object') {
         let msg = err.hasOwnProperty("code") ? err.code : '';
         msg += err.hasOwnProperty("message") ? " " + err.message : '';
-        alert.querySelector("p").innerHTML = msg
+        alert.querySelector("p").innerHTML = msg;
       }
-      alert.style.display = 'block'
+      alert.style.display = 'block';
     };
 
     this.setRoute = function (data) {
@@ -34,10 +35,10 @@ class MapWrapper {
       this.clearUI(this.routeLabels, 'advMarker');
 
       let colors = {
-        "NORMAL": "#4285f4",
-        "SLOW": "#fbbc04",
-        "TRAFFIC_JAM": "#ea4335",
-        "ALTERNATIVE": "#999999"
+        "NORMAL": "#4285f4"
+        , "SLOW": "#fbbc04"
+        , "TRAFFIC_JAM": "#ea4335"
+        , "ALTERNATIVE": "#999999"
       };
 
       let routes = data.routes; //routes
@@ -50,7 +51,7 @@ class MapWrapper {
         routeTag.className = "route-tag";
 
         if (route.hasOwnProperty("routeLabels")) {
-          content += "<p>"
+          content += "<p>";
           route.routeLabels.forEach((label, index) => {
             if (label.includes("FUEL_EFFICIENT")) {
               routeTag.classList.add("eco");
@@ -88,16 +89,16 @@ class MapWrapper {
         content += "</div>";
         routeTag.innerHTML = content;
 
-        let markerView = new google.maps.marker.AdvancedMarkerView({
-          map: mapWrapper.gMap,
-          position: { lat: location.lat(), lng: location.lng() },
-          zIndex: 1,
+        const markerView = new google.maps.marker.AdvancedMarkerView({
           content: routeTag
+          , gmpClickable: mapWrapper.isClickable
+          , map: mapWrapper.gMap
+          , position: { lat: location.lat(), lng: location.lng() }
+          , zIndex: 1
         });
         mapWrapper.routeLabels.push(markerView);
         markerView.addEventListener("gmp-click", (e) => {
-          debugger
-          mapWrapper.dotNetHelper.invokeMethodAsync("OnClickGmapRouteJS")
+          mapWrapper.dotNetHelper.invokeMethodAsync("OnClickGmapRouteJS");
         });
       }
 
@@ -112,9 +113,9 @@ class MapWrapper {
 
           // midPoint is the location used for labelling routes
           let midPoint = parseInt(routePath.length / 2);
-          addRouteLabel(this, routePath[midPoint], route)
+          addRouteLabel(this, routePath[midPoint], route);
         } else {
-          this.setErrorMsg("Something wrong happened while fetching the polyline. Please try again later.")
+          this.setErrorMsg("Something wrong happened while fetching the polyline. Please try again later.");
         }
       });
 
@@ -141,24 +142,23 @@ class MapWrapper {
             }
 
             polyline = new google.maps.Polyline({
-              map: this.gMap,
-              path: section,
-              strokeColor: colors[item.speed],
-              strokeOpacity: i == 0 ? 0.8 : 0.4,
-              strokeWeight: 5
+              map: this.gMap
+              , path: section
+              , strokeColor: colors[item.speed]
+              , strokeOpacity: i == 0 ? 0.8 : 0.4
+              , strokeWeight: 5
             });
             this.paths.push(polyline);
           });
         }
-      }
-      else {
+      } else {
         for (let i = decodedPaths.length - 1; i >= 0; i--) {
-          let polyline = new google.maps.Polyline({
-            map: this.gMap,
-            path: decodedPaths[i],
-            strokeColor: i == 0 ? colors.NORMAL : colors.ALTERNATIVE,
-            strokeOpacity: 0.8,
-            strokeWeight: 5
+          const polyline = new google.maps.Polyline({
+            map: this.gMap
+            , path: decodedPaths[i]
+            , strokeColor: i == 0 ? colors.NORMAL : colors.ALTERNATIVE
+            , strokeOpacity: 0.8
+            , strokeWeight: 5
           });
           this.paths.push(polyline);
         }
@@ -168,23 +168,23 @@ class MapWrapper {
     };
 
     this.setViewPort = function (viewPort) {
-      let sw = new google.maps.LatLng({ lat: viewPort.low.latitude, lng: viewPort.low.longitude });
-      let ne = new google.maps.LatLng({ lat: viewPort.high.latitude, lng: viewPort.high.longitude });
-      let bounds = new google.maps.LatLngBounds(sw, ne);
+      const sw = new google.maps.LatLng({ lat: viewPort.low.latitude, lng: viewPort.low.longitude });
+      const ne = new google.maps.LatLng({ lat: viewPort.high.latitude, lng: viewPort.high.longitude });
+      const bounds = new google.maps.LatLngBounds(sw, ne);
       this.gMap.fitBounds(bounds);
     };
 
     this.addMarker = function (pos, label) {
-      let pinGlyph = new google.maps.marker.PinElement({
-        glyphColor: "#fff",
+      const pinGlyph = new google.maps.marker.PinElement({
         glyph: label
+        , glyphColor: "#fff"
       });
 
-      let marker = new google.maps.marker.AdvancedMarkerElement({
-        position: pos,
-        gmpDraggable: true,
-        content: pinGlyph.element,
-        map: this.gMap
+      const marker = new google.maps.marker.AdvancedMarkerElement({
+        content: pinGlyph.element
+        , gmpDraggable: true
+        , map: this.gMap
+        , position: pos
       });
       marker.metadata = { id: label };
 
@@ -217,51 +217,29 @@ class MapWrapper {
           obj.forEach(function (item) { item.setMap(null) });
         }
       }
-    }
+    };
   }
-};
+}; // class MapWrapper
 
 window.seedysoft.googleMaps = window.seedysoft.googleMaps || {
-  mapWrappers: [],
+  mapWrappers: []
 
-  init: (elementId, zoom, center, isClickable, dotNetHelper) => {
+  , init: (elementId, zoom, center, isClickable, dotNetHelper) => {
     let mapOptions = {
-      center: center,
-      disableDefaultUI: true,
-      mapId: elementId,
-      zoom: zoom
+      center: center
+      , disableDefaultUI: true
+      , mapId: elementId
+      , zoom: zoom
     };
 
-    let mapContainer = document.getElementById(elementId);
+    const map = new google.maps.Map(document.getElementById(elementId), mapOptions);
 
-    const map = new google.maps.Map(mapContainer, mapOptions);
+    window.seedysoft.googleMaps.mapWrappers[elementId] = new MapWrapper(map, isClickable, dotNetHelper);
+  }
 
-    const mapWrapper = new MapWrapper(
-      googleMap = map,
-      //directionsService = new google.maps.DirectionsService(),
-      //infoWindow = new google.maps.InfoWindow({
-      //  content: "",
-      //  disableAutoPan: true,
-      //}),
-      isClickable = isClickable,
-      dotNetHelper = dotNetHelper
-    );
+  , get: (elementId) => { return window.seedysoft.googleMaps.mapWrappers[elementId]; }
 
-    window.seedysoft.googleMaps.mapWrappers[elementId] = mapWrapper;
-
-    //mapWrapper.directionRendererArray.push(new google.maps.DirectionsRenderer({ map: map }));
-
-    //if (markers) {
-    //  for (const marker of markers) {
-    //    window.seedysoft.googleMaps.addMarker(elementId, marker, dotNetHelper)
-    //  }
-    //}
-  },
-  get: (elementId) => {
-    return window.seedysoft.googleMaps.mapWrappers[elementId]
-  },
-
-  searchRoutes: (elementId, ori, des, apikey) => {
+  , searchRoutes: (elementId, ori, des, apikey) => {
     let mapWrapper = window.seedysoft.googleMaps.get(elementId);
 
     let origin = ori /*document.getElementById("origin").value.trim()*/
@@ -275,33 +253,33 @@ window.seedysoft.googleMaps = window.seedysoft.googleMaps || {
       */
       , traffic_aware_polyline = false /*document.getElementById("traffic_aware_polyline").checked*/
       , eco_routes = false /*document.getElementById("eco_routes").checked*/
-      , travel_mode = "drive"/*document.getElementById("travel_mode").value*/
+      , travel_mode = "drive" /*document.getElementById("travel_mode").value*/
       , departure_time = '' /*document.getElementById("departuretime").value*/
       ;
 
-    let requestedReferenceRoutes = [],
-      extraComputations = [],
-      allowedTravelModes = [];
+    let requestedReferenceRoutes = [];
+    let extraComputations = [];
+    //let allowedTravelModes = [];
 
     /******  Start of Request *****/
     let reqBody = {
       "origin": {
-        "vehicleStopover": false, /*document.getElementById("origin_stopover").checked*/
         "sideOfRoad": false /*document.getElementById("side_of_road_org").checked*/
+        , "vehicleStopover": false /*document.getElementById("origin_stopover").checked*/
       },
       "destination": {
-        "vehicleStopover": false, /*document.getElementById("destination_stopover").checked,*/
         "sideOfRoad": false /*document.getElementById("side_of_road_des").checked*/
-      },
-      "travelMode": travel_mode,
-      //"routingPreference": routing_preference == '' ? "ROUTING_PREFERENCE_UNSPECIFIED" : routing_preference,
-      //"polylineQuality": document.getElementById("polyline_quality").value,
-      "computeAlternativeRoutes": true, /*document.getElementById("alternative_routes").checked,*/
-      //"routeModifiers": {
-      //  "avoidTolls": document.getElementById("avoid_tolls").checked,
-      //  "avoidHighways": document.getElementById("avoid_highways").checked,
-      //  "avoidFerries": document.getElementById("avoid_ferries").checked,
-      //  "avoidIndoor": document.getElementById("avoid_indoor").checked
+        , "vehicleStopover": false /*document.getElementById("destination_stopover").checked*/
+      }
+      , "computeAlternativeRoutes": true /*document.getElementById("alternative_routes").checked*/
+      , "travelMode": travel_mode
+      //, "routingPreference": routing_preference == '' ? "ROUTING_PREFERENCE_UNSPECIFIED" : routing_preference
+      //, "polylineQuality": document.getElementById("polyline_quality").value
+      //, "routeModifiers": {
+      //  "avoidTolls": document.getElementById("avoid_tolls").checked
+      //  , "avoidHighways": document.getElementById("avoid_highways").checked
+      //  , "avoidFerries": document.getElementById("avoid_ferries").checked
+      //  , "avoidIndoor": document.getElementById("avoid_indoor").checked
       //}
     };
 
@@ -312,18 +290,13 @@ window.seedysoft.googleMaps = window.seedysoft.googleMaps || {
       //  if (origin.indexOf(',') >= 0) {
       //    origin_lat_lng = origin.split(",");
       //    reqBody.origin.location = {
-      //      "latLng": {
-      //        "latitude": origin_lat_lng[0].trim(),
-      //        "longitude": origin_lat_lng[1].trim()
-      //      }
+      //      "latLng": { "latitude": origin_lat_lng[0].trim(), "longitude": origin_lat_lng[1].trim() }
       //    };
-      //  }
-      //  else {
+      //  }  else {
       //    reqBody.origin.placeId = origin;
       //  }
       //}
-    }
-    else {
+    } else {
       mapWrapper.setErrorMsg("Origin must be set in a right format.");
       return false;
     }
@@ -334,18 +307,13 @@ window.seedysoft.googleMaps = window.seedysoft.googleMaps || {
       //  if (destination.indexOf(',') >= 0) {
       //    destination_lat_lng = destination.split(",");
       //    reqBody.destination.location = {
-      //      "latLng": {
-      //        "latitude": destination_lat_lng[0].trim(),
-      //        "longitude": destination_lat_lng[1].trim()
-      //      }
+      //      "latLng": { "latitude": destination_lat_lng[0].trim(), "longitude": destination_lat_lng[1].trim() }
       //    };
-      //  }
-      //  else {
+      //  } else {
       //    reqBody.destination.placeId = destination;
       //  }
       //}
-    }
-    else {
+    } else {
       mapWrapper.setErrorMsg("Destination must be set in a right format.");
       return false;
     }
@@ -375,8 +343,8 @@ window.seedysoft.googleMaps = window.seedysoft.googleMaps || {
     if (travel_mode == "transit") {
       let selectedElem = document.querySelectorAll('ul#transitModes li input[type="checkbox"]:checked');
       reqBody.transitPreferences = {
-        "allowedTravelModes": Array.from(selectedElem).map(x => x.value),
-        "routingPreference": document.getElementById("transitPreference").value
+        "allowedTravelModes": Array.from(selectedElem).map(x => x.value)
+        , "routingPreference": document.getElementById("transitPreference").value
       }
     }
 
@@ -389,37 +357,34 @@ window.seedysoft.googleMaps = window.seedysoft.googleMaps || {
     }
 
     if (departure_time != '') {
-      let date = new Date(departure_time);
+      const date = new Date(departure_time);
       let utc_date = `${date.getUTCFullYear()}-${date.getUTCMonth() + 1}-${date.getUTCDate()}T${date.getUTCHours()}:${date.getUTCMinutes()}:00Z`;
       reqBody.departureTime = utc_date;
     }
 
     fetch("https://routes.googleapis.com/directions/v2:computeRoutes", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-Goog-Api-Key": apikey,
-        "X-Goog-FieldMask": "*"
-      },
       body: JSON.stringify(reqBody)
+      , headers: {
+        "Content-Type": "application/json"
+        , "X-Goog-Api-Key": apikey
+        , "X-Goog-FieldMask": "*"
+      }
+      , method: "POST"
     }).then((response) => {
       return response.json();
     }).then((data) => {
       if ('error' in data) {
         mapWrapper.setErrorMsg(data.error);
       } else if (!data.hasOwnProperty("routes")) {
-        mapWrapper.setErrorMsg("No routes found. It's likely the waypoints location have problems or the travel mode is not supported in this location. ");
+        mapWrapper.setErrorMsg("No routes found. It's likely the waypoints location have problems or the travel mode is not supported in this location.");
       } else {
         mapWrapper.setRoute(data);
       }
-    }).catch((error) => {
-      console.log(error)
-    });
-
+    }).catch((error) => { console.log(error); });
     /****** End of Request ******/
-  },
+  }
 
-  addMarker: (elementId, marker, dotNetHelper) => {
+  , addMarker: (elementId, marker, dotNetHelper) => {
     let mapWrapper = window.seedysoft.googleMaps.get(elementId);
 
     let map = mapWrapper.gMap;
@@ -433,32 +398,30 @@ window.seedysoft.googleMaps = window.seedysoft.googleMaps || {
         const icon = document.createElement("div");
         icon.innerHTML = `<i class="${marker.pinElement.glyph}"></i>`;
         _glyph = icon;
-      }
-      else {
-        _glyph = marker.pinElement.glyph
+      } else {
+        _glyph = marker.pinElement.glyph;
       }
 
       const pin = new google.maps.marker.PinElement({
-        background: marker.pinElement.background,
-        borderColor: marker.pinElement.borderColor,
-        glyph: _glyph,
-        glyphColor: marker.pinElement.glyphColor,
-        scale: marker.pinElement.scale,
+        background: marker.pinElement.background
+        , borderColor: marker.pinElement.borderColor
+        , glyph: _glyph
+        , glyphColor: marker.pinElement.glyphColor
+        , scale: marker.pinElement.scale
       });
       _content = pin.element;
-    }
-    else if (marker.content) {
+    } else if (marker.content) {
       _content = document.createElement("div");
       _content.classList.add("bb-google-marker-content");
       _content.innerHTML = marker.content;
     }
 
     const markerEl = new google.maps.marker.AdvancedMarkerElement({
-      map,
-      content: _content,
-      position: marker.position,
-      title: marker.title,
-      gmpClickable: isClickable
+      content: _content
+      , gmpClickable: isClickable
+      , map: map
+      , position: marker.position
+      , title: marker.title
     });
 
     mapWrapper.markerArray.push(markerEl);
@@ -466,21 +429,21 @@ window.seedysoft.googleMaps = window.seedysoft.googleMaps || {
     // add a click listener for each marker, and set up the info window.
     if (isClickable) {
       markerEl.addListener("click", () => {
-        window.seedysoft.openInfoWindow(elementId, marker, dotNetHelper)
+        window.seedysoft.openInfoWindow(elementId, marker, dotNetHelper);
       });
     }
-  },
-  removeAllMarkers: (elementId) => {
+  }
+  , removeAllMarkers: (elementId) => {
     let mapWrapper = window.seedysoft.googleMaps.get(elementId);
 
     if (mapWrapper.markerArray.length > 0) {
       for (const markerEl of mapWrapper.markerArray) {
-        markerEl.setMap(null)
+        markerEl.setMap(null);
       }
-      mapWrapper.markerArray = []
+      mapWrapper.markerArray = [];
     }
-  },
-  //updateMarkers: (elementId, markers, dotNetHelper) => {
+  }
+  //, updateMarkers: (elementId, markers, dotNetHelper) => {
   //  window.seedysoft.googleMaps.removeAllMarkers(elementId);
 
   //  if (markers) {
@@ -488,9 +451,9 @@ window.seedysoft.googleMaps = window.seedysoft.googleMaps || {
   //      window.seedysoft.googleMaps.addMarker(elementId, marker, dotNetHelper);
   //    }
   //  }
-  //},
+  //}
 
-  openInfoWindow: (elementId, marker, dotNetHelper) => {
+  , openInfoWindow: (elementId, marker, dotNetHelper) => {
     let mapWrapper = window.seedysoft.googleMaps.get(elementId);
     mapWrapper.gMap.panTo(marker.position);
     mapWrapper.gMap.setZoom(14);
@@ -498,22 +461,22 @@ window.seedysoft.googleMaps = window.seedysoft.googleMaps || {
     mapWrapper.infoWindow.close();
     mapWrapper.infoWindow.setContent(marker.title);
     mapWrapper.infoWindow.open(mapWrapper.gMap, marker.position);
-    dotNetHelper.invokeMethodAsync("OnClickGmapMarkerJS", marker)
-  },
+    dotNetHelper.invokeMethodAsync("OnClickGmapMarkerJS", marker);
+  }
 
-  directionsRoute: (elementId, response) => {
+  , directionsRoute: (elementId, response) => {
     let mapWrapper = window.seedysoft.googleMaps.get(elementId);
 
     mapWrapper.directionsRenderer.setDirections(response);
 
     if (response.routes.length > 1) {
-      mapWrapper.directionsRenderer.setRouteIndex(-1)
+      mapWrapper.directionsRenderer.setRouteIndex(-1);
     }
-  },
+  }
 
-  highlightRoute: (elementId, routeIndex) => {
+  , highlightRoute: (elementId, routeIndex) => {
     let mapWrapper = window.seedysoft.googleMaps.get(elementId);
-    mapWrapper.directionsRenderer.setRouteIndex(routeIndex)
+    mapWrapper.directionsRenderer.setRouteIndex(routeIndex);
   }
 }
 
@@ -521,15 +484,14 @@ window.seedysoft.scriptLoader = window.seedysoft.scriptLoader || {
   init: (elementId, async, defer, scriptId, source, type, dotNetHelper) => {
     if (source.length === 0) {
       console.error("Invalid source url.");
-      return
+      return;
     }
 
     let scriptLoaderElement = document.getElementById(elementId);
 
     if (scriptLoaderElement == null) {
-      window.alert(`Cannot find Element ${elementId}`)
-    }
-    else {
+      window.alert(`Cannot find Element ${elementId}`);
+    } else {
       let scriptElement = document.createElement("script");
 
       scriptElement.async = async;
@@ -546,14 +508,14 @@ window.seedysoft.scriptLoader = window.seedysoft.scriptLoader || {
         scriptElement.type = type;
 
       scriptElement.addEventListener("error", (_event) => {
-        dotNetHelper.invokeMethodAsync("OnErrorJS", `An error occurred while loading the script: ${source}`)
+        dotNetHelper.invokeMethodAsync("OnErrorJS", `An error occurred while loading the script: ${source}`);
       });
 
       scriptElement.addEventListener("load", (_event) => {
-        dotNetHelper.invokeMethodAsync("OnLoadJS")
+        dotNetHelper.invokeMethodAsync("OnLoadJS");
       });
 
-      scriptLoaderElement.appendChild(scriptElement)
+      scriptLoaderElement.appendChild(scriptElement);
     }
   }
 }
