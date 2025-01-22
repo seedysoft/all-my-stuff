@@ -3,7 +3,7 @@
 /// <summary>
 /// Contains a segment between non-via waypoints.
 /// </summary>
-public record RouteLeg
+public class RouteLeg
 {
     /// <summary>
     /// The travel distance of the route leg, in meters.

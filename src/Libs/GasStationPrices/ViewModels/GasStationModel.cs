@@ -1,6 +1,4 @@
-﻿using Seedysoft.Libs.Core.Extensions;
-
-namespace Seedysoft.Libs.GasStationPrices.ViewModels;
+﻿namespace Seedysoft.Libs.GasStationPrices.ViewModels;
 
 public record class GasStationModel
 {

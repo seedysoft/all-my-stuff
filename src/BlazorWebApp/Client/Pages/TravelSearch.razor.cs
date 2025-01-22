@@ -54,7 +54,7 @@ public partial class TravelSearch
         false => MudBlazor.Icons.Material.Filled.FilterAlt,
     };
 
-    private MudBlazor.MudDataGrid<Libs.GasStationPrices.ViewModels.GasStationModel> RoutesDataGrid { get; set; } = default!;
+    //private MudBlazor.MudDataGrid<Libs.GasStationPrices.ViewModels.GasStationModel> RoutesDataGrid { get; set; } = default!;
 
     protected override async Task OnInitializedAsync()
     {
@@ -75,9 +75,18 @@ public partial class TravelSearch
 
     private void OnClickGmapMarker(Libs.GoogleMapsRazorClassLib.GoogleMap.Marker marker)
         => _ = Snackbar.Add($"Clicked in {marker.Content}. DateTime: {DateTime.Now}", MudBlazor.Severity.Success);
-    private void OnClickGmapRoute()
+    private async Task OnClickGmapRouteAsync(string encodedPolyline)
     {
         // TODO     find Gas Stations
+        GasStationsDataGridItems.Clear();
+
+        StateHasChanged();
+
+        IEnumerable<Libs.GoogleApis.Models.Shared.LatLngLiteral> RoutePoints = Libs.GoogleApis.Helpers.GooglePolyline.Decode(encodedPolyline);
+
+        GasStationsDataGridItems.AddRange(await GasStationPricesService.GetNearGasStationsAsync(RoutePoints, travelQueryModel.MaxDistanceInKm));
+
+        StateHasChanged();
     }
 
     private async Task<IEnumerable<string>> FindPlacesAsync(string textToFind, CancellationToken cancellationToken)

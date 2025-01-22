@@ -4,7 +4,7 @@
 /// Information related to how and why a fallback result was used.
 /// If this field is set, then it means the server used a different routing mode from your preferred mode as fallback.
 /// </summary>
-public record FallbackInfo
+public class FallbackInfo
 {
     /// <summary>
     /// Routing mode used for the response.

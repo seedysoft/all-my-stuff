@@ -3,7 +3,7 @@
 /// <summary>
 /// Traffic density indicator on a contiguous segment of a polyline or path. Given a path with points P_0, P_1, ... , P_N (zero-based index), the SpeedReadingInterval defines an interval and describes its traffic using the following categories.
 /// </summary>
-public record SpeedReadingInterval
+public class SpeedReadingInterval
 {
     /// <summary>
     /// The starting index of this interval in the polyline.

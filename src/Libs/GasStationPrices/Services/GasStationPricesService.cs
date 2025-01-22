@@ -34,6 +34,7 @@ public sealed class GasStationPricesService(IServiceProvider serviceProvider)
         }
         catch (Exception e) when (Logger.LogAndHandle(e, "Unexpected error")) { }
 
+        // TODO                                         TEST GeometricHelper.GetDistance
         var NearStations = MineturResponse?.EstacionesTerrestres
             .AsParallel()
             .Where(x => routePoints.Any(y => x.IsNear(y, maxDistanceInKm)))

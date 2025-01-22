@@ -3,7 +3,7 @@
 /// <summary>
 /// Contains the additional information that the user should be informed about on a leg step, such as possible traffic zone restrictions.
 /// </summary>
-public record RouteLegTravelAdvisory
+public class RouteLegTravelAdvisory
 {
     /// <summary>
     /// Contains information about tolls on the specific RouteLeg.

@@ -1,6 +1,6 @@
 ﻿namespace Seedysoft.Libs.TelegramBot.Settings;
 
-public record class TelegramBotUser : TelegramUserBase
+public record TelegramBotUser : TelegramUserBase
 {
     private string token = default!;
     public string Token

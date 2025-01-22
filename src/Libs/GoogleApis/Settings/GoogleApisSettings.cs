@@ -1,6 +1,6 @@
 ﻿namespace Seedysoft.Libs.GoogleApis.Settings;
 
-public record class GoogleApisSettings
+public record GoogleApisSettings
 {
     private string apiKey = default!;
     public required string ApiKey

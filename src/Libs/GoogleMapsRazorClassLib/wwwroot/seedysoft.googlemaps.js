@@ -66,24 +66,24 @@ class MapWrapper {
         content += '<div class="details">';
         if (route.hasOwnProperty("distanceMeters")) {
           if (route.distanceMeters / 1000 >= 1) {
-            content += "<p>Distance: " + route.distanceMeters / 1000 + "Km</p>";
+            content += "<p>Distance: " + route.distanceMeters / 1000 + " Km</p>";
           } else {
-            content += "<p>Distance: " + route.distanceMeters + "m</p>";
+            content += "<p>Distance: " + route.distanceMeters + " m</p>";
           }
         }
         if (route.hasOwnProperty("duration")) {
           let duration = route.duration.slice(0, -1);
           if (duration / 60 >= 1) {
-            content += "<p>Duration: " + Math.round(duration / 60) + "min.</p>";
+            content += "<p>Duration: " + Math.round(duration / 60) + " min.</p>";
           } else {
             content += "<p>Duration: " + route.duration + "</p>";
           }
         }
         if (route.hasOwnProperty("travelAdvisory") && route.travelAdvisory.hasOwnProperty("fuelConsumptionMicroliters")) {
           if (route.travelAdvisory.fuelConsumptionMicroliters / 1000 >= 1) {
-            content += "<p>Fuel consumption: " + route.travelAdvisory.fuelConsumptionMicroliters / 1000 + "l</p>";
+            content += "<p>Fuel consumption: " + route.travelAdvisory.fuelConsumptionMicroliters / 1000 + " l</p>";
           } else {
-            content += "<p>Fuel consumption: " + route.travelAdvisory.fuelConsumptionMicroliters + "μl</p>";
+            content += "<p>Fuel consumption: " + route.travelAdvisory.fuelConsumptionMicroliters + " μl</p>";
           }
         }
         content += "</div>";
@@ -98,9 +98,9 @@ class MapWrapper {
         });
         mapWrapper.routeLabels.push(markerView);
         markerView.addEventListener("gmp-click", (e) => {
-          mapWrapper.dotNetHelper.invokeMethodAsync("OnClickGmapRouteJS");
+          mapWrapper.dotNetHelper.invokeMethodAsync("OnClickGmapRouteJS", route.polyline.encodedPolyline);
         });
-      }
+      } // addRouteLabel
 
       routes.forEach((route) => {
         if (route.travelAdvisory && route.travelAdvisory.speedReadingIntervals) {
@@ -179,7 +179,6 @@ class MapWrapper {
         glyph: label
         , glyphColor: "#fff"
       });
-
       const marker = new google.maps.marker.AdvancedMarkerElement({
         content: pinGlyph.element
         , gmpDraggable: true
@@ -384,7 +383,7 @@ window.seedysoft.googleMaps = window.seedysoft.googleMaps || {
     /****** End of Request ******/
   }
 
-  , addMarker: (elementId, marker, dotNetHelper) => {
+  , addGasStationMarker: (elementId, marker, dotNetHelper) => {
     let mapWrapper = window.seedysoft.googleMaps.get(elementId);
 
     let map = mapWrapper.gMap;
@@ -429,7 +428,7 @@ window.seedysoft.googleMaps = window.seedysoft.googleMaps || {
     // add a click listener for each marker, and set up the info window.
     if (isClickable) {
       markerEl.addListener("click", () => {
-        window.seedysoft.openInfoWindow(elementId, marker, dotNetHelper);
+        window.seedysoft.googleMaps.openInfoWindow(elementId, marker, dotNetHelper);
       });
     }
   }
@@ -464,20 +463,20 @@ window.seedysoft.googleMaps = window.seedysoft.googleMaps || {
     dotNetHelper.invokeMethodAsync("OnClickGmapMarkerJS", marker);
   }
 
-  , directionsRoute: (elementId, response) => {
-    let mapWrapper = window.seedysoft.googleMaps.get(elementId);
+  //, directionsRoute: (elementId, response) => {
+  //  let mapWrapper = window.seedysoft.googleMaps.get(elementId);
 
-    mapWrapper.directionsRenderer.setDirections(response);
+  //  mapWrapper.directionsRenderer.setDirections(response);
 
-    if (response.routes.length > 1) {
-      mapWrapper.directionsRenderer.setRouteIndex(-1);
-    }
-  }
+  //  if (response.routes.length > 1) {
+  //    mapWrapper.directionsRenderer.setRouteIndex(-1);
+  //  }
+  //}
 
-  , highlightRoute: (elementId, routeIndex) => {
-    let mapWrapper = window.seedysoft.googleMaps.get(elementId);
-    mapWrapper.directionsRenderer.setRouteIndex(routeIndex);
-  }
+  //, highlightRoute: (elementId, routeIndex) => {
+  //  let mapWrapper = window.seedysoft.googleMaps.get(elementId);
+  //  mapWrapper.directionsRenderer.setRouteIndex(routeIndex);
+  //}
 }
 
 window.seedysoft.scriptLoader = window.seedysoft.scriptLoader || {

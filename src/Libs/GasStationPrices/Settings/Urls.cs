@@ -1,16 +1,16 @@
 ﻿namespace Seedysoft.Libs.GasStationPrices.Settings;
 
-public readonly record struct Urls
+public record Urls
 {
     [J("Base")]
-    public string Base { get; init; }
+    public required string Base { get; init; }
 
     [J("EstacionesTerrestres")]
-    public string EstacionesTerrestres { get; init; }
+    public required string EstacionesTerrestres { get; init; }
 
     [J("EstacionesTerrestresFiltroProducto")]
-    public string EstacionesTerrestresFiltroProducto { get; init; }
+    public required string EstacionesTerrestresFiltroProducto { get; init; }
 
     [J("ListadosBase")]
-    public string ListadosBase { get; init; }
+    public required string ListadosBase { get; init; }
 }

@@ -1,6 +1,6 @@
 ﻿namespace Seedysoft.Libs.GoogleApis.Models.Places.Response;
 
-public record class StructuredFormat
+public class StructuredFormat
 {
     [J("mainText")]
     public TextAndMatches? MainText { get; init; }

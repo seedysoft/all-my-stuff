@@ -2,6 +2,9 @@
 
 public static class GeometricHelper
 {
+    public static float GetDistance(Models.Shared.LatLngLiteral from, Models.Shared.LatLngLiteral to) =>
+        System.Numerics.Vector2.Distance(from.ToVector2(), to.ToVector2());
+
     public static double DegreesToRadians(double degrees) => degrees * (Math.PI / Core.Constants.Earth.TotalDegrees / 2);
     public static double RadiansToDegrees(double radians) => radians * (Core.Constants.Earth.TotalDegrees / 2 / Math.PI);
 

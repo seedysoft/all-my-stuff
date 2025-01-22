@@ -2,8 +2,6 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using RestSharp;
 using Seedysoft.Libs.Core.Extensions;
-using Seedysoft.Libs.GoogleApis.Models.Directions.Response;
-using System.Collections.Frozen;
 
 namespace Seedysoft.Libs.GoogleMapsRazorClassLib.GoogleMap;
 
@@ -45,7 +43,7 @@ public partial class Map : SeedysoftComponentBase
     /// <summary>
     /// Event fired when a user clicks on a route.
     /// </summary>
-    [Parameter] public EventCallback OnClickGmapRouteEventCallback { get; set; }
+    [Parameter] public EventCallback<string> OnClickGmapRouteEventCallback { get; set; }
 
     /// <summary>
     /// Makes the marker clickable if set to <see langword="true" />.
@@ -100,9 +98,9 @@ public partial class Map : SeedysoftComponentBase
         await base.OnInitializedAsync();
     }
 
-    private async ValueTask AddMarkerAsync(Marker marker)
+    private async ValueTask AddGasStationMarkerAsync(Marker marker)
     {
-        await JSRuntime.InvokeVoidAsync($"{Constants.SeedysoftGoogleMaps}.addMarker", Id, marker, objRef);
+        await JSRuntime.InvokeVoidAsync($"{Constants.SeedysoftGoogleMaps}.addGasStationMarker", Id, marker, objRef);
         _ = markers.Add(marker);
     }
     public async ValueTask RemoveAllMarkersAsync()
@@ -113,7 +111,7 @@ public partial class Map : SeedysoftComponentBase
     public async ValueTask ClickOnMarkerAsync(Marker marker)
     {
         if (!markers.Any(x => x.Id == marker.Id))
-            await AddMarkerAsync(marker);
+            await AddGasStationMarkerAsync(marker);
 
         await JSRuntime.InvokeVoidAsync($"{Constants.SeedysoftGoogleMaps}.openInfoWindow", Id, marker, objRef);
     }
@@ -133,7 +131,7 @@ public partial class Map : SeedysoftComponentBase
     //        [Id, routeIndex]);
     //}
 
-    public async Task SearchRoutesAsync(string origin, string destination)
+    public async ValueTask SearchRoutesAsync(string origin, string destination)
     {
         await JSRuntime.InvokeVoidAsync(
             $"{Constants.SeedysoftGoogleMaps}.searchRoutes",
@@ -142,16 +140,16 @@ public partial class Map : SeedysoftComponentBase
     }
 
     [JSInvokable]
-    public async Task OnClickGmapMarkerJS(Marker marker)
+    public async ValueTask OnClickGmapMarkerJS(Marker marker)
     {
         if (OnClickGmapMarkerEventCallback.HasDelegate)
             await OnClickGmapMarkerEventCallback.InvokeAsync(marker);
     }
     [JSInvokable]
-    public async Task OnClickGmapRouteJS()
+    public async ValueTask OnClickGmapRouteJS(string encodedPolyline)
     {
         if (OnClickGmapRouteEventCallback.HasDelegate)
-            await OnClickGmapRouteEventCallback.InvokeAsync();
+            await OnClickGmapRouteEventCallback.InvokeAsync(encodedPolyline);
     }
 
     private static void OnScriptError(string errorMessage) => throw new Exception(errorMessage);

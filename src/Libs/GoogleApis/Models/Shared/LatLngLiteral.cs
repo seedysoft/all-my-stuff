@@ -45,5 +45,7 @@ public class LatLngLiteral
         };
     }
 
+    internal System.Numerics.Vector2 ToVector2() => new((float)Lat, (float)Lng);
+
     private string GetDebuggerDisplay => $"Lat:{Lat} {Environment.NewLine} Lon:{Lng}";
 }
