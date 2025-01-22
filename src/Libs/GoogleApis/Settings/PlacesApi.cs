@@ -1,6 +1,6 @@
 ﻿namespace Seedysoft.Libs.GoogleApis.Settings;
 
-public readonly record struct PlacesApi
+public record PlacesApi
 {
     public required string UrlFormat { get; init; }
 

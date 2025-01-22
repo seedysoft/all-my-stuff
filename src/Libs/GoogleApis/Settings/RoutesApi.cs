@@ -1,6 +1,6 @@
 ﻿//namespace Seedysoft.Libs.GoogleApis.Settings;
 
-//public class RoutesApi
+//public record RoutesApi
 //{
 //    public required string UrlFormat { get; init; }
 //}

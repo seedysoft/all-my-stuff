@@ -1,6 +1,6 @@
 ﻿//namespace Seedysoft.Libs.GoogleApis.Settings;
 
-//public record class MapsApi
+//public record MapsApi
 //{
 //    private string mapId = default!;
 //    public required string MapId

@@ -3,7 +3,7 @@
 /// <summary>
 /// Text representations of certain properties.
 /// </summary>
-public record RouteLegStepLocalizedValues
+public class RouteLegStepLocalizedValues
 {
     /// <summary>
     /// Travel distance represented in text form.

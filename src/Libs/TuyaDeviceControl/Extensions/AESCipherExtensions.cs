@@ -14,7 +14,7 @@ internal static class AESCipherExtensions
     internal static (byte[]?, byte[]) GetDecryptionInitVector(byte[]? iv, byte[] data)
     {
         return iv == null || iv.Length == 0
-            ? ((byte[]?, byte[]))(iv, data)
+            ? (iv, data)
             : (data[..12], data[12..]);
     }
 

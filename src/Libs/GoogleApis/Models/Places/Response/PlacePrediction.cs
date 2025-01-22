@@ -1,6 +1,6 @@
 ﻿namespace Seedysoft.Libs.GoogleApis.Models.Places.Response;
 
-public record class PlacePrediction
+public class PlacePrediction
 {
     [J("place")]
     public string? Place { get; init; }

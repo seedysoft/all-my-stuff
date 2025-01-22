@@ -1,6 +1,6 @@
 ﻿namespace Seedysoft.Libs.GoogleApis.Models.Routes.Response;
 
-public record Body
+public class Body
 {
     /// <summary>
     /// Contains an array of computed routes (up to three) when you specify compute_alternatives_routes, and contains just one route when you don't.

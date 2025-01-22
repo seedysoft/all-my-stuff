@@ -1,6 +1,6 @@
 namespace Seedysoft.Libs.Core.Models.Config;
 
-public class RuntimeSettings
+public record RuntimeSettings
 {
     public short SecondsToDelayWebApplicationStart { get; set; }
 

@@ -3,7 +3,7 @@
 /// <summary>
 /// Contains a segment of a <see cref="RouteLeg"/>. A step corresponds to a single navigation instruction. Route legs are made up of steps.
 /// </summary>
-public record RouteLegStep
+public class RouteLegStep
 {
     /// <summary>
     /// The travel distance of the route leg, in meters.

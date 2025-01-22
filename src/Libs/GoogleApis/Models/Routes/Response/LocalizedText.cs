@@ -3,7 +3,7 @@
 /// <summary>
 /// Localized variant of a text in a particular language.
 /// </summary>
-public record LocalizedText
+public class LocalizedText
 {
     /// <summary>
     /// Localized string in the language corresponding to languageCode below.

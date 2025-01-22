@@ -3,7 +3,7 @@
 /// <summary>
 /// Contains <see cref="GeocodedWaypoint"/>s for origin, destination and intermediate waypoints. Only populated for address waypoints.
 /// </summary>
-public record GeocodingResults
+public class GeocodingResults
 {
     /// <summary>
     /// Origin geocoded waypoint.

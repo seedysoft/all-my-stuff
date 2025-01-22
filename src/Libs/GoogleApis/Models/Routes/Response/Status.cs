@@ -3,7 +3,7 @@
 /// <summary>
 /// The <see cref="Status"/> type defines a logical error model that is suitable for different programming environments.
 /// </summary>
-public record Status
+public class Status
 {
     /// <summary>
     /// The status code, which should be an enum value of google.rpc.Code.
