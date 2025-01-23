@@ -37,6 +37,8 @@ public record class EstacionTerrestre
     public required string Longitud { get; init; }
     public double Lng => double.Parse(Longitud, Core.Constants.Globalization.NumberFormatInfoES);
 
+    public GoogleApis.Models.Shared.LatLngLiteral LatLng => new(Lat, Lng);
+
     public required string Margen { get; init; }
 
     public required string Municipio { get; init; }
