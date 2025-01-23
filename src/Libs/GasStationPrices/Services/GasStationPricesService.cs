@@ -4,7 +4,6 @@ using Microsoft.Extensions.Logging;
 using RestSharp;
 using Seedysoft.Libs.Core.Extensions;
 using Seedysoft.Libs.GasStationPrices.Extensions;
-using System.Collections.Frozen;
 
 namespace Seedysoft.Libs.GasStationPrices.Services;
 
@@ -15,8 +14,8 @@ public sealed class GasStationPricesService(IServiceProvider serviceProvider)
         .Get<Settings.GasStationPricesSettings>()!;
     private readonly ILogger<GasStationPricesService> Logger = serviceProvider.GetRequiredService<ILogger<GasStationPricesService>>();
 
-    public async Task<IReadOnlySet<ViewModels.GasStationModel>> GetNearGasStationsAsync(
-        IEnumerable<GoogleApis.Models.Shared.LatLngLiteral> routePoints,
+    public async IAsyncEnumerable<ViewModels.GasStationModel> GetNearGasStationsAsync(
+        string encodedPolyline,
         int maxDistanceInKm)
     {
         // Obtain Gas Stations with Prices from Minetur
@@ -34,69 +33,16 @@ public sealed class GasStationPricesService(IServiceProvider serviceProvider)
         }
         catch (Exception e) when (Logger.LogAndHandle(e, "Unexpected error")) { }
 
-        // TODO                                         TEST GeometricHelper.GetDistance
-        var NearStations = MineturResponse?.EstacionesTerrestres
-            .AsParallel()
-            .Where(x => routePoints.Any(y => x.IsNear(y, maxDistanceInKm)))
-            .Select(x => x.ToGasStationModel())
-            .ToFrozenSet();
+        IEnumerable<GoogleApis.Models.Shared.LatLngLiteral> RoutePoints = GoogleApis.Helpers.GooglePolyline.Decode(encodedPolyline);
 
-        return NearStations ?? FrozenSet<ViewModels.GasStationModel>.Empty;
+        for (int i = 0; i < MineturResponse?.EstacionesTerrestres.Length; i++)
+        {
+            // TODO                 TEST SPEED
+            Models.Minetur.EstacionTerrestre Estacion = MineturResponse?.EstacionesTerrestres[i]!;
+            GoogleApis.Models.Shared.LatLngLiteral from = Estacion.LatLng;
+            //if (RoutePoints.Any(x => Estacion.IsNear(x, maxDistanceInKm)))
+            if (RoutePoints.Any(x => GoogleApis.Helpers.GeometricHelper.GetDistance(from, x) < maxDistanceInKm))
+                yield return Estacion.ToGasStationModel();
+        }
     }
-
-    //public async IAsyncEnumerable<ViewModels.GasStationModel> GetGasStationsAsync(
-    //    IEnumerable<GoogleApis.Models.Shared.LatLngLiteral> routePoints,
-    //    [System.Runtime.CompilerServices.EnumeratorCancellation] CancellationToken cancellationToken)
-    //{
-    //    // Obtain Gas Stations with Prices from Minetur
-    //    Models.Minetur.Body? MineturResponse = null;
-
-    //    try
-    //    {
-    //        RestRequest restRequest = new(GasStationPricesSettings.Minetur.Urls.EstacionesTerrestres);
-    //        RestClient restClient = new(GasStationPricesSettings.Minetur.Urls.Base)
-    //        {
-    //            AcceptedContentTypes = [System.Net.Mime.MediaTypeNames.Application.Json,],
-    //        };
-    //        RestResponse restResponse = await restClient.ExecuteGetAsync(restRequest, cancellationToken);
-    //        if (restResponse.IsSuccessStatusCode)
-    //            MineturResponse = restResponse.Content!.FromJson<Models.Minetur.Body>();
-    //    }
-    //    catch (Exception e) when (Logger.LogAndHandle(e, "Unexpected error")) { }
-
-    //    if (MineturResponse == null)
-    //        yield break;
-
-    //    if (!routePoints.Any())
-    //        throw new ApplicationException($"{nameof(GoogleApis.Services.RoutesService.GetRoutesAsync)} does not finds route points");
-
-    //    IEnumerable<Models.Minetur.EstacionTerrestre> NearStations = MineturResponse.EstacionesTerrestres
-    //        .AsParallel()
-    //        .Where(x => routePoints.Any(y => x.IsNear(y, travelQueryModel.MaxDistanceInKm)));
-
-    //    foreach (Models.Minetur.EstacionTerrestre et in NearStations)
-    //        yield return ViewModels.GasStationModel.Map(et);
-    //}
-
-    //private static IEnumerable<Core.Json.Minetur.ProductoPetrolifero>? Res;
-    //public async Task<IEnumerable<Core.Json.Minetur.ProductoPetrolifero>> GetPetroleumProductsAsync(
-    //    CancellationToken cancellationToken)
-    //{
-    //    try
-    //    {
-    //        if (Res == null)
-    //        {
-    //            RestRequest restRequest = new(string.Format(Settings.Minetur.Urls.ListadosBase, "ProductosPetroliferos"));
-    //            RestClient restClient = new(Settings.Minetur.Urls.Base) { AcceptedContentTypes = [System.Net.Mime.MediaTypeNames.Application.Json,], };
-    //            RestResponse restResponse = await restClient.ExecuteGetAsync(restRequest, cancellationToken);
-    //            if (restResponse.IsSuccessStatusCode)
-    //                Res = restResponse.Content!.FromJson<IEnumerable<Core.Json.Minetur.ProductoPetrolifero>>();
-    //        }
-
-    //        return Res ?? [];
-    //    }
-    //    catch (Exception e) when (logger.LogAndHandle(e, "Unexpected error")) { }
-
-    //    return [];
-    //}
 }

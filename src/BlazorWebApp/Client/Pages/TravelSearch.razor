@@ -157,7 +157,7 @@
                                TickMarks />
                 </MudStep>
             </ChildContent>
-
+            <CompletedContent></CompletedContent>
             @* <CompletedContent>Click <MudIcon Icon="@Icons.Material.Filled.ArrowDownward" /> to start a new search</CompletedContent> *@
         </MudStepper>
 
@@ -166,8 +166,6 @@
     <MudSpacer />
 
     <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge">
-
-        @* <GoogleRoutesViewer @ref="GoogleRoutesViewer" OnRouteSelected="RoutesDataGridItemSelectedAsync" /> *@
 
         <Map @ref="TravelGoogleMap"
              Id="@nameof(TravelGoogleMap)"
@@ -182,91 +180,10 @@
 
         <MudSpacer />
 
-        <MudDataGrid @ref="GasStationsDataGrid"
-                     ColumnResizeMode="ResizeMode.None"
-                     Filterable
-                     FilterMode="DataGridFilterMode.ColumnFilterRow"
-                     Height="450"
-                     Hover
-                     Items="GasStationsDataGridItems"
-                     SortMode="SortMode.Single"
-                     T="Libs.GasStationPrices.ViewModels.GasStationModel">
-            <ColGroup>
-                <col style="width: 50%;" />
-                @foreach (var item in Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.All)
-                {
-                    var IsHidden = !travelQueryModel.PetroleumProductsSelectedIds.Contains(item.IdProducto);
+        <GasStationsViewer GasStationsMudTableItems="GasStationItems"
+                           PetroleumProductsSelectedIds="@travelQueryModel.PetroleumProductsSelectedIds">
 
-                    <col hidden="@IsHidden" />
-                }
-                <col style="width: 50px;" />
-            </ColGroup>
-            <Columns>
-                <PropertyColumn Property="@(x => x.RotuloTrimed)" Filterable="true" Sortable="true" Title="Rótulo">
-                    <FilterTemplate>
-                        <MudIconButton OnClick="@(() => IsRotuloFilterOpen = true)" Icon="@RotuloFilterIcon" Size="Size.Small" />
-                        <MudOverlay Visible="IsRotuloFilterOpen" OnClick="@(() => IsRotuloFilterOpen = false)" />
-                        <MudPopover Open="IsRotuloFilterOpen" AnchorOrigin="Origin.BottomCenter" TransformOrigin="Origin.TopCenter">
-                            <MudStack Spacing="0">
-                                <MudCheckBox T="bool" Label="Select All" Size="Size.Small" Value="IsRotuloFilterAllSelected" ValueChanged="RotuloFilterSelectAll" />
-                                <MudStack Spacing="0" Style="overflow-y: auto; max-height: 250px">
-                                    @foreach (var item in context.Items.Select(x => x.RotuloTrimed).Distinct().Order())
-                                    {
-                                        <MudCheckBox Label="@($"{item}")"
-                                                     Size="Size.Small"
-                                                     T="bool"
-                                                     Value="@RotuloFilterSelectedItems.Contains(item)"
-                                                     ValueChanged="@((value) => RotuloFilterSelectedChanged(value, item))" />
-                                    }
-                                </MudStack>
-                                <MudStack Row Class="justify-md-space-evenly">
-                                    <MudButton OnClick="@(() => RotuloFilterClearAsync(context))">Clear</MudButton>
-                                    <MudButton Color="Color.Primary" OnClick="@(() => RotuloFilterApplyAsync(context))">Filter</MudButton>
-                                </MudStack>
-                            </MudStack>
-                        </MudPopover>
-                    </FilterTemplate>
-                </PropertyColumn>
-
-                @foreach (var item in Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.All)
-                {
-                    var IsHidden = !travelQueryModel.PetroleumProductsSelectedIds.Contains(item.IdProducto);
-                    <TemplateColumn CellClass="mud-table-cell-align-right"
-                                    Filterable="false"
-                                    Hidden="IsHidden"
-                                    SortBy="@(x => x.Prices.FirstOrDefault(y => y.Product.IdProducto == item.IdProducto)?.Price ?? null)"
-                                    Sortable="true"
-                                    Title="@item.Abreviatura">
-                        <CellTemplate>
-                            @(context.Item.Prices.FirstOrDefault(y => y.Product.IdProducto == item.IdProducto)?.Price ?? null)
-                        </CellTemplate>
-                    </TemplateColumn>
-                }
-
-                <TemplateColumn Filterable="false"
-                                Sortable="false"
-                                StickyRight
-                                Title="@string.Empty">
-                    <CellTemplate>
-                        <MudButton Color="Color.Primary"
-                                   EndIcon="@Icons.Material.Filled.Map"
-                                   OnClick="@(async () => await ShowGasStationInMapAsync(context.Item))"
-                                   Size="Size.Small"
-                                   Variant="Variant.Filled">Show</MudButton>
-                    </CellTemplate>
-                </TemplateColumn>
-            </Columns>
-
-            <NoRecordsContent>No data</NoRecordsContent>
-
-            <RowLoadingContent>
-                <tr class="mud-table-row">
-                    <td class="mud-table-cell" colspan="1000">
-                        Loading...
-                    </td>
-                </tr>
-            </RowLoadingContent>
-        </MudDataGrid>
+        </GasStationsViewer>
 
     </MudContainer>
 

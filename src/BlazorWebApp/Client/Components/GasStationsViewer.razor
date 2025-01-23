@@ -1,0 +1,60 @@
+﻿<style>
+    .mud-table-row.cursor-pointer.selected {
+        background-color: #1E88E5 !important;
+    }
+
+        .mud-table-row.cursor-pointer.selected > td {
+            color: white !important;
+        }
+
+            .mud-table-row.cursor-pointer.selected > td .mud-input {
+                color: white !important;
+            }
+</style>
+
+<MudTable @ref="GasStationsMudTable"
+          Hover
+          Items="GasStationsMudTableItems"
+          OnRowClick="OnRowClickGasStationsMudTable"
+          RowClass="cursor-pointer"
+          RowClassFunc="@SelectedRowClassFunc"
+          T="Libs.GasStationPrices.ViewModels.GasStationModel">
+
+    <ColGroup>
+        <col style="width: 50%;" />
+        @foreach (var item in Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.All)
+        {
+            var IsHidden = !PetroleumProductsSelectedIds.Contains(item.IdProducto);
+
+            <col hidden="@IsHidden" />
+        }
+        <col style="width: 50px;" />
+    </ColGroup>
+
+    <HeaderContent>
+        <MudTh>Rótulo</MudTh>
+        @foreach (var item in Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.All)
+        {
+            var IsHidden = !PetroleumProductsSelectedIds.Contains(item.IdProducto);
+            <MudTh Class="@(IsHidden ? "hidden" : "")">@item.Abreviatura</MudTh>
+        }
+    </HeaderContent>
+
+    <RowTemplate>
+        <MudTd DataLabel="Rótulo">@context.RotuloTrimed</MudTd>
+        @foreach (var item in Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.All)
+        {
+            var IsHidden = !PetroleumProductsSelectedIds.Contains(item.IdProducto);
+            <MudTd Class="@(IsHidden ? "hidden" : "")">@item.Abreviatura</MudTd>
+        }
+    </RowTemplate>
+
+    <NoRecordsContent>No data</NoRecordsContent>
+
+    <PagerContent>
+        <MudPagination Class="pa-4"
+                       Count="@((GasStationsMudTable.GetFilteredItemsCount() + GasStationsMudTable.RowsPerPage - 1) / GasStationsMudTable.RowsPerPage)"
+                       SelectedChanged="GasStationsMudTablePageChanged" />
+    </PagerContent>
+
+</MudTable>
