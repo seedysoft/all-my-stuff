@@ -25,6 +25,4 @@ public sealed class UpdaterCronBackgroundServiceTests : Infrastructure.Tests.Tes
 
         Assert.NotNull(version);
     }
-
-    protected override void Dispose(bool disposing) => Dispose();
 }

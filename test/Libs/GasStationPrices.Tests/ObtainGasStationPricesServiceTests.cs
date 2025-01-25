@@ -45,6 +45,4 @@ public sealed class ObtainGasStationPricesServiceTests : Infrastructure.Tests.Te
 
         Assert.True(gasStationModels.Current != null && !string.IsNullOrWhiteSpace(gasStationModels.Current?.Rotulo));
     }
-
-    protected override void Dispose(bool disposing) => Dispose();
 }
