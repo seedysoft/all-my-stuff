@@ -1,6 +1,6 @@
 ﻿namespace Seedysoft.Libs.GasStationPrices.Models.Minetur;
 
-public record class ProductoPetrolifero
+public record class ProductoPetrolifero : IComparable<ProductoPetrolifero>
 {
     [J("IDProducto"), K(typeof(Core.Extensions.ParseStringConverter))]
     public required long IdProducto { get; init; }
@@ -11,12 +11,14 @@ public record class ProductoPetrolifero
     [J("NombreProductoAbreviatura")]
     public required string Abreviatura { get; init; }
 
-    public static System.Collections.Frozen.FrozenSet<ProductoPetrolifero> All
-        => System.Collections.Frozen.FrozenSet.ToFrozenSet([BIE, BIO, G95E10, G95E5, G95E5Plus, G98E10, G98E5, GLP, GNC, GNL, GOA, GOAPlus, GOB, H2]);
-    public static System.Collections.Frozen.FrozenSet<ProductoPetrolifero> Gasoline
-        => System.Collections.Frozen.FrozenSet.ToFrozenSet([G95E10, G95E5, G95E5Plus, G98E10, G98E5]);
-    public static System.Collections.Frozen.FrozenSet<ProductoPetrolifero> Diesel
-        => System.Collections.Frozen.FrozenSet.ToFrozenSet([BIO, GOA, GOAPlus, GOB]);
+    public int CompareTo(ProductoPetrolifero? other) => Abreviatura.CompareTo(other?.Abreviatura);
+
+    public static System.Collections.Immutable.ImmutableSortedSet<ProductoPetrolifero> All
+        => System.Collections.Immutable.ImmutableSortedSet.Create([BIE, BIO, G95E10, G95E5, G95E5Plus, G98E10, G98E5, GLP, GNC, GNL, GOA, GOAPlus, GOB, H2]);
+    public static System.Collections.Immutable.ImmutableSortedSet<ProductoPetrolifero> Gasoline
+        => System.Collections.Immutable.ImmutableSortedSet.Create([G95E10, G95E5, G95E5Plus, G98E10, G98E5]);
+    public static System.Collections.Immutable.ImmutableSortedSet<ProductoPetrolifero> Diesel
+        => System.Collections.Immutable.ImmutableSortedSet.Create([BIO, GOA, GOAPlus, GOB]);
 
     public override string ToString() => Nombre ?? "Unknown";
 

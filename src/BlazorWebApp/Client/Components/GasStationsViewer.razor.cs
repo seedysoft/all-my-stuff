@@ -6,11 +6,14 @@ public partial class GasStationsViewer
 {
     [Parameter] public IEnumerable<Libs.GasStationPrices.ViewModels.GasStationModel> GasStationsMudTableItems { get; set; } = [];
 
-    [Parameter] public Func<Libs.GasStationPrices.ViewModels.GasStationModel, Task>? OnGasStationSelected { get; set; }
+    [Parameter] public bool IsLoading { get; set; }
+
+    [Parameter] public Func<Libs.GasStationPrices.ViewModels.GasStationModel, Task>? OnItemSelected { get; set; }
 
     [Parameter] public IReadOnlyCollection<long> PetroleumProductsSelectedIds { get; set; } = [];
 
     private MudBlazor.MudTable<Libs.GasStationPrices.ViewModels.GasStationModel> GasStationsMudTable { get; set; } = default!;
+
     private bool IsRotuloFilterOpen = false;
     private MudBlazor.FilterDefinition<Libs.GasStationPrices.ViewModels.GasStationModel> RotuloFilterDefinition = default!;
     private HashSet<string> RotuloFilterAvailableItems => [.. GasStationsMudTableItems.Select(static x => x.RotuloTrimed).Distinct().Order()];
@@ -58,8 +61,8 @@ public partial class GasStationsViewer
     private async Task OnRowClickGasStationsMudTable(
         MudBlazor.TableRowClickEventArgs<Libs.GasStationPrices.ViewModels.GasStationModel> tableRowClickEventArgs)
     {
-        if (OnGasStationSelected != null && tableRowClickEventArgs.Item != null)
-            await OnGasStationSelected.Invoke(tableRowClickEventArgs.Item);
+        if (OnItemSelected != null && tableRowClickEventArgs.Item != null)
+            await OnItemSelected.Invoke(tableRowClickEventArgs.Item);
     }
 
     private string SelectedRowClassFunc(
@@ -73,8 +76,5 @@ public partial class GasStationsViewer
 
     private void GasStationsMudTablePageChanged(int i) => GasStationsMudTable.NavigateTo(i - 1);
 
-    private async Task ClearDataAsync()
-    {
-        RotuloFilterSelectedItems.Clear();
-    }
+    private async Task ClearDataAsync() => RotuloFilterSelectedItems.Clear();
 }

@@ -1,4 +1,5 @@
 ﻿using Seedysoft.Libs.Core.Extensions;
+using System.Collections.Frozen;
 
 namespace Seedysoft.Libs.GasStationPrices.Extensions;
 
@@ -15,8 +16,7 @@ public static class ModelExtensions
             Rotulo = estacionTerrestre.Rotulo,
         };
 
-        static System.Collections.ObjectModel.ReadOnlyCollection<ViewModels.ProductPrice> MapPrices(
-                Models.Minetur.EstacionTerrestre estacionTerrestre)
+        static FrozenSet<ViewModels.ProductPrice> MapPrices(Models.Minetur.EstacionTerrestre estacionTerrestre)
         {
             IEnumerable<ViewModels.ProductPrice> values = [
                 new(Models.Minetur.ProductoPetrolifero.G95E5, estacionTerrestre.PrecioGasolina95E5.ParseWithNumberFormatInfoES()),
@@ -35,7 +35,7 @@ public static class ModelExtensions
                 new(Models.Minetur.ProductoPetrolifero.H2, estacionTerrestre.PrecioHidrogeno.ParseWithNumberFormatInfoES()),
             ];
 
-            return values.Where(static x => x.Price.HasValue).ToList().AsReadOnly();
+            return values.Where(static x => x.Price.HasValue).ToFrozenSet();
         }
     }
 }
