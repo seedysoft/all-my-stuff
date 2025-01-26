@@ -7,6 +7,7 @@ using Seedysoft.Libs.Core.Extensions;
 namespace Seedysoft.BlazorWebApp.Client.Pages;
 
 // TODO                 Add button to switch between Origin and Destination
+// TODO                                 Use CancellationTokenSource
 
 public partial class TravelSearch
 {
@@ -16,6 +17,8 @@ public partial class TravelSearch
     [Inject] private IConfiguration Configuration { get; set; } = default!;
     [Inject] private Libs.GasStationPrices.Services.GasStationPricesService GasStationPricesService { get; set; } = default!;
     [Inject] private Libs.GoogleApis.Services.PlacesService PlacesService { get; set; } = default!;
+
+    private readonly CancellationTokenSource CancellationTokenSource = new();
 
     private Libs.GoogleApis.Settings.GoogleApisSettings googleApisSettings = default!;
 
@@ -35,6 +38,7 @@ public partial class TravelSearch
     };
     private readonly Libs.GasStationPrices.ViewModels.TravelQueryModelFluentValidator travelQueryModelFluentValidator = new();
 
+    private bool GasStationsMudTableLoading;
     private readonly List<Libs.GasStationPrices.ViewModels.GasStationModel> GasStationItems = [];
 
     protected override async Task OnInitializedAsync()
@@ -52,16 +56,19 @@ public partial class TravelSearch
         => _ = Snackbar.Add($"Clicked in {marker.Content}. DateTime: {DateTime.Now}", MudBlazor.Severity.Success);
     private async Task OnClickGmapRouteAsync(string encodedPolyline)
     {
+        GasStationsMudTableLoading = true;
         GasStationItems.Clear();
 
         StateHasChanged();
 
-        await foreach (Libs.GasStationPrices.ViewModels.GasStationModel gasStationModel in 
+        await foreach (Libs.GasStationPrices.ViewModels.GasStationModel gasStationModel in
             GasStationPricesService.GetNearGasStationsAsync(encodedPolyline, travelQueryModel.MaxDistanceInKm)!)
         {
             GasStationItems.Add(gasStationModel);
             StateHasChanged();
         }
+
+        GasStationsMudTableLoading = false;
     }
 
     private async Task<IEnumerable<string>> FindPlacesAsync(string textToFind, CancellationToken cancellationToken)
@@ -89,10 +96,12 @@ public partial class TravelSearch
 
             case MudBlazor.StepAction.Complete: // occurrs when clicking next
                 await ControlStepCompletion(arg);
-
                 break;
 
             case MudBlazor.StepAction.Reset:
+                await CancellationTokenSource.CancelAsync();
+                break;
+
             case MudBlazor.StepAction.Skip:
                 break;
         }
@@ -179,4 +188,7 @@ public partial class TravelSearch
 
         await TravelGoogleMap.SearchRoutesAsync(travelQueryModel.Origin, travelQueryModel.Destination);
     }
+
+    private async Task OnGasStationSelectedAsync(Libs.GasStationPrices.ViewModels.GasStationModel gasStationModel)
+        => await ShowGasStationInMapAsync(gasStationModel);
 }

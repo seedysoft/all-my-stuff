@@ -8,5 +8,5 @@ public record class GasStationModel
     public required string Rotulo { get; init; }
     public string RotuloTrimed => Rotulo.Trim();
 
-    public required IReadOnlyCollection<ProductPrice> Prices { get; init; }
+    public required System.Collections.Frozen.FrozenSet<ProductPrice> Prices { get; init; }
 }

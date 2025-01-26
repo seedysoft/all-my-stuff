@@ -12,31 +12,25 @@
             }
 </style>
 
-<MudTable @ref="GasStationsMudTable"
+<MudTable @ref="@GasStationsMudTable"
+          Dense
           Hover
-          Items="GasStationsMudTableItems"
-          OnRowClick="OnRowClickGasStationsMudTable"
+          Items="@GasStationsMudTableItems"
+          Loading="@IsLoading"
+          LoadingProgressColor="@Color.Info"
+          OnRowClick="@OnRowClickGasStationsMudTable"
           RowClass="cursor-pointer"
           RowClassFunc="@SelectedRowClassFunc"
-          T="Libs.GasStationPrices.ViewModels.GasStationModel">
-
-    <ColGroup>
-        <col style="width: 50%;" />
-        @foreach (var item in Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.All)
-        {
-            var IsHidden = !PetroleumProductsSelectedIds.Contains(item.IdProducto);
-
-            <col hidden="@IsHidden" />
-        }
-        <col style="width: 50px;" />
-    </ColGroup>
+          T="@Libs.GasStationPrices.ViewModels.GasStationModel">
 
     <HeaderContent>
-        <MudTh>Rótulo</MudTh>
+        <MudTh Style=" ">Rótulo</MudTh>
         @foreach (var item in Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.All)
         {
-            var IsHidden = !PetroleumProductsSelectedIds.Contains(item.IdProducto);
-            <MudTh Class="@(IsHidden ? "hidden" : "")">@item.Abreviatura</MudTh>
+            if (PetroleumProductsSelectedIds.Contains(item.IdProducto))
+            {
+                <MudTh>@item.Abreviatura</MudTh>
+            }
         }
     </HeaderContent>
 
@@ -44,8 +38,10 @@
         <MudTd DataLabel="Rótulo">@context.RotuloTrimed</MudTd>
         @foreach (var item in Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.All)
         {
-            var IsHidden = !PetroleumProductsSelectedIds.Contains(item.IdProducto);
-            <MudTd Class="@(IsHidden ? "hidden" : "")">@item.Abreviatura</MudTd>
+            if (PetroleumProductsSelectedIds.Contains(item.IdProducto))
+            {
+                <MudTd>@(context.Prices.SingleOrDefault(x => x.Product.IdProducto == item.IdProducto)?.Price?.ToString("0.000") ?? string.Empty)</MudTd>
+            }
         }
     </RowTemplate>
 
