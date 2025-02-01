@@ -12,45 +12,87 @@
             }
 </style>
 
-<MudTable @ref="@GasStationsMudTable"
-          Dense
-          Hover
-          Items="@GasStationsMudTableItems"
-          Loading="@IsLoading"
-          LoadingProgressColor="@Color.Info"
-          OnRowClick="@OnRowClickGasStationsMudTable"
-          RowClass="cursor-pointer"
-          RowClassFunc="@SelectedRowClassFunc"
-          T="@Libs.GasStationPrices.ViewModels.GasStationModel">
+<MudDataGrid @ref="DataGridRef"
+             ColumnResizeMode="ResizeMode.None"
+             Dense
+             Filterable
+             FilterCaseSensitivity="DataGridFilterCaseSensitivity.Ignore"
+             FilterMode="DataGridFilterMode.ColumnFilterRow"
+             Height="450"
+             Hover
+             Items="GasStationItems"
+             Loading="IsLoading"
+             RowsPerPage="10"
+             SelectedItemChanged="OnSelectedItemChanged"
+             SortMode="SortMode.Single"
+             T="Libs.GasStationPrices.ViewModels.GasStationModel">
 
-    <HeaderContent>
-        <MudTh Style=" ">Rótulo</MudTh>
+    <ColGroup>
+        <col style="width: 50%;" />
         @foreach (var item in Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.All)
         {
-            if (PetroleumProductsSelectedIds.Contains(item.IdProducto))
-            {
-                <MudTh>@item.Abreviatura</MudTh>
-            }
-        }
-    </HeaderContent>
+            var IsHidden = !PetroleumProductsSelectedIds.Contains(item.IdProducto);
 
-    <RowTemplate>
-        <MudTd DataLabel="Rótulo">@context.RotuloTrimed</MudTd>
+            <col hidden="@IsHidden" />
+        }
+    </ColGroup>
+
+    <Columns>
+        <PropertyColumn Property="@(x => x.RotuloTrimed)" Filterable="true" Sortable="true" Title="Rótulo">
+            <FilterTemplate>
+                <MudIconButton Icon="@RotuloFilterIcon" OnClick="@(() => IsRotuloFilterOpen = true)" Size="Size.Small" />
+                <MudOverlay OnClick="@(() => IsRotuloFilterOpen = false)" Visible="IsRotuloFilterOpen" />
+                <MudPopover AnchorOrigin="Origin.BottomCenter" Open="IsRotuloFilterOpen" TransformOrigin="Origin.TopCenter">
+                    <MudStack Spacing="0">
+                        <MudCheckBox Label="Select All" Size="Size.Small" T="bool" Value="IsRotuloFilterAllSelected" ValueChanged="RotuloFilterSelectAll" />
+                        <MudStack Spacing="0" Style="overflow-y: auto; max-height: 250px">
+                            @foreach (var item in context.Items.Select(x => x.RotuloTrimed).Distinct().Order())
+                            {
+                                <MudCheckBox Label="@($"{item}")"
+                                             Size="Size.Small"
+                                             T="bool"
+                                             Value="@RotuloFilterSelectedItems.Contains(item)"
+                                             ValueChanged="@((value) => RotuloFilterSelectedChanged(value, item))" />
+                            }
+                        </MudStack>
+                        <MudStack Row Class="justify-md-space-evenly">
+                            <MudButton OnClick="@(() => RotuloFilterClearAsync(context))">Clear</MudButton>
+                            <MudButton Color="Color.Primary" OnClick="@(() => RotuloFilterApplyAsync(context))">Filter</MudButton>
+                        </MudStack>
+                    </MudStack>
+                </MudPopover>
+            </FilterTemplate>
+        </PropertyColumn>
+
         @foreach (var item in Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.All)
         {
-            if (PetroleumProductsSelectedIds.Contains(item.IdProducto))
-            {
-                <MudTd>@(context.Prices.SingleOrDefault(x => x.Product.IdProducto == item.IdProducto)?.Price?.ToString("0.000") ?? string.Empty)</MudTd>
-            }
+            var IsHidden = !PetroleumProductsSelectedIds.Contains(item.IdProducto);
+            <TemplateColumn CellClass="mud-table-cell-align-right"
+                            Filterable="false"
+                            Hidden="IsHidden"
+                            SortBy="@(x => x.Prices.FirstOrDefault(y => y.Product.IdProducto == item.IdProducto)?.Price ?? null)"
+                            Sortable="true"
+                            Title="@item.Abreviatura">
+                <CellTemplate>
+                    @(context.Item.Prices.FirstOrDefault(y => y.Product.IdProducto == item.IdProducto)?.Price ?? null)
+                </CellTemplate>
+            </TemplateColumn>
         }
-    </RowTemplate>
+    </Columns>
 
-    <NoRecordsContent>No data</NoRecordsContent>
+    <LoadingContent>
+        Loading Content ....
+    </LoadingContent>
+
+    <NoRecordsContent>
+        No data
+    </NoRecordsContent>
 
     <PagerContent>
-        <MudPagination Class="pa-4"
-                       Count="@((GasStationsMudTable.GetFilteredItemsCount() + GasStationsMudTable.RowsPerPage - 1) / GasStationsMudTable.RowsPerPage)"
-                       SelectedChanged="GasStationsMudTablePageChanged" />
+        <MudDataGridPager Class="pa-4"
+                          ShowNavigation="true"
+                          ShowPageNumber="true">
+        </MudDataGridPager>
     </PagerContent>
 
-</MudTable>
+</MudDataGrid>

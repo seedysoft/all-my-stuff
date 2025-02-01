@@ -180,10 +180,10 @@
 
         <MudSpacer />
 
-        <GasStationsViewer GasStationsMudTableItems="@GasStationItems"
-                           IsLoading="@GasStationsMudTableLoading"
+        <GasStationsViewer GasStationItems="@GasStationItems"
+                           IsLoading="@GasStationsViewerIsLoading"
                            PetroleumProductsSelectedIds="@travelQueryModel.PetroleumProductsSelectedIds"
-                           OnItemSelected="@OnGasStationSelectedAsync">
+                           OnSelectedItemChanged="@OnGasStationSelectedAsync">
         </GasStationsViewer>
 
     </MudContainer>
