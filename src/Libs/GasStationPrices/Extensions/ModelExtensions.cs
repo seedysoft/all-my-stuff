@@ -32,7 +32,7 @@ public static class ModelExtensions
                 new(Models.Minetur.ProductoPetrolifero.GLP, estacionTerrestre.PrecioGasesLicuadosDelPetróleo.ParseWithNumberFormatInfoES()),
                 new(Models.Minetur.ProductoPetrolifero.GNC, estacionTerrestre.PrecioGasNaturalComprimido.ParseWithNumberFormatInfoES()),
                 new(Models.Minetur.ProductoPetrolifero.GNL, estacionTerrestre.PrecioGasNaturalLicuado.ParseWithNumberFormatInfoES()),
-                new(Models.Minetur.ProductoPetrolifero.H2, estacionTerrestre.PrecioHidrogeno.ParseWithNumberFormatInfoES()),
+                //new(Models.Minetur.ProductoPetrolifero.H2, estacionTerrestre.PrecioHidrogeno.ParseWithNumberFormatInfoES()),
             ];
 
             return values.Where(static x => x.Price.HasValue).ToFrozenSet();
