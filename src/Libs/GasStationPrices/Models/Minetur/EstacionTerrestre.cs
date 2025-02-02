@@ -103,14 +103,14 @@ public record class EstacionTerrestre
     [J("Precio Gasolina 98 E5")]
     public required string PrecioGasolina98E5 { get; init; }
 
-    [J("Precio Hidrogeno")]
-    public required string PrecioHidrogeno { get; init; }
+    //[J("Precio Hidrogeno")]
+    //public required string PrecioHidrogeno { get; init; }
 
-    [J("% BioEtanol")]
-    public required string BioEtanol { get; init; }
+    //[J("% BioEtanol")]
+    //public required string BioEtanol { get; init; }
 
-    [J("% Éster metílico")]
-    public required string EsterMetilico { get; init; }
+    //[J("% Éster metílico")]
+    //public required string EsterMetilico { get; init; }
 
     public bool IsNear(GoogleApis.Models.Shared.LatLngLiteral routePoint, int maxDistanceInKm)
     {
