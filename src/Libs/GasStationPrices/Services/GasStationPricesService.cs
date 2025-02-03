@@ -33,6 +33,9 @@ public sealed class GasStationPricesService(IServiceProvider serviceProvider)
         }
         catch (Exception e) when (Logger.LogAndHandle(e, "Unexpected error")) { }
 
+        if (MineturResponse == null)
+            yield break;
+
         IEnumerable<GoogleApis.Models.Shared.LatLngLiteral> RoutePoints = GoogleApis.Helpers.GooglePolyline.Decode(encodedPolyline);
 
         for (int i = 0; i < MineturResponse?.EstacionesTerrestres.Length; i++)

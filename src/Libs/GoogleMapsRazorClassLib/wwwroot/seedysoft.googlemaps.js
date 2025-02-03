@@ -15,6 +15,7 @@ class MapWrapper {
     this.paths = [];
     this.routeLabels = [];
     this.wayPoints = [];
+    this.viewport = {};
 
     this.setErrorMsg = function (err) {
       debugger
@@ -163,13 +164,13 @@ class MapWrapper {
           this.paths.push(polyline);
         }
       }
-
-      this.setViewPort(routes[0].viewport);
+      this.viewport = routes[0].viewport;
+      this.setViewport(this.viewport);
     };
 
-    this.setViewPort = function (viewPort) {
-      const sw = new google.maps.LatLng({ lat: viewPort.low.latitude, lng: viewPort.low.longitude });
-      const ne = new google.maps.LatLng({ lat: viewPort.high.latitude, lng: viewPort.high.longitude });
+    this.setViewport = function (viewport) {
+      const sw = new google.maps.LatLng({ lat: viewport.low.latitude, lng: viewport.low.longitude });
+      const ne = new google.maps.LatLng({ lat: viewport.high.latitude, lng: viewport.high.longitude });
       const bounds = new google.maps.LatLngBounds(sw, ne);
       this.gMap.fitBounds(bounds);
     };
@@ -461,6 +462,11 @@ window.seedysoft.googleMaps = window.seedysoft.googleMaps || {
     mapWrapper.infoWindow.setContent(marker.title);
     mapWrapper.infoWindow.open(mapWrapper.gMap, marker.position);
     dotNetHelper.invokeMethodAsync("OnClickGmapMarkerJS", marker);
+  }
+
+  , resetViewport: (elementId) => {
+    let mapWrapper = window.seedysoft.googleMaps.get(elementId);
+    mapWrapper.setViewport(mapWrapper.viewport);
   }
 
   //, directionsRoute: (elementId, response) => {
