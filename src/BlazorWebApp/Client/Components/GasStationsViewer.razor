@@ -1,81 +1,87 @@
-﻿<style>
-    .mud-table-row.cursor-pointer.selected {
-        background-color: #1E88E5 !important;
-    }
-
-        .mud-table-row.cursor-pointer.selected > td {
-            color: white !important;
-        }
-
-            .mud-table-row.cursor-pointer.selected > td .mud-input {
-                color: white !important;
-            }
-</style>
+﻿@using Model = Seedysoft.Libs.GasStationPrices.ViewModels.GasStationModel;
 
 <MudDataGrid @ref="DataGridRef"
-             ColumnResizeMode="ResizeMode.None"
+             Bordered
              Dense
              Filterable
-             FilterCaseSensitivity="DataGridFilterCaseSensitivity.Ignore"
-             FilterMode="DataGridFilterMode.ColumnFilterRow"
+             FilterCaseSensitivity="DataGridFilterCaseSensitivity.CaseInsensitive"
+             FilterMode="DataGridFilterMode.ColumnFilterMenu"
+             FixedHeader="true"
              Height="450"
              Hover
-             Items="GasStationItems"
+             Items="Elements"
              Loading="IsLoading"
+             ReadOnly
+             RowClassFunc="RowClassFuncion"
              RowsPerPage="10"
              SelectedItemChanged="OnSelectedItemChanged"
+             ShowFilterIcons="true"
              SortMode="SortMode.Single"
-             T="Libs.GasStationPrices.ViewModels.GasStationModel">
+             Striped
+             T="Model"
+             Virtualize>
 
     <ColGroup>
         <col style="width: 50%;" />
         @foreach (var item in Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.All)
         {
             var IsHidden = !PetroleumProductsSelectedIds.Contains(item.IdProducto);
-
             <col hidden="@IsHidden" />
         }
     </ColGroup>
 
     <Columns>
-        <PropertyColumn Property="@(x => x.RotuloTrimed)" Filterable="true" Sortable="true" Title="Rótulo">
-            <FilterTemplate>
-                <MudIconButton Icon="@RotuloFilterIcon" OnClick="@(() => IsRotuloFilterOpen = true)" Size="Size.Small" />
-                <MudOverlay OnClick="@(() => IsRotuloFilterOpen = false)" Visible="IsRotuloFilterOpen" />
-                <MudPopover AnchorOrigin="Origin.BottomCenter" Open="IsRotuloFilterOpen" TransformOrigin="Origin.TopCenter">
-                    <MudStack Spacing="0">
-                        <MudCheckBox Label="Select All" Size="Size.Small" T="bool" Value="IsRotuloFilterAllSelected" ValueChanged="RotuloFilterSelectAll" />
-                        <MudStack Spacing="0" Style="overflow-y: auto; max-height: 250px">
-                            @foreach (var item in context.Items.Select(x => x.RotuloTrimed).Distinct().Order())
-                            {
-                                <MudCheckBox Label="@($"{item}")"
-                                             Size="Size.Small"
-                                             T="bool"
-                                             Value="@RotuloFilterSelectedItems.Contains(item)"
-                                             ValueChanged="@((value) => RotuloFilterSelectedChanged(value, item))" />
-                            }
-                        </MudStack>
-                        <MudStack Row Class="justify-md-space-evenly">
-                            <MudButton OnClick="@(() => RotuloFilterClearAsync(context))">Clear</MudButton>
-                            <MudButton Color="Color.Primary" OnClick="@(() => RotuloFilterApplyAsync(context))">Filter</MudButton>
-                        </MudStack>
-                    </MudStack>
-                </MudPopover>
-            </FilterTemplate>
+        <PropertyColumn Property="@(x => x.RotuloTrimed)" Filterable="true" Sortable="true" StickyLeft Title="Rótulo">
+            <CellTemplate>
+                <span style="white-space: nowrap;">@context.Item.RotuloTrimed</span>
+            </CellTemplate>
         </PropertyColumn>
 
         @foreach (var item in Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.All)
         {
-            var IsHidden = !PetroleumProductsSelectedIds.Contains(item.IdProducto);
-            <TemplateColumn CellClass="mud-table-cell-align-right"
-                            Filterable="false"
-                            Hidden="IsHidden"
-                            SortBy="@(x => x.Prices.FirstOrDefault(y => y.Product.IdProducto == item.IdProducto)?.Price ?? null)"
+            var CurrentProductId = item.IdProducto;
+            var IsHidden = !PetroleumProductsSelectedIds.Contains(CurrentProductId);
+            <TemplateColumn AggregateDefinition="@(new AggregateDefinition<Model>())"
+                            CellClass="mud-table-cell-align-right"
+                            Filterable="true"
+                            @* FilterOperators="@(new HashSet<string>([MudBlazor.FilterOperator.Number.Empty, MudBlazor.FilterOperator.Number.NotEmpty]))" *@
+                            FooterClass="mud-table-cell-align-right"
+                            Hidden="@IsHidden"
                             Sortable="true"
+                            SortBy="@(x => x.GetSortBy(CurrentProductId))"
                             Title="@item.Abreviatura">
+
+                <AggregateTemplate>
+                    @{
+                        MarkupString TextToShow;
+                        if (context.Any())
+                        {
+                            var CurrentPrices = context.Select(x => x.Prices.FirstOrDefault(y => y.ProductId == CurrentProductId)?.Price ?? null).Where(x => x != null).Distinct();
+                            if (CurrentPrices.Any())
+                            {
+                                var Expensivest = CurrentPrices.Max();
+                                var Cheapest = CurrentPrices.Min();
+                                var Average = CurrentPrices.Average();
+                                TextToShow = new($"<p>L {Cheapest:0.000}</p><p>A {Average:0.000}</p><p>H {Expensivest:0.000}</p>");
+                            }
+                            else
+                            {
+                                TextToShow = new();
+                            }
+                        }
+                        else
+                        {
+                            TextToShow = new();
+                        }
+                    }
+
+                    <div>@TextToShow</div>
+                </AggregateTemplate>
+
                 <CellTemplate>
-                    @(context.Item.Prices.FirstOrDefault(y => y.Product.IdProducto == item.IdProducto)?.Price ?? null)
+                    @(context.Item.Prices.First(y => y.ProductId == item.IdProducto).Price)
                 </CellTemplate>
+
             </TemplateColumn>
         }
     </Columns>
@@ -91,8 +97,8 @@
     <PagerContent>
         <MudDataGridPager Class="pa-4"
                           ShowNavigation="true"
-                          ShowPageNumber="true">
-        </MudDataGridPager>
+                          ShowPageNumber="true"
+                          T="Model" />
     </PagerContent>
 
 </MudDataGrid>

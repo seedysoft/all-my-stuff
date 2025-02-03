@@ -3,6 +3,7 @@
 @attribute [StreamRendering(true)]
 
 @using Seedysoft.BlazorWebApp.Client.Components
+@using Seedysoft.BlazorWebApp.Client.Extensions
 @using Seedysoft.Libs.GoogleMapsRazorClassLib.GoogleMap
 
 @{
@@ -157,8 +158,7 @@
                                TickMarks />
                 </MudStep>
             </ChildContent>
-            <CompletedContent></CompletedContent>
-            @* <CompletedContent>Click <MudIcon Icon="@Icons.Material.Filled.ArrowDownward" /> to start a new search</CompletedContent> *@
+
         </MudStepper>
 
     </MudContainer>
@@ -178,13 +178,16 @@
              OnClickGmapMarkerEventCallback="OnClickGmapMarker"
              OnClickGmapRouteEventCallback="OnClickGmapRouteAsync" />
 
-        <MudSpacer />
+    </MudContainer>
 
-        <GasStationsViewer GasStationItems="@GasStationItems"
+    <MudSpacer />
+
+    <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge">
+
+        <GasStationsViewer Elements="@GasStationItems"
                            IsLoading="@GasStationsViewerIsLoading"
-                           PetroleumProductsSelectedIds="@travelQueryModel.PetroleumProductsSelectedIds"
-                           OnSelectedItemChanged="@OnGasStationSelectedAsync">
-        </GasStationsViewer>
+                           OnSelectedItemChanged="@(async (gasStationModel) => await TravelGoogleMap.ClickOnMarkerAsync(gasStationModel.ToMarker()))"
+                           PetroleumProductsSelectedIds="@travelQueryModel.PetroleumProductsSelectedIds" />
 
     </MudContainer>
 

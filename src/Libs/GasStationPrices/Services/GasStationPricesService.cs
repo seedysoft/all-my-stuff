@@ -39,9 +39,10 @@ public sealed class GasStationPricesService(IServiceProvider serviceProvider)
         {
             // TODO                 TEST SPEED
             Models.Minetur.EstacionTerrestre Estacion = MineturResponse?.EstacionesTerrestres[i]!;
-            GoogleApis.Models.Shared.LatLngLiteral from = Estacion.LatLng;
             //if (RoutePoints.Any(x => Estacion.IsNear(x, maxDistanceInKm)))
-            if (RoutePoints.Any(x => GoogleApis.Helpers.GeometricHelper.GetDistance(from, x) < maxDistanceInKm))
+            //GoogleApis.Models.Shared.LatLngLiteral from = Estacion.LatLng;
+            //if (RoutePoints.Any(x => GoogleApis.Helpers.GeometricHelper.GetDistance(from, x) < maxDistanceInKm))
+            if (RoutePoints.Any(x => GoogleApis.Helpers.GeometricHelper.Haversine.Distance(Estacion.Lat, Estacion.Lng, x.Lat, x.Lng) < maxDistanceInKm))
                 yield return Estacion.ToGasStationModel();
         }
     }
