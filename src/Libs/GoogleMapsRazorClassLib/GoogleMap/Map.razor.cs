@@ -98,17 +98,17 @@ public partial class Map : SeedysoftComponentBase
         await base.OnInitializedAsync();
     }
 
-    private async ValueTask AddGasStationMarkerAsync(Marker marker)
+    private async Task AddGasStationMarkerAsync(Marker marker)
     {
         await JSRuntime.InvokeVoidAsync($"{Constants.SeedysoftGoogleMaps}.addGasStationMarker", Id, marker, objRef);
         _ = markers.Add(marker);
     }
-    public async ValueTask RemoveAllMarkersAsync()
+    public async Task RemoveAllMarkersAsync()
     {
         await JSRuntime.InvokeVoidAsync($"{Constants.SeedysoftGoogleMaps}.removeAllMarkers", Id, objRef);
         markers.Clear();
     }
-    public async ValueTask ClickOnMarkerAsync(Marker marker)
+    public async Task ClickOnMarkerAsync(Marker marker)
     {
         if (!markers.Any(x => x.Id == marker.Id))
             await AddGasStationMarkerAsync(marker);
@@ -116,37 +116,20 @@ public partial class Map : SeedysoftComponentBase
         await JSRuntime.InvokeVoidAsync($"{Constants.SeedysoftGoogleMaps}.openInfoWindow", Id, marker, objRef);
     }
 
-    //public async ValueTask SetDirectionsResponse(Body? directionsResponse)
-    //{
-    //    await JSRuntime.InvokeVoidAsync(
-    //      $"{Constants.SeedysoftGoogleMaps}.directionsRoute",
-    //      TimeSpan.FromSeconds(2),
-    //      [Id, directionsResponse]);
-    //}
-    //public async ValueTask HighlightRouteAsync(int routeIndex)
-    //{
-    //    await JSRuntime.InvokeVoidAsync(
-    //        $"{Constants.SeedysoftGoogleMaps}.highlightRoute",
-    //        TimeSpan.FromSeconds(2),
-    //        [Id, routeIndex]);
-    //}
+    public async Task SearchRoutesAsync(string origin, string destination)
+        => await JSRuntime.InvokeVoidAsync($"{Constants.SeedysoftGoogleMaps}.searchRoutes", TimeSpan.FromSeconds(5), [Id, origin, destination, ApiKey]);
 
-    public async ValueTask SearchRoutesAsync(string origin, string destination)
-    {
-        await JSRuntime.InvokeVoidAsync(
-            $"{Constants.SeedysoftGoogleMaps}.searchRoutes",
-            TimeSpan.FromSeconds(5),
-            [Id, origin, destination, ApiKey]);
-    }
+    public async Task ResetViewportAsync() 
+        => await JSRuntime.InvokeVoidAsync($"{Constants.SeedysoftGoogleMaps}.resetViewport", Id);
 
     [JSInvokable]
-    public async ValueTask OnClickGmapMarkerJS(Marker marker)
+    public async Task OnClickGmapMarkerJS(Marker marker)
     {
         if (OnClickGmapMarkerEventCallback.HasDelegate)
             await OnClickGmapMarkerEventCallback.InvokeAsync(marker);
     }
     [JSInvokable]
-    public async ValueTask OnClickGmapRouteJS(string encodedPolyline)
+    public async Task OnClickGmapRouteJS(string encodedPolyline)
     {
         if (OnClickGmapRouteEventCallback.HasDelegate)
             await OnClickGmapRouteEventCallback.InvokeAsync(encodedPolyline);

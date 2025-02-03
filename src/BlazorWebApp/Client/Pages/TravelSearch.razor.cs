@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Components;
-using Microsoft.JSInterop;
 using RestSharp;
 using Seedysoft.BlazorWebApp.Client.Extensions;
 using Seedysoft.Libs.Core.Extensions;
@@ -49,21 +48,30 @@ public partial class TravelSearch
             .Get<Libs.GoogleApis.Settings.GoogleApisSettings>()!;
     }
 
-    private void OnClickGmapMarker(Libs.GoogleMapsRazorClassLib.GoogleMap.Marker marker)
-        => _ = Snackbar.Add($"Clicked in {marker.Content}. DateTime: {DateTime.Now}", MudBlazor.Severity.Success);
+    private async Task OnGasStationSelectedItemChanged(Libs.GasStationPrices.ViewModels.GasStationModel gasStationModel)
+    {
+        if (gasStationModel == null)
+            await TravelGoogleMap.ResetViewportAsync();
+        else
+            await TravelGoogleMap.ClickOnMarkerAsync(gasStationModel.ToMarker());
+    }
+
     private async Task OnClickGmapRouteAsync(string encodedPolyline)
     {
         GasStationsViewerIsLoading = true;
         GasStationItems.Clear();
 
         await foreach (Libs.GasStationPrices.ViewModels.GasStationModel gasStationModel in
-            GasStationPricesService.GetNearGasStationsAsync(encodedPolyline, travelQueryModel.MaxDistanceInKm)!)
+            GasStationPricesService.GetNearGasStationsAsync(encodedPolyline, travelQueryModel.MaxDistanceInKm))
         {
             GasStationItems.Add(gasStationModel);
         }
 
         GasStationsViewerIsLoading = false;
     }
+
+    private void OnClickGmapMarker(Libs.GoogleMapsRazorClassLib.GoogleMap.Marker marker)
+        => _ = Snackbar.Add($"Clicked in {marker.Content}. DateTime: {DateTime.Now}", MudBlazor.Severity.Success);
 
     private async Task<IEnumerable<string>> FindPlacesAsync(string textToFind, CancellationToken cancellationToken)
     {
@@ -77,108 +85,30 @@ public partial class TravelSearch
         return [];
     }
 
-    private async Task OnPreviewInteractionAsync(MudBlazor.StepperInteractionEventArgs arg)
-    {
-        switch (arg.Action)
-        {
-            case MudBlazor.StepAction.Activate: // occurrs when clicking a step header with the mouse
-                await ControlStepNavigation(arg);
-                break;
-
-            case MudBlazor.StepAction.Complete: // occurrs when clicking next
-                await ControlStepCompletion(arg);
-                break;
-
-            case MudBlazor.StepAction.Reset:
-                // OnCompletedChangedAsync(false) keeps cancellationTokenSource in state
-                break;
-
-            case MudBlazor.StepAction.Skip:
-                break;
-        }
-
-        async Task ControlStepNavigation(MudBlazor.StepperInteractionEventArgs arg)
-        {
-            switch (arg.StepIndex)
-            {
-                case 1:
-                    if (!IsStep1Complete())
-                    {
-                        _ = await DialogService.ShowMessageBox("Error", "Finish step 1 first");
-                        arg.Cancel = true;
-                    }
-
-                    break;
-
-                case 2:
-                    if (!IsStep1Complete() || !IsStep2Complete())
-                    {
-                        _ = await DialogService.ShowMessageBox("Error", "Finish step 1 and 2 first");
-                        arg.Cancel = true;
-                    }
-
-                    break;
-            }
-        }
-
-        async Task ControlStepCompletion(MudBlazor.StepperInteractionEventArgs arg)
-        {
-            switch (arg.StepIndex)
-            {
-                case 0:
-                    if (!IsStep1Complete())
-                    {
-                        _ = await DialogService.ShowMessageBox("Error", "You must fill Origin and Destination on first step");
-                        arg.Cancel = true;
-                    }
-
-                    break;
-
-                case 1:
-                    if (!IsStep2Complete())
-                    {
-                        _ = await DialogService.ShowMessageBox("Error", "You must select at least one Product on second step");
-                        arg.Cancel = true;
-                    }
-
-                    break;
-            }
-        }
-    }
-
-    private bool IsStep1Complete()
-        => !string.IsNullOrWhiteSpace(travelQueryModel.Origin) && !string.IsNullOrWhiteSpace(travelQueryModel.Destination);
-    private bool IsStep2Complete()
-        => travelQueryModel.PetroleumProductsSelectedIds.Count > 0;
-
-    [System.Runtime.Versioning.UnsupportedOSPlatform("browser")]
-    private async Task OnCompletedChangedAsync(bool isCompleted)
-    {
-        if (isCompleted)
-            await LoadGoogleRoutesAsync();
-    }
-
     private async Task ClearDataAsync()
     {
         await TravelGoogleMap.RemoveAllMarkersAsync();
         GasStationItems.Clear();
     }
 
-    private async Task LoadGoogleRoutesAsync()
+    private async Task ValidateSearch()
     {
         FluentValidation.Results.ValidationResult validationResult = await travelQueryModelFluentValidator.ValidateAsync(travelQueryModel);
-        if (!validationResult.IsValid)
+        if (validationResult.IsValid)
+        {
+            await LoadGoogleRoutesAsync();
+        }
+        else
         {
             IEnumerable<string> errors = validationResult.Errors.Select(static x => $"<li>{x.ErrorMessage}</li>");
             _ = Snackbar.Add(new MarkupString($"<ul>{string.Join("", errors)}</ul>"), MudBlazor.Severity.Error);
-            return;
         }
+    }
 
+    private async Task LoadGoogleRoutesAsync()
+    {
         await ClearDataAsync();
 
         await TravelGoogleMap.SearchRoutesAsync(travelQueryModel.Origin, travelQueryModel.Destination);
     }
-
-    private async Task OnGasStationSelectedAsync(Libs.GasStationPrices.ViewModels.GasStationModel gasStationModel)
-        => await TravelGoogleMap.ClickOnMarkerAsync(gasStationModel.ToMarker());
 }
