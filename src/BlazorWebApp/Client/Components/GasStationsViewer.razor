@@ -31,59 +31,48 @@
     </ColGroup>
 
     <Columns>
-        <PropertyColumn Property="@(x => x.RotuloTrimed)" Filterable="true" Sortable="true" StickyLeft Title="Rótulo">
+        <PropertyColumn Property="@(x => x.RotuloTrimed)" Filterable="true" ShowFilterIcon="true" Sortable="true" Title="Rótulo">
             <CellTemplate>
                 <span style="white-space: nowrap;">@context.Item.RotuloTrimed</span>
             </CellTemplate>
         </PropertyColumn>
 
-        @foreach (var item in Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.All)
-        {
-            var CurrentProductId = item.IdProducto;
-            var IsHidden = !PetroleumProductsSelectedIds.Contains(CurrentProductId);
-            <TemplateColumn AggregateDefinition="@(new AggregateDefinition<Model>())"
-                            CellClass="mud-table-cell-align-right"
-                            Filterable="true"
-                            @* FilterOperators="@(new HashSet<string>([MudBlazor.FilterOperator.Number.Empty, MudBlazor.FilterOperator.Number.NotEmpty]))" *@
-                            FooterClass="mud-table-cell-align-right"
-                            Hidden="@IsHidden"
-                            Sortable="true"
-                            SortBy="@(x => x.GetSortBy(CurrentProductId))"
-                            Title="@item.Abreviatura">
-
-                <AggregateTemplate>
-                    @{
-                        MarkupString TextToShow;
-                        if (context.Any())
-                        {
-                            var CurrentPrices = context.Select(x => x.Prices.FirstOrDefault(y => y.ProductId == CurrentProductId)?.Price ?? null).Where(x => x != null).Distinct();
-                            if (CurrentPrices.Any())
-                            {
-                                var Expensivest = CurrentPrices.Max();
-                                var Cheapest = CurrentPrices.Min();
-                                var Average = CurrentPrices.Average();
-                                TextToShow = new($"<p>L {Cheapest:0.000}</p><p>A {Average:0.000}</p><p>H {Expensivest:0.000}</p>");
-                            }
-                            else
-                            {
-                                TextToShow = new();
-                            }
-                        }
-                        else
-                        {
-                            TextToShow = new();
-                        }
-                    }
-
-                    <div>@TextToShow</div>
-                </AggregateTemplate>
-
-                <CellTemplate>
-                    @(context.Item.Prices.First(y => y.ProductId == item.IdProducto).Price)
-                </CellTemplate>
-
-            </TemplateColumn>
+        @{
+            HashSet<string> DecimalOperators = new([MudBlazor.FilterOperator.Number.Empty, MudBlazor.FilterOperator.Number.NotEmpty]);
         }
+
+        <PropertyColumn Property="@(x=> x.G95E5)" CellClass="mud-table-cell-align-right" FilterOperators="@DecimalOperators" Hidden="!PetroleumProductsSelectedIds.Contains(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.G95E5.IdProducto)">
+            <HeaderTemplate>
+                <MudTooltip Placement="Placement.Top" ShowOnFocus="false" Text="@(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.G95E5.Nombre)">
+                    @(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.G95E5.Abreviatura)
+                </MudTooltip>
+            </HeaderTemplate>
+        </PropertyColumn>
+
+        <PropertyColumn Property="@(x=> x.G95E5Plus)" CellClass="mud-table-cell-align-right" FilterOperators="@DecimalOperators" Hidden="!PetroleumProductsSelectedIds.Contains(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.G95E5Plus.IdProducto)">
+            <HeaderTemplate>
+                <MudTooltip Placement="Placement.Top" ShowOnFocus="false" Text="@(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.G95E5Plus.Nombre)">
+                    @(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.G95E5Plus.Abreviatura)
+                </MudTooltip>
+            </HeaderTemplate>
+        </PropertyColumn>
+
+        <PropertyColumn Property="@(x=> x.G98E10)" CellClass="mud-table-cell-align-right" FilterOperators="@DecimalOperators" Hidden="!PetroleumProductsSelectedIds.Contains(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.G98E10.IdProducto)">
+            <HeaderTemplate>
+                <MudTooltip Placement="Placement.Top" ShowOnFocus="false" Text="@(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.G98E10.Nombre)">
+                    @(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.G98E10.Abreviatura)
+                </MudTooltip>
+            </HeaderTemplate>
+        </PropertyColumn>
+
+        <PropertyColumn Property="@(x=> x.G98E5)" CellClass="mud-table-cell-align-right" FilterOperators="@DecimalOperators" Hidden="!PetroleumProductsSelectedIds.Contains(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.G98E5.IdProducto)">
+            <HeaderTemplate>
+                <MudTooltip Placement="Placement.Top" ShowOnFocus="false" Text="@(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.G98E5.Nombre)">
+                    @(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.G98E5.Abreviatura)
+                </MudTooltip>
+            </HeaderTemplate>
+        </PropertyColumn>
+
     </Columns>
 
     <LoadingContent>
