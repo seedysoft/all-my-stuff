@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Humanizer;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using RestSharp;
@@ -14,24 +15,15 @@ public sealed class GasStationPricesService(IServiceProvider serviceProvider)
         .Get<Settings.GasStationPricesSettings>()!;
     private readonly ILogger<GasStationPricesService> Logger = serviceProvider.GetRequiredService<ILogger<GasStationPricesService>>();
 
+    private static Models.Minetur.Body? MineturResponse = null;
+
     public async IAsyncEnumerable<ViewModels.GasStationModel> GetNearGasStationsAsync(
         string encodedPolyline,
         int maxDistanceInKm)
     {
-        // Obtain Gas Stations with Prices from Minetur
-        Models.Minetur.Body? MineturResponse = null;
-        try
-        {
-            RestRequest restRequest = new(GasStationPricesSettings.Minetur.Urls.EstacionesTerrestres);
-            RestClient restClient = new(GasStationPricesSettings.Minetur.Urls.Base)
-            {
-                AcceptedContentTypes = [System.Net.Mime.MediaTypeNames.Application.Json,],
-            };
-            RestResponse restResponse = await restClient.ExecuteGetAsync(restRequest);
-            if (restResponse.IsSuccessStatusCode)
-                MineturResponse = restResponse.Content!.FromJson<Models.Minetur.Body>();
-        }
-        catch (Exception e) when (Logger.LogAndHandle(e, "Unexpected error")) { }
+        var sw = System.Diagnostics.Stopwatch.StartNew();
+
+        await LoadGasStationsAsync();
 
         if (MineturResponse == null)
             yield break;
@@ -47,6 +39,32 @@ public sealed class GasStationPricesService(IServiceProvider serviceProvider)
             //if (RoutePoints.Any(x => GoogleApis.Helpers.GeometricHelper.GetDistance(from, x) < maxDistanceInKm))
             if (RoutePoints.Any(x => GoogleApis.Helpers.GeometricHelper.Haversine.Distance(Estacion.Lat, Estacion.Lng, x.Lat, x.Lng) < maxDistanceInKm))
                 yield return Estacion.ToGasStationModel();
+        }
+
+        sw.Stop();
+        Logger.LogInformation("Obtained gas stations in {Elapsed}.", sw.Elapsed.Humanize(minUnit: Humanizer.Localisation.TimeUnit.Second));
+    }
+
+    /// <summary>
+    /// Obtain Gas Stations with Prices from Minetur
+    /// </summary>
+    /// <returns></returns>
+    private async Task LoadGasStationsAsync()
+    {
+        if (MineturResponse == null || MineturResponse.DateTimeOffset < DateTimeOffset.Now.AddMinutes(-35))
+        {
+            try
+            {
+                RestRequest restRequest = new(GasStationPricesSettings.Minetur.Urls.EstacionesTerrestres);
+                RestClient restClient = new(GasStationPricesSettings.Minetur.Urls.Base)
+                {
+                    AcceptedContentTypes = [System.Net.Mime.MediaTypeNames.Application.Json,],
+                };
+                RestResponse restResponse = await restClient.GetAsync(restRequest);
+                if (restResponse.IsSuccessStatusCode)
+                    MineturResponse = restResponse.Content!.FromJson<Models.Minetur.Body>();
+            }
+            catch (Exception e) when (Logger.LogAndHandle(e, "Unexpected error")) { }
         }
     }
 }
