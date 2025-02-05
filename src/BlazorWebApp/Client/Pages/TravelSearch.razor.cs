@@ -60,6 +60,7 @@ public partial class TravelSearch
     {
         GasStationsViewerIsLoading = true;
         GasStationItems.Clear();
+        StateHasChanged();
 
         await foreach (Libs.GasStationPrices.ViewModels.GasStationModel gasStationModel in
             GasStationPricesService.GetNearGasStationsAsync(encodedPolyline, travelQueryModel.MaxDistanceInKm))
@@ -68,6 +69,7 @@ public partial class TravelSearch
         }
 
         GasStationsViewerIsLoading = false;
+        StateHasChanged();
     }
 
     private void OnClickGmapMarker(Libs.GoogleMapsRazorClassLib.GoogleMap.Marker marker)

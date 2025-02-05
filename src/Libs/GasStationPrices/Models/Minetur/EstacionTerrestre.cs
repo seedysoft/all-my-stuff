@@ -4,6 +4,10 @@ public record class Body
 {
     [J("Fecha")]
     public required string Fecha { get; init; }
+    /// <summary>
+    /// Sample: 05/02/2025 20:43:02
+    /// </summary>
+    public DateTimeOffset DateTimeOffset => DateTimeOffset.ParseExact(Fecha, "dd/MM/yyyy HH:mm:ss", Core.Constants.Globalization.DateTimeFormatInfoES);
 
     [J("ListaEESSPrecio")]
     public required EstacionTerrestre[] EstacionesTerrestres { get; init; }

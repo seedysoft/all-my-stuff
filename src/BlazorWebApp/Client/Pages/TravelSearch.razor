@@ -79,7 +79,7 @@
         </MudItem>
 
         <MudItem xs="12">
-            <Map @ref="TravelGoogleMap"
+            <Map @ref="@TravelGoogleMap"
                  Id="@nameof(TravelGoogleMap)"
                  ApiKey="@googleApisSettings.ApiKey"
                  Center="@(new Libs.GoogleApis.Models.Shared.LatLngLiteral(Seedysoft.Libs.Core.Constants.Earth.Home.Lat, Seedysoft.Libs.Core.Constants.Earth.Home.Lng))"
@@ -87,8 +87,8 @@
                  Width="100" WidthUnit="Libs.Core.Enums.CssUnit.Percentage"
                  Zoom="14"
                  IsClickable
-                 OnClickGmapMarkerEventCallback="OnClickGmapMarker"
-                 OnClickGmapRouteEventCallback="OnClickGmapRouteAsync" />
+                 OnClickGmapMarkerEventCallback="@OnClickGmapMarker"
+                 OnClickGmapRouteEventCallback="@OnClickGmapRouteAsync" />
         </MudItem>
 
         <MudItem xs="12">
