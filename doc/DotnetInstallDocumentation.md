@@ -64,14 +64,19 @@ find . -type d -name "8.0.1" -exec rm -rf "{}" \;
 # ./dotnet workload search -?|-h|--help
 dotnet workload install wasm-tools
 dotnet workload update
+# Keep .NET 8:
+dotnet workload install wasm-tools-net8
 ```
 
 **Update Entity Framework global tools:**
 ```bash
-dotnet tool update --global dotnet-ef
+dotnet tool list   -g
+dotnet tool update -g dotnet-ef
+# Keep .NET 8:
+dotnet tool install dotnet-ef -g --version 8.0.12 --allow-downgrade
 ```
 
-**MudBlazor Templates
+**MudBlazor Templates**
 ```bash
 dotnet new install MudBlazor.Templates
 ```
