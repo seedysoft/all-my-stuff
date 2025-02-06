@@ -28,6 +28,4 @@ public sealed class PlacesServiceTests : Infrastructure.Tests.TestClassBase
 
         Assert.True(Res.Any());
     }
-
-    protected override void Dispose(bool disposing) => Dispose();
 }

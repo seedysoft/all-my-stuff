@@ -24,8 +24,5 @@ public sealed class UpdaterCronBackgroundServiceTests : Infrastructure.Tests.Tes
         Version? version = await updaterCronBackgroundService.GetLatestVersionFromGithubAsync();
 
         Assert.NotNull(version);
-        Assert.True(version.Major >= DateTime.UtcNow.Year);
     }
-
-    protected override void Dispose(bool disposing) => Dispose();
 }

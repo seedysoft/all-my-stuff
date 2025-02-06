@@ -1,53 +1,39 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Seedysoft.Libs.Infrastructure.Extensions;
 
 namespace Seedysoft.Libs.Infrastructure.Tests;
 
-public abstract class TestClassBase : IDisposable
+public abstract class TestClassBase
 {
-    private bool disposedValue;
-
-    private static Microsoft.Data.Sqlite.SqliteConnection SqliteConnection => new("Filename=:memory:");
-    private DbContextOptions<DbContexts.DbCxt> Options { get; set; } = default!;
-
     protected TestClassBase()
     {
-        SqliteConnection.Open();
-
-        Options = new DbContextOptionsBuilder<DbContexts.DbCxt>().UseSqlite(SqliteConnection).Options;
-
-        if (System.Diagnostics.Debugger.IsAttached)
-            Environment.SetEnvironmentVariable("DOTNET_ENVIRONMENT", "Development");
-
-        // Throws error... Maybe not necessary
-        //using DbContexts.DbCxt dbCxt = GetDbCxt();
-        //dbCxt.Database.Migrate();
+        string NewEnvironment =
+#if DEBUG
+            "Development"
+#else
+            "Production"
+#endif
+        ;
+        Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", NewEnvironment, EnvironmentVariableTarget.Process);
+        Environment.SetEnvironmentVariable("DOTNET_ENVIRONMENT", NewEnvironment, EnvironmentVariableTarget.Process);
     }
 
-    protected DbContexts.DbCxt GetDbCxt() => new(Options);
-
-    protected abstract void Dispose(bool disposing);
-
-    // // override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
-    // ~TestClassBase()
-    // {
-    //     // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-    //     Dispose(disposing: false);
-    // }
-
-    public void Dispose()
+    public static void AddDbContext(IServiceCollection services)
     {
-        if (!disposedValue)
-        {
-            // dispose managed state (managed objects)
-            SqliteConnection?.Dispose();
+        Microsoft.Data.Sqlite.SqliteConnection connection = new("Filename=:memory:");
+        connection.Open();
 
-            // free unmanaged resources (unmanaged objects) and override finalizer
+        using (DbContexts.DbCxt context = new(new DbContextOptionsBuilder<DbContexts.DbCxt>().UseSqlite(connection).Options))
+            _ = context.Database.EnsureCreated();
 
-            // set large fields to null
-
-            disposedValue = true;
-        }
-
-        GC.SuppressFinalize(this);
+        _ = services
+            .AddDbContext<DbContexts.DbCxt>((dbContextOptionsBuilder) =>
+            {
+                _ = dbContextOptionsBuilder.UseSqlite(connection);
+                dbContextOptionsBuilder.ConfigureDebugOptions();
+            }
+            , ServiceLifetime.Transient
+            , ServiceLifetime.Transient);
     }
 }
