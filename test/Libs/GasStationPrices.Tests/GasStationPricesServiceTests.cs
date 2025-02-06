@@ -45,5 +45,5 @@ public sealed class GasStationPricesServiceTests : Infrastructure.Tests.TestClas
         Assert.Fail("Must be fixed");
     }
 
-    protected override void Dispose(bool disposing) => Dispose();
+    //protected override void Dispose(bool disposing) => Dispose();
 }
