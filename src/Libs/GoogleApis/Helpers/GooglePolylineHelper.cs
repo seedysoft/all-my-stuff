@@ -3,7 +3,7 @@
 /// <summary>
 /// See https://developers.google.com/maps/documentation/utilities/polylinealgorithm
 /// </summary>
-public static class GooglePolyline
+public static class GooglePolylineHelper
 {
     /// <summary>
     /// Decode google style polyline coordinates.

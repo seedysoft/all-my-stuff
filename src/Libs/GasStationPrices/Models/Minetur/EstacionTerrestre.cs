@@ -116,17 +116,12 @@ public record class EstacionTerrestre
     //[J("% Éster metílico")]
     //public required string EsterMetilico { get; init; }
 
-    public bool IsNear(GoogleApis.Models.Shared.LatLngLiteral routePoint, int maxDistanceInKm)
+    public bool IsInside(GoogleApis.Models.Shared.LatLngBoundsLiteral boundsLiteral)
     {
-        return IsInsideBounds(routePoint.Expand(maxDistanceInKm));
-
-        bool IsInsideBounds(GoogleApis.Models.Shared.LatLngBoundsLiteral boundsLiteral)
-        {
-            return
-                Lat < boundsLiteral.North &&
-                Lat > boundsLiteral.South &&
-                Lng < boundsLiteral.East &&
-                Lng > boundsLiteral.West;
-        }
+        return
+            Lat < boundsLiteral.North &&
+            Lat > boundsLiteral.South &&
+            Lng < boundsLiteral.East &&
+            Lng > boundsLiteral.West;
     }
 }

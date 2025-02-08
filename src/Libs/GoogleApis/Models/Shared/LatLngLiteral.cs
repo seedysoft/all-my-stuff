@@ -29,23 +29,6 @@ public class LatLngLiteral
         Lat = lat;
         Lng = lng;
     }
-    //public LatLngLiteral(decimal lat, decimal lng) : this(Convert.ToDouble(lat), Convert.ToDouble(lng)) { }
-
-    public LatLngBoundsLiteral Expand(int maxDistanceInKm)
-    {
-        double LatExpanded = Helpers.GeometricHelper.ExpandLatitude(Lat, Lng, maxDistanceInKm);
-        double LngExpanded = Helpers.GeometricHelper.ExpandLongitude(Lat, Lng, maxDistanceInKm);
-
-        return new LatLngBoundsLiteral()
-        {
-            North = LatExpanded,
-            South = Lat - (LatExpanded - Lat),
-            East = LngExpanded,
-            West = Lng - (LngExpanded - Lng),
-        };
-    }
-
-    internal System.Numerics.Vector2 ToVector2() => new((float)Lat, (float)Lng);
 
     private string GetDebuggerDisplay => $"Lat:{Lat} {Environment.NewLine} Lon:{Lng}";
 }
