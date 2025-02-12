@@ -32,7 +32,7 @@ public class RoutesService(IConfiguration configuration, ILogger<RoutesService> 
             from g in l.Polyline?.GeoJsonLinestring?.Coordinates ?? []
             select new Models.Shared.LatLngLiteral(g[1], g[0]);
 
-        return CoordinatesQuery.Distinct().ToList();
+        return [.. CoordinatesQuery.Distinct()];
 
         RestRequest BuildRoutesRequest(string origin, string destination)
         {

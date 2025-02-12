@@ -26,7 +26,7 @@ public class EnumMemberArrayJsonConverter<T> : System.Text.Json.Serialization.Js
     public override bool CanConvert(Type t) => t == typeof(T[]);
 
     public override T[]? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-        => reader.GetString()!.Split(',')!.Select(static x => EnumExtensions.ToEnum<T>(x)!).ToArray();
+        => [.. reader.GetString()!.Split(',')!.Select(static x => EnumExtensions.ToEnum<T>(x)!)];
 
     public override void Write(Utf8JsonWriter writer, T[] value, JsonSerializerOptions options)
         => JsonSerializer.Serialize(writer, string.Join(",", value.Select(static x => x.GetEnumMember())), options);

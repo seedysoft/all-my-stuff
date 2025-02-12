@@ -55,10 +55,9 @@ public sealed class OutboxCronBackgroundService : Libs.BackgroundServices.Cron
                 {
                     Libs.Core.Entities.Outbox PendingMessage = PendingMessages[i];
 
-                    Libs.Core.Entities.Subscriber[] Subscribers = AllSubscribers
+                    Libs.Core.Entities.Subscriber[] Subscribers = [.. AllSubscribers
                         .Where(x => x.Subscriptions.Any(s => s.SubscriptionName == PendingMessage.SubscriptionName))
-                        .Where(x => PendingMessage.SubscriptionId == null || x.Subscriptions.Any(y => y.SubscriptionId == PendingMessage.SubscriptionId))
-                        .ToArray();
+                        .Where(x => PendingMessage.SubscriptionId == null || x.Subscriptions.Any(y => y.SubscriptionId == PendingMessage.SubscriptionId))];
 
                     for (int j = 0; j < Subscribers.Length; j++)
                     {

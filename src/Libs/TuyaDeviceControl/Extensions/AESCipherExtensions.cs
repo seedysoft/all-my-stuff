@@ -37,7 +37,7 @@ internal static class AESCipherExtensions
 
             _ => verifyPadding && !s.Skip(s.Length - padlen).SequenceEqual(Enumerable.Repeat((byte)padlen, padlen))
                 ? throw new ArgumentException("invalid padding data")
-                : s.Take(s.Length - padlen).ToArray(),
+                : [.. s.Take(s.Length - padlen)],
         };
     }
 }

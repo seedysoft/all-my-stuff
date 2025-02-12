@@ -35,11 +35,10 @@ public sealed class PvpcCronBackgroundServiceTests : Libs.Infrastructure.Tests.T
 
         TimeToQuery = DateTimeOffset.UtcNow;
         MinPriceAllowed = 0.05M;
-        Prices = Enumerable.Range(0, 24)
+        Prices = [.. Enumerable.Range(0, 24)
             .Select(i => new Libs.Core.Entities.Pvpc(
                 TimeToQuery.UtcDateTime.AddHours(i),
-                decimal.Divide(Random.Shared.Next(40_000, 220_000), 1_000M)))
-            .ToArray();
+                decimal.Divide(Random.Shared.Next(40_000, 220_000), 1_000M)))];
         Prices.Last(x => x.AtDateTimeOffset <= TimeToQuery).MWhPriceInEuros = 49M; // 0.049 KWhPriceInEuros
     }
 

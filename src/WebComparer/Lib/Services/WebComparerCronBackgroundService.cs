@@ -318,7 +318,7 @@ public sealed class WebComparerCronBackgroundService : Libs.BackgroundServices.C
         if (!diffModel.HasDifferences)
             return true;
 
-        DiffPlex.DiffBuilder.Model.DiffPiece[] ChangedLines = diffModel.Lines.Where(static x => x.Type != DiffPlex.DiffBuilder.Model.ChangeType.Unchanged).ToArray();
+        DiffPlex.DiffBuilder.Model.DiffPiece[] ChangedLines = [.. diffModel.Lines.Where(static x => x.Type != DiffPlex.DiffBuilder.Model.ChangeType.Unchanged)];
         string[]? IgnoreTexts = webData.IgnoreChangeWhen?.Split(';', StringSplitOptions.RemoveEmptyEntries);
         for (int j = 0; j < IgnoreTexts?.Length; j++)
         {

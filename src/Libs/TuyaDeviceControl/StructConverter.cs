@@ -75,7 +75,7 @@ public static class StructConverter
         // start working on the output string
         StringBuilder outString = new(isLittleEndian ? LittleEndianChar : BigEndianChar);
 
-        List<object> itemsArray = new(items);
+        List<object> itemsArray = [.. items];
         if (itemsArray is System.Collections.IEnumerable enumerable)
         {
             foreach (object? item in enumerable)
@@ -94,7 +94,7 @@ public static class StructConverter
         {
             byte[] theseBytes = TypeAgnosticGetBytes(o);
             if (BitConverter.IsLittleEndian)
-                theseBytes = theseBytes.Reverse().ToArray();
+                theseBytes = [.. theseBytes.Reverse()];
             outputBytes.AddRange(theseBytes);
 
             _ = outString.Append(GetFormatSpecifierFor(o));
