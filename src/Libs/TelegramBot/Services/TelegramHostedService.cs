@@ -150,7 +150,7 @@ public class TelegramHostedService : Core.NonBackgroundServiceBase, IHostedServi
     private async Task<Message> MessageSendQueryAsync(
         long to,
         string text,
-        IReplyMarkup replyMarkup,
+        ReplyMarkup replyMarkup,
         CancellationToken cancellationToken)
     {
         if (System.Diagnostics.Debugger.IsAttached)

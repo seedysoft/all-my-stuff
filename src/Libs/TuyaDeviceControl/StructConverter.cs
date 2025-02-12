@@ -104,7 +104,7 @@ public static class StructConverter
         int obtainedSize = CalcSize(obtainedFormat);
 
         return obtainedSize == fmtSize
-            ? ([.. outputBytes])
+            ? [.. outputBytes]
             : throw new ArgumentException($"Different format sizes. Obtained '{obtainedFormat}({obtainedSize})' expected '{fmt}({fmtSize})'.");
     }
 
