@@ -54,13 +54,12 @@ public class TelegramHostedService : Core.NonBackgroundServiceBase, IHostedServi
 
     private static BotCommand[] GetMyCommands()
     {
-        return Enum.GetValues<Enums.BotActionName>().
+        return [.. Enum.GetValues<Enums.BotActionName>().
             Select(static x => new BotCommand()
             {
                 Command = x.ToString(),
                 Description = x.GetEnumDescription(),
-            })
-            .ToArray();
+            })];
     }
 
     private async Task StartReceivingAsync(
@@ -150,7 +149,7 @@ public class TelegramHostedService : Core.NonBackgroundServiceBase, IHostedServi
     private async Task<Message> MessageSendQueryAsync(
         long to,
         string text,
-        IReplyMarkup replyMarkup,
+        ReplyMarkup replyMarkup,
         CancellationToken cancellationToken)
     {
         if (System.Diagnostics.Debugger.IsAttached)

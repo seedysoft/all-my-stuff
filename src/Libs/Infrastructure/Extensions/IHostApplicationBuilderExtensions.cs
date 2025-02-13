@@ -22,9 +22,7 @@ public static class IHostApplicationBuilderExtensions
 
         IEnumerable<System.Reflection.Assembly> referencedAssemblies = GetAllReferencedAssembliesSorted(entryAssembly);
 
-        Type[] typesToRegister = referencedAssemblies.SelectMany(static (n) => n.GetTypes())
-            .Where(static (t) => t is not null && t.IsSubclassOf(typeof(ConfiguratorBase)))
-            .ToArray();
+        Type[] typesToRegister = [.. referencedAssemblies.SelectMany(static (n) => n.GetTypes()).Where(static (t) => t is not null && t.IsSubclassOf(typeof(ConfiguratorBase)))];
 
         foreach (Type? type in typesToRegister)
             (Activator.CreateInstance(type) as ConfiguratorBase)?.AddDependencies(hostApplicationBuilder);
