@@ -44,23 +44,11 @@ public sealed class GasStationPricesService(IServiceProvider serviceProvider)
 
         ParallelQuery<ViewModels.GasStationModel> gasStationsNear = StationsInsideBounds
             .AsParallel()
-            //.Where(x => RoutePoints.Any(y => GoogleApis.Helpers.GeometricHelper.Haversine.Distance(x.Lat, x.Lng, y.Lat, y.Lng) < maxDistanceInKm))
-            .Where(es => RoutePoints.Any(rp => GoogleApis.Helpers.GeometricHelper.DistanceHaversineInKilometers(es.Lat, es.Lng, rp.Lat, rp.Lng) < maxDistanceInKm))
+            .Where(es => RoutePoints.Any(rp => GoogleApis.Helpers.GeometricHelper.DistanceHaversineInKilometers(es.LatLng, rp) < maxDistanceInKm))
             .Select(x => x.ToGasStationModel());
 
         foreach (ViewModels.GasStationModel item in gasStationsNear)
             yield return item;
-
-        //for (int i = 0; i < StationsInsideBounds.Count; i++)
-        //{
-        //    // TODO                 TEST SPEED
-        //    Models.Minetur.EstacionTerrestre Estacion = MineturResponse?.EstacionesTerrestres[i]!;
-        //    //if (RoutePoints.Any(x => Estacion.IsNear(x, maxDistanceInKm)))
-        //    //GoogleApis.Models.Shared.LatLngLiteral from = Estacion.LatLng;
-        //    //if (RoutePoints.Any(x => GoogleApis.Helpers.GeometricHelper.GetDistance(from, x) < maxDistanceInKm))
-        //    if (RoutePoints.Any(x => GoogleApis.Helpers.GeometricHelper.Haversine.Distance(Estacion.Lat, Estacion.Lng, x.Lat, x.Lng) < maxDistanceInKm))
-        //        yield return Estacion.ToGasStationModel();
-        //}
 
         sw.Stop();
         Logger.LogInformation("Filtered near gas stations in {Elapsed} secs.", sw.Elapsed.ToString(@"s\.fff"));
