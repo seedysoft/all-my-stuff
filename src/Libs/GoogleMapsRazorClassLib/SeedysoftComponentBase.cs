@@ -4,7 +4,7 @@ using Microsoft.JSInterop;
 
 namespace Seedysoft.Libs.GoogleMapsRazorClassLib;
 
-public abstract class SeedysoftComponentBase : ComponentBase, IDisposable, IAsyncDisposable
+public abstract class SeedysoftComponentBase : ComponentBase/*, IDisposable, IAsyncDisposable*/
 {
     #region Parameters
 
@@ -20,8 +20,8 @@ public abstract class SeedysoftComponentBase : ComponentBase, IDisposable, IAsyn
 
     #endregion
 
-    private bool isAsyncDisposed;
-    private bool isDisposed;
+    //private bool isAsyncDisposed;
+    //private bool isDisposed;
 
     [Inject] protected IConfiguration Configuration { get; set; } = default!;
     [Inject] protected IJSRuntime JSRuntime { get; set; } = default!;
@@ -68,46 +68,46 @@ public abstract class SeedysoftComponentBase : ComponentBase, IDisposable, IAsyn
 
     protected virtual string? StyleNames => Style;
 
-    ~SeedysoftComponentBase()
-    {
-        Dispose(false);
-    }
-    public void Dispose()
-    {
-        Dispose(true);
-        GC.SuppressFinalize(this);
-    }
-    public async ValueTask DisposeAsync()
-    {
-        await DisposeAsyncCore(true).ConfigureAwait(false);
+    //~SeedysoftComponentBase()
+    //{
+    //    Dispose(false);
+    //}
+    //public virtual void Dispose()
+    //{
+    //    Dispose(true);
+    //    GC.SuppressFinalize(this);
+    //}
+    //public virtual async ValueTask DisposeAsync()
+    //{
+    //    await DisposeAsyncCore(true).ConfigureAwait(false);
 
-        Dispose(false);
-        GC.SuppressFinalize(this);
-    }
-    protected virtual void Dispose(bool disposing)
-    {
-        if (!isDisposed)
-        {
-            if (disposing)
-            {
-                // cleanup
-            }
+    //    Dispose(false);
+    //    GC.SuppressFinalize(this);
+    //}
+    //protected virtual void Dispose(bool disposing)
+    //{
+    //    if (!isDisposed)
+    //    {
+    //        if (disposing)
+    //        {
+    //            // cleanup
+    //        }
 
-            isDisposed = true;
-        }
-    }
-    protected virtual ValueTask DisposeAsyncCore(bool disposing)
-    {
-        if (!isAsyncDisposed)
-        {
-            if (disposing)
-            {
-                // cleanup
-            }
+    //        isDisposed = true;
+    //    }
+    //}
+    //protected virtual ValueTask DisposeAsyncCore(bool disposing)
+    //{
+    //    if (!isAsyncDisposed)
+    //    {
+    //        if (disposing)
+    //        {
+    //            // cleanup
+    //        }
 
-            isAsyncDisposed = true;
-        }
+    //        isAsyncDisposed = true;
+    //    }
 
-        return ValueTask.CompletedTask;
-    }
+    //    return ValueTask.CompletedTask;
+    //}
 }

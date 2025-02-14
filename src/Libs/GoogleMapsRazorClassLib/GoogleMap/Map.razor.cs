@@ -147,22 +147,22 @@ public partial class Map : SeedysoftComponentBase
             objRef));
     }
 
-    protected override void Dispose(bool disposing)
-    {
-        base.Dispose(disposing);
-        try
-        {
-            objRef?.Dispose();
-        }
-        catch (JSDisconnectedException) { }
-    }
-    protected override async ValueTask DisposeAsyncCore(bool disposing)
-    {
-        await base.DisposeAsyncCore(disposing);
-        try
-        {
-            objRef?.Dispose();
-        }
-        catch (JSDisconnectedException) { }
-    }
+    //protected override void Dispose(bool disposing)
+    //{
+    //    base.Dispose(disposing);
+    //    try
+    //    {
+    //        objRef?.Dispose();
+    //    }
+    //    catch (JSDisconnectedException) { }
+    //}
+    //protected override async ValueTask DisposeAsyncCore(bool disposing)
+    //{
+    //    await base.DisposeAsyncCore(disposing);
+    //    try
+    //    {
+    //        objRef?.Dispose();
+    //    }
+    //    catch (JSDisconnectedException) { }
+    //}
 }
