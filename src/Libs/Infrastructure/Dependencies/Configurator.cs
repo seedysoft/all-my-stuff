@@ -29,14 +29,13 @@ internal sealed class Configurator : Core.Dependencies.ConfiguratorBase
                 builder.SetMinimumLevel(LogLevel.Debug);
                 builder.AddConsole();
             });
-            Microsoft.Extensions.Logging.ILogger logger = null!;
+            Microsoft.Extensions.Logging.ILogger logger = loggerFactory.CreateLogger(nameof(AddDbContexts));
 
             string ConnectionStringName = nameof(DbContexts.DbCxt);
             string ConnectionString = hostApplicationBuilder.Configuration.GetConnectionString($"{ConnectionStringName}") ?? throw new KeyNotFoundException($"Connection string '{ConnectionStringName}' not found.");
             string FullFilePath = Path.GetFullPath(ConnectionString);
             while (!File.Exists(FullFilePath))
             {
-                logger ??= loggerFactory.CreateLogger(nameof(AddDbContexts));
 #if DEBUG
                 if (System.Diagnostics.Debugger.IsAttached)
                     System.Diagnostics.Debugger.Break();
