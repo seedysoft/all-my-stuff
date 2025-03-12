@@ -22,7 +22,9 @@
     </ItemGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\..\..\src\Libs\Core\Seedysoft.Libs.Core.csproj" />
         <ProjectReference Include="..\..\..\src\Libs\Cryptography\Seedysoft.Libs.Cryptography.csproj" />
+        <ProjectReference Include="..\Core.Tests\Seedysoft.Libs.Core.Tests.csproj" />
     </ItemGroup>
 
     <ItemGroup>
