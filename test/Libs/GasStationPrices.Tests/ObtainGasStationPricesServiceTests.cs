@@ -9,7 +9,7 @@ public sealed class ObtainGasStationPricesServiceTests : Infrastructure.Tests.Te
 {
     private readonly Services.ObtainGasStationPricesService ObtainGasStationPricesService = default!;
 
-    public ObtainGasStationPricesServiceTests() : base()
+    public ObtainGasStationPricesServiceTests(Xunit.Abstractions.ITestOutputHelper testOutputHelper) : base(testOutputHelper)
     {
         HostApplicationBuilder appBuilder = new();
         _ = appBuilder.AddAllMyDependencies();

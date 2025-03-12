@@ -1,9 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting.Internal;
 using Microsoft.Extensions.Logging.Abstractions;
-using Seedysoft.Libs.Infrastructure.Extensions;
 using Xunit;
 
 namespace Seedysoft.Pvpc.Lib.Tests;
@@ -13,7 +11,7 @@ public sealed class TuyaManagerCronBackgroundServiceTests : Libs.Infrastructure.
     private readonly Services.TuyaManagerCronBackgroundService TuyaManagerService = default!;
     private bool disposedValue;
 
-    public TuyaManagerCronBackgroundServiceTests() : base()
+    public TuyaManagerCronBackgroundServiceTests(Xunit.Abstractions.ITestOutputHelper testOutputHelper) : base(testOutputHelper)
     {
         IConfiguration configuration = new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())

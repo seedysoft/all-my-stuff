@@ -6,22 +6,53 @@ public static class Crypto
 {
     internal static readonly System.Text.Encoding Encoding = System.Text.Encoding.Latin1;
 
+    public static bool CanEncryptText(string textToEncrypt, string key, CipherMode cipherMode = CipherMode.CBC)
+    {
+        try
+        {
+            byte[] textBytes = Encoding.GetBytes(textToEncrypt);
+            byte[] keyBytes = Convert.FromBase64String(key);
+            byte[] encryptedBytes = EncryptBytes(textBytes, keyBytes, cipherMode);
+            string encryptedText = Convert.ToBase64String(encryptedBytes);
+
+            return true;
+        }
+        catch { }
+
+        return false;
+    }
     public static string EncryptText(string textToEncrypt, string key, CipherMode cipherMode = CipherMode.CBC)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(textToEncrypt);
-        ArgumentException.ThrowIfNullOrWhiteSpace(key);
-        ArgumentOutOfRangeException.ThrowIfEqual((int)cipherMode, (int)CipherMode.ECB, nameof(cipherMode));
-
-        return Convert.ToBase64String(EncryptBytes(Encoding.GetBytes(textToEncrypt), Convert.FromBase64String(key), cipherMode));
+        return CanEncryptText(textToEncrypt, key, cipherMode)
+            ? Convert.ToBase64String(EncryptBytes(Encoding.GetBytes(textToEncrypt), Convert.FromBase64String(key), cipherMode))
+            : throw new InvalidDataException($"Cannot Encrypt {textToEncrypt} with {key} key and mode {cipherMode}");
     }
 
+    public static bool CanDecryptText(string encryptedText, string key, CipherMode cipherMode = CipherMode.CBC)
+    {
+        if (string.IsNullOrWhiteSpace(encryptedText))
+            return false;
+        if (string.IsNullOrWhiteSpace(key))
+            return false;
+
+        try
+        {
+            byte[] encryptedTextBytes = Convert.FromBase64String(encryptedText);
+            byte[] keyBytes = Convert.FromBase64String(key);
+            byte[] decryptedBytes = DecryptBytes(Convert.FromBase64String(encryptedText), Convert.FromBase64String(key), cipherMode);
+            string decryptedText = Encoding.GetString(decryptedBytes);
+
+            return true;
+        }
+        catch { }
+
+        return false;
+    }
     public static string DecryptText(string encryptedText, string key, CipherMode cipherMode = CipherMode.CBC)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(encryptedText);
-        ArgumentException.ThrowIfNullOrWhiteSpace(key);
-        ArgumentOutOfRangeException.ThrowIfEqual((int)cipherMode, (int)CipherMode.ECB, nameof(cipherMode));
-
-        return Encoding.GetString(DecryptBytes(Convert.FromBase64String(encryptedText), Convert.FromBase64String(key), cipherMode));
+        return CanDecryptText(encryptedText, key, cipherMode)
+            ? Encoding.GetString(DecryptBytes(Convert.FromBase64String(encryptedText), Convert.FromBase64String(key), cipherMode))
+            : throw new InvalidDataException($"Cannot Decrypt {encryptedText} with {key} key and mode {cipherMode}");
     }
 
     private static byte[] EncryptBytes(byte[] inputBuffer, byte[] key, CipherMode cipherMode)

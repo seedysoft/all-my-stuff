@@ -4,21 +4,8 @@ using Seedysoft.Libs.Infrastructure.Extensions;
 
 namespace Seedysoft.Libs.Infrastructure.Tests;
 
-public abstract class TestClassBase
+public abstract class TestClassBase(Xunit.Abstractions.ITestOutputHelper testOutputHelper) : Core.Tests.XUnitTestClassBase(testOutputHelper)
 {
-    protected TestClassBase()
-    {
-        string NewEnvironment =
-#if DEBUG
-            "Development"
-#else
-            "Production"
-#endif
-        ;
-        Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", NewEnvironment, EnvironmentVariableTarget.Process);
-        Environment.SetEnvironmentVariable("DOTNET_ENVIRONMENT", NewEnvironment, EnvironmentVariableTarget.Process);
-    }
-
     public static void AddDbContext(IServiceCollection services)
     {
         Microsoft.Data.Sqlite.SqliteConnection connection = new("Filename=:memory:");
