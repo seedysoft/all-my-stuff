@@ -3,6 +3,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <RuntimeIdentifiers>linux-arm64;win-x64</RuntimeIdentifiers>
+        <SelfContained>true</SelfContained>
         <StartupObject>Seedysoft.BlazorWebApp.Server.Program</StartupObject>
         <TargetFramework>net8.0</TargetFramework>
         <UserSecretsId>953853f7-9384-457c-a3c0-3492059196ab</UserSecretsId>
