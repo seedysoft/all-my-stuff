@@ -1,7 +1,7 @@
 ﻿**Publish all projects from BestiaParda:**
 ```PowerShell
-$ProjectOrSolution="C:\Users\alfon\_prog\seedysoft\all-my-stuff\Seedysoft.Tests.sln"
-$ProjectOrSolution="C:\Users\alfon\_prog\seedysoft\all-my-stuff\src\BlazorWebApp\Server\Seedysoft.BlazorWebApp.Server.csproj"
+$ProjectOrSolution="$env:USERPROFILE\_prog\seedysoft\all-my-stuff\Seedysoft.Tests.sln"
+$ProjectOrSolution="$env:USERPROFILE\_prog\seedysoft\all-my-stuff\src\BlazorWebApp\Server\Seedysoft.BlazorWebApp.Server.csproj"
 
 dotnet publish $ProjectOrSolution -p:PublishDir=C:\Users\alfon\_prog\seedysoft\all-my-stuff\publish\linux-arm64\  -c Release  -r linux-arm64  -p:BlazorCacheBootResources=false  -p:PublishTrimmed=false  -p:PublishReadyToRun  -p:PublishReadyToRunShowWarnings=true  --sc ;
 dotnet publish $ProjectOrSolution -p:PublishDir=C:\Users\alfon\_prog\seedysoft\all-my-stuff\publish\win-x64\      -c Release  -r win-x64      -p:BlazorCacheBootResources=false  -p:PublishTrimmed=false  --sc ;
@@ -9,27 +9,28 @@ dotnet publish $ProjectOrSolution -p:PublishDir=C:\Users\alfon\_prog\seedysoft\a
 dotnet publish $ProjectOrSolution -p:PublishDir=C:\Users\alfon\_prog\seedysoft\Test\linux-x64\  -c Debug    -r linux-x64  -p:EnvironmentName="Development"  -p:BlazorCacheBootResources=false  -p:PublishTrimmed=false  --sc ;
 dotnet publish $ProjectOrSolution -p:PublishDir=C:\Users\alfon\_prog\seedysoft\Test\linux-x64\  -c Release  -r linux-x64                                    -p:BlazorCacheBootResources=false  -p:PublishTrimmed=false  --sc ;
 
-dotnet publish C:\Users\alfon\_prog\seedysoft\all-my-stuff\src\Outbox\ConsoleApp\Seedysoft.Outbox.ConsoleApp.csproj            -p:PublishDir=C:\Users\alfon\_prog\seedysoft\all-my-stuff\publish\linux-arm64\  -c Release  -r linux-arm64  -p:PublishTrimmed=false  --sc ;
-dotnet publish C:\Users\alfon\_prog\seedysoft\all-my-stuff\src\Pvpc\ConsoleApp\Seedysoft.Pvpc.ConsoleApp.csproj                -p:PublishDir=C:\Users\alfon\_prog\seedysoft\all-my-stuff\publish\linux-arm64\  -c Release  -r linux-arm64  -p:PublishTrimmed=false  --sc ;
-dotnet publish C:\Users\alfon\_prog\seedysoft\all-my-stuff\src\WebComparer\ConsoleApp\Seedysoft.WebComparer.ConsoleApp.csproj  -p:PublishDir=C:\Users\alfon\_prog\seedysoft\all-my-stuff\publish\linux-arm64\  -c Release  -r linux-arm64  -p:PublishTrimmed=false  --sc ;
-dotnet publish C:\Users\alfon\_prog\seedysoft\all-my-stuff\src\BlazorWebApp\Server\Seedysoft.BlazorWebApp.Server.csproj        -p:PublishDir=C:\Users\alfon\_prog\seedysoft\all-my-stuff\publish\linux-arm64\  -c Release  -r linux-arm64  -p:PublishTrimmed=false  --sc -p:BlazorCacheBootResources=false ;
+dotnet publish $env:USERPROFILE\_prog\seedysoft\all-my-stuff\src\Outbox\ConsoleApp\Seedysoft.Outbox.ConsoleApp.csproj            -p:PublishDir=C:\Users\alfon\_prog\seedysoft\all-my-stuff\publish\linux-arm64\  -c Release  -r linux-arm64  -p:PublishTrimmed=false  --sc ;
+dotnet publish $env:USERPROFILE\_prog\seedysoft\all-my-stuff\src\Pvpc\ConsoleApp\Seedysoft.Pvpc.ConsoleApp.csproj                -p:PublishDir=C:\Users\alfon\_prog\seedysoft\all-my-stuff\publish\linux-arm64\  -c Release  -r linux-arm64  -p:PublishTrimmed=false  --sc ;
+dotnet publish $env:USERPROFILE\_prog\seedysoft\all-my-stuff\src\WebComparer\ConsoleApp\Seedysoft.WebComparer.ConsoleApp.csproj  -p:PublishDir=C:\Users\alfon\_prog\seedysoft\all-my-stuff\publish\linux-arm64\  -c Release  -r linux-arm64  -p:PublishTrimmed=false  --sc ;
+dotnet publish $env:USERPROFILE\_prog\seedysoft\all-my-stuff\src\BlazorWebApp\Server\Seedysoft.BlazorWebApp.Server.csproj        -p:PublishDir=C:\Users\alfon\_prog\seedysoft\all-my-stuff\publish\linux-arm64\  -c Release  -r linux-arm64  -p:PublishTrimmed=false  --sc -p:BlazorCacheBootResources=false ;
 ```
 
 **Publish all projects from Acer:**
 ```PowerShell
-$ProjectOrSolution="C:\Users\alfon\_prog\seedysoft\all-my-stuff\Seedysoft.Tests.sln"
-$ProjectOrSolution="C:\Users\alfon\_prog\seedysoft\all-my-stuff\src\BlazorWebApp\Server\Seedysoft.BlazorWebApp.Server.csproj"
+$ProjectOrSolution="$env:USERPROFILE\_prog\seedysoft\all-my-stuff\Seedysoft.Tests.sln"
+$ProjectOrSolution="$env:USERPROFILE\_prog\seedysoft\all-my-stuff\src\BlazorWebApp\Server\Seedysoft.BlazorWebApp.Server.csproj"
+$PublishDir="$env:USERPROFILE\OneDrive - AGE - Administraci`ón General del Estado\_Syncthing\Seedysoft\"
 
-dotnet publish $ProjectOrSolution -p:PublishDir=D:\\_Syncthing\Seedysoft\linux-arm64\  -c Release  -r linux-arm64  -p:BlazorCacheBootResources=false  -p:PublishTrimmed=false  --sc ;
-dotnet publish $ProjectOrSolution -p:PublishDir=D:\\_Syncthing\Seedysoft\win-x64\      -c Release  -r win-x64      -p:BlazorCacheBootResources=false  -p:PublishTrimmed=false  --sc ;
+dotnet publish $ProjectOrSolution -p:PublishDir="$env:USERPROFILE\OneDrive - AGE - Administraci$([char]0xC3)n General del Estado\_Syncthing\Seedysoft\linux-arm64\"  -c Release  -r linux-arm64  -p:BlazorCacheBootResources=false  -p:PublishTrimmed=false  --sc ;
+dotnet publish $ProjectOrSolution -p:PublishDir=$PublishDir\win-x64\      -c Release  -r win-x64      -p:BlazorCacheBootResources=false  -p:PublishTrimmed=false  --sc ;
 
 dotnet publish $ProjectOrSolution -p:PublishDir=D:\\Test\linux-x64\  -c Debug  -r linux-x64  -p:EnvironmentName="Development"  -p:BlazorCacheBootResources=false  -p:PublishTrimmed=false  --sc ;
 dotnet publish $ProjectOrSolution -p:PublishDir=D:\\Test\linux-x64\  -c Release  -r linux-x64    -p:BlazorCacheBootResources=false  -p:PublishTrimmed=false  --sc ;
 
-dotnet publish C:\Users\alfon\_prog\seedysoft\all-my-stuff\src\Outbox\ConsoleApp\Seedysoft.Outbox.ConsoleApp.csproj            -p:PublishDir=D:\\_Syncthing\Seedysoft\linux-arm64\  -c Release  -r linux-arm64  -p:PublishTrimmed=false  --sc ;
-dotnet publish C:\Users\alfon\_prog\seedysoft\all-my-stuff\src\Pvpc\ConsoleApp\Seedysoft.Pvpc.ConsoleApp.csproj                -p:PublishDir=D:\\_Syncthing\Seedysoft\linux-arm64\  -c Release  -r linux-arm64  -p:PublishTrimmed=false  --sc ;
-dotnet publish C:\Users\alfon\_prog\seedysoft\all-my-stuff\src\WebComparer\ConsoleApp\Seedysoft.WebComparer.ConsoleApp.csproj  -p:PublishDir=D:\\_Syncthing\Seedysoft\linux-arm64\  -c Release  -r linux-arm64  -p:PublishTrimmed=false  --sc ;
-dotnet publish C:\Users\alfon\_prog\seedysoft\all-my-stuff\src\BlazorWebApp\Server\Seedysoft.BlazorWebApp.Server.csproj        -p:PublishDir=D:\\_Syncthing\Seedysoft\linux-arm64\  -c Release  -r linux-arm64  -p:PublishTrimmed=false  --sc -p:BlazorCacheBootResources=false ;
+dotnet publish $env:USERPROFILE\_prog\seedysoft\all-my-stuff\src\Outbox\ConsoleApp\Seedysoft.Outbox.ConsoleApp.csproj            -p:PublishDir=$env:OneDriveCommercial\_Syncthing\Seedysoft\linux-arm64\  -c Release  -r linux-arm64  -p:PublishTrimmed=false  --sc ;
+dotnet publish $env:USERPROFILE\_prog\seedysoft\all-my-stuff\src\Pvpc\ConsoleApp\Seedysoft.Pvpc.ConsoleApp.csproj                -p:PublishDir=$env:OneDriveCommercial\_Syncthing\Seedysoft\linux-arm64\  -c Release  -r linux-arm64  -p:PublishTrimmed=false  --sc ;
+dotnet publish $env:USERPROFILE\_prog\seedysoft\all-my-stuff\src\WebComparer\ConsoleApp\Seedysoft.WebComparer.ConsoleApp.csproj  -p:PublishDir=$env:OneDriveCommercial\_Syncthing\Seedysoft\linux-arm64\  -c Release  -r linux-arm64  -p:PublishTrimmed=false  --sc ;
+dotnet publish $env:USERPROFILE\_prog\seedysoft\all-my-stuff\src\BlazorWebApp\Server\Seedysoft.BlazorWebApp.Server.csproj        -p:PublishDir=$env:OneDriveCommercial\_Syncthing\Seedysoft\linux-arm64\  -c Release  -r linux-arm64  -p:PublishTrimmed=false  --sc -p:BlazorCacheBootResources=false ;
 ```
 
 **Publish all projects from Raspberrypi4:**
