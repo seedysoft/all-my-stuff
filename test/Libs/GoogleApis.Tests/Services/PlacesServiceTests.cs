@@ -3,19 +3,19 @@ using Microsoft.Extensions.Hosting;
 using Seedysoft.Libs.Infrastructure.Extensions;
 using Xunit;
 
-namespace Seedysoft.Libs.GoogleApis.Tests;
+namespace Seedysoft.Libs.GoogleApis.Tests.Services;
 
 public sealed class PlacesServiceTests : Infrastructure.Tests.TestClassBase
 {
-    private readonly Services.PlacesService PlacesService = default!;
+    private readonly GoogleApis.Services.PlacesService PlacesService = default!;
 
-    public PlacesServiceTests() : base()
+    public PlacesServiceTests(Xunit.Abstractions.ITestOutputHelper testOutputHelper) : base(testOutputHelper)
     {
         HostApplicationBuilder appBuilder = new();
         _ = appBuilder.AddAllMyDependencies();
         ServiceProvider serviceProvider = appBuilder.Services.BuildServiceProvider();
 
-        PlacesService = serviceProvider.GetRequiredService<Services.PlacesService>();
+        PlacesService = serviceProvider.GetRequiredService<GoogleApis.Services.PlacesService>();
     }
 
     [InlineData("Calle de la Iglesia 11 Brazuelo León")]

@@ -12,7 +12,7 @@ public sealed class PvpcCronBackgroundServiceTests : Libs.Infrastructure.Tests.T
     private readonly decimal MinPriceAllowed = default!;
     private bool disposedValue;
 
-    public PvpcCronBackgroundServiceTests() : base()
+    public PvpcCronBackgroundServiceTests(Xunit.Abstractions.ITestOutputHelper testOutputHelper) : base(testOutputHelper)
     {
         Settings.PvpcSettings pvpcSettings = new()
         {

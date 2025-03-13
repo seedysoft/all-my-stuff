@@ -19,12 +19,11 @@ dotnet publish $env:USERPROFILE\_prog\seedysoft\all-my-stuff\src\BlazorWebApp\Se
 ```PowerShell
 $ProjectOrSolution="$env:USERPROFILE\_prog\seedysoft\all-my-stuff\Seedysoft.Tests.sln"
 $ProjectOrSolution="$env:USERPROFILE\_prog\seedysoft\all-my-stuff\src\BlazorWebApp\Server\Seedysoft.BlazorWebApp.Server.csproj"
-$PublishDir="$env:USERPROFILE\OneDrive - AGE - Administraci`ón General del Estado\_Syncthing\Seedysoft\"
 
-dotnet publish $ProjectOrSolution -p:PublishDir="$env:USERPROFILE\OneDrive - AGE - Administraci$([char]0xC3)n General del Estado\_Syncthing\Seedysoft\linux-arm64\"  -c Release  -r linux-arm64  -p:BlazorCacheBootResources=false  -p:PublishTrimmed=false  --sc ;
-dotnet publish $ProjectOrSolution -p:PublishDir=$PublishDir\win-x64\      -c Release  -r win-x64      -p:BlazorCacheBootResources=false  -p:PublishTrimmed=false  --sc ;
+dotnet publish $ProjectOrSolution -p:PublishDir="C:\Users\alfon\OneDrive - AGE - Administración General del Estado\_Syncthing\Seedysoft\linux-arm64\"  -c Release  -r linux-arm64  -p:BlazorCacheBootResources=false  -p:PublishTrimmed=false  --sc ;
+dotnet publish $ProjectOrSolution -p:PublishDir="C:\Users\alfon\OneDrive - AGE - Administración General del Estado\_Syncthing\Seedysoft\win-x64\"      -c Release  -r win-x64      -p:BlazorCacheBootResources=false  -p:PublishTrimmed=false  --sc ;
 
-dotnet publish $ProjectOrSolution -p:PublishDir=D:\\Test\linux-x64\  -c Debug  -r linux-x64  -p:EnvironmentName="Development"  -p:BlazorCacheBootResources=false  -p:PublishTrimmed=false  --sc ;
+dotnet publish $ProjectOrSolution -p:PublishDir=D:\\Test\linux-x64\  -c Debug    -r linux-x64    -p:EnvironmentName="Development"   -p:BlazorCacheBootResources=false  -p:PublishTrimmed=false  --sc ;
 dotnet publish $ProjectOrSolution -p:PublishDir=D:\\Test\linux-x64\  -c Release  -r linux-x64    -p:BlazorCacheBootResources=false  -p:PublishTrimmed=false  --sc ;
 
 dotnet publish $env:USERPROFILE\_prog\seedysoft\all-my-stuff\src\Outbox\ConsoleApp\Seedysoft.Outbox.ConsoleApp.csproj            -p:PublishDir=$env:OneDriveCommercial\_Syncthing\Seedysoft\linux-arm64\  -c Release  -r linux-arm64  -p:PublishTrimmed=false  --sc ;
