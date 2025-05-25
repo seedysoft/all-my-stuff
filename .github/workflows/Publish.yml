@@ -74,7 +74,7 @@ jobs:
         id: pack
         run: |
           cd ${{ matrix.runtime.name }}/
-            -t # 7z, zip, gzip, bzip2, or tar
+          # -t[7z|zip|gzip|bzip2|tar] https://documentation.help/7-Zip/type.htm
           7z a -mx9 -tzip -y "../${{ matrix.runtime.name }}.${{ steps.get-version.outputs.version }}.zip" *
           cd ..
       - name: Upload artifact ${{ matrix.runtime.name }}.${{ steps.get-version.outputs.version }}.zip
