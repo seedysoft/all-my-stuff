@@ -1,11 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
     <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
         <IsPackable>false</IsPackable>
-        <IsPublishable>False</IsPublishable>
-        <RuntimeIdentifiers>linux-arm64;linux-x64;win-x64</RuntimeIdentifiers>
+        <IsPublishable>false</IsPublishable>
+        <Nullable>enable</Nullable>
+        <TargetFramework>net8.0</TargetFramework>
     </PropertyGroup>
 
     <ItemGroup>
@@ -31,6 +30,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\GasStationPrices\Seedysoft.Libs.GasStationPrices.csproj" />
         <ProjectReference Include="..\GoogleApis\Seedysoft.Libs.GoogleApis.csproj" />
     </ItemGroup>
 </Project>

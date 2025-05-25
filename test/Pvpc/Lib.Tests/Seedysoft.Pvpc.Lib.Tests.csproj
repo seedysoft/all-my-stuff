@@ -14,7 +14,7 @@
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
             <PrivateAssets>all</PrivateAssets>
         </PackageReference>
-        <PackageReference Include="Cronos" Version="0.9.0" />
+        <PackageReference Include="Cronos" Version="0.11.0" />
         <PackageReference Include="EfCore.SchemaCompare" Version="[8.*,9)" />
         <PackageReference Include="Microsoft.EntityFrameworkCore" Version="[8.*,9)" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="[8.*,9)" />
@@ -29,13 +29,13 @@
         <PackageReference Include="Microsoft.Extensions.Hosting" Version="[8.*,9)" />
         <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="[8.*,9)" />
         <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="[8.*,9)" />
-        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.13.0" />
-        <PackageReference Include="Serilog" Version="4.2.0" />
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.0" />
+        <PackageReference Include="Serilog" Version="4.3.0" />
         <PackageReference Include="Serilog.Extensions.Logging" Version="[8.*,9)" />
         <PackageReference Include="Serilog.Settings.Configuration" Version="[8.*,9)" />
         <PackageReference Include="System.IO.Hashing" Version="[8.*,9)" />
         <PackageReference Include="xunit" Version="2.9.3" />
-        <PackageReference Include="xunit.runner.visualstudio" Version="3.0.2">
+        <PackageReference Include="xunit.runner.visualstudio" Version="3.1.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
