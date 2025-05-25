@@ -57,6 +57,14 @@ jobs:
         run: |
           dotnet build "./src/BlazorWebApp/Server/Seedysoft.BlazorWebApp.Server.csproj" -c Release --nologo -v m
           dotnet publish "./src/BlazorWebApp/Server/Seedysoft.BlazorWebApp.Server.csproj" -o "./${{ matrix.runtime.name }}/" -r "${{ matrix.runtime.name }}" -c Release --no-restore --nologo -p:PublishTrimmed=false --sc -v m
+      - name: Make linux files executable
+        if: ${{ startsWith(matrix.runtime.name, 'linux') }}
+        run: |
+          cd ${{ matrix.runtime.name }}/
+          chmod -v +x *.so
+          chmod -v +x *.sh
+          chmod -v +x *.ConsoleApp
+          chmod -v +x *.Server
       - name: Get Version from project file
         id: get-version
         run: |
