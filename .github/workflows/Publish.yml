@@ -61,27 +61,28 @@ jobs:
         if: ${{ startsWith(matrix.runtime.name, 'linux') }}
         run: |
           cd ${{ matrix.runtime.name }}/
-          chmod -v +x *.so
-          chmod -v +x *.sh
-          chmod -v +x *.ConsoleApp
-          chmod -v +x *.Server
+          chmod -v ug+x *.ConsoleApp
+          chmod -v ug+x *.sh
+          chmod -v ug+x *.so
+          chmod -v ug+x *.Server
       - name: Get Version from project file
         id: get-version
         run: |
           echo "version=$(grep -m 1 '"Seedysoft.Libs.BackgroundServices/' ./${{ matrix.runtime.name }}/Seedysoft.BlazorWebApp.Server.deps.json | grep -Eo '[[:digit:]]{2}\.[[:digit:]]{1,4}\.[[:digit:]]{1,4}')" >> $GITHUB_OUTPUT
           echo ${{ steps.get-version.outputs.version }}
-      - name: Pack to ${{ matrix.runtime.name }}.${{ steps.get-version.outputs.version }}.7z
+      - name: Pack to ${{ matrix.runtime.name }}.${{ steps.get-version.outputs.version }}.zip
         id: pack
         run: |
           cd ${{ matrix.runtime.name }}/
-          7z a -r -t7z "../${{ matrix.runtime.name }}.${{ steps.get-version.outputs.version }}.7z" *
+            -t # 7z, zip, gzip, bzip2, or tar
+          7z a -mx9 -tzip -y "../${{ matrix.runtime.name }}.${{ steps.get-version.outputs.version }}.zip" *
           cd ..
-      - name: Upload artifact ${{ matrix.runtime.name }}.${{ steps.get-version.outputs.version }}.7z
+      - name: Upload artifact ${{ matrix.runtime.name }}.${{ steps.get-version.outputs.version }}.zip
         if: steps.pack.outcome == 'success'
         uses: actions/upload-artifact@main
         with:
-          name: ${{ matrix.runtime.name }}.${{ steps.get-version.outputs.version }}.7z
-          path: ${{ matrix.runtime.name }}.${{ steps.get-version.outputs.version }}.7z
+          name: ${{ matrix.runtime.name }}.${{ steps.get-version.outputs.version }}.zip
+          path: ${{ matrix.runtime.name }}.${{ steps.get-version.outputs.version }}.zip
           compression-level: 0
           if-no-files-found: error # `warn` or `ignore` are also available, defaults to `warn`
           
@@ -107,6 +108,6 @@ jobs:
         with:
           name: ${{ needs.publish_and_pack_job.outputs.tag_version }}
           fail_on_unmatched_files: true
-          files: ./artifacts/*/*.7z
+          files: ./artifacts/*/*.zip
           generate_release_notes: true
           tag_name: ${{ needs.publish_and_pack_job.outputs.tag_version }}
