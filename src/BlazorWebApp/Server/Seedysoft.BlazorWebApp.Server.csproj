@@ -19,16 +19,13 @@
     </ItemGroup>
 
     <ItemGroup>
+        <None Include="..\..\..\scripts\shared.sh" Link="shared.sh">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
         <None Include="..\..\..\scripts\create-daemon.sh" Link="create-daemon.sh">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
-        <None Include="..\..\..\scripts\create-BlazorWebApp-daemon.sh" Link="create-BlazorWebApp-daemon.sh">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
         <None Include="..\..\..\scripts\stop-daemon.sh" Link="stop-daemon.sh">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
-        <None Include="..\..\..\scripts\stop-BlazorWebApp-daemon.sh" Link="stop-BlazorWebApp-daemon.sh">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
         <None Include="..\..\..\scripts\update.sh" Link="update.sh">

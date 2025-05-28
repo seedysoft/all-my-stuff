@@ -41,9 +41,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "doc", "doc", "{623B6345-334
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", "scripts", "{278EDAC9-2DDC-4F89-8C6F-6A8B66E01A2E}"
 	ProjectSection(SolutionItems) = preProject
-		scripts\create-BlazorWebApp-daemon.sh = scripts\create-BlazorWebApp-daemon.sh
 		scripts\create-daemon.sh = scripts\create-daemon.sh
-		scripts\stop-BlazorWebApp-daemon.sh = scripts\stop-BlazorWebApp-daemon.sh
+		scripts\shared.sh = scripts\shared.sh
 		scripts\stop-daemon.sh = scripts\stop-daemon.sh
 		scripts\update.sh = scripts\update.sh
 	EndProjectSection

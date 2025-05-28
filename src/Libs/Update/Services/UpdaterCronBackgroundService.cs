@@ -26,11 +26,9 @@ public sealed class UpdaterCronBackgroundService : BackgroundServices.Cron
 
         try
         {
-            if (await IsNewVersionAvailableAsync())
-            {
-                // Execute external process
-                ExecuteUpdateScript();
-            }
+            string? NewVersionFileName = await GetNewVersionAvailableFileNameAsync();
+            if (!string.IsNullOrWhiteSpace(NewVersionFileName))
+                ExecuteUpdateScript(NewVersionFileName);
         }
         catch (Exception e) when (Logger.LogAndHandle(e, "Unexpected error")) { }
         finally { await Task.CompletedTask; }
@@ -38,7 +36,7 @@ public sealed class UpdaterCronBackgroundService : BackgroundServices.Cron
         Logger.LogInformation("End {ApplicationName}", AppName);
     }
 
-    private void ExecuteUpdateScript()
+    private void ExecuteUpdateScript(string zipFileName)
     {
         System.Diagnostics.ProcessStartInfo processStartInfo = new()
         {
@@ -51,11 +49,11 @@ public sealed class UpdaterCronBackgroundService : BackgroundServices.Cron
         {
             case "linux-arm64":
             case "linux-x64":
-                processStartInfo.FileName = "update.sh";
+                processStartInfo.FileName = $"sudo ./update.sh {zipFileName}";
                 break;
 
             case "win-x64":
-                processStartInfo.FileName = "update.bat";
+                processStartInfo.FileName = $"update.bat {zipFileName}";
                 break;
 
             default:
@@ -66,12 +64,12 @@ public sealed class UpdaterCronBackgroundService : BackgroundServices.Cron
         _ = System.Diagnostics.Process.Start(processStartInfo);
     }
 
-    private async Task<bool> IsNewVersionAvailableAsync()
+    private async Task<string?> GetNewVersionAvailableFileNameAsync()
     {
         Octokit.Release? latestRelease = await GetLatestReleaseFromGithubAsync();
 
         if (latestRelease == null)
-            return false;
+            return null;
 
         // System.Reflection.Assembly assembly = System.Reflection.Assembly.GetExecutingAssembly();
         // System.Diagnostics.FileVersionInfo fvi = System.Diagnostics.FileVersionInfo.GetVersionInfo(assembly.Location);
@@ -83,7 +81,9 @@ public sealed class UpdaterCronBackgroundService : BackgroundServices.Cron
         Logger.LogInformation("Current version is: {CurrentVersion}", CurrentVersion);
         Logger.LogInformation("Latest version is: {LatestVersion}", LatestVersion);
 
-        return LatestVersion > CurrentVersion && !string.IsNullOrEmpty(await DownloadReleaseFromGithubAsync(latestRelease));
+        return LatestVersion <= CurrentVersion
+            ? null
+            : await DownloadReleaseFromGithubAsync(latestRelease);
     }
 
     internal async Task<Octokit.Release?> GetLatestReleaseFromGithubAsync()
@@ -110,7 +110,7 @@ public sealed class UpdaterCronBackgroundService : BackgroundServices.Cron
 
             Logger.LogInformation("Try to download {assetBrowserDownloadUrl}", asset.BrowserDownloadUrl);
 
-            HttpResponseMessage response = await httpClient.GetAsync(asset.BrowserDownloadUrl);
+            using HttpResponseMessage response = await httpClient.GetAsync(asset.BrowserDownloadUrl);
 
             _ = response.EnsureSuccessStatusCode();
 
