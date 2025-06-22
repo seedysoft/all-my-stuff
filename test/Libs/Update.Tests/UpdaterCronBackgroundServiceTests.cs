@@ -19,6 +19,9 @@ public sealed class UpdaterCronBackgroundServiceTests : Infrastructure.Tests.Tes
     }
 
     [Fact]
+    public async Task CheckAndUpgradeToNewVersionTest() => Assert.Equal(Enums.UpdateResults.NoNewVersionFound, await updaterCronBackgroundService.CheckAndUpgradeToNewVersion(CancellationToken.None));
+
+    [Fact]
     public async Task GetLatestReleaseFromGithubAsyncTest()
     {
         Octokit.Release? release = await updaterCronBackgroundService.GetLatestReleaseFromGithubAsync();
@@ -29,14 +32,17 @@ public sealed class UpdaterCronBackgroundServiceTests : Infrastructure.Tests.Tes
     }
 
     [Fact(Timeout = 60_000)]
-    public async Task DownloadReleaseFromGithubAsyncTest()
+    public async Task DownloadReleaseAssetFromGithubAsyncTest()
     {
         Octokit.Release? release = await updaterCronBackgroundService.GetLatestReleaseFromGithubAsync();
         Assert.NotNull(release);
+        Assert.NotEmpty(release.Assets);
 
-        string fileName = await updaterCronBackgroundService.DownloadReleaseFromGithubAsync(release);
-        Assert.False(string.IsNullOrWhiteSpace(fileName));
+        string tempFilePath = Path.GetTempFileName();
 
-        File.Delete(fileName);
+        bool a = await updaterCronBackgroundService.DownloadReleaseAssetFromGithubAsync(release.Assets[0], tempFilePath, CancellationToken.None);
+        Assert.True(a);
+
+        File.Delete(tempFilePath);
     }
 }

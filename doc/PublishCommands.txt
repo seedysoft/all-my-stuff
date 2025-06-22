@@ -15,7 +15,9 @@ $Configuration="-c Release"
 $Configuration=""
 
 # <RuntimeIdentifiers>linux-arm64;linux-x64;win-x64</RuntimeIdentifiers>
-$Runtime="linux-x64"
+# <RuntimeIdentifiers>linux-arm64;win-x64</RuntimeIdentifiers>
+
+# $Runtime="linux-x64"
 $Runtime="win-x64"
 $Runtime="linux-arm64"
 
