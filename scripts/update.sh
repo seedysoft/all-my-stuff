@@ -1,8 +1,16 @@
 #!/bin/bash
 
-EXECUTABLE_FILE_NAME="Seedysoft.BlazorWebApp.Server"
-WORKER_SERVICE_NAME="ss-BlazorWebAppTest"
-WORKER_SERVICE_USER="pi"
+echo "${#} arguments in $0"
+
+# Check minimun required parameters
+if [[ $# -ne 1 ]]; then
+    echo "Must provide zip file name!"
+    exit 1
+fi
+
+source shared.sh
+
+echo "worker_service_name: ${WORKER_SERVICE_NAME}"
 
 # Stop service
 ./stop-daemon.sh -s "${WORKER_SERVICE_NAME}"
@@ -31,11 +39,14 @@ if [ "${WORKER_SERVICE_USER}" == "root" ] || [ "${WORKER_SERVICE_USER}" == "UNKN
   exit 1
 fi
 
-# # Extract files from 7z
-# echo "Extracting 7z files"
-# 7z x -y *.7z
+# Extract files from zip
+echo "Extracting files"
+unzip -o -q $1 -d ./
+
+chown pi:pi *
+chmod ug+rw *
 
 # Start service
-./create-daemon.sh -f "${EXECUTABLE_FILE_NAME}" -s "${WORKER_SERVICE_NAME}"
+sudo ./create-daemon.sh -f "${EXECUTABLE_FILE_NAME}" -s "${WORKER_SERVICE_NAME}"
 
-# rm *.7z
+rm *.zip

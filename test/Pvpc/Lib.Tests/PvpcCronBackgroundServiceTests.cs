@@ -4,12 +4,13 @@ using Xunit;
 
 namespace Seedysoft.Pvpc.Lib.Tests;
 
-public sealed class PvpcCronBackgroundServiceTests : Libs.Infrastructure.Tests.TestClassBase
+public sealed class PvpcCronBackgroundServiceTests : Libs.Infrastructure.Tests.TestClassBase, IDisposable
 {
     private readonly Services.PvpcCronBackgroundService PvpcService = default!;
     private readonly Libs.Core.Entities.Pvpc[] Prices = default!;
     private readonly DateTimeOffset TimeToQuery = default!;
     private readonly decimal MinPriceAllowed = default!;
+    private bool disposedValue;
 
     public PvpcCronBackgroundServiceTests() : base()
     {
@@ -20,11 +21,13 @@ public sealed class PvpcCronBackgroundServiceTests : Libs.Infrastructure.Tests.T
             PvpcId = "1001",
         };
 
+        // TODO                     Maybe a Console logger????
         IServiceCollection services = new ServiceCollection();
         _ = services
             .AddSingleton(pvpcSettings)
-            .AddSingleton(GetDbCxt())
             .AddSingleton<Microsoft.Extensions.Logging.ILogger<Services.PvpcCronBackgroundService>>(new NullLogger<Services.PvpcCronBackgroundService>());
+
+        //AddDbContext(services);
 
         //PvpcService = new(
         //    services.BuildServiceProvider(),
@@ -32,11 +35,10 @@ public sealed class PvpcCronBackgroundServiceTests : Libs.Infrastructure.Tests.T
 
         TimeToQuery = DateTimeOffset.UtcNow;
         MinPriceAllowed = 0.05M;
-        Prices = Enumerable.Range(0, 24)
+        Prices = [.. Enumerable.Range(0, 24)
             .Select(i => new Libs.Core.Entities.Pvpc(
                 TimeToQuery.UtcDateTime.AddHours(i),
-                decimal.Divide(Random.Shared.Next(40_000, 220_000), 1_000M)))
-            .ToArray();
+                decimal.Divide(Random.Shared.Next(40_000, 220_000), 1_000M)))];
         Prices.Last(x => x.AtDateTimeOffset <= TimeToQuery).MWhPriceInEuros = 49M; // 0.049 KWhPriceInEuros
     }
 
@@ -93,9 +95,33 @@ public sealed class PvpcCronBackgroundServiceTests : Libs.Infrastructure.Tests.T
         Assert.Equal(res, Prices.Any(x => x.KWhPriceInEuros <= MinPriceAllowed));
     }
 
-    protected override void Dispose(bool disposing)
+    private void Dispose(bool disposing)
     {
-        PvpcService?.Dispose();
-        Dispose();
+        if (!disposedValue)
+        {
+            if (disposing)
+            {
+                // TODO: dispose managed state (managed objects)
+                PvpcService?.Dispose();
+            }
+
+            // TODO: free unmanaged resources (unmanaged objects) and override finalizer
+            // TODO: set large fields to null
+            disposedValue = true;
+        }
+    }
+
+    // // TODO: override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
+    // ~PvpcCronBackgroundServiceTests()
+    // {
+    //     // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+    //     Dispose(disposing: false);
+    // }
+
+    public void Dispose()
+    {
+        // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+        Dispose(disposing: true);
+        GC.SuppressFinalize(this);
     }
 }

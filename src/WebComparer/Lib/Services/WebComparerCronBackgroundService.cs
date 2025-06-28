@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OpenQA.Selenium.Support.Extensions;
@@ -10,6 +11,7 @@ public sealed class WebComparerCronBackgroundService : Libs.BackgroundServices.C
 {
     private static readonly TimeSpan FiveSecondsTimeSpan = TimeSpan.FromSeconds(5);
     private readonly ILogger<WebComparerCronBackgroundService> Logger;
+    private Settings.WebComparerSettings Settings => (Settings.WebComparerSettings)Config;
 
     public WebComparerCronBackgroundService(
         IServiceProvider serviceProvider,
@@ -18,7 +20,8 @@ public sealed class WebComparerCronBackgroundService : Libs.BackgroundServices.C
     {
         Logger = ServiceProvider.GetRequiredService<ILogger<WebComparerCronBackgroundService>>();
 
-        Config = new Libs.BackgroundServices.ScheduleConfig() { CronExpression = "7 * * * *" /*At every 7th minute*/ };
+        Config = ServiceProvider.GetRequiredService<IConfiguration>()
+            .GetSection(nameof(Lib.Settings.WebComparerSettings)).Get<Settings.WebComparerSettings>()!;
     }
 
     public override async Task DoWorkAsync(CancellationToken cancellationToken)
@@ -110,7 +113,7 @@ public sealed class WebComparerCronBackgroundService : Libs.BackgroundServices.C
             };
             HtmlAgilityPack.HtmlDocument htmlDocument = htmlWeb.Load(webData.WebUrl);
 
-            Content = htmlDocument.DocumentNode.SelectSingleNode("//body").InnerText;
+            Content = htmlDocument.DocumentNode.SelectSingleNode("//body")?.InnerText ?? default!;
         }
         else
         {
@@ -155,7 +158,7 @@ public sealed class WebComparerCronBackgroundService : Libs.BackgroundServices.C
         OpenQA.Selenium.Chrome.ChromeDriverService chromeDriverService;
         switch (System.Runtime.InteropServices.RuntimeInformation.RuntimeIdentifier)
         {
-            case "linux-arm64":
+            case Libs.Core.Constants.SupportedRuntimeIdentifiers.LinuxArm64:
                 Options.BinaryLocation = "/usr/bin/chromium-browser";
 
                 chromeDriverService = OpenQA.Selenium.Chrome.ChromeDriverService.CreateDefaultService("/usr/bin/", "chromedriver");
@@ -163,7 +166,7 @@ public sealed class WebComparerCronBackgroundService : Libs.BackgroundServices.C
                 chromeDriver = new(chromeDriverService, Options);
                 break;
 
-            //case "linux-x64":
+            //case Libs.Core.Constants.SupportedRuntimeIdentifiers.LinuxX64:
             //    Options.BinaryLocation = "/usr/lib/chromium-browser/chromium-browser";
 
             //    chromeDriverService = OpenQA.Selenium.Chrome.ChromeDriverService.CreateDefaultService("/usr/lib/chromium-browser/", "chromedriver");
@@ -315,7 +318,7 @@ public sealed class WebComparerCronBackgroundService : Libs.BackgroundServices.C
         if (!diffModel.HasDifferences)
             return true;
 
-        DiffPlex.DiffBuilder.Model.DiffPiece[] ChangedLines = diffModel.Lines.Where(static x => x.Type != DiffPlex.DiffBuilder.Model.ChangeType.Unchanged).ToArray();
+        DiffPlex.DiffBuilder.Model.DiffPiece[] ChangedLines = [.. diffModel.Lines.Where(static x => x.Type != DiffPlex.DiffBuilder.Model.ChangeType.Unchanged)];
         string[]? IgnoreTexts = webData.IgnoreChangeWhen?.Split(';', StringSplitOptions.RemoveEmptyEntries);
         for (int j = 0; j < IgnoreTexts?.Length; j++)
         {

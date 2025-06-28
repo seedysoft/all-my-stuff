@@ -8,69 +8,7 @@ namespace Seedysoft.Libs.GoogleMapsRazorClassLib.GoogleMap;
 
 public partial class Map : SeedysoftComponentBase
 {
-    private DotNetObjectReference<Map>? objRef;
-
-    private readonly List<Marker> Markers = [];
-
-    private string GoogleMapsJsFileUrl
-        => $"https://maps.googleapis.com/maps/api/js?key={ApiKey}&loading=async&v=beta&libraries=maps,marker,routes";
-
-    protected override string? StyleNames =>
-        BuildStyleNames(
-            Style,
-            ($"width:{Width!.Value.ToString(CultureInfo.InvariantCulture)}{WidthUnit.ToCssString()}", Width.GetValueOrDefault() > 0),
-            ($"height:{Height!.Value.ToString(CultureInfo.InvariantCulture)}{HeightUnit.ToCssString()}", Height.GetValueOrDefault() > 0)
-        );
-
-    protected override async Task OnInitializedAsync()
-    {
-        objRef ??= DotNetObjectReference.Create(this);
-
-        await base.OnInitializedAsync();
-    }
-
-    /// <summary>
-    /// Adds a marker to the GoogleMap.
-    /// </summary>
-    /// <param name="marker">The marker to add to the map.</param>
-    /// <returns>A completed task.</returns>
-    public async ValueTask AddMarkerAsync(Marker marker)
-    {
-        await JSRuntime.InvokeVoidAsync($"{Constants.SeedysoftGoogleMaps}.addMarker", Id, marker, objRef);
-        Markers.Add(marker);
-    }
-    public async ValueTask RemoveAllMarkersAsync()
-    {
-        await JSRuntime.InvokeVoidAsync($"{Constants.SeedysoftGoogleMaps}.removeAllMarkers", Id, objRef);
-        Markers.Clear();
-    }
-
-    [JSInvokable]
-    public async Task OnMarkerClickJS(Marker marker)
-    {
-        if (OnMarkerClick.HasDelegate)
-            await OnMarkerClick.InvokeAsync(marker);
-    }
-
-    public async Task ShowDataAsync()
-    {
-        // TODO
-        //var asdfasdf = Markers.FirstOrDefault();
-        //asdfasdf.PinElement.
-    }
-
-    private void OnScriptLoad()
-    {
-        _ = Task.Run(async () => await JSRuntime.InvokeVoidAsync(
-            $"{Constants.SeedysoftGoogleMaps}.initialize",
-            Id,
-            Zoom,
-            Center,
-            Markers,
-            IsClickable,
-            objRef));
-    }
-    private static void OnScriptError(string errorMessage) => throw new Exception(errorMessage);
+    #region Parameters
 
     /// <summary>
     /// Gets or sets the Google Map API key.
@@ -131,4 +69,63 @@ public partial class Map : SeedysoftComponentBase
     /// Default value is 14.
     /// </remarks>
     [Parameter] public int Zoom { get; set; } = 14;
+
+    #endregion
+
+    private DotNetObjectReference<Map>? objRef;
+
+    private readonly List<Marker> Markers = [];
+
+    private string GoogleMapsJsFileUrl
+        => $"https://maps.googleapis.com/maps/api/js?key={ApiKey}&loading=async&v=beta&libraries=maps,marker,routes";
+
+    protected override string? StyleNames =>
+        BuildStyleNames(
+            Style,
+            ($"width:{Width!.Value.ToString(CultureInfo.InvariantCulture)}{WidthUnit.ToCssString()}", Width.GetValueOrDefault() > 0),
+            ($"height:{Height!.Value.ToString(CultureInfo.InvariantCulture)}{HeightUnit.ToCssString()}", Height.GetValueOrDefault() > 0)
+        );
+
+    protected override async Task OnInitializedAsync()
+    {
+        objRef ??= DotNetObjectReference.Create(this);
+
+        await base.OnInitializedAsync();
+    }
+
+    /// <summary>
+    /// Adds a marker to the GoogleMap.
+    /// </summary>
+    /// <param name="marker">The marker to add to the map.</param>
+    /// <returns>A completed task.</returns>
+    public async ValueTask AddMarkerAsync(Marker marker)
+    {
+        await JSRuntime.InvokeVoidAsync($"{Constants.SeedysoftGoogleMaps}.addMarker", Id, marker, objRef);
+        Markers.Add(marker);
+    }
+    public async ValueTask RemoveAllMarkersAsync()
+    {
+        await JSRuntime.InvokeVoidAsync($"{Constants.SeedysoftGoogleMaps}.removeAllMarkers", Id, objRef);
+        Markers.Clear();
+    }
+
+    [JSInvokable]
+    public async Task OnMarkerClickJS(Marker marker)
+    {
+        if (OnMarkerClick.HasDelegate)
+            await OnMarkerClick.InvokeAsync(marker);
+    }
+
+    private static void OnScriptError(string errorMessage) => throw new Exception(errorMessage);
+    private void OnScriptLoad()
+    {
+        _ = Task.Run(async () => await JSRuntime.InvokeVoidAsync(
+            $"{Constants.SeedysoftGoogleMaps}.initialize",
+            Id,
+            Zoom,
+            Center,
+            Markers,
+            IsClickable,
+            objRef));
+    }
 }

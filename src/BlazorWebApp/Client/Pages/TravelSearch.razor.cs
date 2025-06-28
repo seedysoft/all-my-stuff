@@ -44,11 +44,9 @@ public partial class TravelSearch
         Logger.LogInformation($"Called {nameof(OnInitializedAsync)}");
 
         gasStationPricesSettings = Configuration
-            .GetSection(nameof(Libs.GasStationPrices.Settings.GasStationPricesSettings))
-            .Get<Libs.GasStationPrices.Settings.GasStationPricesSettings>()!;
+            .GetSection(nameof(Libs.GasStationPrices.Settings.GasStationPricesSettings)).Get<Libs.GasStationPrices.Settings.GasStationPricesSettings>()!;
         googleApisSettings = Configuration
-            .GetSection(nameof(Libs.GoogleApis.Settings.GoogleApisSettings))
-            .Get<Libs.GoogleApis.Settings.GoogleApisSettings>()!;
+            .GetSection(nameof(Libs.GoogleApis.Settings.GoogleApisSettings)).Get<Libs.GoogleApis.Settings.GoogleApisSettings>()!;
 
         await base.OnInitializedAsync();
 
@@ -195,7 +193,5 @@ public partial class TravelSearch
                 Title = gasStationModel.Rotulo,
             });
         }
-
-       await TravelGoogleMap.ShowDataAsync();
     }
 }

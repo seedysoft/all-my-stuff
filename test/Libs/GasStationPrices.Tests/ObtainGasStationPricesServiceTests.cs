@@ -43,8 +43,8 @@ public sealed class ObtainGasStationPricesServiceTests : Infrastructure.Tests.Te
 
         _ = await gasStationModels.MoveNextAsync();
 
-        Assert.True(gasStationModels.Current != null && !string.IsNullOrWhiteSpace(gasStationModels.Current?.Rotulo));
+        Assert.NotNull(gasStationModels.Current);
+        Assert.NotNull(gasStationModels.Current?.Rotulo);
+        Assert.False(string.IsNullOrWhiteSpace(gasStationModels.Current?.Rotulo));
     }
-
-    protected override void Dispose(bool disposing) => Dispose();
 }

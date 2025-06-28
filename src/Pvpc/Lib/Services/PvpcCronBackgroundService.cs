@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Seedysoft.Libs.Core.Extensions;
@@ -12,6 +13,7 @@ public sealed class PvpcCronBackgroundService : Libs.BackgroundServices.Cron
     private static readonly HttpClient client = new();
 
     private readonly ILogger<PvpcCronBackgroundService> Logger;
+    private Settings.PvpcSettings Settings => (Settings.PvpcSettings)Config;
 
     public PvpcCronBackgroundService(
         IServiceProvider serviceProvider,
@@ -20,10 +22,9 @@ public sealed class PvpcCronBackgroundService : Libs.BackgroundServices.Cron
     {
         Logger = ServiceProvider.GetRequiredService<ILogger<PvpcCronBackgroundService>>();
 
-        Config = ServiceProvider.GetRequiredService<Settings.PvpcSettings>();
+        Config = ServiceProvider.GetRequiredService<IConfiguration>()
+            .GetSection(nameof(Lib.Settings.PvpcSettings)).Get<Settings.PvpcSettings>()!;
     }
-
-    private Settings.PvpcSettings Settings => (Settings.PvpcSettings)Config;
 
     public override async Task DoWorkAsync(CancellationToken stoppingToken)
     {

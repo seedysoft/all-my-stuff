@@ -6,6 +6,20 @@ namespace Seedysoft.Libs.GoogleMapsRazorClassLib;
 
 public abstract class SeedysoftComponentBase : ComponentBase, IDisposable, IAsyncDisposable
 {
+    #region Parameters
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object> AdditionalAttributes { get; set; } = default!;
+
+    [Parameter] public string? Class { get; set; }
+
+    [EditorRequired]
+    [Parameter] public required string Id { get; set; }
+
+    [Parameter] public string? Style { get; set; }
+
+    #endregion
+
     private bool isAsyncDisposed;
     private bool isDisposed;
 
@@ -91,23 +105,13 @@ public abstract class SeedysoftComponentBase : ComponentBase, IDisposable, IAsyn
         return ValueTask.CompletedTask;
     }
 
-    [Parameter(CaptureUnmatchedValues = true)]
-    public Dictionary<string, object> AdditionalAttributes { get; set; } = default!;
-
-    [Parameter]
-    public string? Class { get; set; }
     protected virtual string? ClassNames => Class;
-
-    public ElementReference Element { get; set; }
-
-    [Parameter, EditorRequired]
-    public required string Id { get; set; }
 
     protected bool IsRenderComplete { get; private set; }
 
-    [Parameter]
-    public string? Style { get; set; }
     protected virtual string? StyleNames => Style;
+
+    public ElementReference Element { get; set; }
 
     ~SeedysoftComponentBase()
     {

@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Seedysoft.Libs.Core.Extensions;
@@ -9,6 +10,7 @@ namespace Seedysoft.Pvpc.Lib.Services;
 public sealed class TuyaManagerCronBackgroundService : Libs.BackgroundServices.Cron
 {
     private readonly ILogger<TuyaManagerCronBackgroundService> Logger;
+    private Settings.TuyaManagerSettings Settings => (Settings.TuyaManagerSettings)Config;
 
     public TuyaManagerCronBackgroundService(
         IServiceProvider serviceProvider,
@@ -17,10 +19,9 @@ public sealed class TuyaManagerCronBackgroundService : Libs.BackgroundServices.C
     {
         Logger = ServiceProvider.GetRequiredService<ILogger<TuyaManagerCronBackgroundService>>();
 
-        Config = ServiceProvider.GetRequiredService<Settings.TuyaManagerSettings>();
+        Config = ServiceProvider.GetRequiredService<IConfiguration>()
+            .GetSection(nameof(Lib.Settings.TuyaManagerSettings)).Get<Settings.TuyaManagerSettings>()!;
     }
-
-    private Settings.TuyaManagerSettings Settings => (Settings.TuyaManagerSettings)Config;
 
     public override async Task StartAsync(CancellationToken cancellationToken)
     {

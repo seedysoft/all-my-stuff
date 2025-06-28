@@ -321,7 +321,7 @@ public class TuyaDeviceBase
     }
     private bool NegotiateSessionKeyGenerateFinalize()
     {
-        LocalKey = LocalNonce.Zip(RemoteNonce, static (a, b) => Convert.ToByte(a ^ b)).ToArray();
+        LocalKey = [.. LocalNonce.Zip(RemoteNonce, static (a, b) => Convert.ToByte(a ^ b))];
 
         Debug.WriteLine($"{nameof(LocalNonce)}={Convert.ToHexString(LocalNonce)}");
         Debug.WriteLine($"{nameof(RemoteNonce)}={Convert.ToHexString(RemoteNonce)}");
@@ -1068,7 +1068,7 @@ public class TuyaDeviceBase
             AESCipher cipher = new(hmacKey ?? []);
             byte[] raw = [.. StructConverter.Pack(ProtocolVersionsAndHeaders.MESSAGE_RETCODE_FMT, [msg.RetCode]), .. msg.Payload];
 
-            byte[] data2 = cipher.Encrypt(raw, pad: false, initialVector: msg.InitVector, header: data.Skip(4).ToArray());
+            byte[] data2 = cipher.Encrypt(raw, pad: false, initialVector: msg.InitVector, header: [.. data.Skip(4)]);
             data = [.. data, .. data2, .. ProtocolVersionsAndHeaders.SUFFIX_6699_BIN];
         }
         else
@@ -1148,14 +1148,14 @@ public class TuyaDeviceBase
 
         // Negative indexes refer to the positions of elements within an array-like object such as a list, tuple, or string, counting from the end of the data structure rather than the beginning
         // crc, suffix = struct.unpack(end_fmt, payload[-end_len:])
-        byte[] real = payload.TakeLast(endLength).ToArray();
+        byte[] real = [.. payload.TakeLast(endLength)];
         byte[][] crcAndSuffix = StructConverter.Unpack(endFormat, real);
 
         byte[]? crc = crcAndSuffix[0];
         uint suffix = Convert.ToUInt32(Convert.ToHexString(crcAndSuffix[1]), 16);
 
         // payload = payload[:-end_len]
-        payload = payload.SkipLast(endLength).ToArray();
+        payload = [.. payload.SkipLast(endLength)];
 
         bool isCrcGood = false;
         byte[]? initVector = null;
@@ -1165,8 +1165,8 @@ public class TuyaDeviceBase
             case ProtocolVersionsAndHeaders.PREFIX_55AA_VALUE:
             {
                 byte[] haveCrc = hmacKey == null
-                    ? BitConverter.GetBytes(System.IO.Hashing.Crc32.HashToUInt32(new(data.Take((int)(headerLength + header.Length) - endLength).ToArray())))
-                    : new System.Security.Cryptography.HMACSHA256(hmacKey).ComputeHash(data.Take((int)(headerLength + header.Length) - endLength).ToArray());
+                    ? BitConverter.GetBytes(System.IO.Hashing.Crc32.HashToUInt32(new([.. data.Take((int)(headerLength + header.Length) - endLength)])))
+                    : new System.Security.Cryptography.HMACSHA256(hmacKey).ComputeHash([.. data.Take((int)(headerLength + header.Length) - endLength)]);
 
                 if (suffix != ProtocolVersionsAndHeaders.SUFFIX_55AA_VALUE)
                     Debug.WriteLine($"Suffix prefix wrong! {suffix:X8} != {ProtocolVersionsAndHeaders.SUFFIX_VALUE:X8}");

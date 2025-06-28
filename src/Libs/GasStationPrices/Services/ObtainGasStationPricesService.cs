@@ -1,17 +1,19 @@
 ﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using RestSharp;
 using Seedysoft.Libs.Core.Extensions;
 
 namespace Seedysoft.Libs.GasStationPrices.Services;
 
+// TODO                 Remove Obtain from name
 public sealed class ObtainGasStationPricesService(
-    IConfiguration configuration,
-    GoogleApis.Services.RoutesService googleApisServicesRoutesService,
-    ILogger<ObtainGasStationPricesService> logger)
+    IServiceProvider serviceProvider,
+    GoogleApis.Services.RoutesService googleApisServicesRoutesService)
 {
-    private readonly Settings.GasStationPricesSettings GasStationPricesSettings
-        = configuration.GetSection(nameof(Settings.GasStationPricesSettings)).Get<Settings.GasStationPricesSettings>()!;
+    private readonly Settings.GasStationPricesSettings GasStationPricesSettings = serviceProvider.GetRequiredService<IConfiguration>()
+        .GetSection(nameof(Settings.GasStationPricesSettings)).Get<Settings.GasStationPricesSettings>()!;
+    private readonly ILogger<ObtainGasStationPricesService> Logger = serviceProvider.GetRequiredService<ILogger<ObtainGasStationPricesService>>();
 
     public async IAsyncEnumerable<ViewModels.GasStationModel> GetGasStationsAsync(
         ViewModels.TravelQueryModel travelQueryModel,
@@ -31,7 +33,7 @@ public sealed class ObtainGasStationPricesService(
             if (restResponse.IsSuccessStatusCode)
                 MineturResponse = restResponse.Content!.FromJson<Models.Minetur.Body>();
         }
-        catch (Exception e) when (logger.LogAndHandle(e, "Unexpected error")) { }
+        catch (Exception e) when (Logger.LogAndHandle(e, "Unexpected error")) { }
 
         if (MineturResponse == null)
             yield break;

@@ -17,11 +17,6 @@ public sealed class Configurator : Core.Dependencies.ConfiguratorBase
 
     protected override void AddDbContexts(IHostApplicationBuilder hostApplicationBuilder) { /* No DbContexts */ }
 
-    protected override void AddMyServices(IHostApplicationBuilder hostApplicationBuilder)
-    {
-        hostApplicationBuilder.Services.TryAddSingleton(
-            hostApplicationBuilder.Configuration.GetSection(nameof(Settings.TelegramBotSettings)).Get<Settings.TelegramBotSettings>()!);
-
-        hostApplicationBuilder.Services.TryAddSingleton<Services.TelegramHostedService>();
-    }
+    protected override void AddMyServices(IHostApplicationBuilder hostApplicationBuilder) 
+        => hostApplicationBuilder.Services.TryAddSingleton<Services.TelegramHostedService>();
 }

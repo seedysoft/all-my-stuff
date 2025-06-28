@@ -4,7 +4,7 @@
         <IsPackable>false</IsPackable>
         <Nullable>enable</Nullable>
         <OutputType>Exe</OutputType>
-        <RuntimeIdentifiers>linux-arm64;linux-x64;win-x64</RuntimeIdentifiers>
+        <RuntimeIdentifiers>linux-arm64;win-x64</RuntimeIdentifiers>
         <TargetFramework>net8.0</TargetFramework>
     </PropertyGroup>
 
@@ -21,7 +21,7 @@
 
     <ItemGroup>
         <PackageReference Include="CommandLineParser" Version="2.9.1" />
-        <PackageReference Include="Cronos" Version="0.9.0" />
+        <PackageReference Include="Cronos" Version="0.11.0" />
         <PackageReference Include="EFCore.BulkExtensions.Sqlite" Version="[8.*,9)" />
         <PackageReference Include="EfCore.SchemaCompare" Version="[8.*,9)" />
         <PackageReference Include="Microsoft.EntityFrameworkCore" Version="[8.*,9)" />
@@ -38,14 +38,12 @@
         <PackageReference Include="Microsoft.Extensions.Hosting" Version="[8.*,9)" />
         <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="[8.*,9)" />
         <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="[8.*,9)" />
-        <PackageReference Include="Serilog" Version="4.2.0" />
+        <PackageReference Include="Serilog" Version="4.3.0" />
         <PackageReference Include="Serilog.Extensions.Logging" Version="[8.*,9)" />
         <PackageReference Include="Serilog.Settings.Configuration" Version="[8.*,9)" />
-        <PackageReference Include="Serilog.Sinks.Console" Version="6.0.0" />
-        <PackageReference Include="Serilog.Sinks.File" Version="6.0.0" />
-        <PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" Version="2.1.10" />
+        <PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" Version="2.1.11" />
         <PackageReference Include="System.IO.Hashing" Version="[8.*,9)" />
-        <PackageReference Include="Telegram.Bot" Version="22.2.0" />
+        <PackageReference Include="Telegram.Bot" Version="22.5.1" />
     </ItemGroup>
 
     <ItemGroup>

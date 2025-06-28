@@ -2,6 +2,10 @@
 
 name: CI
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 defaults:
   run:
     shell: bash
@@ -13,7 +17,9 @@ on:
   pull_request:
   push:
     branches-ignore:
-      - 'feat/*'
+      - dev/*
+      - feat/*
+      - release/*
   workflow_dispatch:
 
 jobs:

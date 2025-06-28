@@ -1,5 +1,6 @@
 ﻿using EFCore.BulkExtensions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Seedysoft.Libs.Core.Extensions;
@@ -9,6 +10,7 @@ namespace Seedysoft.Outbox.Lib.Services;
 public sealed class OutboxCronBackgroundService : Libs.BackgroundServices.Cron
 {
     private readonly ILogger<OutboxCronBackgroundService> Logger;
+    private Settings.OutboxSettings Settings => (Settings.OutboxSettings)Config;
 
     public OutboxCronBackgroundService(
         IServiceProvider serviceProvider,
@@ -17,7 +19,8 @@ public sealed class OutboxCronBackgroundService : Libs.BackgroundServices.Cron
     {
         Logger = ServiceProvider.GetRequiredService<ILogger<OutboxCronBackgroundService>>();
 
-        Config = new Libs.BackgroundServices.ScheduleConfig() { CronExpression = "*/4 * * * *" /*At every 4th minute*/  };
+        Config = ServiceProvider.GetRequiredService<IConfiguration>()
+            .GetSection(nameof(Lib.Settings.OutboxSettings)).Get<Settings.OutboxSettings>()!;
     }
 
     public override async Task DoWorkAsync(CancellationToken stoppingToken)
@@ -52,10 +55,9 @@ public sealed class OutboxCronBackgroundService : Libs.BackgroundServices.Cron
                 {
                     Libs.Core.Entities.Outbox PendingMessage = PendingMessages[i];
 
-                    Libs.Core.Entities.Subscriber[] Subscribers = AllSubscribers
+                    Libs.Core.Entities.Subscriber[] Subscribers = [.. AllSubscribers
                         .Where(x => x.Subscriptions.Any(s => s.SubscriptionName == PendingMessage.SubscriptionName))
-                        .Where(x => PendingMessage.SubscriptionId == null || x.Subscriptions.Any(y => y.SubscriptionId == PendingMessage.SubscriptionId))
-                        .ToArray();
+                        .Where(x => PendingMessage.SubscriptionId == null || x.Subscriptions.Any(y => y.SubscriptionId == PendingMessage.SubscriptionId))];
 
                     for (int j = 0; j < Subscribers.Length; j++)
                     {

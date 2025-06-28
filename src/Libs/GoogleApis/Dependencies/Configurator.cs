@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Seedysoft.Libs.GoogleApis.Dependencies;
 
-internal sealed class Configurator : Core.Dependencies.ConfiguratorBase
+public sealed class Configurator : Core.Dependencies.ConfiguratorBase
 {
     protected override void AddJsonFiles(Microsoft.Extensions.Hosting.IHostApplicationBuilder hostApplicationBuilder)
     {
@@ -18,9 +18,6 @@ internal sealed class Configurator : Core.Dependencies.ConfiguratorBase
 
     protected override void AddMyServices(Microsoft.Extensions.Hosting.IHostApplicationBuilder hostApplicationBuilder)
     {
-        hostApplicationBuilder.Services.TryAddSingleton(
-            hostApplicationBuilder.Configuration.GetSection(nameof(Settings.GoogleApisSettings)).Get<Settings.GoogleApisSettings>()!);
-
         hostApplicationBuilder.Services.TryAddScoped<Services.PlacesService>();
         hostApplicationBuilder.Services.TryAddScoped<Services.RoutesService>();
     }

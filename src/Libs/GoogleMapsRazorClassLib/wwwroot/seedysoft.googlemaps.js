@@ -1,6 +1,6 @@
 window.seedysoft = window.seedysoft || {};
 window.seedysoft.googleMaps = window.seedysoft.googleMaps || {};
-window.seedysoft.scriptLoader = window.window.seedysoft.scriptLoader || {};
+window.seedysoft.scriptLoader = window.seedysoft.scriptLoader || {};
 
 window.seedysoft = {
   googleMaps: {
