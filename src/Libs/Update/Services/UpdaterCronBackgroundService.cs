@@ -12,7 +12,7 @@ public sealed class UpdaterCronBackgroundService : BackgroundServices.Cron
     public UpdaterCronBackgroundService(IServiceProvider serviceProvider, Microsoft.Extensions.Hosting.IHostApplicationLifetime hostApplicationLifetime)
         : base(serviceProvider, hostApplicationLifetime)
     {
-        GitHubClient = new(new Octokit.ProductHeaderValue(Core.Constants.Github.RepositoryName));
+        GitHubClient = serviceProvider.GetRequiredService<Octokit.GitHubClient>();
         //string GitHubToken = "--- token goes here ---";
         //var tokenAuth = new Octokit.Credentials(GitHubToken);
         //client.Credentials = tokenAuth;
