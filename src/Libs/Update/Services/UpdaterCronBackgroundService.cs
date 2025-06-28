@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Seedysoft.Libs.Core.Extensions;
 
@@ -16,6 +17,8 @@ public sealed class UpdaterCronBackgroundService : BackgroundServices.Cron
         //string GitHubToken = "--- token goes here ---";
         //var tokenAuth = new Octokit.Credentials(GitHubToken);
         //client.Credentials = tokenAuth;
+
+        Config = ServiceProvider.GetRequiredService<IConfiguration>().GetSection(nameof(Settings.UpdateSettings)).Get<Settings.UpdateSettings>()!;
 
         Logger = ServiceProvider.GetRequiredService<ILogger<UpdaterCronBackgroundService>>();
     }

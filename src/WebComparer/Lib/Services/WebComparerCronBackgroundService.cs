@@ -113,7 +113,7 @@ public sealed class WebComparerCronBackgroundService : Libs.BackgroundServices.C
             };
             HtmlAgilityPack.HtmlDocument htmlDocument = htmlWeb.Load(webData.WebUrl);
 
-            Content = htmlDocument.DocumentNode.SelectSingleNode("//body").InnerText;
+            Content = htmlDocument.DocumentNode.SelectSingleNode("//body")?.InnerText ?? default!;
         }
         else
         {
