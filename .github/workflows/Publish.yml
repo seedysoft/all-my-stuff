@@ -3,8 +3,8 @@
 name: Publish
 
 concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
-  group: '**'
 
 defaults:
   run:
