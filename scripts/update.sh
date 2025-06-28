@@ -40,13 +40,13 @@ if [ "${WORKER_SERVICE_USER}" == "root" ] || [ "${WORKER_SERVICE_USER}" == "UNKN
 fi
 
 # Extract files from zip
-echo "Extracting files" 
+echo "Extracting files"
 unzip -o -q $1 -d ./
 
 chown pi:pi *
 chmod ug+rw *
 
 # Start service
-./create-daemon.sh -f "${EXECUTABLE_FILE_NAME}" -s "${WORKER_SERVICE_NAME}"
+sudo ./create-daemon.sh -f "${EXECUTABLE_FILE_NAME}" -s "${WORKER_SERVICE_NAME}"
 
 rm *.zip
