@@ -40,12 +40,13 @@ fi
 ./stop-daemon.sh -s "${WORKER_SERVICE_NAME}"
 
 echo "Downloading ..."
-wget $1
-echo "Zip downloaded"
+ZIP_FILE_NAME="$(mktemp -p . --suffix=.zip)"
+wget -O $ZIP_FILE_NAME $1
+echo "Zip '${ZIP_FILE_NAME}' downloaded"
 
 # Extract files from zip
 echo "Extracting files"
-unzip -o -q *.zip -d ./
+unzip -o -q $ZIP_FILE_NAME -d ./
 
 chown pi:pi *
 chmod ug+rw *
@@ -53,4 +54,4 @@ chmod ug+rw *
 # Start service
 sudo ./create-daemon.sh -f "${EXECUTABLE_FILE_NAME}" -s "${WORKER_SERVICE_NAME}"
 
-rm *.zip
+rm $ZIP_FILE_NAME
