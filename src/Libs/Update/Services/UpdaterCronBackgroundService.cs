@@ -68,7 +68,7 @@ public sealed class UpdaterCronBackgroundService : BackgroundServices.Cron
             return Enums.UpdateResults.AssetNotFound;
         }
 
-        if (!ExecuteUpdateScript(Octokit.ApiUrls.Asset(Core.Constants.Github.OwnerName, Core.Constants.Github.RepositoryName, asset.Id)))
+        if (!ExecuteUpdateScript(new Uri(asset.BrowserDownloadUrl)))
         {
             Logger.LogError("Cannot execute update script");
             return Enums.UpdateResults.ErrorExecutingUpdateScript;

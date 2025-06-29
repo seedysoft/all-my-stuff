@@ -45,7 +45,7 @@ echo "Zip downloaded"
 
 # Extract files from zip
 echo "Extracting files"
-unzip -o -q $1 -d ./
+unzip -o -q *.zip -d ./
 
 chown pi:pi *
 chmod ug+rw *
