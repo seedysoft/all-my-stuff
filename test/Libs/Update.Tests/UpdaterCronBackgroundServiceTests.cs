@@ -30,19 +30,4 @@ public sealed class UpdaterCronBackgroundServiceTests : Infrastructure.Tests.Tes
         var RelaseVersion = new Version(release.Name);
         Assert.True(RelaseVersion < new Version(DateTime.UtcNow.ToString("yy.Mdd.Hmm")));
     }
-
-    [Fact(Timeout = 60_000)]
-    public async Task DownloadReleaseAssetFromGithubAsyncTest()
-    {
-        Octokit.Release? release = await updaterCronBackgroundService.GetLatestReleaseFromGithubAsync();
-        Assert.NotNull(release);
-        Assert.NotEmpty(release.Assets);
-
-        string tempFilePath = Path.GetTempFileName();
-
-        bool a = await updaterCronBackgroundService.DownloadReleaseAssetFromGithubAsync(release.Assets[0], tempFilePath, CancellationToken.None);
-        Assert.True(a);
-
-        File.Delete(tempFilePath);
-    }
 }

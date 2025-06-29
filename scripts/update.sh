@@ -4,16 +4,13 @@ echo "${#} arguments in $0"
 
 # Check minimun required parameters
 if [[ $# -ne 1 ]]; then
-    echo "Must provide zip file name!"
+    echo "Must provide Uri to download!"
     exit 1
 fi
 
 source shared.sh
 
 echo "worker_service_name: ${WORKER_SERVICE_NAME}"
-
-# Stop service
-./stop-daemon.sh -s "${WORKER_SERVICE_NAME}"
 
 # Move working directory to WORKER_SERVICE_DIRECTORY
 WORKER_SERVICE_DIRECTORY="$(dirname "$(readlink -f "$0")")"
@@ -38,6 +35,13 @@ if [ "${WORKER_SERVICE_USER}" == "root" ] || [ "${WORKER_SERVICE_USER}" == "UNKN
   echo "The user <user> will be used to run '${WORKER_SERVICE_NAME}'"
   exit 1
 fi
+
+# Stop service
+./stop-daemon.sh -s "${WORKER_SERVICE_NAME}"
+
+echo "Downloading ..."
+wget $1
+echo "Zip downloaded"
 
 # Extract files from zip
 echo "Extracting files"

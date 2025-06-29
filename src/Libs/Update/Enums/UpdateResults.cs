@@ -10,7 +10,5 @@ public enum UpdateResults : int
 
     AssetNotFound,
 
-    ErrorDownloadingAsset,
-
     ErrorExecutingUpdateScript,
 }

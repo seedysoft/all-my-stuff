@@ -60,21 +60,15 @@ public sealed class UpdaterCronBackgroundService : BackgroundServices.Cron
             return Enums.UpdateResults.NoNewVersionFound;
         }
 
-        Octokit.ReleaseAsset? asset = release.Assets.FirstOrDefault(x => x.Name.Contains(System.Runtime.InteropServices.RuntimeInformation.RuntimeIdentifier, StringComparison.InvariantCultureIgnoreCase));
+        Octokit.ReleaseAsset? asset =
+            release.Assets.FirstOrDefault(x => x.Name.Contains(System.Runtime.InteropServices.RuntimeInformation.RuntimeIdentifier, StringComparison.InvariantCultureIgnoreCase));
         if (asset == null)
         {
             Logger.LogError($"Asset not found for {System.Runtime.InteropServices.RuntimeInformation.RuntimeIdentifier}.");
             return Enums.UpdateResults.AssetNotFound;
         }
 
-        string AssetLocalFullPath = Path.Combine(Path.GetDirectoryName(ExecutingAssembly.Location) ?? string.Empty, asset.Name);
-        if (!await DownloadReleaseAssetFromGithubAsync(asset, AssetLocalFullPath, cancellationToken))
-        {
-            Logger.LogError("Cannot download asset");
-            return Enums.UpdateResults.ErrorDownloadingAsset;
-        }
-
-        if (!ExecuteUpdateScript(AssetLocalFullPath))
+        if (!ExecuteUpdateScript(Octokit.ApiUrls.Asset(Core.Constants.Github.OwnerName, Core.Constants.Github.RepositoryName, asset.Id)))
         {
             Logger.LogError("Cannot execute update script");
             return Enums.UpdateResults.ErrorExecutingUpdateScript;
@@ -98,37 +92,7 @@ public sealed class UpdaterCronBackgroundService : BackgroundServices.Cron
         return releases.Any() ? releases[0] : null;
     }
 
-    internal async Task<bool> DownloadReleaseAssetFromGithubAsync(Octokit.ReleaseAsset asset, string assetLocalFullPath, CancellationToken cancellationToken)
-    {
-        if (File.Exists(assetLocalFullPath))
-        {
-            Logger.LogInformation($"File {assetLocalFullPath} already exists");
-            return true;
-        }
-
-        Logger.LogInformation("Try to download {assetBrowserDownloadUrl}", asset.BrowserDownloadUrl);
-
-        using HttpClient httpClient = new();
-        httpClient.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue(asset.ContentType));
-        //httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Core.Constants.Github.Token);
-        httpClient.DefaultRequestHeaders.UserAgent.Add(new System.Net.Http.Headers.ProductInfoHeaderValue(nameof(Seedysoft)));
-
-        using HttpResponseMessage response = await httpClient.GetAsync(asset.BrowserDownloadUrl, cancellationToken);
-
-        _ = response.EnsureSuccessStatusCode();
-
-        using (Stream stream = await response.Content.ReadAsStreamAsync(cancellationToken))
-        {
-            using FileStream fileStream = File.Create(assetLocalFullPath);
-            await stream.CopyToAsync(fileStream, cancellationToken);
-        }
-
-        Logger.LogInformation($"Downloaded {asset.Name}");
-
-        return true;
-    }
-
-    internal bool ExecuteUpdateScript(string zipFileName)
+    internal bool ExecuteUpdateScript(Uri assetUri)
     {
         System.Diagnostics.ProcessStartInfo processStartInfo = new()
         {
@@ -141,7 +105,7 @@ public sealed class UpdaterCronBackgroundService : BackgroundServices.Cron
         {
             case Core.Constants.SupportedRuntimeIdentifiers.LinuxArm64:
                 //case Core.Constants.SupportedRuntimeIdentifiers.LinuxX64:
-                processStartInfo.FileName = $"sudo ./update.sh {zipFileName}";
+                processStartInfo.FileName = $"sudo ./update.sh {assetUri}";
                 break;
 
             //case Core.Constants.SupportedRuntimeIdentifiers.WinX64:
