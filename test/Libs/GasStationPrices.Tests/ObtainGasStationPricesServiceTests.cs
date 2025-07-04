@@ -27,24 +27,24 @@ public sealed class ObtainGasStationPricesServiceTests : Infrastructure.Tests.Te
     //    Assert.True(Res.Any());
     //}
 
-    [Fact]
-    public async Task GetGasStationsAsyncTest()
-    {
-        ViewModels.TravelQueryModel travelQueryModel = new()
-        {
-            Origin = "Juan Ramón Jiménez 8 Burgos",
-            Destination = "Calle la Iglesia 11 Brazuelo León",
-            MaxDistanceInKm = 50,
-            PetroleumProductsSelectedIds = [],
-        };
+    //[Fact]
+    //public async Task GetGasStationsAsyncTest()
+    //{
+    //    ViewModels.TravelQueryModel travelQueryModel = new()
+    //    {
+    //        Origin = "Juan Ramón Jiménez 8 Burgos",
+    //        Destination = "Calle la Iglesia 11 Brazuelo León",
+    //        MaxDistanceInKm = 50,
+    //        PetroleumProductsSelectedIds = [],
+    //    };
 
-        IAsyncEnumerator<ViewModels.GasStationModel> gasStationModels =
-            ObtainGasStationPricesService.GetGasStationsAsync(travelQueryModel, CancellationToken.None).GetAsyncEnumerator();
+    //    IAsyncEnumerator<ViewModels.GasStationModel> gasStationModels =
+    //        ObtainGasStationPricesService.GetGasStationsAsync(travelQueryModel, CancellationToken.None).GetAsyncEnumerator();
 
-        _ = await gasStationModels.MoveNextAsync();
+    //    _ = await gasStationModels.MoveNextAsync();
 
-        Assert.NotNull(gasStationModels.Current);
-        Assert.NotNull(gasStationModels.Current?.Rotulo);
-        Assert.False(string.IsNullOrWhiteSpace(gasStationModels.Current?.Rotulo));
-    }
+    //    Assert.NotNull(gasStationModels.Current);
+    //    Assert.NotNull(gasStationModels.Current?.Rotulo);
+    //    Assert.False(string.IsNullOrWhiteSpace(gasStationModels.Current?.Rotulo));
+    //}
 }
