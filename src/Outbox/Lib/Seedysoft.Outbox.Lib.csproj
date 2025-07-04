@@ -36,7 +36,7 @@
         <PackageReference Include="Serilog.Extensions.Logging" Version="[8.*,9)" />
         <PackageReference Include="Serilog.Settings.Configuration" Version="[8.*,9)" />
         <PackageReference Include="System.IO.Hashing" Version="[8.*,9)" />
-        <PackageReference Include="Telegram.Bot" Version="22.5.1" />
+        <PackageReference Include="Telegram.Bot" Version="22.6.0" />
     </ItemGroup>
 
     <ItemGroup>
