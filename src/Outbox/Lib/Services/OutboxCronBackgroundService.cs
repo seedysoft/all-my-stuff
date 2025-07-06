@@ -25,6 +25,9 @@ public sealed class OutboxCronBackgroundService : Libs.BackgroundServices.Cron
 
     public override async Task DoWorkAsync(CancellationToken stoppingToken)
     {
+        if (System.Diagnostics.Debugger.IsAttached)
+            System.Diagnostics.Debugger.Break();
+
         string? AppName = GetType().FullName;
 
         Logger.LogInformation("Called {ApplicationName} version {Version}", AppName, System.Reflection.Assembly.GetExecutingAssembly().GetName().Version);

@@ -36,6 +36,9 @@ public class TelegramHostedService : Core.NonBackgroundServiceBase, IHostedServi
     public async Task StartAsync(
         CancellationToken cancellationToken)
     {
+        if (System.Diagnostics.Debugger.IsAttached)
+            System.Diagnostics.Debugger.Break();
+
         Logger.LogInformation("Called {ApplicationName} version {Version}", GetType().FullName, System.Reflection.Assembly.GetExecutingAssembly().GetName().Version);
 
         BotCommand[] Commands = GetMyCommands();

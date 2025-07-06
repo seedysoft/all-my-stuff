@@ -26,6 +26,9 @@ public sealed class WebComparerCronBackgroundService : Libs.BackgroundServices.C
 
     public override async Task DoWorkAsync(CancellationToken cancellationToken)
     {
+        if (System.Diagnostics.Debugger.IsAttached)
+            System.Diagnostics.Debugger.Break();
+
         Logger.LogInformation("Called {ApplicationName} version {Version}", GetType().FullName, System.Reflection.Assembly.GetExecutingAssembly().GetName().Version);
 
         _ = FindDifferencesAsync(cancellationToken);

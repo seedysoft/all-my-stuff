@@ -28,6 +28,9 @@ public sealed class PvpcCronBackgroundService : Libs.BackgroundServices.Cron
 
     public override async Task DoWorkAsync(CancellationToken stoppingToken)
     {
+        if (System.Diagnostics.Debugger.IsAttached)
+            System.Diagnostics.Debugger.Break();
+
         DateTime ForDate = DateTimeOffset.UtcNow.AddDays(1).Date;
 
         _ = GetPvpcFromReeForDateAsync(ForDate, stoppingToken);
