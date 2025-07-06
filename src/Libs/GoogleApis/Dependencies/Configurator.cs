@@ -18,8 +18,10 @@ public sealed class Configurator : Core.Dependencies.ConfiguratorBase
 
     protected override void AddMyServices(Microsoft.Extensions.Hosting.IHostApplicationBuilder hostApplicationBuilder)
     {
+#pragma warning disable IDE0022 // Use expression body for method
         //hostApplicationBuilder.Services.TryAddScoped<Services.DirectionsService>();
         hostApplicationBuilder.Services.TryAddScoped<Services.PlacesService>();
         //hostApplicationBuilder.Services.TryAddScoped<Services.RoutesService>();
+#pragma warning restore IDE0022 // Use expression body for method
     }
 }

@@ -34,7 +34,7 @@ public sealed class UpdaterCronBackgroundService : BackgroundServices.Cron
 
         try
         {
-            Enums.UpdateResults UpgradeResult = await CheckAndUpgradeToNewVersion(cancellationToken);
+            Enums.UpdateResults UpgradeResult = await CheckAndUpgradeToNewVersion();
 
             Logger.LogInformation($"Updating result: {UpgradeResult}");
         }
@@ -44,7 +44,7 @@ public sealed class UpdaterCronBackgroundService : BackgroundServices.Cron
         Logger.LogInformation("End {ApplicationName}", AppName);
     }
 
-    internal async Task<Enums.UpdateResults> CheckAndUpgradeToNewVersion(CancellationToken cancellationToken)
+    internal async Task<Enums.UpdateResults> CheckAndUpgradeToNewVersion()
     {
         Octokit.Release? release = await GetLatestReleaseFromGithubAsync();
         if (release == null)
