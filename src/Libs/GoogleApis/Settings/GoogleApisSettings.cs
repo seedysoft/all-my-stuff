@@ -9,7 +9,9 @@ public record GoogleApisSettings
         init => apiKey = Cryptography.Crypto.DecryptText(value, Core.Helpers.EnvironmentHelper.GetMasterKey());
     }
 
-    public required DirectionsApi DirectionsApi { get; init; }
+    public required string FieldMask { get; init; }
+
+    //public required DirectionsApi DirectionsApi { get; init; }
 
     //public required MapsApi MapsApi { get; init; }
 

@@ -43,6 +43,7 @@ public class PlacesService(IConfiguration configuration, ILogger<PlacesService> 
         {
             RestRequest restRequest = new();
             restRequest = restRequest.AddHeader("X-Goog-Api-Key", GoogleApisSettings.ApiKey);
+            restRequest = restRequest.AddHeader("X-Goog-FieldMask", GoogleApisSettings.FieldMask);
 
             Models.Places.Request.Body PlacesRequestBody = new()
             {
