@@ -9,9 +9,9 @@
     Variant variant = Variant.Outlined;
 }
 
-<MudContainer MaxWidth="MaxWidth.ExtraExtraLarge">
+<MudContainer MaxWidth="@MaxWidth.ExtraExtraLarge">
 
-    <MudGrid Justify="Justify.SpaceBetween">
+    <MudGrid Justify="@Justify.SpaceBetween">
 
         <MudItem xs="12" md="6">
             <MudAutocomplete @bind-Value="@travelQueryModel.Origin"
@@ -27,11 +27,11 @@
                              Placeholder="Select an origin place"
                              Required
                              ResetValueOnEmptyText
-                             SearchFunc="FindPlacesAsync"
+                             SearchFunc="@FindPlacesAsync"
                              SelectOnActivation
                              ShowProgressIndicator
                              T="string"
-                             Variant="variant" />
+                             Variant="@variant" />
         </MudItem>
 
         <MudItem xs="12" md="6">
@@ -51,7 +51,7 @@
                              SelectOnActivation
                              ShowProgressIndicator
                              T="string"
-                             Variant="variant" />
+                             Variant="@variant" />
         </MudItem>
 
         <MudItem xs="10">
@@ -71,7 +71,7 @@
                        Class="flex-grow-all"
                        IconSize="@Size.Large"
                        OnClick="@ValidateSearch"
-                       Size="Size.Large"
+                       Size="@Size.Large"
                        StartIcon="@Icons.Material.Filled.Search"
                        Variant="@variant">
                 Search
@@ -83,8 +83,8 @@
                  Id="@nameof(TravelGoogleMap)"
                  ApiKey="@googleApisSettings.ApiKey"
                  Center="@(new Libs.GoogleApis.Models.Shared.LatLngLiteral(Seedysoft.Libs.Core.Constants.Earth.Home.Lat, Seedysoft.Libs.Core.Constants.Earth.Home.Lng))"
-                 Height="450" HeightUnit="Libs.Core.Enums.CssUnit.Px"
-                 Width="100" WidthUnit="Libs.Core.Enums.CssUnit.Percentage"
+                 Height="450" HeightUnit="@Libs.Core.Enums.CssUnit.Px"
+                 Width="100" WidthUnit="@Libs.Core.Enums.CssUnit.Percentage"
                  Zoom="14"
                  IsClickable
                  OnClickGmapMarkerEventCallback="@OnClickGmapMarker"
@@ -92,7 +92,7 @@
         </MudItem>
 
         <MudItem xs="12">
-            <MudButtonGroup Class="gap-4 pa-4" FullWidth Size="@Size.Medium" Variant="variant">
+            <MudButtonGroup Class="gap-4 pa-4" FullWidth Size="@Size.Medium" Variant="@variant">
 
                 <MudButton ButtonType="@ButtonType.Button"
                            IconColor="@(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.All.Count == travelQueryModel.PetroleumProductsSelectedIds.Count ? Color.Primary : Color.Secondary)"

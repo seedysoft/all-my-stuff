@@ -33,7 +33,7 @@ public class PlacesService(IConfiguration configuration, ILogger<PlacesService> 
                 where !string.IsNullOrWhiteSpace(p.Text?.Text)
                 select p.Text!.Text;
 
-            return places.ToArray();
+            return places.ToHashSet();
         }
         catch (Exception e) when (logger.LogAndHandle(e, "Unexpected error")) { }
 

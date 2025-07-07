@@ -22,7 +22,8 @@ class MapWrapper {
       let alert = document.getElementById("alert");
       if (typeof err === 'string') {
         alert.querySelector("p").innerHTML = err;
-      } else if (typeof err === 'object') {
+      }
+      else if (typeof err === 'object') {
         let msg = err.hasOwnProperty("code") ? err.code : '';
         msg += err.hasOwnProperty("message") ? " " + err.message : '';
         alert.querySelector("p").innerHTML = msg;
@@ -68,7 +69,8 @@ class MapWrapper {
         if (route.hasOwnProperty("distanceMeters")) {
           if (route.distanceMeters / 1000 >= 1) {
             content += "<p>Distance: " + route.distanceMeters / 1000 + " Km</p>";
-          } else {
+          }
+          else {
             content += "<p>Distance: " + route.distanceMeters + " m</p>";
           }
         }
@@ -76,14 +78,16 @@ class MapWrapper {
           let duration = route.duration.slice(0, -1);
           if (duration / 60 >= 1) {
             content += "<p>Duration: " + Math.round(duration / 60) + " min.</p>";
-          } else {
+          }
+          else {
             content += "<p>Duration: " + route.duration + "</p>";
           }
         }
         if (route.hasOwnProperty("travelAdvisory") && route.travelAdvisory.hasOwnProperty("fuelConsumptionMicroliters")) {
           if (route.travelAdvisory.fuelConsumptionMicroliters / 1000 >= 1) {
             content += "<p>Fuel consumption: " + route.travelAdvisory.fuelConsumptionMicroliters / 1000 + " l</p>";
-          } else {
+          }
+          else {
             content += "<p>Fuel consumption: " + route.travelAdvisory.fuelConsumptionMicroliters + " μl</p>";
           }
         }
@@ -115,7 +119,8 @@ class MapWrapper {
           // midPoint is the location used for labelling routes
           let midPoint = parseInt(routePath.length / 2);
           addRouteLabel(this, routePath[midPoint], route);
-        } else {
+        }
+        else {
           this.setErrorMsg("Something wrong happened while fetching the polyline. Please try again later.");
         }
       });
@@ -152,7 +157,8 @@ class MapWrapper {
             this.paths.push(polyline);
           });
         }
-      } else {
+      }
+      else {
         for (let i = decodedPaths.length - 1; i >= 0; i--) {
           const polyline = new google.maps.Polyline({
             map: this.gMap
@@ -196,7 +202,8 @@ class MapWrapper {
       //    }
       //    document.getElementById("origin").value = e.latLng.lat().toFixed(3) + "," + e.latLng.lng().toFixed(3);
       //    myMapObj.sendRequest();
-      //  } else {
+      //  }
+      //  else {
       //    let desCheckbox = document.getElementById("des_input_toggle");
       //    if (!desCheckbox.checked) {
       //      desCheckbox.click(); // Enforce lat/lng as waypoint
@@ -213,7 +220,8 @@ class MapWrapper {
       if (obj.length > 0) {
         if (type == 'advMarker') {
           obj.forEach(function (item) { item.map = null });
-        } else {
+        }
+        else {
           obj.forEach(function (item) { item.setMap(null) });
         }
       }
@@ -286,7 +294,8 @@ window.seedysoft.googleMaps = window.seedysoft.googleMaps || {
     if (origin !== '') {
       //if (mapWrapper.isAddress.origin) {
       reqBody.origin.address = origin;
-      //} else {
+      //}
+      //else {
       //  if (origin.indexOf(',') >= 0) {
       //    origin_lat_lng = origin.split(",");
       //    reqBody.origin.location = {
@@ -296,24 +305,28 @@ window.seedysoft.googleMaps = window.seedysoft.googleMaps || {
       //    reqBody.origin.placeId = origin;
       //  }
       //}
-    } else {
+    }
+    else {
       mapWrapper.setErrorMsg("Origin must be set in a right format.");
       return false;
     }
     if (destination !== '') {
       //if (mapWrapper.isAddress.destination) {
       reqBody.destination.address = destination;
-      //} else {
+      //}
+      //else {
       //  if (destination.indexOf(',') >= 0) {
       //    destination_lat_lng = destination.split(",");
       //    reqBody.destination.location = {
       //      "latLng": { "latitude": destination_lat_lng[0].trim(), "longitude": destination_lat_lng[1].trim() }
       //    };
-      //  } else {
+      //  }
+      //  else {
       //    reqBody.destination.placeId = destination;
       //  }
       //}
-    } else {
+    }
+    else {
       mapWrapper.setErrorMsg("Destination must be set in a right format.");
       return false;
     }
@@ -351,7 +364,8 @@ window.seedysoft.googleMaps = window.seedysoft.googleMaps || {
     if (travel_mode != "transit") {
       if (routing_preference == '') {
         reqBody.routingPreference = "ROUTING_PREFERENCE_UNSPECIFIED";
-      } else {
+      }
+      else {
         reqBody.routingPreference = routing_preference;
       }
     }
@@ -375,9 +389,11 @@ window.seedysoft.googleMaps = window.seedysoft.googleMaps || {
     }).then((data) => {
       if ('error' in data) {
         mapWrapper.setErrorMsg(data.error);
-      } else if (!data.hasOwnProperty("routes")) {
+      }
+      else if (!data.hasOwnProperty("routes")) {
         mapWrapper.setErrorMsg("No routes found. It's likely the waypoints location have problems or the travel mode is not supported in this location.");
-      } else {
+      }
+      else {
         mapWrapper.setRoute(data);
       }
     }).catch((error) => { console.log(error); });
@@ -398,7 +414,8 @@ window.seedysoft.googleMaps = window.seedysoft.googleMaps || {
         const icon = document.createElement("div");
         icon.innerHTML = `<i class="${marker.pinElement.glyph}"></i>`;
         _glyph = icon;
-      } else {
+      }
+      else {
         _glyph = marker.pinElement.glyph;
       }
 
@@ -410,7 +427,8 @@ window.seedysoft.googleMaps = window.seedysoft.googleMaps || {
         , scale: marker.pinElement.scale
       });
       _content = pin.element;
-    } else if (marker.content) {
+    }
+    else if (marker.content) {
       _content = document.createElement("div");
       _content.classList.add("bb-google-marker-content");
       _content.innerHTML = marker.content;
@@ -496,7 +514,8 @@ window.seedysoft.scriptLoader = window.seedysoft.scriptLoader || {
 
     if (scriptLoaderElement == null) {
       window.alert(`Cannot find Element ${elementId}`);
-    } else {
+    }
+    else {
       let scriptElement = document.createElement("script");
 
       scriptElement.async = async;

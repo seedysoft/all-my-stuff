@@ -6,11 +6,12 @@ using Seedysoft.Libs.Core.Extensions;
 namespace Seedysoft.BlazorWebApp.Client.Pages;
 
 // TODO                 Add button to switch between Origin and Destination
+// TODO                 Add button for obtain current location
 
 public partial class TravelSearch
 {
     [Inject] private ILogger<TravelSearch> Logger { get; set; } = default!;
-    [Inject] private MudBlazor.IDialogService DialogService { get; set; } = default!;
+    //[Inject] private MudBlazor.IDialogService DialogService { get; set; } = default!;
     [Inject] private MudBlazor.ISnackbar Snackbar { get; set; } = default!;
     [Inject] private IConfiguration Configuration { get; set; } = default!;
     [Inject] private Libs.GasStationPrices.Services.GasStationPricesService GasStationPricesService { get; set; } = default!;
@@ -72,6 +73,7 @@ public partial class TravelSearch
         StateHasChanged();
     }
 
+    // TODO                                     Show Gas Station data
     private void OnClickGmapMarker(Libs.GoogleMapsRazorClassLib.GoogleMap.Marker marker)
         => _ = Snackbar.Add($"Clicked in {marker.Content}. DateTime: {DateTime.Now}", MudBlazor.Severity.Success);
 
