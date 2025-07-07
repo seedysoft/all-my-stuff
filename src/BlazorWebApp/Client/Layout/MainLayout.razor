@@ -1,7 +1,7 @@
 ﻿@inherits LayoutComponentBase
 
 @* Required *@
-<MudThemeProvider Theme="@_theme" IsDarkMode="_isDarkMode" />
+<MudThemeProvider Theme="_theme" IsDarkMode="@_isDarkMode" />
 <MudPopoverProvider />
 
 @* Needed for dialogs *@
@@ -12,14 +12,14 @@
 
 <MudLayout>
     <MudAppBar Elevation="1">
-        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@DrawerToggle" />
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="@Color.Inherit" Edge="@Edge.Start" OnClick="@DrawerToggle" />
         <MudText Typo="Typo.h5" Class="ml-3">Application</MudText>
         <MudSpacer />
-        <MudIconButton Icon="@DarkLightModeButtonIcon" Color="Color.Inherit" OnClick="@DarkModeToggle" />
-        <MudIconButton Icon="@Icons.Material.Filled.MoreVert" Color="Color.Inherit" Edge="Edge.End" />
+        <MudIconButton Icon="@DarkLightModeButtonIcon" Color="@Color.Inherit" OnClick="@DarkModeToggle" />
+        <MudIconButton Icon="@Icons.Material.Filled.MoreVert" Color="@Color.Inherit" Edge="@Edge.End" />
     </MudAppBar>
     <MudDrawer @bind-Open="@_drawerOpen"
-               Breakpoint="Breakpoint.Xxl"
+               Breakpoint="@Breakpoint.Xxl"
                ClipMode="@DrawerClipMode.Always"
                OpenMiniOnHover
                Variant="@DrawerVariant.Mini">

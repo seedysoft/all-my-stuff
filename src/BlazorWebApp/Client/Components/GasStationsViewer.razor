@@ -1,24 +1,24 @@
 ﻿@using Model = Seedysoft.Libs.GasStationPrices.ViewModels.GasStationModel;
 
-<MudDataGrid @ref="DataGridRef"
+<MudDataGrid @ref="@DataGridRef"
              Bordered
              Dense
              Filterable
-             FilterCaseSensitivity="DataGridFilterCaseSensitivity.CaseInsensitive"
-             FilterMode="DataGridFilterMode.ColumnFilterMenu"
+             FilterCaseSensitivity="@DataGridFilterCaseSensitivity.CaseInsensitive"
+             FilterMode="@DataGridFilterMode.ColumnFilterMenu"
              FixedHeader="true"
              Height="450"
              Hover
-             Items="Elements"
-             Loading="IsLoading"
+             Items="@Elements"
+             Loading="@IsLoading"
              ReadOnly
-             RowClassFunc="RowClassFuncion"
+             RowClassFunc="@RowClassFuncion"
              RowsPerPage="10"
-             SelectedItemChanged="OnSelectedItemChanged"
+             SelectedItemChanged="@OnSelectedItemChanged"
              ShowFilterIcons="true"
-             SortMode="SortMode.Single"
+             SortMode="@SortMode.Single"
              Striped
-             T="Model"
+             T="@Model"
              Virtualize>
 
     <ColGroup>
@@ -41,7 +41,7 @@
             HashSet<string> DecimalFilterOperators = new([MudBlazor.FilterOperator.Number.Empty, MudBlazor.FilterOperator.Number.NotEmpty]);
         }
 
-        <PropertyColumn Property="@(x=> x.BIE)" CellClass="mud-table-cell-align-right" FilterOperators="@DecimalFilterOperators"
+        <PropertyColumn Property="@(x => x.BIE)" CellClass="mud-table-cell-align-right" FilterOperators="@DecimalFilterOperators"
                         Hidden="@(!PetroleumProductsSelectedIds.Contains(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.BIE.IdProducto))">
             <HeaderTemplate>
                 <MudTooltip Placement="Placement.Top" ShowOnFocus="false" Text="@(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.BIE.Nombre)">
@@ -50,7 +50,7 @@
             </HeaderTemplate>
         </PropertyColumn>
 
-        <PropertyColumn Property="@(x=> x.BIO)" CellClass="mud-table-cell-align-right" FilterOperators="@DecimalFilterOperators"
+        <PropertyColumn Property="@(x => x.BIO)" CellClass="mud-table-cell-align-right" FilterOperators="@DecimalFilterOperators"
                         Hidden="@(!PetroleumProductsSelectedIds.Contains(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.BIO.IdProducto))">
             <HeaderTemplate>
                 <MudTooltip Placement="Placement.Top" ShowOnFocus="false" Text="@(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.BIO.Nombre)">
@@ -59,7 +59,7 @@
             </HeaderTemplate>
         </PropertyColumn>
 
-        <PropertyColumn Property="@(x=> x.G95E10)" CellClass="mud-table-cell-align-right" FilterOperators="@DecimalFilterOperators"
+        <PropertyColumn Property="@(x => x.G95E10)" CellClass="mud-table-cell-align-right" FilterOperators="@DecimalFilterOperators"
                         Hidden="@(!PetroleumProductsSelectedIds.Contains(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.G95E10.IdProducto))">
             <HeaderTemplate>
                 <MudTooltip Placement="Placement.Top" ShowOnFocus="false" Text="@(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.G95E10.Nombre)">
@@ -68,7 +68,7 @@
             </HeaderTemplate>
         </PropertyColumn>
 
-        <PropertyColumn Property="@(x=> x.G95E5)" CellClass="mud-table-cell-align-right" FilterOperators="@DecimalFilterOperators"
+        <PropertyColumn Property="@(x => x.G95E5)" CellClass="mud-table-cell-align-right" FilterOperators="@DecimalFilterOperators"
                         Hidden="@(!PetroleumProductsSelectedIds.Contains(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.G95E5.IdProducto))">
             <HeaderTemplate>
                 <MudTooltip Placement="Placement.Top" ShowOnFocus="false" Text="@(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.G95E5.Nombre)">
@@ -77,7 +77,7 @@
             </HeaderTemplate>
         </PropertyColumn>
 
-        <PropertyColumn Property="@(x=> x.G95E5Plus)" CellClass="mud-table-cell-align-right" FilterOperators="@DecimalFilterOperators"
+        <PropertyColumn Property="@(x => x.G95E5Plus)" CellClass="mud-table-cell-align-right" FilterOperators="@DecimalFilterOperators"
                         Hidden="@(!PetroleumProductsSelectedIds.Contains(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.G95E5Plus.IdProducto))">
             <HeaderTemplate>
                 <MudTooltip Placement="Placement.Top" ShowOnFocus="false" Text="@(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.G95E5Plus.Nombre)">
@@ -86,7 +86,7 @@
             </HeaderTemplate>
         </PropertyColumn>
 
-        <PropertyColumn Property="@(x=> x.G98E10)" CellClass="mud-table-cell-align-right" FilterOperators="@DecimalFilterOperators"
+        <PropertyColumn Property="@(x => x.G98E10)" CellClass="mud-table-cell-align-right" FilterOperators="@DecimalFilterOperators"
                         Hidden="!PetroleumProductsSelectedIds.Contains(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.G98E10.IdProducto)">
             <HeaderTemplate>
                 <MudTooltip Placement="Placement.Top" ShowOnFocus="false" Text="@(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.G98E10.Nombre)">
@@ -95,7 +95,7 @@
             </HeaderTemplate>
         </PropertyColumn>
 
-        <PropertyColumn Property="@(x=> x.G98E5)" CellClass="mud-table-cell-align-right" FilterOperators="@DecimalFilterOperators"
+        <PropertyColumn Property="@(x => x.G98E5)" CellClass="mud-table-cell-align-right" FilterOperators="@DecimalFilterOperators"
                         Hidden="!PetroleumProductsSelectedIds.Contains(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.G98E5.IdProducto)">
             <HeaderTemplate>
                 <MudTooltip Placement="Placement.Top" ShowOnFocus="false" Text="@(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.G98E5.Nombre)">
@@ -104,7 +104,7 @@
             </HeaderTemplate>
         </PropertyColumn>
 
-        <PropertyColumn Property="@(x=> x.GLP)" CellClass="mud-table-cell-align-right" FilterOperators="@DecimalFilterOperators"
+        <PropertyColumn Property="@(x => x.GLP)" CellClass="mud-table-cell-align-right" FilterOperators="@DecimalFilterOperators"
                         Hidden="!PetroleumProductsSelectedIds.Contains(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.GLP.IdProducto)">
             <HeaderTemplate>
                 <MudTooltip Placement="Placement.Top" ShowOnFocus="false" Text="@(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.GLP.Nombre)">
@@ -113,7 +113,7 @@
             </HeaderTemplate>
         </PropertyColumn>
 
-        <PropertyColumn Property="@(x=> x.GNC)" CellClass="mud-table-cell-align-right" FilterOperators="@DecimalFilterOperators"
+        <PropertyColumn Property="@(x => x.GNC)" CellClass="mud-table-cell-align-right" FilterOperators="@DecimalFilterOperators"
                         Hidden="!PetroleumProductsSelectedIds.Contains(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.GNC.IdProducto)">
             <HeaderTemplate>
                 <MudTooltip Placement="Placement.Top" ShowOnFocus="false" Text="@(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.GNC.Nombre)">
@@ -122,7 +122,7 @@
             </HeaderTemplate>
         </PropertyColumn>
 
-        <PropertyColumn Property="@(x=> x.GNL)" CellClass="mud-table-cell-align-right" FilterOperators="@DecimalFilterOperators"
+        <PropertyColumn Property="@(x => x.GNL)" CellClass="mud-table-cell-align-right" FilterOperators="@DecimalFilterOperators"
                         Hidden="!PetroleumProductsSelectedIds.Contains(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.GNL.IdProducto)">
             <HeaderTemplate>
                 <MudTooltip Placement="Placement.Top" ShowOnFocus="false" Text="@(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.GNL.Nombre)">
@@ -131,7 +131,7 @@
             </HeaderTemplate>
         </PropertyColumn>
 
-        <PropertyColumn Property="@(x=> x.GOA)" CellClass="mud-table-cell-align-right" FilterOperators="@DecimalFilterOperators"
+        <PropertyColumn Property="@(x => x.GOA)" CellClass="mud-table-cell-align-right" FilterOperators="@DecimalFilterOperators"
                         Hidden="!PetroleumProductsSelectedIds.Contains(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.GOA.IdProducto)">
             <HeaderTemplate>
                 <MudTooltip Placement="Placement.Top" ShowOnFocus="false" Text="@(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.GOA.Nombre)">
@@ -140,7 +140,7 @@
             </HeaderTemplate>
         </PropertyColumn>
 
-        <PropertyColumn Property="@(x=> x.GOAPlus)" CellClass="mud-table-cell-align-right" FilterOperators="@DecimalFilterOperators"
+        <PropertyColumn Property="@(x => x.GOAPlus)" CellClass="mud-table-cell-align-right" FilterOperators="@DecimalFilterOperators"
                         Hidden="!PetroleumProductsSelectedIds.Contains(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.GOAPlus.IdProducto)">
             <HeaderTemplate>
                 <MudTooltip Placement="Placement.Top" ShowOnFocus="false" Text="@(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.GOAPlus.Nombre)">
@@ -149,7 +149,7 @@
             </HeaderTemplate>
         </PropertyColumn>
 
-        <PropertyColumn Property="@(x=> x.GOB)" CellClass="mud-table-cell-align-right" FilterOperators="@DecimalFilterOperators"
+        <PropertyColumn Property="@(x => x.GOB)" CellClass="mud-table-cell-align-right" FilterOperators="@DecimalFilterOperators"
                         Hidden="!PetroleumProductsSelectedIds.Contains(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.GOB.IdProducto)">
             <HeaderTemplate>
                 <MudTooltip Placement="Placement.Top" ShowOnFocus="false" Text="@(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.GOB.Nombre)">
