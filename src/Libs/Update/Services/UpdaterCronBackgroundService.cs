@@ -126,7 +126,7 @@ public sealed class UpdaterCronBackgroundService : BackgroundServices.Cron
 
             default:
                 // TODO: use interpolated strings in all solution
-                Logger.LogError("RuntimeIdentifier {runtimeIdentifier} not supported", runtimeIdentifier);
+                Logger.LogError($"RuntimeIdentifier {runtimeIdentifier} not supported");
                 return false;
         }
 
