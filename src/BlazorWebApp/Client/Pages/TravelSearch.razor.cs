@@ -64,7 +64,7 @@ public partial class TravelSearch
         StateHasChanged();
 
         await foreach (Libs.GasStationPrices.ViewModels.GasStationModel gasStationModel in
-            GasStationPricesService.GetNearGasStationsAsync(encodedPolyline, travelQueryModel.MaxDistanceInKm))
+            GasStationPricesService.GetNearGasStationsAsync(encodedPolyline, travelQueryModel.MaxDistanceInKm, CancellationToken.None))
         {
             GasStationItems.Add(gasStationModel);
         }
@@ -74,8 +74,9 @@ public partial class TravelSearch
     }
 
     // TODO                                     Show Gas Station data
-    private void OnClickGmapMarker(Libs.GoogleMapsRazorClassLib.GoogleMap.Marker marker)
-        => _ = Snackbar.Add($"Clicked in {marker.Content}. DateTime: {DateTime.Now}", MudBlazor.Severity.Success);
+    //private void OnClickGmapMarker(Libs.GoogleMapsRazorClassLib.GoogleMap.Marker marker)
+    //    => _ = Snackbar.Add($"Clicked in {marker.Content}. DateTime: {DateTime.Now}", MudBlazor.Severity.Success);
+    // OnClickGmapMarkerEventCallback="@OnClickGmapMarker"
 
     private async Task<IEnumerable<string>> FindPlacesAsync(string textToFind, CancellationToken cancellationToken)
     {

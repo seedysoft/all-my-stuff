@@ -2,12 +2,22 @@
 
 public record class Body
 {
+    private const string FechaFormat = "dd/MM/yyyy HH:mm:ss";
+
     [J("Fecha")]
     public required string Fecha { get; init; }
     /// <summary>
     /// Sample: 05/02/2025 20:43:02
     /// </summary>
-    public DateTimeOffset DateTimeOffset => DateTimeOffset.ParseExact(Fecha, "dd/MM/yyyy HH:mm:ss", Core.Constants.Globalization.DateTimeFormatInfoES);
+    public DateTimeOffset DateTimeOffset
+    {
+        get
+        {
+            return DateTimeOffset.TryParseExact(Fecha, FechaFormat, Core.Constants.Globalization.DateTimeFormatInfoES, System.Globalization.DateTimeStyles.AssumeUniversal, out DateTimeOffset result)
+                ? result
+                : DateTimeOffset.MinValue;
+        }
+    }
 
     [J("ListaEESSPrecio")]
     public required EstacionTerrestre[] EstacionesTerrestres { get; init; }

@@ -5,7 +5,7 @@ public static class GeometricHelper
     public static double DegreesToRadians(double degrees) => degrees * (Math.PI / Core.Constants.Earth.TotalDegrees / 2);
     public static double RadiansToDegrees(double radians) => radians * (Core.Constants.Earth.TotalDegrees / 2 / Math.PI);
 
-    public static Models.Shared.LatLngBoundsLiteral GetBounds(List<Models.Shared.LatLngLiteral> routePoints, int maxDistanceInKm)
+    public static Models.Shared.LatLngBoundsLiteral GetBounds(IEnumerable<Models.Shared.LatLngLiteral> routePoints, int maxDistanceInKm)
     {
         double North = routePoints.Max(x => x.Lat);
         double South = routePoints.Min(x => x.Lat);

@@ -34,7 +34,7 @@ public sealed class GasStationPricesServiceTests : Infrastructure.Tests.TestClas
         int MaxDistanceInKm = 50;
 
         int Total = 0;
-        IAsyncEnumerable<ViewModels.GasStationModel> gasStationModels = GasStationPricesService.GetNearGasStationsAsync(SamplePolyline, MaxDistanceInKm);
+        IAsyncEnumerable<ViewModels.GasStationModel> gasStationModels = GasStationPricesService.GetNearGasStationsAsync(SamplePolyline, MaxDistanceInKm, CancellationToken.None);
         await foreach (ViewModels.GasStationModel item in gasStationModels)
         {
             Assert.NotNull(item);

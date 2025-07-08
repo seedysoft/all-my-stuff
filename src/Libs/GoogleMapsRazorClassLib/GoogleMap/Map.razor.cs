@@ -113,7 +113,7 @@ public partial class Map : SeedysoftComponentBase
         if (!markers.Any(x => x.Id == marker.Id))
             await AddGasStationMarkerAsync(marker);
 
-        await JSRuntime.InvokeVoidAsync($"{Constants.SeedysoftGoogleMaps}.openInfoWindow", Id, marker, objRef);
+        //await JSRuntime.InvokeVoidAsync($"{Constants.SeedysoftGoogleMaps}.openInfoWindow", Id, marker, objRef);
     }
 
     public async Task SearchRoutesAsync(string origin, string destination)
@@ -122,12 +122,12 @@ public partial class Map : SeedysoftComponentBase
     public async Task ResetViewportAsync() 
         => await JSRuntime.InvokeVoidAsync($"{Constants.SeedysoftGoogleMaps}.resetViewport", Id);
 
-    [JSInvokable]
-    public async Task OnClickGmapMarkerJS(Marker marker)
-    {
-        if (OnClickGmapMarkerEventCallback.HasDelegate)
-            await OnClickGmapMarkerEventCallback.InvokeAsync(marker);
-    }
+    //[JSInvokable]
+    //public async Task OnClickGmapMarkerJS(Marker marker)
+    //{
+    //    if (OnClickGmapMarkerEventCallback.HasDelegate)
+    //        await OnClickGmapMarkerEventCallback.InvokeAsync(marker);
+    //}
     [JSInvokable]
     public async Task OnClickGmapRouteJS(string encodedPolyline)
     {
