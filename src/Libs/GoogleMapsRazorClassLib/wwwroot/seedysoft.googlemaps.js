@@ -400,7 +400,7 @@ window.seedysoft.googleMaps = window.seedysoft.googleMaps || {
     /****** End of Request ******/
   }
 
-  , addGasStationMarker: (elementId, marker, dotNetHelper) => {
+  , addGasStationMarker: (elementId, marker/*, dotNetHelper*/) => {
     let mapWrapper = window.seedysoft.googleMaps.get(elementId);
 
     let map = mapWrapper.gMap;
@@ -448,7 +448,7 @@ window.seedysoft.googleMaps = window.seedysoft.googleMaps || {
     if (isClickable) {
       markerEl.addListener("click", ({ domEvent, latLng }) => {
         const { target } = domEvent;
-        window.seedysoft.googleMaps.openInfoWindow(elementId, markerEl, dotNetHelper);
+        window.seedysoft.googleMaps.openInfoWindow(elementId, markerEl/*, dotNetHelper*/);
       });
     }
   }
@@ -472,7 +472,7 @@ window.seedysoft.googleMaps = window.seedysoft.googleMaps || {
   //  }
   //}
 
-  , openInfoWindow: (elementId, marker, dotNetHelper) => {
+  , openInfoWindow: (elementId, marker/*, dotNetHelper*/) => {
     let mapWrapper = window.seedysoft.googleMaps.get(elementId);
     mapWrapper.gMap.panTo(marker.position);
     mapWrapper.gMap.setZoom(14);

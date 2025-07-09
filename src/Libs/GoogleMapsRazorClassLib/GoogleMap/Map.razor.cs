@@ -100,7 +100,7 @@ public partial class Map : SeedysoftComponentBase
 
     private async Task AddGasStationMarkerAsync(Marker marker)
     {
-        await JSRuntime.InvokeVoidAsync($"{Constants.SeedysoftGoogleMaps}.addGasStationMarker", Id, marker, objRef);
+        await JSRuntime.InvokeVoidAsync($"{Constants.SeedysoftGoogleMaps}.addGasStationMarker", Id, marker/*, objRef*/);
         _ = markers.Add(marker);
     }
     public async Task RemoveAllMarkersAsync()
