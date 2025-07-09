@@ -35,11 +35,11 @@ public partial class Map : SeedysoftComponentBase
     /// </remarks>
     [Parameter] public Core.Enums.CssUnit HeightUnit { get; set; } = Core.Enums.CssUnit.Px;
 
-    /// <summary>
-    /// Event fired when a user clicks on a marker.
-    /// This event fires only when <see cref="Clickable" /> is set to <see langword="true" />.
-    /// </summary>
-    [Parameter] public EventCallback<Marker> OnClickGmapMarkerEventCallback { get; set; }
+    ///// <summary>
+    ///// Event fired when a user clicks on a marker.
+    ///// This event fires only when <see cref="Clickable" /> is set to <see langword="true" />.
+    ///// </summary>
+    //[Parameter] public EventCallback<Marker> OnClickGmapMarkerEventCallback { get; set; }
     /// <summary>
     /// Event fired when a user clicks on a route.
     /// </summary>

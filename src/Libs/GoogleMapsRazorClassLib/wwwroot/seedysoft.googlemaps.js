@@ -192,9 +192,9 @@ class MapWrapper {
         , map: this.gMap
         , position: pos
       });
-      marker.metadata = { id: label };
+      markerEl.metadata = { id: label };
 
-      //marker.addListener("dragend", function (e) {
+      //markerEl.addListener("dragend", function (e) {
       //  if (this.metadata.id == "A") {
       //    let originCheckbox = document.getElementById("origin_input_toggle");
       //    if (!originCheckbox.checked) {
@@ -213,7 +213,7 @@ class MapWrapper {
       //  }
       //});
 
-      return marker;
+      return markerEl;
     };
 
     this.clearUI = function (obj, type) {
@@ -446,8 +446,9 @@ window.seedysoft.googleMaps = window.seedysoft.googleMaps || {
 
     // add a click listener for each marker, and set up the info window.
     if (isClickable) {
-      markerEl.addListener("click", () => {
-        window.seedysoft.googleMaps.openInfoWindow(elementId, marker, dotNetHelper);
+      markerEl.addListener("click", ({ domEvent, latLng }) => {
+        const { target } = domEvent;
+        window.seedysoft.googleMaps.openInfoWindow(elementId, markerEl, dotNetHelper);
       });
     }
   }
@@ -478,7 +479,6 @@ window.seedysoft.googleMaps = window.seedysoft.googleMaps || {
 
     mapWrapper.infoWindow.close();
     mapWrapper.infoWindow.setContent(marker.title);
-    mapWrapper.infoWindow.open(mapWrapper.gMap, marker.position);
     mapWrapper.infoWindow.open(mapWrapper.gMap, marker);
     //dotNetHelper.invokeMethodAsync("OnClickGmapMarkerJS", marker);
   }
