@@ -479,6 +479,7 @@ window.seedysoft.googleMaps = window.seedysoft.googleMaps || {
     mapWrapper.infoWindow.close();
     mapWrapper.infoWindow.setContent(marker.title);
     mapWrapper.infoWindow.open(mapWrapper.gMap, marker.position);
+    mapWrapper.infoWindow.open(mapWrapper.gMap, marker);
     //dotNetHelper.invokeMethodAsync("OnClickGmapMarkerJS", marker);
   }
 
