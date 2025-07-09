@@ -94,7 +94,7 @@ class MapWrapper {
         content += "</div>";
         routeTag.innerHTML = content;
 
-        const markerView = new google.maps.marker.AdvancedMarkerView({
+        let markerView = new google.maps.marker.AdvancedMarkerView({
           content: routeTag
           , gmpClickable: mapWrapper.isClickable
           , map: mapWrapper.gMap
@@ -160,7 +160,7 @@ class MapWrapper {
       }
       else {
         for (let i = decodedPaths.length - 1; i >= 0; i--) {
-          const polyline = new google.maps.Polyline({
+          let polyline = new google.maps.Polyline({
             map: this.gMap
             , path: decodedPaths[i]
             , strokeColor: i == 0 ? colors.NORMAL : colors.ALTERNATIVE
@@ -175,18 +175,18 @@ class MapWrapper {
     };
 
     this.setViewport = function (viewport) {
-      const sw = new google.maps.LatLng({ lat: viewport.low.latitude, lng: viewport.low.longitude });
-      const ne = new google.maps.LatLng({ lat: viewport.high.latitude, lng: viewport.high.longitude });
-      const bounds = new google.maps.LatLngBounds(sw, ne);
+      let sw = new google.maps.LatLng({ lat: viewport.low.latitude, lng: viewport.low.longitude });
+      let ne = new google.maps.LatLng({ lat: viewport.high.latitude, lng: viewport.high.longitude });
+      let bounds = new google.maps.LatLngBounds(sw, ne);
       this.gMap.fitBounds(bounds);
     };
 
     this.addMarker = function (pos, label) {
-      const pinGlyph = new google.maps.marker.PinElement({
+      let pinGlyph = new google.maps.marker.PinElement({
         glyph: label
         , glyphColor: "#fff"
       });
-      const marker = new google.maps.marker.AdvancedMarkerElement({
+      let markerEl = new google.maps.marker.AdvancedMarkerElement({
         content: pinGlyph.element
         , gmpDraggable: true
         , map: this.gMap
@@ -240,7 +240,7 @@ window.seedysoft.googleMaps = window.seedysoft.googleMaps || {
       , zoom: zoom
     };
 
-    const map = new google.maps.Map(document.getElementById(elementId), mapOptions);
+    let map = new google.maps.Map(document.getElementById(elementId), mapOptions);
 
     window.seedysoft.googleMaps.mapWrappers[elementId] = new MapWrapper(map, isClickable, dotNetHelper);
   }
@@ -371,7 +371,7 @@ window.seedysoft.googleMaps = window.seedysoft.googleMaps || {
     }
 
     if (departure_time != '') {
-      const date = new Date(departure_time);
+      let date = new Date(departure_time);
       let utc_date = `${date.getUTCFullYear()}-${date.getUTCMonth() + 1}-${date.getUTCDate()}T${date.getUTCHours()}:${date.getUTCMinutes()}:00Z`;
       reqBody.departureTime = utc_date;
     }
@@ -411,7 +411,7 @@ window.seedysoft.googleMaps = window.seedysoft.googleMaps || {
       let _glyph;
 
       if (marker.pinElement.useIconFonts) {
-        const icon = document.createElement("div");
+        let icon = document.createElement("div");
         icon.innerHTML = `<i class="${marker.pinElement.glyph}"></i>`;
         _glyph = icon;
       }
@@ -419,7 +419,7 @@ window.seedysoft.googleMaps = window.seedysoft.googleMaps || {
         _glyph = marker.pinElement.glyph;
       }
 
-      const pin = new google.maps.marker.PinElement({
+      let pin = new google.maps.marker.PinElement({
         background: marker.pinElement.background
         , borderColor: marker.pinElement.borderColor
         , glyph: _glyph
@@ -434,7 +434,7 @@ window.seedysoft.googleMaps = window.seedysoft.googleMaps || {
       _content.innerHTML = marker.content;
     }
 
-    const markerEl = new google.maps.marker.AdvancedMarkerElement({
+    let markerEl = new google.maps.marker.AdvancedMarkerElement({
       content: _content
       , gmpClickable: isClickable
       , map: map
@@ -455,7 +455,7 @@ window.seedysoft.googleMaps = window.seedysoft.googleMaps || {
     let mapWrapper = window.seedysoft.googleMaps.get(elementId);
 
     if (mapWrapper.markerArray.length > 0) {
-      for (const markerEl of mapWrapper.markerArray) {
+      for (let markerEl of mapWrapper.markerArray) {
         markerEl.setMap(null);
       }
       mapWrapper.markerArray = [];
@@ -465,7 +465,7 @@ window.seedysoft.googleMaps = window.seedysoft.googleMaps || {
   //  window.seedysoft.googleMaps.removeAllMarkers(elementId);
 
   //  if (markers) {
-  //    for (const marker of markers) {
+  //    for (let marker of markers) {
   //      window.seedysoft.googleMaps.addMarker(elementId, marker, dotNetHelper);
   //    }
   //  }
