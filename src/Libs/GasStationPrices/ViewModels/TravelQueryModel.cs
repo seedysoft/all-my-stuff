@@ -9,5 +9,5 @@ public record class TravelQueryModel
     public required int MaxDistanceInKm { get; set; }
 
     [System.ComponentModel.DataAnnotations.Length(1, int.MaxValue)]
-    public IReadOnlyCollection<long> PetroleumProductsSelectedIds { get; set; } = [];
+    public IReadOnlyCollection<Constants.ProductoPetroliferoId> PetroleumProductsSelectedIds { get; set; } = [];
 }

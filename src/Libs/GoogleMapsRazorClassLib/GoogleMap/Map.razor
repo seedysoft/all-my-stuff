@@ -2,6 +2,10 @@
 
 @inherits SeedysoftComponentBase
 
+<style type="text/css">
+    @($"#{this.Id} {{ height: 100%; }} ")
+</style>
+
 <ScriptsLoader Async
                Defer
                Id="@($"sl{Id}")"

@@ -7,18 +7,18 @@ public static class ModelsExtensions
     {
         return new()
         {
-            Content = $"<div style='background-color:blue'>{gasStationModel.RotuloTrimed}</div>",
-            PinElement = new()
+            Content = null,
+            PinElement = new Libs.GoogleMapsRazorClassLib.GoogleMap.PinElement()
             {
-                Background = "",
-                BorderColor = "",
-                Glyph = null,
-                GlyphColor = "azure",
-                Scale = 1.0,
-                UseIconFonts = true,
+                Background = "blue",
+                BorderColor = "yellow",
+                Glyph = gasStationModel.RotuloTrimed.First(),
+                GlyphColor = "white",
+                Scale = 1.5,
             },
             Position = new(gasStationModel.Lat, gasStationModel.Lng),
             Title = gasStationModel.RotuloTrimed,
+            ZIndex = 1,
         };
     }
 }

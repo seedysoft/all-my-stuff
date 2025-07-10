@@ -13,4 +13,7 @@ public record class Marker
 
     [I(Condition = C.WhenWritingNull)]
     public string? Title { get; set; }
+
+    [I(Condition = C.WhenWritingNull), J("zIndex")]
+    public int? ZIndex { get; set; }
 }

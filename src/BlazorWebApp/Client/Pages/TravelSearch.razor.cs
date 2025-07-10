@@ -25,13 +25,13 @@ public partial class TravelSearch
     {
 #if DEBUG
         Origin = "Calle Juan Ramon Jimenez, 8, Burgos, Spain",
-        Destination = "Calle la Iglesia, 11, Brazuelo, Leon, Spain",
+        Destination = "Manciles, Spain", /*"Calle la Iglesia, 11, Brazuelo, Leon, Spain",*/
 #else
         Origin = string.Empty,
         Destination = string.Empty,
 #endif
         MaxDistanceInKm = 10,
-        PetroleumProductsSelectedIds = Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.Gasoline.Select(x => x.IdProducto).ToHashSet(),
+        PetroleumProductsSelectedIds = Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.Gasoline.Select(static x => x.IdProducto).ToHashSet(),
     };
     private readonly Libs.GasStationPrices.ViewModels.TravelQueryModelFluentValidator travelQueryModelFluentValidator = new();
 

@@ -100,7 +100,7 @@ public partial class Map : SeedysoftComponentBase
 
     private async Task AddGasStationMarkerAsync(Marker marker)
     {
-        await JSRuntime.InvokeVoidAsync($"{Constants.SeedysoftGoogleMaps}.addGasStationMarker", Id, marker/*, objRef*/);
+        await JSRuntime.InvokeVoidAsync($"{Constants.SeedysoftGoogleMaps}.addGasStationMarker", Id, marker);
         _ = markers.Add(marker);
     }
     public async Task RemoveAllMarkersAsync()
@@ -113,21 +113,15 @@ public partial class Map : SeedysoftComponentBase
         if (!markers.Any(x => x.Id == marker.Id))
             await AddGasStationMarkerAsync(marker);
 
-        //await JSRuntime.InvokeVoidAsync($"{Constants.SeedysoftGoogleMaps}.openInfoWindow", Id, marker, objRef);
+        //await JSRuntime.InvokeVoidAsync($"{Constants.SeedysoftGoogleMaps}.openInfoWindow", Id, marker);
     }
 
     public async Task SearchRoutesAsync(string origin, string destination)
         => await JSRuntime.InvokeVoidAsync($"{Constants.SeedysoftGoogleMaps}.searchRoutes", TimeSpan.FromSeconds(5), [Id, origin, destination, ApiKey]);
 
-    public async Task ResetViewportAsync() 
+    public async Task ResetViewportAsync()
         => await JSRuntime.InvokeVoidAsync($"{Constants.SeedysoftGoogleMaps}.resetViewport", Id);
 
-    //[JSInvokable]
-    //public async Task OnClickGmapMarkerJS(Marker marker)
-    //{
-    //    if (OnClickGmapMarkerEventCallback.HasDelegate)
-    //        await OnClickGmapMarkerEventCallback.InvokeAsync(marker);
-    //}
     [JSInvokable]
     public async Task OnClickGmapRouteJS(string encodedPolyline)
     {

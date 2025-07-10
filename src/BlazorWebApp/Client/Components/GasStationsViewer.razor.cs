@@ -14,7 +14,7 @@ public partial class GasStationsViewer
 
     [Parameter] public EventCallback<Model> OnSelectedItemChanged { get; set; } = default!;
 
-    [Parameter] public IReadOnlyCollection<long> PetroleumProductsSelectedIds { get; set; } = [];
+    [Parameter] public IReadOnlyCollection<Libs.GasStationPrices.Constants.ProductoPetroliferoId> PetroleumProductsSelectedIds { get; set; } = [];
 
     #endregion
 

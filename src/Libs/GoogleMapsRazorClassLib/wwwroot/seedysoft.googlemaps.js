@@ -1,6 +1,4 @@
-﻿window.seedysoft = window.seedysoft || {};
-
-class MapWrapper {
+﻿class MapWrapper {
 
   constructor(googleMap, isClickable, dotNetHelper) {
     this.gMap = googleMap;
@@ -400,42 +398,15 @@ window.seedysoft.googleMaps = window.seedysoft.googleMaps || {
     /****** End of Request ******/
   }
 
-  , addGasStationMarker: (elementId, marker/*, dotNetHelper*/) => {
+  , addGasStationMarker: (elementId, marker) => {
     let mapWrapper = window.seedysoft.googleMaps.get(elementId);
 
     let map = mapWrapper.gMap;
     let isClickable = mapWrapper.isClickable;
-    let _content;
 
-    if (marker.pinElement) {
-      let _glyph;
-
-      if (marker.pinElement.useIconFonts) {
-        let icon = document.createElement("div");
-        icon.innerHTML = `<i class="${marker.pinElement.glyph}"></i>`;
-        _glyph = icon;
-      }
-      else {
-        _glyph = marker.pinElement.glyph;
-      }
-
-      let pin = new google.maps.marker.PinElement({
-        background: marker.pinElement.background
-        , borderColor: marker.pinElement.borderColor
-        , glyph: _glyph
-        , glyphColor: marker.pinElement.glyphColor
-        , scale: marker.pinElement.scale
-      });
-      _content = pin.element;
-    }
-    else if (marker.content) {
-      _content = document.createElement("div");
-      _content.classList.add("bb-google-marker-content");
-      _content.innerHTML = marker.content;
-    }
-
+    let pinGlyph = new google.maps.marker.PinElement(marker.pinElement);
     let markerEl = new google.maps.marker.AdvancedMarkerElement({
-      content: _content
+      content: pinGlyph.element
       , gmpClickable: isClickable
       , map: map
       , position: marker.position
@@ -446,9 +417,9 @@ window.seedysoft.googleMaps = window.seedysoft.googleMaps || {
 
     // add a click listener for each marker, and set up the info window.
     if (isClickable) {
-      markerEl.addListener("click", ({ domEvent, latLng }) => {
-        const { target } = domEvent;
-        window.seedysoft.googleMaps.openInfoWindow(elementId, markerEl/*, dotNetHelper*/);
+      markerEl.addListener("click", (/*{ domEvent, latLng }*/) => {
+        //const { target } = domEvent;
+        window.seedysoft.googleMaps.openInfoWindow(elementId, markerEl);
       });
     }
   }
@@ -462,17 +433,17 @@ window.seedysoft.googleMaps = window.seedysoft.googleMaps || {
       mapWrapper.markerArray = [];
     }
   }
-  //, updateMarkers: (elementId, markers, dotNetHelper) => {
+  //, updateMarkers: (elementId, markers) => {
   //  window.seedysoft.googleMaps.removeAllMarkers(elementId);
 
   //  if (markers) {
   //    for (let marker of markers) {
-  //      window.seedysoft.googleMaps.addMarker(elementId, marker, dotNetHelper);
+  //      window.seedysoft.googleMaps.addMarker(elementId, marker);
   //    }
   //  }
   //}
 
-  , openInfoWindow: (elementId, marker/*, dotNetHelper*/) => {
+  , openInfoWindow: (elementId, marker) => {
     let mapWrapper = window.seedysoft.googleMaps.get(elementId);
     mapWrapper.gMap.panTo(marker.position);
     mapWrapper.gMap.setZoom(14);
@@ -480,7 +451,6 @@ window.seedysoft.googleMaps = window.seedysoft.googleMaps || {
     mapWrapper.infoWindow.close();
     mapWrapper.infoWindow.setContent(marker.title);
     mapWrapper.infoWindow.open(mapWrapper.gMap, marker);
-    //dotNetHelper.invokeMethodAsync("OnClickGmapMarkerJS", marker);
   }
 
   , resetViewport: (elementId) => {
@@ -502,45 +472,4 @@ window.seedysoft.googleMaps = window.seedysoft.googleMaps || {
   //  let mapWrapper = window.seedysoft.googleMaps.get(elementId);
   //  mapWrapper.directionsRenderer.setRouteIndex(routeIndex);
   //}
-}
-
-window.seedysoft.scriptLoader = window.seedysoft.scriptLoader || {
-  init: (elementId, async, defer, scriptId, source, type, dotNetHelper) => {
-    if (source.length === 0) {
-      console.error("Invalid source url.");
-      return;
-    }
-
-    let scriptLoaderElement = document.getElementById(elementId);
-
-    if (scriptLoaderElement == null) {
-      window.alert(`Cannot find Element ${elementId}`);
-    }
-    else {
-      let scriptElement = document.createElement("script");
-
-      scriptElement.async = async;
-
-      scriptElement.defer = defer;
-
-      if (scriptId != null)
-        scriptElement.id = scriptId;
-
-      if (source != null)
-        scriptElement.src = source;
-
-      if (type != null)
-        scriptElement.type = type;
-
-      scriptElement.addEventListener("error", (_event) => {
-        dotNetHelper.invokeMethodAsync("OnErrorJS", `An error occurred while loading the script: ${source}`);
-      });
-
-      scriptElement.addEventListener("load", (_event) => {
-        dotNetHelper.invokeMethodAsync("OnLoadJS");
-      });
-
-      scriptLoaderElement.appendChild(scriptElement);
-    }
-  }
 }
