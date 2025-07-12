@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Components;
 using RestSharp;
-using Seedysoft.BlazorWebApp.Client.Extensions;
 using Seedysoft.Libs.Core.Extensions;
+using Seedysoft.Libs.GoogleMapsRazorClassLib.Extensions;
 
 namespace Seedysoft.BlazorWebApp.Client.Pages;
 
@@ -54,7 +54,7 @@ public partial class TravelSearch
         if (gasStationModel == null)
             await TravelGoogleMap.ResetViewportAsync();
         else
-            await TravelGoogleMap.ClickOnMarkerAsync(gasStationModel.ToMarker());
+            await TravelGoogleMap.ClickOnMarkerAsync(gasStationModel.ToMarker(travelQueryModel.PetroleumProductsSelectedIds));
     }
 
     private async Task OnClickGmapRouteAsync(string encodedPolyline)

@@ -31,11 +31,11 @@ public record class Body
 
 public record class EstacionTerrestre
 {
-    //[J("C.P.")]
-    //public required string CodigoPostal { get; init; }
+    [J("C.P.")]
+    public required string CodigoPostal { get; init; }
 
-    //[J("Dirección")]
-    //public required string Direccion { get; init; }
+    [J("Dirección")]
+    public required string Direccion { get; init; }
 
     [J("Horario")]
     public required string Horario { get; init; }
@@ -77,6 +77,8 @@ public record class EstacionTerrestre
 
     //[J("IDCCAA"), K(typeof(Core.Extensions.ParseStringConverter))]
     //public long IdComunidad { get; init; }
+
+    public string DireccionParsed => $"{Direccion} - {CodigoPostal} {Localidad} {(string.Equals(Localidad, Municipio, StringComparison.OrdinalIgnoreCase) ? string.Empty : Municipio)}".Trim();
 
     [J("Precio Biodiesel")]
     public required string PrecioBiodiesel { get; init; }

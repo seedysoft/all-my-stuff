@@ -7,8 +7,8 @@
 
     this.directionRenderer = new google.maps.DirectionsRenderer({ map: googleMap });
     this.directionsService = new google.maps.DirectionsService();
-    this.infoWindow = new google.maps.InfoWindow({ content: "", disableAutoPan: true });
-    this.markerArray = [];
+    this.googleInfoWindow = new google.maps.InfoWindow({ content: "", disableAutoPan: true });
+    this.googleMarkerArray = [];
 
     this.paths = [];
     this.routeLabels = [];
@@ -92,15 +92,15 @@
         content += "</div>";
         routeTag.innerHTML = content;
 
-        let markerView = new google.maps.marker.AdvancedMarkerView({
+        let googleMarkerView = new google.maps.marker.AdvancedMarkerView({
           content: routeTag
           , gmpClickable: mapWrapper.isClickable
           , map: mapWrapper.gMap
           , position: { lat: location.lat(), lng: location.lng() }
           , zIndex: 1
         });
-        mapWrapper.routeLabels.push(markerView);
-        markerView.addEventListener("gmp-click", (e) => {
+        mapWrapper.routeLabels.push(googleMarkerView);
+        googleMarkerView.addEventListener("gmp-click", (e) => {
           mapWrapper.dotNetHelper.invokeMethodAsync("OnClickGmapRouteJS", route.polyline.encodedPolyline);
         });
       } // addRouteLabel
@@ -132,7 +132,6 @@
         for (let i = decodedPaths.length - 1; i >= 0; i--) {
           let decodedPath = decodedPaths[i];
           let speedInterval = speedIntervals[i];
-          let polyline = {};
 
           speedInterval.forEach(function (item, j) {
             let section = [];
@@ -145,27 +144,27 @@
               section.push(new google.maps.LatLng(decodedPath[p].lat(), decodedPath[p].lng()));
             }
 
-            polyline = new google.maps.Polyline({
+            let googlePolyline = new google.maps.Polyline({
               map: this.gMap
               , path: section
               , strokeColor: colors[item.speed]
               , strokeOpacity: i == 0 ? 0.8 : 0.4
               , strokeWeight: 5
             });
-            this.paths.push(polyline);
+            this.paths.push(googlePolyline);
           });
         }
       }
       else {
         for (let i = decodedPaths.length - 1; i >= 0; i--) {
-          let polyline = new google.maps.Polyline({
+          let googlePolyline = new google.maps.Polyline({
             map: this.gMap
             , path: decodedPaths[i]
             , strokeColor: i == 0 ? colors.NORMAL : colors.ALTERNATIVE
             , strokeOpacity: 0.8
             , strokeWeight: 5
           });
-          this.paths.push(polyline);
+          this.paths.push(googlePolyline);
         }
       }
       this.viewport = routes[0].viewport;
@@ -175,24 +174,24 @@
     this.setViewport = function (viewport) {
       let sw = new google.maps.LatLng({ lat: viewport.low.latitude, lng: viewport.low.longitude });
       let ne = new google.maps.LatLng({ lat: viewport.high.latitude, lng: viewport.high.longitude });
-      let bounds = new google.maps.LatLngBounds(sw, ne);
-      this.gMap.fitBounds(bounds);
+      let googleLatLngBounds = new google.maps.LatLngBounds(sw, ne);
+      this.gMap.fitBounds(googleLatLngBounds);
     };
 
     this.addMarker = function (pos, label) {
-      let pinGlyph = new google.maps.marker.PinElement({
+      let googlePinElement = new google.maps.marker.PinElement({
         glyph: label
         , glyphColor: "#fff"
       });
-      let markerEl = new google.maps.marker.AdvancedMarkerElement({
-        content: pinGlyph.element
+      let googleMarker = new google.maps.marker.AdvancedMarkerElement({
+        content: googlePinElement.element
         , gmpDraggable: true
         , map: this.gMap
         , position: pos
       });
-      markerEl.metadata = { id: label };
+      googleMarker.metadata = { id: label };
 
-      //markerEl.addListener("dragend", function (e) {
+      //googleMarker.addListener("dragend", function (e) {
       //  if (this.metadata.id == "A") {
       //    let originCheckbox = document.getElementById("origin_input_toggle");
       //    if (!originCheckbox.checked) {
@@ -211,7 +210,7 @@
       //  }
       //});
 
-      return markerEl;
+      return googleMarker;
     };
 
     this.clearUI = function (obj, type) {
@@ -238,9 +237,9 @@ window.seedysoft.googleMaps = window.seedysoft.googleMaps || {
       , zoom: zoom
     };
 
-    let map = new google.maps.Map(document.getElementById(elementId), mapOptions);
+    let googleMap = new google.maps.Map(document.getElementById(elementId), mapOptions);
 
-    window.seedysoft.googleMaps.mapWrappers[elementId] = new MapWrapper(map, isClickable, dotNetHelper);
+    window.seedysoft.googleMaps.mapWrappers[elementId] = new MapWrapper(googleMap, isClickable, dotNetHelper);
   }
 
   , get: (elementId) => { return window.seedysoft.googleMaps.mapWrappers[elementId]; }
@@ -401,36 +400,36 @@ window.seedysoft.googleMaps = window.seedysoft.googleMaps || {
   , addGasStationMarker: (elementId, marker) => {
     let mapWrapper = window.seedysoft.googleMaps.get(elementId);
 
-    let map = mapWrapper.gMap;
+    let googleMap = mapWrapper.gMap;
     let isClickable = mapWrapper.isClickable;
 
-    let pinGlyph = new google.maps.marker.PinElement(marker.pinElement);
-    let markerEl = new google.maps.marker.AdvancedMarkerElement({
-      content: pinGlyph.element
+    let googlePinElement = new google.maps.marker.PinElement(marker.pinElement);
+    let googleMarker = new google.maps.marker.AdvancedMarkerElement({
+      content: googlePinElement.element
       , gmpClickable: isClickable
-      , map: map
+      , map: googleMap
       , position: marker.position
       , title: marker.title
     });
 
-    mapWrapper.markerArray.push(markerEl);
+    mapWrapper.googleMarkerArray[marker.Id] = googleMarker;
 
     // add a click listener for each marker, and set up the info window.
     if (isClickable) {
-      markerEl.addListener("click", (/*{ domEvent, latLng }*/) => {
+      googleMarker.addListener("click", (/*{ domEvent, latLng }*/) => {
         //const { target } = domEvent;
-        window.seedysoft.googleMaps.openInfoWindow(elementId, markerEl);
+        window.seedysoft.googleMaps.openInfoWindow(elementId, marker); // Use original instead AdvancedMarkerElement
       });
     }
   }
   , removeAllMarkers: (elementId) => {
     let mapWrapper = window.seedysoft.googleMaps.get(elementId);
 
-    if (mapWrapper.markerArray.length > 0) {
-      for (let markerEl of mapWrapper.markerArray) {
-        markerEl.setMap(null);
+    if (mapWrapper.googleMarkerArray.length > 0) {
+      for (let googleMarker of mapWrapper.googleMarkerArray) {
+        googleMarker.setMap(null);
       }
-      mapWrapper.markerArray = [];
+      mapWrapper.googleMarkerArray = [];
     }
   }
   //, updateMarkers: (elementId, markers) => {
@@ -448,9 +447,57 @@ window.seedysoft.googleMaps = window.seedysoft.googleMaps || {
     mapWrapper.gMap.panTo(marker.position);
     mapWrapper.gMap.setZoom(14);
 
-    mapWrapper.infoWindow.close();
-    mapWrapper.infoWindow.setContent(marker.title);
-    mapWrapper.infoWindow.open(mapWrapper.gMap, marker);
+    mapWrapper.googleInfoWindow.close();
+    let googleInfoWindowOptions = {
+      ariaLabel: marker.title
+      , content: buildInfoWindowContent(marker)
+      , headerContent: buildInfoWindowHeaderContent(marker)
+      , minWidth: 350
+    };
+    mapWrapper.googleInfoWindow.setOptions(googleInfoWindowOptions);
+    mapWrapper.googleInfoWindow.open(mapWrapper.gMap, mapWrapper.googleMarkerArray[marker.Id]);
+
+    function buildInfoWindowContent(marker) {
+      var content = '';
+
+      marker.productsAndPrices.forEach((item, index) => {
+        content +=
+          `<div class='d-flex justify-space-between ma-2'>` +
+          `  <div>${item.productName}</div>` +
+          `  <div>${item.price}</div>` +
+          `</div>`;
+      });
+
+      content +=
+        `<br>` +
+        `<div class='d-flex justify-space-between ma-2'>` +
+        `  <div>${marker.address}</div>` +
+        `</div>` +
+        `<br>` +
+        `<div class='mb-2'>` +
+        `  <a href='https://www.waze.com/ul?ll=${marker.position.lat}%2C${marker.position.lng}&amp;zoom=17' target='_blank'>` +
+        `    <span class='px-2'>Open in </span>` +
+        `    <img src='waze-svgrepo-com.svg' alt='Waze' height='18' width='18'/>` +
+        `  </a>` +
+        `</div>`;
+
+      var container = document.createElement('div');
+      container.classList.add(['d-flex', 'flex-column', 'ma-2']);
+      container.innerHTML = content;
+
+      return container;
+    }
+    function buildInfoWindowHeaderContent(marker) {
+      var container = document.createElement('div');
+      container.classList.add(['d-flex', 'flex-column', 'ma-2']);
+
+      container.innerHTML =
+        `<div class='mb-2'>` +
+        `  <h2>${marker.title}</h2>` +
+        `</div>`;
+
+      return container;
+    }
   }
 
   , resetViewport: (elementId) => {

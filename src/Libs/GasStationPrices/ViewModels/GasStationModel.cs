@@ -5,6 +5,8 @@ public record class GasStationModel
     public double Lat { get; init; }
     public double Lng { get; init; }
 
+    public string? Localizacion { get; init; }
+
     public required string Rotulo { get; init; }
     public string RotuloTrimed => Rotulo.Trim();
 
@@ -23,27 +25,30 @@ public record class GasStationModel
     public decimal? GOB { get; init; }
     //public decimal? H2 { get; init; }
 
-    public decimal? GetProductPrice(Constants.ProductoPetroliferoId productId)
+    public ProductAndPrice GetProductNameAndPrice(Constants.ProductoPetroliferoId productId)
     {
         return productId switch
         {
             #pragma warning disable format
-            Constants.ProductoPetroliferoId.BIE         => BIE,
-            Constants.ProductoPetroliferoId.BIO         => BIO,
-            Constants.ProductoPetroliferoId.G95E10      => G95E10,
-            Constants.ProductoPetroliferoId.G95E5       => G95E5,
-            Constants.ProductoPetroliferoId.G95E5Plus   => G95E5Plus,
-            Constants.ProductoPetroliferoId.G98E10      => G98E10,
-            Constants.ProductoPetroliferoId.G98E5       => G98E5,
-            Constants.ProductoPetroliferoId.GLP         => GLP,
-            Constants.ProductoPetroliferoId.GNC         => GNC,
-            Constants.ProductoPetroliferoId.GNL         => GNL,
-            Constants.ProductoPetroliferoId.GOA         => GOA,
-            Constants.ProductoPetroliferoId.GOAPlus     => GOAPlus,
-            Constants.ProductoPetroliferoId.GOB         => GOB,
-            //Constants.ProductoPetroliferoId.H2          => H2;
-            _                                           => null,
+            
+            Constants.ProductoPetroliferoId.BIE         => new ProductAndPrice(Models.Minetur.ProductoPetrolifero.BIE.Nombre,       $"{BIE          :0.000 €}"),
+            Constants.ProductoPetroliferoId.BIO         => new ProductAndPrice(Models.Minetur.ProductoPetrolifero.BIO.Nombre,       $"{BIO          :0.000 €}"),
+            Constants.ProductoPetroliferoId.G95E10      => new ProductAndPrice(Models.Minetur.ProductoPetrolifero.G95E10.Nombre,    $"{G95E10       :0.000 €}"),
+            Constants.ProductoPetroliferoId.G95E5       => new ProductAndPrice(Models.Minetur.ProductoPetrolifero.G95E5.Nombre,     $"{G95E5        :0.000 €}"),
+            Constants.ProductoPetroliferoId.G95E5Plus   => new ProductAndPrice(Models.Minetur.ProductoPetrolifero.G95E5Plus.Nombre, $"{G95E5Plus    :0.000 €}"),
+            Constants.ProductoPetroliferoId.G98E10      => new ProductAndPrice(Models.Minetur.ProductoPetrolifero.G98E10.Nombre,    $"{G98E10       :0.000 €}"),
+            Constants.ProductoPetroliferoId.G98E5       => new ProductAndPrice(Models.Minetur.ProductoPetrolifero.G98E5.Nombre,     $"{G98E5        :0.000 €}"),
+            Constants.ProductoPetroliferoId.GLP         => new ProductAndPrice(Models.Minetur.ProductoPetrolifero.GLP.Nombre,       $"{GLP          :0.000 €}"),
+            Constants.ProductoPetroliferoId.GNC         => new ProductAndPrice(Models.Minetur.ProductoPetrolifero.GNC.Nombre,       $"{GNC          :0.000 €}"),
+            Constants.ProductoPetroliferoId.GNL         => new ProductAndPrice(Models.Minetur.ProductoPetrolifero.GNL.Nombre,       $"{GNL          :0.000 €}"),
+            Constants.ProductoPetroliferoId.GOA         => new ProductAndPrice(Models.Minetur.ProductoPetrolifero.GOA.Nombre,       $"{GOA          :0.000 €}"),
+            Constants.ProductoPetroliferoId.GOAPlus     => new ProductAndPrice(Models.Minetur.ProductoPetrolifero.GOAPlus.Nombre,   $"{GOAPlus      :0.000 €}"),
+            Constants.ProductoPetroliferoId.GOB         => new ProductAndPrice(Models.Minetur.ProductoPetrolifero.GOB.Nombre,       $"{GOB          :0.000 €}"),
+            //Constants.ProductoPetroliferoId.H2          => new ProductAndPrice(Models.Minetur.ProductoPetrolifero.H2.Nombre,        $"{H2           :0.000 €}"),
+
             #pragma warning restore format
+
+            _ => throw new ArgumentOutOfRangeException(nameof(productId), productId, "Not recognized"),
         };
     }
 }
