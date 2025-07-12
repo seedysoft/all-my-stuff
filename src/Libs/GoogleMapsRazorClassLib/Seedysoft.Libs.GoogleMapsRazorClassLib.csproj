@@ -12,6 +12,11 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Content Include="Sample\htmlpage1.html" />
+      <Content Include="Sample\original.js" />
+    </ItemGroup>
+
+    <ItemGroup>
         <SupportedPlatform Include="browser" />
     </ItemGroup>
 

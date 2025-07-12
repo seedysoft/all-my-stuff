@@ -1,6 +1,6 @@
 ﻿namespace Seedysoft.Libs.GoogleApis.Models.Places.Response;
 
-public record class Match
+public class Match
 {
     [J("endOffset")]
     public long EndOffset { get; init; }

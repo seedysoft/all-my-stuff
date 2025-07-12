@@ -45,7 +45,7 @@ public class Program : Libs.Core.ProgramBase
             .AddInteractiveWebAssemblyRenderMode()
             .AddAdditionalAssemblies(typeof(Client._Imports).Assembly);
 
-        _ = webApplication.MapControllers();
+        //_ = webApplication.MapControllers();
 
         await webApplication.RunAsync();
     }

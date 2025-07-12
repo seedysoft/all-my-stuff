@@ -3,7 +3,7 @@
 /// <summary>
 /// Encapsulates an encoded polyline.
 /// </summary>
-public record Polyline
+public class Polyline
 {
     /// <summary>
     /// The string encoding of the polyline using the <see cref="https://developers.google.com/maps/documentation/utilities/polylinealgorithm">polyline encoding algorithm</see>.

@@ -3,7 +3,7 @@
 /// <summary>
 /// Represents an amount of money with its currency type.
 /// </summary>
-public record Money
+public class Money
 {
     /// <summary>
     /// The three-letter currency code defined in ISO 4217.

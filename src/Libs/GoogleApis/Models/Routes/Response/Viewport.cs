@@ -15,7 +15,7 @@
 /// For example, this viewport fully encloses New York City:
 /// { "low": { "latitude": 40.477398, "longitude": -74.259087 }, "high": { "latitude": 40.91618, "longitude": -73.70018 } }
 /// </summary>
-public record Viewport
+public class Viewport
 {
     /// <summary>
     /// Required. The high point of the viewport.

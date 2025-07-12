@@ -5,7 +5,7 @@
 /// Only populated for address waypoints.
 /// Includes details about the geocoding results for the purposes of determining what the address was geocoded to.
 /// </summary>
-public record GeocodedWaypoint
+public class GeocodedWaypoint
 {
     /// <summary>
     /// Indicates the status code resulting from the geocoding operation.

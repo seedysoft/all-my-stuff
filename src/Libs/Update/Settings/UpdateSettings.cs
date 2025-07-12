@@ -1,6 +1,6 @@
 ﻿namespace Seedysoft.Libs.Update.Settings;
 
-public record class UpdateSettings : BackgroundServices.ScheduleConfig
+public record UpdateSettings : BackgroundServices.ScheduleConfig
 {
     //private string githubToken = default!;
     //public required string GithubToken
