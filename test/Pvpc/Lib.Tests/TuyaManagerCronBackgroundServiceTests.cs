@@ -11,7 +11,7 @@ public sealed class TuyaManagerCronBackgroundServiceTests : Libs.Infrastructure.
     private readonly Services.TuyaManagerCronBackgroundService TuyaManagerService = default!;
     private bool disposedValue;
 
-    public TuyaManagerCronBackgroundServiceTests() : base()
+    public TuyaManagerCronBackgroundServiceTests(Xunit.Abstractions.ITestOutputHelper testOutputHelper) : base(testOutputHelper)
     {
         IConfiguration configuration = new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
