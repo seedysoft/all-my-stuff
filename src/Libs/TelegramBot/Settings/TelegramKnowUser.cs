@@ -1,3 +1,3 @@
 ﻿namespace Seedysoft.Libs.TelegramBot.Settings;
 
-public record class TelegramKnowUser : TelegramUserBase { }
+public record TelegramKnowUser : TelegramUserBase { }

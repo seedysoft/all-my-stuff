@@ -3,7 +3,7 @@
 /// <summary>
 /// Provides overview information about a list of <see cref="RouteLegStep"/>s.
 /// </summary>
-public record StepsOverview
+public class StepsOverview
 {
     /// <summary>
     /// Summarized information about different multi-modal segments of the <see cref="RouteLeg.Steps"/>.

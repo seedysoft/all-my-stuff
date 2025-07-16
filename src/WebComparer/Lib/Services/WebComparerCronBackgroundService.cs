@@ -26,6 +26,9 @@ public sealed class WebComparerCronBackgroundService : Libs.BackgroundServices.C
 
     public override async Task DoWorkAsync(CancellationToken cancellationToken)
     {
+        if (System.Diagnostics.Debugger.IsAttached)
+            System.Diagnostics.Debugger.Break();
+
         Logger.LogInformation("Called {ApplicationName} version {Version}", GetType().FullName, System.Reflection.Assembly.GetExecutingAssembly().GetName().Version);
 
         _ = FindDifferencesAsync(cancellationToken);
@@ -113,7 +116,7 @@ public sealed class WebComparerCronBackgroundService : Libs.BackgroundServices.C
             };
             HtmlAgilityPack.HtmlDocument htmlDocument = htmlWeb.Load(webData.WebUrl);
 
-            Content = htmlDocument.DocumentNode.SelectSingleNode("//body").InnerText;
+            Content = htmlDocument.DocumentNode.SelectSingleNode("//body")?.InnerText ?? default!;
         }
         else
         {
@@ -158,7 +161,7 @@ public sealed class WebComparerCronBackgroundService : Libs.BackgroundServices.C
         OpenQA.Selenium.Chrome.ChromeDriverService chromeDriverService;
         switch (System.Runtime.InteropServices.RuntimeInformation.RuntimeIdentifier)
         {
-            case "linux-arm64":
+            case Libs.Core.Constants.SupportedRuntimeIdentifiers.LinuxArm64:
                 Options.BinaryLocation = "/usr/bin/chromium-browser";
 
                 chromeDriverService = OpenQA.Selenium.Chrome.ChromeDriverService.CreateDefaultService("/usr/bin/", "chromedriver");
@@ -166,7 +169,7 @@ public sealed class WebComparerCronBackgroundService : Libs.BackgroundServices.C
                 chromeDriver = new(chromeDriverService, Options);
                 break;
 
-            //case "linux-x64":
+            //case Libs.Core.Constants.SupportedRuntimeIdentifiers.LinuxX64:
             //    Options.BinaryLocation = "/usr/lib/chromium-browser/chromium-browser";
 
             //    chromeDriverService = OpenQA.Selenium.Chrome.ChromeDriverService.CreateDefaultService("/usr/lib/chromium-browser/", "chromedriver");

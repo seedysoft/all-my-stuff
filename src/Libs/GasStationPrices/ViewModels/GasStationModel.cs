@@ -1,44 +1,54 @@
-﻿using Seedysoft.Libs.Core.Extensions;
-
-namespace Seedysoft.Libs.GasStationPrices.ViewModels;
+﻿namespace Seedysoft.Libs.GasStationPrices.ViewModels;
 
 public record class GasStationModel
 {
-    public double Lat { get; set; }
-    public double Lng { get; set; }
+    public double Lat { get; init; }
+    public double Lng { get; init; }
+
+    public string? Localizacion { get; init; }
 
     public required string Rotulo { get; init; }
+    public string RotuloTrimed => Rotulo.Trim();
 
-    public required IEnumerable<ProductPrice> Prices { get; init; }
+    public decimal? BIE { get; init; }
+    public decimal? BIO { get; init; }
+    public decimal? G95E10 { get; init; }
+    public decimal? G95E5 { get; init; }
+    public decimal? G95E5Plus { get; init; }
+    public decimal? G98E10 { get; init; }
+    public decimal? G98E5 { get; init; }
+    public decimal? GLP { get; init; }
+    public decimal? GNC { get; init; }
+    public decimal? GNL { get; init; }
+    public decimal? GOA { get; init; }
+    public decimal? GOAPlus { get; init; }
+    public decimal? GOB { get; init; }
+    //public decimal? H2 { get; init; }
 
-    internal static GasStationModel Map(Models.Minetur.EstacionTerrestre estacionTerrestre) => new()
+    public ProductAndPrice GetProductNameAndPrice(Constants.ProductoPetroliferoId productId)
     {
-        Lat = estacionTerrestre.Lat,
-        Lng = estacionTerrestre.Lng,
-        Prices = MapPrices(estacionTerrestre),
-        Rotulo = estacionTerrestre.Rotulo,
-    };
+        return productId switch
+        {
+            #pragma warning disable format
+            
+            Constants.ProductoPetroliferoId.BIE         => new ProductAndPrice(Models.Minetur.ProductoPetrolifero.BIE.Nombre,       $"{BIE          :0.000 €}"),
+            Constants.ProductoPetroliferoId.BIO         => new ProductAndPrice(Models.Minetur.ProductoPetrolifero.BIO.Nombre,       $"{BIO          :0.000 €}"),
+            Constants.ProductoPetroliferoId.G95E10      => new ProductAndPrice(Models.Minetur.ProductoPetrolifero.G95E10.Nombre,    $"{G95E10       :0.000 €}"),
+            Constants.ProductoPetroliferoId.G95E5       => new ProductAndPrice(Models.Minetur.ProductoPetrolifero.G95E5.Nombre,     $"{G95E5        :0.000 €}"),
+            Constants.ProductoPetroliferoId.G95E5Plus   => new ProductAndPrice(Models.Minetur.ProductoPetrolifero.G95E5Plus.Nombre, $"{G95E5Plus    :0.000 €}"),
+            Constants.ProductoPetroliferoId.G98E10      => new ProductAndPrice(Models.Minetur.ProductoPetrolifero.G98E10.Nombre,    $"{G98E10       :0.000 €}"),
+            Constants.ProductoPetroliferoId.G98E5       => new ProductAndPrice(Models.Minetur.ProductoPetrolifero.G98E5.Nombre,     $"{G98E5        :0.000 €}"),
+            Constants.ProductoPetroliferoId.GLP         => new ProductAndPrice(Models.Minetur.ProductoPetrolifero.GLP.Nombre,       $"{GLP          :0.000 €}"),
+            Constants.ProductoPetroliferoId.GNC         => new ProductAndPrice(Models.Minetur.ProductoPetrolifero.GNC.Nombre,       $"{GNC          :0.000 €}"),
+            Constants.ProductoPetroliferoId.GNL         => new ProductAndPrice(Models.Minetur.ProductoPetrolifero.GNL.Nombre,       $"{GNL          :0.000 €}"),
+            Constants.ProductoPetroliferoId.GOA         => new ProductAndPrice(Models.Minetur.ProductoPetrolifero.GOA.Nombre,       $"{GOA          :0.000 €}"),
+            Constants.ProductoPetroliferoId.GOAPlus     => new ProductAndPrice(Models.Minetur.ProductoPetrolifero.GOAPlus.Nombre,   $"{GOAPlus      :0.000 €}"),
+            Constants.ProductoPetroliferoId.GOB         => new ProductAndPrice(Models.Minetur.ProductoPetrolifero.GOB.Nombre,       $"{GOB          :0.000 €}"),
+            //Constants.ProductoPetroliferoId.H2          => new ProductAndPrice(Models.Minetur.ProductoPetrolifero.H2.Nombre,        $"{H2           :0.000 €}"),
 
-    private static System.Collections.ObjectModel.ReadOnlyCollection<ProductPrice> MapPrices(
-        Models.Minetur.EstacionTerrestre estacionTerrestre)
-    {
-        IEnumerable<ProductPrice> values = [
-            new(Models.Minetur.ProductoPetrolifero.G95E5, estacionTerrestre.PrecioGasolina95E5.ParseWithNumberFormatInfoES()),
-            new(Models.Minetur.ProductoPetrolifero.G95E10, estacionTerrestre.PrecioGasolina95E10.ParseWithNumberFormatInfoES()),
-            new(Models.Minetur.ProductoPetrolifero.G95E5Plus, estacionTerrestre.PrecioGasolina95E5Premium.ParseWithNumberFormatInfoES()),
-            new(Models.Minetur.ProductoPetrolifero.G98E5, estacionTerrestre.PrecioGasolina98E5.ParseWithNumberFormatInfoES()),
-            new(Models.Minetur.ProductoPetrolifero.G98E10, estacionTerrestre.PrecioGasolina98E10.ParseWithNumberFormatInfoES()),
-            new(Models.Minetur.ProductoPetrolifero.GOA, estacionTerrestre.PrecioGasoleoA.ParseWithNumberFormatInfoES()),
-            new(Models.Minetur.ProductoPetrolifero.GOAPlus, estacionTerrestre.PrecioGasoleoPremium.ParseWithNumberFormatInfoES()),
-            new(Models.Minetur.ProductoPetrolifero.GOB, estacionTerrestre.PrecioGasoleoB.ParseWithNumberFormatInfoES()),
-            new(Models.Minetur.ProductoPetrolifero.BIE, estacionTerrestre.PrecioBioetanol.ParseWithNumberFormatInfoES()),
-            new(Models.Minetur.ProductoPetrolifero.BIO, estacionTerrestre.PrecioBiodiesel.ParseWithNumberFormatInfoES()),
-            new(Models.Minetur.ProductoPetrolifero.GLP, estacionTerrestre.PrecioGasesLicuadosDelPetróleo.ParseWithNumberFormatInfoES()),
-            new(Models.Minetur.ProductoPetrolifero.GNC, estacionTerrestre.PrecioGasNaturalComprimido.ParseWithNumberFormatInfoES()),
-            new(Models.Minetur.ProductoPetrolifero.GNL, estacionTerrestre.PrecioGasNaturalLicuado.ParseWithNumberFormatInfoES()),
-            new(Models.Minetur.ProductoPetrolifero.H2, estacionTerrestre.PrecioHidrogeno.ParseWithNumberFormatInfoES()),
-        ];
+            #pragma warning restore format
 
-        return values.Where(static x => x.Price.HasValue).ToList().AsReadOnly();
+            _ => throw new ArgumentOutOfRangeException(nameof(productId), productId, "Not recognized"),
+        };
     }
 }

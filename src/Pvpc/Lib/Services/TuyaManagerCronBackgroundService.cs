@@ -25,6 +25,9 @@ public sealed class TuyaManagerCronBackgroundService : Libs.BackgroundServices.C
 
     public override async Task StartAsync(CancellationToken cancellationToken)
     {
+        if (System.Diagnostics.Debugger.IsAttached)
+            System.Diagnostics.Debugger.Break();
+
         // Execute on init in background (fire and forget), so no hang on start 
         _ = Task.Factory.StartNew(async () => await DoWorkAsync(cancellationToken), cancellationToken);
 

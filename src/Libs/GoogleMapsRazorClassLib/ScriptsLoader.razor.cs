@@ -66,7 +66,16 @@ public partial class ScriptsLoader : SeedysoftComponentBase
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
-            await JSRuntime.InvokeVoidAsync($"{Constants.SeedysoftScriptLoader}.initialize", Id, Async, Defer, ScriptId, Source, ScriptType, objRef);
+        {
+            await JSRuntime.InvokeVoidAsync($"{Constants.SeedysoftScriptLoader}.init",
+                Id,
+                Async,
+                Defer,
+                ScriptId,
+                Source,
+                ScriptType,
+                objRef);
+        }
 
         await base.OnAfterRenderAsync(firstRender);
     }

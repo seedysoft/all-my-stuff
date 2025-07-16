@@ -1,0 +1,47 @@
+# FIRST SET VARIABLES (PS>):
+
+$ProjectOrSolution="$env:USERPROFILE\_prog\seedysoft\all-my-stuff\Seedysoft.Tests.sln"
+
+$PublishDirectory="$env:OneDriveCommercial\_Syncthing\Seedysoft\linux-arm64\"
+$PublishDirectory="D:\Test\linux-x64\"
+
+$PublishDirectory="$env:USERPROFILE\_prog\seedysoft\all-my-stuff\publish\linux-arm64\"
+$PublishDirectory="$env:USERPROFILE\_prog\seedysoft\all-my-stuff\publish\win-arm64\"
+$PublishDirectory="$env:USERPROFILE\_prog\seedysoft\Test\linux-x64\"
+
+$Configuration="-c Debug"
+$Configuration="-c Release"
+# By default, so can be ommited:
+$Configuration=""
+
+# <RuntimeIdentifiers>linux-arm64;linux-x64;win-x64</RuntimeIdentifiers>
+# <RuntimeIdentifiers>linux-arm64;win-x64</RuntimeIdentifiers>
+
+# $Runtime="linux-x64"
+$Runtime="win-x64"
+$Runtime="linux-arm64"
+
+$ProjectOrSolution="$env:USERPROFILE\_prog\seedysoft\all-my-stuff\src\Outbox\ConsoleApp\Seedysoft.Outbox.ConsoleApp.csproj"
+dotnet publish $ProjectOrSolution -p:PublishDir=$PublishDirectory $Configuration-r $Runtime -p:PublishTrimmed=false --sc ;
+$ProjectOrSolution="$env:USERPROFILE\_prog\seedysoft\all-my-stuff\src\Pvpc\ConsoleApp\Seedysoft.Pvpc.ConsoleApp.csproj"
+dotnet publish $ProjectOrSolution -p:PublishDir=$PublishDirectory $Configuration-r $Runtime -p:PublishTrimmed=false --sc ;
+$ProjectOrSolution="$env:USERPROFILE\_prog\seedysoft\all-my-stuff\src\WebComparer\ConsoleApp\Seedysoft.WebComparer.ConsoleApp.csproj"
+dotnet publish $ProjectOrSolution -p:PublishDir=$PublishDirectory $Configuration-r $Runtime -p:PublishTrimmed=false --sc ;
+$ProjectOrSolution="$env:USERPROFILE\_prog\seedysoft\all-my-stuff\src\BlazorWebApp\Server\Seedysoft.BlazorWebApp.Server.csproj"
+dotnet publish $ProjectOrSolution -p:PublishDir=$PublishDirectory $Configuration-r $Runtime -p:BlazorCacheBootResources=false -p:PublishTrimmed=false -p:PublishReadyToRun -p:PublishReadyToRunShowWarnings=true --sc ;
+
+# Publish all projects from Raspberrypi4 ($>):
+dotnet publish /mnt/wd/_prog/seedysoft/all-my-stuff/Seedysoft.Test.sln -p:PublishDir=/mnt/st/Seedysoft/linux-arm64/ $Configuration -r linux-arm64 -p:BlazorCacheBootResources=false -p:PublishTrimmed=false --sc ;
+cd /mnt/st/Seedysoft/linux-arm64 ;
+bash create-BlazorWebApp-daemon.sh ;
+
+dotnet publish /mnt/wd/_prog/seedysoft/all-my-stuff/Seedysoft.Test.sln -p:PublishDir=/mnt/st/Seedysoft/win-x64      $Configuration -r win-x64     -p:BlazorCacheBootResources=false -p:PublishTrimmed=false --sc ;
+
+# Para ver errores podemos añadir --verbosity
+
+#   Explicación de las opciones:
+#        -c  | --configuration
+#        -p  | --property
+#        -r  | --runtime
+#       --sc | --self-contained
+#        -v  | --verbosity <LEVEL> # Allowed values are q[uiet], m[inimal], n[ormal], d[etailed], and diag[nostic]. The default is minimal.

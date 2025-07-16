@@ -322,3 +322,6 @@ dotnet_diagnostic.CA2254.severity = none
 dotnet_diagnostic.IDE0210.severity = none
 dotnet_diagnostic.SYSLIB1045.severity = warning
 dotnet_diagnostic.SYSLIB1054.severity = warning
+csharp_style_prefer_implicitly_typed_lambda_expression = true:warning
+csharp_style_prefer_unbound_generic_type_in_nameof = true:warning
+dotnet_diagnostic.xUnit2001.severity = warning

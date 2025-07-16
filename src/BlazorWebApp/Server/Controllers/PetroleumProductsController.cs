@@ -7,7 +7,7 @@
 //{
 //    [HttpGet(Client.Constants.PetroleumProductsUris.Actions.ForFilter)]
 //    public async Task<IEnumerable<Libs.GasStationPrices.Core.Json.Minetur.ProductoPetrolifero>> ForFilterAsync(
-//        [FromServices] Libs.GasStationPrices.Services.ObtainGasStationPricesService obtainGasStationPricesService,
+//        [FromServices] Libs.GasStationPrices.Services.GasStationPricesService gasStationPricesService,
 //        CancellationToken cancellationToken)
-//        => await obtainGasStationPricesService.GetPetroleumProductsAsync(cancellationToken);
+//        => await gasStationPricesService.GetPetroleumProductsAsync(cancellationToken);
 //}

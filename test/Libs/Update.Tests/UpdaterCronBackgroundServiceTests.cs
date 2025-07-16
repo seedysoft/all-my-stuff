@@ -18,11 +18,16 @@ public sealed class UpdaterCronBackgroundServiceTests : Infrastructure.Tests.Tes
         updaterCronBackgroundService = serviceProvider.GetRequiredService<Services.UpdaterCronBackgroundService>();
     }
 
-    [Fact]
-    public async Task GetLatestVersionFromGithubTest()
-    {
-        Version? version = await updaterCronBackgroundService.GetLatestVersionFromGithubAsync();
+    //[Fact]
+    //public async Task CheckAndUpgradeToNewVersionTest() => Assert.Equal(Enums.UpdateResults.NoNewVersionFound, await updaterCronBackgroundService.CheckAndUpgradeToNewVersion());
 
-        Assert.NotNull(version);
+    [Fact]
+    public async Task GetLatestReleaseFromGithubAsyncTest()
+    {
+        Octokit.Release? release = await updaterCronBackgroundService.GetLatestReleaseFromGithubAsync();
+        Assert.NotNull(release);
+
+        var RelaseVersion = new Version(release.Name);
+        Assert.True(RelaseVersion < new Version(DateTime.UtcNow.ToString("yy.Mdd.Hmm")));
     }
 }

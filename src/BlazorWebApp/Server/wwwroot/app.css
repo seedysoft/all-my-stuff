@@ -18,3 +18,41 @@
     --bs-nav-link-color: var(--mud-palette-primary) !important;
     --bs-nav-link-hover-color: var(--mud-palette-primary-darken) !important;
 }
+
+.route-tag {
+    background-color: #4285f4;
+    border-radius: 8px;
+    box-shadow: 10px 10px 24px 0 rgba(0,0,0,0.3);
+    font-size: 14px;
+    height: auto;
+    padding: 6px 10px;
+    position: relative;
+    transition: 0.3s;
+    width: auto;
+    z-index: 10;
+}
+
+    .route-tag .details {
+        display: none;
+    }
+
+    .route-tag::after {
+        border-left: 8px solid transparent;
+        border-right: 8px solid transparent;
+        border-top: 8px solid #4285f4;
+        content: "";
+        height: 0;
+        left: 50%;
+        position: absolute;
+        top: 100%;
+        transform: translate(-50%, 0);
+        width: 0;
+    }
+
+    .route-tag:hover .details {
+        display: block;
+    }
+
+gmp-advanced-marker:hover {
+    z-index: 2 !important;
+}

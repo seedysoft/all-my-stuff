@@ -3,7 +3,7 @@
 /// <summary>
 /// Encapsulates navigation instructions for a <see cref="RouteLegStep"/>.
 /// </summary>
-public record NavigationInstruction
+public class NavigationInstruction
 {
     /// <summary>
     /// Encapsulates the navigation instructions for the current step (for example, turn left, merge, or straight). This field determines which icon to display.

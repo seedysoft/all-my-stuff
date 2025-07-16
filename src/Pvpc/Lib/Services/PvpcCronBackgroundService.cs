@@ -28,6 +28,9 @@ public sealed class PvpcCronBackgroundService : Libs.BackgroundServices.Cron
 
     public override async Task DoWorkAsync(CancellationToken stoppingToken)
     {
+        if (System.Diagnostics.Debugger.IsAttached)
+            System.Diagnostics.Debugger.Break();
+
         DateTime ForDate = DateTimeOffset.UtcNow.AddDays(1).Date;
 
         _ = GetPvpcFromReeForDateAsync(ForDate, stoppingToken);
@@ -52,9 +55,9 @@ public sealed class PvpcCronBackgroundService : Libs.BackgroundServices.Cron
 
             Included? PvpcIncluded = Response?.Included?.FirstOrDefault(x => x.Id == Settings.PvpcId);
 
-            Libs.Core.Entities.Pvpc[]? NewEntities = PvpcIncluded?.Attributes?.Values?
+            var NewEntities = PvpcIncluded?.Attributes?.Values?
                 .Select(x => new Libs.Core.Entities.Pvpc(x.Datetime.GetValueOrDefault(), (decimal)x.Val.GetValueOrDefault()))
-                .ToArray();
+                .ToHashSet();
 
             int? HowManyPricesObtained = await ProcessPricesAsync(NewEntities, stoppingToken);
         }
@@ -66,9 +69,9 @@ public sealed class PvpcCronBackgroundService : Libs.BackgroundServices.Cron
         Logger.LogInformation("End {ApplicationName}", AppName);
     }
 
-    private async Task<int?> ProcessPricesAsync(Libs.Core.Entities.Pvpc[]? NewEntities, CancellationToken stoppingToken)
+    private async Task<int?> ProcessPricesAsync(HashSet<Libs.Core.Entities.Pvpc>? NewEntities, CancellationToken stoppingToken)
     {
-        if (!(NewEntities?.Length > 0))
+        if (NewEntities == null || NewEntities.Count == 0)
         {
             Logger.LogInformation("No entities obtained");
             return null;
@@ -111,7 +114,7 @@ public sealed class PvpcCronBackgroundService : Libs.BackgroundServices.Cron
 
             _ = await dbCxt.SaveChangesAsync(stoppingToken);
 
-            Logger.LogInformation("Obtained {NewEntities} entities", NewEntities.Length);
+            Logger.LogInformation("Obtained {NewEntities} entities", NewEntities.Count);
 
             return Prices.Count;
         }

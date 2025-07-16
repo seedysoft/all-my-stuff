@@ -20,6 +20,7 @@ public sealed class PlacesServiceTests : Infrastructure.Tests.TestClassBase
 
     [InlineData("Calle de la Iglesia 11 Brazuelo León")]
     [InlineData("Juan Ramón Jiménez 8 Burgos")]
+    [InlineData("Azud de Villagonzalo")]
     [Theory]
     public async Task FindPlacesAsyncTest(string textToFind)
     {

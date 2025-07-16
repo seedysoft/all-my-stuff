@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Seedysoft.Libs.Core.Extensions;
 
@@ -6,94 +7,36 @@ namespace Seedysoft.Libs.Update.Services;
 
 public sealed class UpdaterCronBackgroundService : BackgroundServices.Cron
 {
+    private readonly Octokit.GitHubClient GitHubClient;
     private readonly ILogger<UpdaterCronBackgroundService> Logger;
 
-    public UpdaterCronBackgroundService(
-        IServiceProvider serviceProvider,
-        Microsoft.Extensions.Hosting.IHostApplicationLifetime hostApplicationLifetime)
+    public UpdaterCronBackgroundService(IServiceProvider serviceProvider, Microsoft.Extensions.Hosting.IHostApplicationLifetime hostApplicationLifetime)
         : base(serviceProvider, hostApplicationLifetime)
-        => Logger = ServiceProvider.GetRequiredService<ILogger<UpdaterCronBackgroundService>>();
+    {
+        GitHubClient = serviceProvider.GetRequiredService<Octokit.GitHubClient>();
+        //string GitHubToken = "--- token goes here ---";
+        //var tokenAuth = new Octokit.Credentials(GitHubToken);
+        //client.Credentials = tokenAuth;
+
+        Config = ServiceProvider.GetRequiredService<IConfiguration>().GetSection(nameof(Settings.UpdateSettings)).Get<Settings.UpdateSettings>()!;
+
+        Logger = ServiceProvider.GetRequiredService<ILogger<UpdaterCronBackgroundService>>();
+    }
 
     public override async Task DoWorkAsync(CancellationToken cancellationToken)
     {
+        if (System.Diagnostics.Debugger.IsAttached)
+            System.Diagnostics.Debugger.Break();
+
         string? AppName = GetType().FullName;
 
         Logger.LogInformation("Called {ApplicationName} version {Version}", AppName, System.Reflection.Assembly.GetExecutingAssembly().GetName().Version);
 
         try
         {
-            if (await IsNewVersionAvailableAsync())
-            {
+            Enums.UpdateResults UpgradeResult = await CheckAndUpgradeToNewVersion();
 
-            }
-            //Libs.Infrastructure.DbContexts.DbCxt dbCtx = ServiceProvider.GetRequiredService<Libs.Infrastructure.DbContexts.DbCxt>();
-
-            //Libs.Core.Entities.Outbox[] PendingMessages = await dbCtx.Outbox.Where(x => x.SentAtDateTimeOffset == null).ToArrayAsync(stoppingToken);
-
-            //if (PendingMessages.Length == 0)
-            //{
-            //    Logger.LogInformation("NO pending messages");
-            //}
-            //else
-            //{
-            //    Logger.LogInformation("Obtained {PendingMessages} pending messages", PendingMessages.Length);
-
-            //    Libs.Core.Entities.Subscriber[]? AllSubscribers = await dbCtx.Subscribers
-            //        .Include(x => x.Subscriptions)
-            //        .AsNoTracking()
-            //        .ToArrayAsync(stoppingToken);
-            //    Logger.LogInformation("Obtained {AllSubscribers} subscribers", AllSubscribers.Length);
-
-            //    Libs.TelegramBot.Services.TelegramHostedService telegramHostedService = ServiceProvider.GetRequiredService<Libs.TelegramBot.Services.TelegramHostedService>();
-
-            //    for (int i = 0; i < PendingMessages.Length; i++)
-            //    {
-            //        Libs.Core.Entities.Outbox PendingMessage = PendingMessages[i];
-
-            //        Libs.Core.Entities.Subscriber[] Subscribers = AllSubscribers
-            //            .Where(x => x.Subscriptions.Any(s => s.SubscriptionName == PendingMessage.SubscriptionName))
-            //            .Where(x => PendingMessage.SubscriptionId == null || x.Subscriptions.Any(y => y.SubscriptionId == PendingMessage.SubscriptionId))
-            //            .ToArray();
-
-            //        for (int j = 0; j < Subscribers.Length; j++)
-            //        {
-            //            Libs.Core.Entities.Subscriber subscriber = Subscribers[j];
-
-            //            if (subscriber.TelegramUserId.HasValue)
-            //                await telegramHostedService.SendMessageToSubscriberAsync(PendingMessage, subscriber.TelegramUserId.Value, stoppingToken);
-
-            //            if (!string.IsNullOrEmpty(subscriber.MailAddress))
-            //            {
-            //                string Message = PendingMessage.SubscriptionName switch
-            //                {
-            //                    Libs.Core.Enums.SubscriptionName.electricidad => GetHtmlBodyMail(PendingMessage.Payload),
-
-            //                    Libs.Core.Enums.SubscriptionName.webComparer => PendingMessage.Payload,
-
-            //                    //Enums.SubscriptionName.amazon => ,
-
-            //                    _ => throw new ApplicationException($"Unexpected SubscriptionName: '{PendingMessage.SubscriptionName}'"),
-            //                };
-
-            //                await ServiceProvider.GetRequiredService<Libs.SmtpService.Services.SmtpService>().SendMailAsync(
-            //                    subscriber.MailAddress,
-            //                    PendingMessage.SubscriptionName.ToString(),
-            //                    Message,
-            //                    Libs.Core.Enums.SubscriptionName.electricidad == PendingMessage.SubscriptionName || Message.ContainsHtml(),
-            //                    stoppingToken);
-            //            }
-            //        }
-
-            //        PendingMessage.SentAtDateTimeOffset = DateTimeOffset.Now;
-
-            //        _ = await dbCtx.SaveChangesAsync(stoppingToken);
-            //    }
-            //}
-
-            //const int KeepDays = 20;
-            //DateTimeOffset dateTimeOffset = DateTimeOffset.UtcNow.AddDays(-KeepDays);
-            //await dbCtx.BulkDeleteAsync(dbCtx.Outbox.Where(x => x.SentAtDateTimeOffset < dateTimeOffset), cancellationToken: stoppingToken);
-            //Logger.LogDebug("Removed {Entities} old entities", await dbCtx.SaveChangesAsync(stoppingToken));
+            Logger.LogInformation($"Updating result: {UpgradeResult}");
         }
         catch (Exception e) when (Logger.LogAndHandle(e, "Unexpected error")) { }
         finally { await Task.CompletedTask; }
@@ -101,38 +44,83 @@ public sealed class UpdaterCronBackgroundService : BackgroundServices.Cron
         Logger.LogInformation("End {ApplicationName}", AppName);
     }
 
-    internal async Task<bool> IsNewVersionAvailableAsync()
+    internal async Task<Enums.UpdateResults> CheckAndUpgradeToNewVersion()
     {
-        // System.Reflection.Assembly assembly = System.Reflection.Assembly.GetExecutingAssembly();
-        // System.Diagnostics.FileVersionInfo fvi = System.Diagnostics.FileVersionInfo.GetVersionInfo(assembly.Location);
-        // string version = fvi.FileVersion;
+        Octokit.Release? release = await GetLatestReleaseFromGithubAsync();
+        if (release == null)
+        {
+            Logger.LogError("LatestReleaseFromGithub is null.");
+            return Enums.UpdateResults.LatestReleaseFromGithubIsNull;
+        }
 
-        Version? CurrentVersion = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
-        Version? NewVersion = await GetLatestVersionFromGithubAsync();
+        var ExecutingAssembly = System.Reflection.Assembly.GetExecutingAssembly();
+        Version? CurrentVersion = ExecutingAssembly.GetName().Version;
+        Version? NewVersion = new(release.Name);
 
-        return NewVersion > CurrentVersion;
+        if (NewVersion <= CurrentVersion)
+        {
+            Logger.LogInformation($"Current version is: {CurrentVersion}. Latest version is: {NewVersion}");
+            return Enums.UpdateResults.NoNewVersionFound;
+        }
+
+        Octokit.ReleaseAsset? asset =
+            release.Assets.FirstOrDefault(x => x.Name.Contains(System.Runtime.InteropServices.RuntimeInformation.RuntimeIdentifier, StringComparison.InvariantCultureIgnoreCase));
+        if (asset == null)
+        {
+            Logger.LogError($"Asset not found for {System.Runtime.InteropServices.RuntimeInformation.RuntimeIdentifier}.");
+            return Enums.UpdateResults.AssetNotFound;
+        }
+
+        if (!ExecuteUpdateScript(new Uri(asset.BrowserDownloadUrl)))
+        {
+            Logger.LogError("Cannot execute update script");
+            return Enums.UpdateResults.ErrorExecutingUpdateScript;
+        }
+
+        Logger.LogInformation("Update in progress...");
+
+        Environment.Exit(0);
+
+        return Enums.UpdateResults.Ok;
     }
 
-    internal async Task<Version?> GetLatestVersionFromGithubAsync()
+    internal async Task<Octokit.Release?> GetLatestReleaseFromGithubAsync()
     {
-        var client = new Octokit.GitHubClient(new Octokit.ProductHeaderValue(Core.Constants.Github.RepositoryName));
-        //string GitHubToken = "--- token goes here ---";
-        //var tokenAuth = new Octokit.Credentials(GitHubToken);
-        //client.Credentials = tokenAuth;
-
         // Retrieve a List of Releases in the Repository, and get latest using [0]-subscript
         IReadOnlyList<Octokit.Release> releases =
-            await client.Repository.Release.GetAll(Core.Constants.Github.OwnerName, Core.Constants.Github.RepositoryName);
-        Octokit.Release latest = releases[0];
+            await GitHubClient.Repository.Release.GetAll(Core.Constants.Github.OwnerName, Core.Constants.Github.RepositoryName);
 
-        return new Version(latest.Name);
+        Logger.LogInformation("Obtained {releasesCount} releases", releases.Count);
 
-        //// Get a HttpResponse from the Zipball URL, which is then converted to a byte array
-        //Octokit.IApiResponse<object> response =
-        //    await client.Connection.Get<object>(new Uri(latest.ZipballUrl), new Dictionary<string, string>(), "application/json");
-        //byte[] releaseBytes = System.Text.Encoding.ASCII.GetBytes(response.HttpResponse.Body.ToString());
+        return releases.Any() ? releases[0] : null;
+    }
 
-        //// Create the resulting file using the byte array
-        //await File.WriteAllBytesAsync(filename, releaseBytes);
+    internal bool ExecuteUpdateScript(Uri assetUri)
+    {
+        System.Diagnostics.ProcessStartInfo processStartInfo = new()
+        {
+            CreateNoWindow = false,
+            UseShellExecute = true,
+        };
+
+        string runtimeIdentifier = System.Runtime.InteropServices.RuntimeInformation.RuntimeIdentifier;
+        switch (runtimeIdentifier)
+        {
+            case Core.Constants.SupportedRuntimeIdentifiers.LinuxArm64:
+                //case Core.Constants.SupportedRuntimeIdentifiers.LinuxX64:
+                processStartInfo.FileName = $"sudo ./update.sh {assetUri}";
+                break;
+
+            //case Core.Constants.SupportedRuntimeIdentifiers.WinX64:
+            //    processStartInfo.FileName = $"update.bat {zipFileName}";
+            //    break;
+
+            default:
+                // TODO: use interpolated strings in all solution
+                Logger.LogError("RuntimeIdentifier {runtimeIdentifier} not supported", runtimeIdentifier);
+                return false;
+        }
+
+        return System.Diagnostics.Process.Start(processStartInfo) != null;
     }
 }

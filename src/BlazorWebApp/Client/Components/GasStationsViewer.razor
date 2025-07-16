@@ -1,0 +1,178 @@
+﻿@using Model = Seedysoft.Libs.GasStationPrices.ViewModels.GasStationModel;
+
+<MudDataGrid @ref="@DataGridRef"
+             Bordered
+             Dense
+             Filterable
+             FilterCaseSensitivity="@DataGridFilterCaseSensitivity.CaseInsensitive"
+             FilterMode="@DataGridFilterMode.ColumnFilterMenu"
+             FixedHeader="true"
+             Height="450"
+             Hover
+             Items="@Elements"
+             Loading="@IsLoading"
+             ReadOnly
+             RowClassFunc="@RowClassFuncion"
+             RowsPerPage="10"
+             SelectedItemChanged="@OnSelectedItemChanged"
+             ShowFilterIcons="true"
+             SortMode="@SortMode.Single"
+             Striped
+             T="@Model"
+             Virtualize>
+
+    <ColGroup>
+        <col style="width: 50%;" />
+        @foreach (var item in Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.All)
+        {
+            var IsHidden = !PetroleumProductsSelectedIds.Contains(item.IdProducto);
+            <col hidden="@IsHidden" />
+        }
+    </ColGroup>
+
+    <Columns>
+        <PropertyColumn Property="@(x => x.RotuloTrimed)" Filterable="true" ShowFilterIcon="true" Sortable="true" Title="Rótulo">
+            <CellTemplate>
+                <span style="white-space: nowrap;">@context.Item.RotuloTrimed</span>
+            </CellTemplate>
+        </PropertyColumn>
+
+        @{
+            HashSet<string> DecimalFilterOperators = new([MudBlazor.FilterOperator.Number.Empty, MudBlazor.FilterOperator.Number.NotEmpty]);
+        }
+
+        <PropertyColumn Property="@(x => x.BIE)" CellClass="mud-table-cell-align-right" FilterOperators="@DecimalFilterOperators"
+                        Hidden="@(!PetroleumProductsSelectedIds.Contains(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.BIE.IdProducto))">
+            <HeaderTemplate>
+                <MudTooltip Placement="Placement.Top" ShowOnFocus="false" Text="@(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.BIE.Nombre)">
+                    @(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.BIE.Abreviatura)
+                </MudTooltip>
+            </HeaderTemplate>
+        </PropertyColumn>
+
+        <PropertyColumn Property="@(x => x.BIO)" CellClass="mud-table-cell-align-right" FilterOperators="@DecimalFilterOperators"
+                        Hidden="@(!PetroleumProductsSelectedIds.Contains(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.BIO.IdProducto))">
+            <HeaderTemplate>
+                <MudTooltip Placement="Placement.Top" ShowOnFocus="false" Text="@(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.BIO.Nombre)">
+                    @(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.BIO.Abreviatura)
+                </MudTooltip>
+            </HeaderTemplate>
+        </PropertyColumn>
+
+        <PropertyColumn Property="@(x => x.G95E10)" CellClass="mud-table-cell-align-right" FilterOperators="@DecimalFilterOperators"
+                        Hidden="@(!PetroleumProductsSelectedIds.Contains(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.G95E10.IdProducto))">
+            <HeaderTemplate>
+                <MudTooltip Placement="Placement.Top" ShowOnFocus="false" Text="@(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.G95E10.Nombre)">
+                    @(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.G95E10.Abreviatura)
+                </MudTooltip>
+            </HeaderTemplate>
+        </PropertyColumn>
+
+        <PropertyColumn Property="@(x => x.G95E5)" CellClass="mud-table-cell-align-right" FilterOperators="@DecimalFilterOperators"
+                        Hidden="@(!PetroleumProductsSelectedIds.Contains(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.G95E5.IdProducto))">
+            <HeaderTemplate>
+                <MudTooltip Placement="Placement.Top" ShowOnFocus="false" Text="@(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.G95E5.Nombre)">
+                    @(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.G95E5.Abreviatura)
+                </MudTooltip>
+            </HeaderTemplate>
+        </PropertyColumn>
+
+        <PropertyColumn Property="@(x => x.G95E5Plus)" CellClass="mud-table-cell-align-right" FilterOperators="@DecimalFilterOperators"
+                        Hidden="@(!PetroleumProductsSelectedIds.Contains(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.G95E5Plus.IdProducto))">
+            <HeaderTemplate>
+                <MudTooltip Placement="Placement.Top" ShowOnFocus="false" Text="@(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.G95E5Plus.Nombre)">
+                    @(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.G95E5Plus.Abreviatura)
+                </MudTooltip>
+            </HeaderTemplate>
+        </PropertyColumn>
+
+        <PropertyColumn Property="@(x => x.G98E10)" CellClass="mud-table-cell-align-right" FilterOperators="@DecimalFilterOperators"
+                        Hidden="!PetroleumProductsSelectedIds.Contains(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.G98E10.IdProducto)">
+            <HeaderTemplate>
+                <MudTooltip Placement="Placement.Top" ShowOnFocus="false" Text="@(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.G98E10.Nombre)">
+                    @(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.G98E10.Abreviatura)
+                </MudTooltip>
+            </HeaderTemplate>
+        </PropertyColumn>
+
+        <PropertyColumn Property="@(x => x.G98E5)" CellClass="mud-table-cell-align-right" FilterOperators="@DecimalFilterOperators"
+                        Hidden="!PetroleumProductsSelectedIds.Contains(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.G98E5.IdProducto)">
+            <HeaderTemplate>
+                <MudTooltip Placement="Placement.Top" ShowOnFocus="false" Text="@(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.G98E5.Nombre)">
+                    @(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.G98E5.Abreviatura)
+                </MudTooltip>
+            </HeaderTemplate>
+        </PropertyColumn>
+
+        <PropertyColumn Property="@(x => x.GLP)" CellClass="mud-table-cell-align-right" FilterOperators="@DecimalFilterOperators"
+                        Hidden="!PetroleumProductsSelectedIds.Contains(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.GLP.IdProducto)">
+            <HeaderTemplate>
+                <MudTooltip Placement="Placement.Top" ShowOnFocus="false" Text="@(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.GLP.Nombre)">
+                    @(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.GLP.Abreviatura)
+                </MudTooltip>
+            </HeaderTemplate>
+        </PropertyColumn>
+
+        <PropertyColumn Property="@(x => x.GNC)" CellClass="mud-table-cell-align-right" FilterOperators="@DecimalFilterOperators"
+                        Hidden="!PetroleumProductsSelectedIds.Contains(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.GNC.IdProducto)">
+            <HeaderTemplate>
+                <MudTooltip Placement="Placement.Top" ShowOnFocus="false" Text="@(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.GNC.Nombre)">
+                    @(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.GNC.Abreviatura)
+                </MudTooltip>
+            </HeaderTemplate>
+        </PropertyColumn>
+
+        <PropertyColumn Property="@(x => x.GNL)" CellClass="mud-table-cell-align-right" FilterOperators="@DecimalFilterOperators"
+                        Hidden="!PetroleumProductsSelectedIds.Contains(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.GNL.IdProducto)">
+            <HeaderTemplate>
+                <MudTooltip Placement="Placement.Top" ShowOnFocus="false" Text="@(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.GNL.Nombre)">
+                    @(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.GNL.Abreviatura)
+                </MudTooltip>
+            </HeaderTemplate>
+        </PropertyColumn>
+
+        <PropertyColumn Property="@(x => x.GOA)" CellClass="mud-table-cell-align-right" FilterOperators="@DecimalFilterOperators"
+                        Hidden="!PetroleumProductsSelectedIds.Contains(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.GOA.IdProducto)">
+            <HeaderTemplate>
+                <MudTooltip Placement="Placement.Top" ShowOnFocus="false" Text="@(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.GOA.Nombre)">
+                    @(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.GOA.Abreviatura)
+                </MudTooltip>
+            </HeaderTemplate>
+        </PropertyColumn>
+
+        <PropertyColumn Property="@(x => x.GOAPlus)" CellClass="mud-table-cell-align-right" FilterOperators="@DecimalFilterOperators"
+                        Hidden="!PetroleumProductsSelectedIds.Contains(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.GOAPlus.IdProducto)">
+            <HeaderTemplate>
+                <MudTooltip Placement="Placement.Top" ShowOnFocus="false" Text="@(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.GOAPlus.Nombre)">
+                    @(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.GOAPlus.Abreviatura)
+                </MudTooltip>
+            </HeaderTemplate>
+        </PropertyColumn>
+
+        <PropertyColumn Property="@(x => x.GOB)" CellClass="mud-table-cell-align-right" FilterOperators="@DecimalFilterOperators"
+                        Hidden="!PetroleumProductsSelectedIds.Contains(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.GOB.IdProducto)">
+            <HeaderTemplate>
+                <MudTooltip Placement="Placement.Top" ShowOnFocus="false" Text="@(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.GOB.Nombre)">
+                    @(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.GOB.Abreviatura)
+                </MudTooltip>
+            </HeaderTemplate>
+        </PropertyColumn>
+
+    </Columns>
+
+    <LoadingContent>
+        Loading Content ....
+    </LoadingContent>
+
+    <NoRecordsContent>
+        No data
+    </NoRecordsContent>
+
+    <PagerContent>
+        <MudDataGridPager Class="pa-4"
+                          ShowNavigation="true"
+                          ShowPageNumber="true"
+                          T="Model" />
+    </PagerContent>
+
+</MudDataGrid>

@@ -1,6 +1,6 @@
 ﻿namespace Seedysoft.Libs.GasStationPrices.Settings;
 
-public record class GasStationPricesSettings
+public record GasStationPricesSettings
 {
     public required Minetur Minetur { get; init; }
 }

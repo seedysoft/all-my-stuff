@@ -5,7 +5,7 @@
 /// A multi-modal segment is defined as one or more contiguous <see cref="RouteLegStep"/> that have the same <see cref="Shared.RouteTravelMode"/>.
 /// This field is not populated if the <see cref="RouteLeg"/> does not contain any multi-modal segments in the steps.
 /// </summary>
-public record MultiModalSegment
+public class MultiModalSegment
 {
     /// <summary>
     /// NavigationInstruction for the multi-modal segment.

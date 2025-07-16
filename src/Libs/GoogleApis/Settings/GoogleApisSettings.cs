@@ -1,6 +1,6 @@
 ﻿namespace Seedysoft.Libs.GoogleApis.Settings;
 
-public record class GoogleApisSettings
+public record GoogleApisSettings
 {
     private string apiKey = default!;
     public required string ApiKey
@@ -9,9 +9,13 @@ public record class GoogleApisSettings
         init => apiKey = Cryptography.Crypto.DecryptText(value, Core.Helpers.EnvironmentHelper.GetMasterKey());
     }
 
-    public required MapsApi MapsApi { get; init; }
+    public required string FieldMask { get; init; }
+
+    //public required DirectionsApi DirectionsApi { get; init; }
+
+    //public required MapsApi MapsApi { get; init; }
 
     public required PlacesApi PlacesApi { get; init; }
 
-    public required RoutesApi RoutesApi { get; init; }
+    //public required RoutesApi RoutesApi { get; init; }
 }

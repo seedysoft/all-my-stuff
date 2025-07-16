@@ -2,7 +2,7 @@
     <PropertyGroup>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <RuntimeIdentifiers>linux-arm64;linux-x64;win-x64</RuntimeIdentifiers>
+        <RuntimeIdentifiers>linux-arm64;win-x64</RuntimeIdentifiers>
         <SelfContained>true</SelfContained>
         <StartupObject>Seedysoft.BlazorWebApp.Server.Program</StartupObject>
         <TargetFramework>net8.0</TargetFramework>
@@ -20,10 +20,16 @@
     </ItemGroup>
 
     <ItemGroup>
-        <None Include="..\..\..\bashScripts\create-daemon.sh" Link="create-daemon.sh">
+        <None Include="..\..\..\scripts\shared.sh" Link="shared.sh">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
-        <None Include="..\..\..\bashScripts\create-BlazorWebApp-daemon.sh" Link="create-BlazorWebApp-daemon.sh">
+        <None Include="..\..\..\scripts\create-daemon.sh" Link="create-daemon.sh">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Include="..\..\..\scripts\stop-daemon.sh" Link="stop-daemon.sh">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Include="..\..\..\scripts\update.sh" Link="update.sh">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
     </ItemGroup>
@@ -41,12 +47,12 @@
 
     <ItemGroup>
         <PackageReference Include="CommandLineParser" Version="2.9.1" />
-        <PackageReference Include="Cronos" Version="0.9.0" />
-        <PackageReference Include="DiffPlex" Version="1.7.2" />
+        <PackageReference Include="Cronos" Version="0.11.0" />
+        <PackageReference Include="DiffPlex" Version="1.8.0" />
         <PackageReference Include="EFCore.BulkExtensions.Sqlite" Version="[8.*,9)" />
         <PackageReference Include="EfCore.SchemaCompare" Version="[8.*,9)" />
-        <PackageReference Include="FluentValidation" Version="11.11.0" />
-        <PackageReference Include="HtmlAgilityPack" Version="1.12.0" />
+        <PackageReference Include="FluentValidation" Version="12.0.0" />
+        <PackageReference Include="HtmlAgilityPack" Version="1.12.1" />
         <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="[8.*,9)" />
         <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="[8.*,9)" />
         <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="[8.*,9)" />
@@ -65,13 +71,13 @@
         <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="[8.*,9)" />
         <PackageReference Include="Microsoft.Extensions.Hosting.Systemd" Version="[8.*,9)" />
         <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="[8.*,9)" />
-        <PackageReference Include="MudBlazor" Version="8.3.0" />
-        <PackageReference Include="NSwag.AspNetCore" Version="14.2.0" />
-        <PackageReference Include="Serilog" Version="4.2.0" />
+        <PackageReference Include="MudBlazor" Version="8.9.0" />
+        <PackageReference Include="NSwag.AspNetCore" Version="14.4.0" />
+        <PackageReference Include="Serilog" Version="4.3.0" />
         <PackageReference Include="Serilog.Extensions.Logging" Version="[8.*,9)" />
         <PackageReference Include="Serilog.Settings.Configuration" Version="[8.*,9)" />
         <PackageReference Include="System.IO.Hashing" Version="[8.*,9)" />
-        <PackageReference Include="Telegram.Bot" Version="22.4.4" />
+        <PackageReference Include="Telegram.Bot" Version="22.6.0" />
     </ItemGroup>
 
     <ItemGroup>
