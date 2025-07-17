@@ -61,6 +61,7 @@ public partial class TravelSearch
     {
         GasStationsViewerIsLoading = true;
         GasStationItems.Clear();
+        // TODO                                                     Remove routes and markers 
         StateHasChanged();
 
         await foreach (Libs.GasStationPrices.ViewModels.GasStationModel gasStationModel in
