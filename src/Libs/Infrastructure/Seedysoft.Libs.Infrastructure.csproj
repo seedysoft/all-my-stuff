@@ -9,6 +9,9 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <Content Include="appsettings.rptConnectionString.json">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
         <Content Include="appsettings.dbConnectionString.json">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>

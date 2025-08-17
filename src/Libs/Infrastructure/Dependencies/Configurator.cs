@@ -16,6 +16,7 @@ public sealed class Configurator : Core.Dependencies.ConfiguratorBase
 
         _ = hostApplicationBuilder.Configuration
             .AddJsonFile($"appsettings.dbConnectionString.json", optional: false, reloadOnChange: true)
+            .AddJsonFile($"appsettings.rptConnectionString.json", optional: false, reloadOnChange: true)
             .AddJsonFile($"appsettings.{nameof(Serilog)}.json", optional: false, reloadOnChange: true)
             .AddJsonFile($"appsettings.{nameof(Serilog)}.{CurrentEnvironmentName}.json", optional: false, reloadOnChange: true);
     }
@@ -45,7 +46,39 @@ public sealed class Configurator : Core.Dependencies.ConfiguratorBase
             }
 
             if (!File.Exists(FullFilePath))
-                throw new FileNotFoundException("Database file not found.", FullFilePath);
+                throw new FileNotFoundException($"Database file for {ConnectionStringName} not found.", FullFilePath);
+
+            logger.LogInformation("Using database file {FullFilePath}", FullFilePath);
+            _ = dbContextOptionsBuilder.UseSqlite($"{Core.Constants.DatabaseStrings.DataSource}{FullFilePath}");
+            dbContextOptionsBuilder.ConfigureDebugOptions();
+        },
+        ServiceLifetime.Transient,
+        ServiceLifetime.Transient);
+
+        _ = hostApplicationBuilder.Services.AddDbContext<DbContexts.DbRpt>(dbContextOptionsBuilder =>
+        {
+            using ILoggerFactory loggerFactory = LoggerFactory.Create(builder =>
+            {
+                builder.SetMinimumLevel(LogLevel.Debug);
+                builder.AddConsole();
+            });
+            Microsoft.Extensions.Logging.ILogger logger = loggerFactory.CreateLogger(nameof(AddDbContexts));
+
+            string ConnectionStringName = nameof(DbContexts.DbRpt);
+            string ConnectionString = hostApplicationBuilder.Configuration.GetConnectionString($"{ConnectionStringName}") ?? throw new KeyNotFoundException($"Connection string '{ConnectionStringName}' not found.");
+            string FullFilePath = Path.GetFullPath(ConnectionString);
+            while (!File.Exists(FullFilePath))
+            {
+#if DEBUG
+                if (System.Diagnostics.Debugger.IsAttached)
+                    System.Diagnostics.Debugger.Break();
+#endif
+                logger.LogDebug("Database file {FullFilePath} does not exists", FullFilePath);
+                FullFilePath = Path.GetFullPath(ConnectionString = ConnectionString.Insert(0, "../"));
+            }
+
+            if (!File.Exists(FullFilePath))
+                throw new FileNotFoundException($"Database file for {ConnectionStringName} not found.", FullFilePath);
 
             logger.LogInformation("Using database file {FullFilePath}", FullFilePath);
             _ = dbContextOptionsBuilder.UseSqlite($"{Core.Constants.DatabaseStrings.DataSource}{FullFilePath}");
