@@ -2,21 +2,25 @@
 dotnet tool update --global dotnet-ef
 
 # Add a migration:
-dotnet ef migrations add Creating -v -c DbCxt -o .\Migrations -p .\src\Libs\Infrastructure\Seedysoft.Libs.Infrastructure.csproj
+dotnet ef migrations add CreatingCxt -v -c DbCxt -o .\Migrations\DbCxt -p .\src\Libs\Infrastructure\Seedysoft.Libs.Infrastructure.csproj
+dotnet ef migrations add CreatingRpt -v -c DbRpt -o .\Migrations\DbRpt -p .\src\Libs\Infrastructure\Seedysoft.Libs.Infrastructure.csproj
 
-Add-Migration Creating -Verbose -Context DbCxt -OutputDir .\Migrations -Project Libs\Seedysoft.Libs.Infrastructure -StartupProject Libs\Seedysoft.Libs.Infrastructure
+Add-Migration Creating -Verbose -Context DbCxt -OutputDir .\Migrations\DbCxt -Project Libs\Seedysoft.Libs.Infrastructure -StartupProject Libs\Seedysoft.Libs.Infrastructure
 
 # Remove latest migration:
-dotnet ef migrations remove -v -p .\src\Libs\Infrastructure\Seedysoft.Libs.Infrastructure.csproj
+dotnet ef migrations remove -v -c DbCxt -p .\src\Libs\Infrastructure\Seedysoft.Libs.Infrastructure.csproj
+dotnet ef migrations remove -v -c DbRpt -p .\src\Libs\Infrastructure\Seedysoft.Libs.Infrastructure.csproj
 
 Remove-Migration -Verbose -Context DbCxt -Project Libs\Seedysoft.Libs.Infrastructure -StartupProject Libs\Seedysoft.Libs.Infrastructure
 
-# List all existent migrations:
+# List all existent migrations (better without -v):
 dotnet ef migrations list --no-build -v -c DbCxt -p .\src\Libs\Infrastructure\Seedysoft.Libs.Infrastructure.csproj
+dotnet ef migrations list --no-build -v -c DbRpt -p .\src\Libs\Infrastructure\Seedysoft.Libs.Infrastructure.csproj
 
 Get-Migration -Verbose -Context DbCxt -Project Libs\Seedysoft.Libs.Infrastructure
 
 # Execute a previous migration:
-dotnet ef database update Creating --no-build -v -c DbCxt -p .\src\Libs\Infrastructure\Seedysoft.Libs.Infrastructure.csproj
+dotnet ef database update CreatingCxt --no-build -v -c DbCxt -p .\src\Libs\Infrastructure\Seedysoft.Libs.Infrastructure.csproj
+dotnet ef database update CreatingRpt --no-build -v -c DbRpt -p .\src\Libs\Infrastructure\Seedysoft.Libs.Infrastructure.csproj
 
-Update-Database Creating -Verbose -Context DbCxt -Project Libs\Seedysoft.Libs.Infrastructure
+Update-Database CreatingCxt -Verbose -Context DbCxt -Project Libs\Seedysoft.Libs.Infrastructure

@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace Seedysoft.Libs.Infrastructure.EntityTypeConfigurations;
+namespace Seedysoft.Libs.Infrastructure.EntityTypeConfigurations.DbCtx;
 
 internal abstract class WebDataEntityTypeConfigurationT<T> : IEntityTypeConfiguration<T> where T : Core.Entities.WebDataBase
 {

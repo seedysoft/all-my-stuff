@@ -1,6 +1,6 @@
 ﻿namespace Seedysoft.Libs.Core.Entities;
 
-public class FormasProvision
+public record FormasProvision(string Value) : MasterFilesBase(Value)
 {
     public const string ConcursoDeMeritos = "C";
 

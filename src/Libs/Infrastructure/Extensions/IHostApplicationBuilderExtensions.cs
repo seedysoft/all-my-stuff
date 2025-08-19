@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Seedysoft.Libs.Core.Dependencies;
 
 namespace Seedysoft.Libs.Infrastructure.Extensions;
 
@@ -20,17 +19,17 @@ public static class IHostApplicationBuilderExtensions
         _ = hostApplicationBuilder.Configuration
             .AddEnvironmentVariables();
 
-        IEnumerable<System.Reflection.Assembly> referencedAssemblies = GetAllReferencedAssembliesSorted(entryAssembly);
-
-        Type[] typesToRegister = [.. referencedAssemblies.SelectMany(static (n) => n.GetTypes()).Where(static (t) => t is not null && t.IsSubclassOf(typeof(ConfiguratorBase)))];
+        Type[] typesToRegister = [.. GetRecursiveReferencedAssembliesSorted(entryAssembly)
+            .SelectMany(static (n) => n.GetTypes())
+            .Where(static (t) => t is not null && t.IsSubclassOf(typeof(Core.Dependencies.ConfiguratorBase)))];
 
         foreach (Type? type in typesToRegister)
-            (Activator.CreateInstance(type) as ConfiguratorBase)?.AddDependencies(hostApplicationBuilder);
+            (Activator.CreateInstance(type) as Core.Dependencies.ConfiguratorBase)?.AddDependencies(hostApplicationBuilder);
 
         return hostApplicationBuilder;
     }
 
-    private static IEnumerable<System.Reflection.Assembly> GetAllReferencedAssembliesSorted(System.Reflection.Assembly source)
+    private static IEnumerable<System.Reflection.Assembly> GetRecursiveReferencedAssembliesSorted(System.Reflection.Assembly source)
     {
         var results = new List<System.Reflection.Assembly> { source, };
 
@@ -38,8 +37,8 @@ public static class IHostApplicationBuilderExtensions
         {
             var loaded = System.Reflection.Assembly.Load(name);
 
-            return loaded.DefinedTypes.Any(static (Type t) => t is not null && t.IsSubclassOf(typeof(ConfiguratorBase)))
-                ? GetAllReferencedAssembliesSorted(loaded)
+            return loaded.DefinedTypes.Any(static (Type t) => t is not null && t.IsSubclassOf(typeof(Core.Dependencies.ConfiguratorBase)))
+                ? GetRecursiveReferencedAssembliesSorted(loaded)
                 : [];
         }).Distinct());
 

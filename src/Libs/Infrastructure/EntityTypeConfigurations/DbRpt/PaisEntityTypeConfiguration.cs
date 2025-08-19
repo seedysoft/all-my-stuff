@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace Seedysoft.Libs.Infrastructure.EntityTypeConfigurations;
+namespace Seedysoft.Libs.Infrastructure.EntityTypeConfigurations.DbRpt;
 
 internal sealed class PaisEntityTypeConfiguration : IEntityTypeConfiguration<Core.Entities.Pais>
 {

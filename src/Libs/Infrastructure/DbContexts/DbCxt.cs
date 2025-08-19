@@ -2,12 +2,12 @@
 
 namespace Seedysoft.Libs.Infrastructure.DbContexts;
 
-public sealed partial class DbCxt : DbContext
+public sealed partial class DbCxt : DbContextBase
 {
 #if DEBUG
-    public DbCxt() : base() => ChangeTracker.LazyLoadingEnabled = false;
+    public DbCxt() : base() { }
 #endif
-    public DbCxt(DbContextOptions<DbCxt> options) : base(options) => ChangeTracker.LazyLoadingEnabled = false;
+    public DbCxt(DbContextOptions<DbCxt> options) : base(options) { }
 
 #if DEBUG
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -16,6 +16,10 @@ public sealed partial class DbCxt : DbContext
 
         if (!optionsBuilder.IsConfigured)
         {
+#if DEBUG
+            if (System.Diagnostics.Debugger.IsAttached)
+                System.Diagnostics.Debugger.Break();
+#endif
             string DatabasePath = "../databases/db.sqlite3";
             string FullFilePath = Path.GetFullPath(DatabasePath);
             while (!File.Exists(FullFilePath))
@@ -40,7 +44,7 @@ public sealed partial class DbCxt : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
-        _ = modelBuilder.ApplyConfigurationsFromAssembly(GetType().Assembly);
+        _ = modelBuilder.ApplyConfigurationsFromAssembly(GetType().Assembly, t => t.FullName?.Contains(nameof(EntityTypeConfigurations.DbCtx)) ?? false);
     }
 
     public DbSet<Core.Entities.Outbox> Outbox { get; set; } = default!;

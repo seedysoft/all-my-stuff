@@ -2,12 +2,12 @@
 
 namespace Seedysoft.Libs.Infrastructure.DbContexts;
 
-public sealed partial class DbRpt : DbContext
+public sealed partial class DbRpt : DbContextBase
 {
 #if DEBUG
-    public DbRpt() : base() => ChangeTracker.LazyLoadingEnabled = false;
+    public DbRpt() : base() { }
 #endif
-    public DbRpt(DbContextOptions<DbRpt> options) : base(options) => ChangeTracker.LazyLoadingEnabled = false;
+    public DbRpt(DbContextOptions<DbRpt> options) : base(options) { }
 
 #if DEBUG
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -16,6 +16,10 @@ public sealed partial class DbRpt : DbContext
 
         if (!optionsBuilder.IsConfigured)
         {
+#if DEBUG
+            if (System.Diagnostics.Debugger.IsAttached)
+                System.Diagnostics.Debugger.Break();
+#endif
             string DatabasePath = "../databases/rpt.sqlite3";
             string FullFilePath = Path.GetFullPath(DatabasePath);
             while (!File.Exists(FullFilePath))
@@ -40,7 +44,7 @@ public sealed partial class DbRpt : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
-        _ = modelBuilder.ApplyConfigurationsFromAssembly(GetType().Assembly);
+        _ = modelBuilder.ApplyConfigurationsFromAssembly(GetType().Assembly, t => t.FullName?.Contains(nameof(EntityTypeConfigurations.DbRpt)) ?? false);
     }
 
     public DbSet<Core.Entities.CentroDirectivo> CentrosDirectivos { get; set; } = default!;

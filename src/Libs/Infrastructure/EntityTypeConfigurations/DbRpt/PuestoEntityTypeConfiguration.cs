@@ -1,13 +1,14 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace Seedysoft.Libs.Infrastructure.EntityTypeConfigurations;
+namespace Seedysoft.Libs.Infrastructure.EntityTypeConfigurations.DbRpt;
 
 internal sealed class PuestoEntityTypeConfiguration : IEntityTypeConfiguration<Core.Entities.Puesto>
 {
     public void Configure(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder<Core.Entities.Puesto> builder)
     {
         _ = builder
-            .Property(static x => x.PuestoId);
+            .Property(static x => x.PuestoId)
+            .ValueGeneratedNever();
 
         _ = builder
             .Property(static x => x.PuestoDenominacionCorta);
@@ -23,19 +24,23 @@ internal sealed class PuestoEntityTypeConfiguration : IEntityTypeConfiguration<C
             .HasPrecision(2);
 
         _ = builder
-            .Property(static x => x.TipoPuesto);
+            .Property(static x => x.TipoPuesto)
+            /*.HasConversion(ValueConverters.RecordToString<Core.Entities.TiposPuesto>.NullableMasterFilesBaseStringValueConverter)*/;
 
         _ = builder
-            .Property(static x => x.Provision);
+            .Property(static x => x.Provision)
+            /*.HasConversion(ValueConverters.RecordToString<Core.Entities.FormasProvision>.NullableMasterFilesBaseStringValueConverter)*/;
 
         _ = builder
-            .Property(static x => x.Adscripcion);
+            .Property(static x => x.Adscripcion)
+            /*.HasConversion(ValueConverters.RecordToString<Core.Entities.AdscripcionesAdministracion>.NullableMasterFilesBaseStringValueConverter)*/;
 
         _ = builder
             .Property(static x => x.GrupoSubgrupo);
 
         _ = builder
-            .Property(static x => x.Cuerpo);
+            .Property(static x => x.Cuerpo)
+            /*.HasConversion(ValueConverters.RecordToString<Core.Entities.AdscripcionesCuerpos>.NullableMasterFilesBaseStringValueConverter)*/;
 
         _ = builder
             .Property(static x => x.TitulacionAcademica);
@@ -47,7 +52,8 @@ internal sealed class PuestoEntityTypeConfiguration : IEntityTypeConfiguration<C
             .Property(static x => x.Observaciones);
 
         _ = builder
-            .Property(static x => x.Estado);
+            .Property(static x => x.Estado)
+            /*.HasConversion(ValueConverters.RecordToString<Core.Entities.Estados>.NullableMasterFilesBaseStringValueConverter)*/;
 
         _ = builder
             .ToTable(nameof(Core.Entities.Puesto))
@@ -72,12 +78,16 @@ internal sealed class PuestoEntityTypeConfiguration : IEntityTypeConfiguration<C
             .Navigation(static e => e.Localidad);
 
         _ = builder
-            .Navigation(static e => e.Pais);
+            .Navigation(static e => e.ResidenciaPais);
 
         _ = builder
-            .Navigation(static e => e.ProvinciaResidencia);
+            .Navigation(static e => e.ResidenciaProvincia);
 
         _ = builder
-            .Navigation(static e => e.LocalidadResidencia);
+            .HasOne<Core.Entities.Localidad>(nameof(Core.Entities.Puesto.ResidenciaLocalidad))
+            .WithMany();
+
+        //_ = builder
+        //    .Navigation(static e => e.ResidenciaLocalidad);
     }
 }

@@ -36,8 +36,11 @@ public sealed class Program : Libs.Core.ProgramBase
             //    Logger.LogDebug($"{item.Key}: {item.Value ?? "<<NULL>>"}");
 
             // Migrate and seed the database during startup. Must be synchronous.
-            using AsyncServiceScope Scope = host.Services.CreateAsyncScope();
-            await Scope.ServiceProvider.GetRequiredService<Libs.Infrastructure.DbContexts.DbCxt>().Database.MigrateAsync();
+            using (AsyncServiceScope Scope = host.Services.CreateAsyncScope())
+            {
+                await Scope.ServiceProvider.GetRequiredService<Libs.Infrastructure.DbContexts.DbCxt>().Database.MigrateAsync();
+                await Scope.ServiceProvider.GetRequiredService<Libs.Infrastructure.DbContexts.DbRpt>().Database.MigrateAsync();
+            }
 
             DateTime ForDate = DateTime.MinValue;
 

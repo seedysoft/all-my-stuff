@@ -1,13 +1,14 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace Seedysoft.Libs.Infrastructure.EntityTypeConfigurations;
+namespace Seedysoft.Libs.Infrastructure.EntityTypeConfigurations.DbRpt;
 
 internal sealed class UnidadEntityTypeConfiguration : IEntityTypeConfiguration<Core.Entities.Unidad>
 {
     public void Configure(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder<Core.Entities.Unidad> builder)
     {
         _ = builder
-            .Property(static x => x.UnidadId);
+            .Property(static x => x.UnidadId)
+            .ValueGeneratedNever();
 
         _ = builder
             .Property(static x => x.UnidadDenominacion);

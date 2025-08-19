@@ -12,15 +12,25 @@ public class Puesto
 
     public decimal ComplementoEspecifico { get; set; }
 
-    public TiposPuesto? TipoPuesto { get; set; }
+    //public TiposPuesto? TipoPuesto { get; set; }
 
-    public FormasProvision? Provision { get; set; }
+    //public FormasProvision? Provision { get; set; }
 
-    public AdscripcionesAdministracion? Adscripcion { get; set; }
+    //public AdscripcionesAdministracion? Adscripcion { get; set; }
 
-    public Grupos? GrupoSubgrupo { get; set; }
+    //public Grupos? GrupoSubgrupo { get; set; }
 
-    public AdscripcionesCuerpos? Cuerpo { get; set; }
+    //public AdscripcionesCuerpos? Cuerpo { get; set; }
+
+    public string? TipoPuesto { get; set; }
+
+    public string? Provision { get; set; }
+
+    public string? Adscripcion { get; set; }
+
+    public string? GrupoSubgrupo { get; set; }
+
+    public string? Cuerpo { get; set; }
 
     public string? TitulacionAcademica { get; set; }
 
@@ -28,7 +38,9 @@ public class Puesto
 
     public string? Observaciones { get; set; }
 
-    public required Estados Estado { get; set; }
+    //public required Estados Estado { get; set; }
+
+    public required string Estado { get; set; }
 
     public required Ministerio Ministerio { get; set; }
 
@@ -42,9 +54,9 @@ public class Puesto
 
     public required Localidad Localidad { get; set; }
 
-    public Pais? PaisResidencia { get; set; }
+    public Pais? ResidenciaPais { get; set; }
 
-    public Provincia? ProvinciaResidencia { get; set; }
+    public Provincia? ResidenciaProvincia { get; set; }
 
-    public Localidad? LocalidadResidencia { get; set; }
+    public Localidad? ResidenciaLocalidad { get; set; }
 }
