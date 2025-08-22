@@ -6,7 +6,13 @@ public class Localidad
 
     public required string LocalidadDenominacion { get; set; }
 
-    //public virtual ICollection<Puesto> PuestoLocalidad { get; set; } = [];
+    public required string PaisId { get; set; }
+    public required Pais Pais { get; set; }
 
-    //public virtual ICollection<Puesto> PuestoResidenciaLocalidad { get; set; } = [];
+    public required string ProvinciaId { get; set; }
+    public required Provincia Provincia { get; set; }
+
+    //public virtual ICollection<Puesto> Puestos { get; set; } = [];
+
+    //public virtual ICollection<Unidad> Unidades { get; set; } = [];
 }

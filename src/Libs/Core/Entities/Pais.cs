@@ -6,7 +6,11 @@ public class Pais
 
     public required string PaisDenominacion { get; set; }
 
-    //public virtual ICollection<Puesto> PuestoPais { get; set; } = [];
+    //public virtual ICollection<Localidad> Localidades { get; set; } = [];
 
-    //public virtual ICollection<Puesto> PuestoResidenciaPais { get; set; } = [];
+    //public virtual ICollection<Provincia> Provincias { get; set; } = [];
+
+    //public virtual ICollection<Puesto> Puestos { get; set; } = [];
+
+    //public virtual ICollection<Unidad> Unidades { get; set; } = [];
 }

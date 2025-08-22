@@ -17,5 +17,14 @@ internal sealed class ProvinciaEntityTypeConfiguration : IEntityTypeConfiguratio
         _ = builder
             .ToTable(nameof(Core.Entities.Provincia))
             .HasKey(static x => x.ProvinciaId);
+
+        _ = builder
+            .HasIndex(static e => e.PaisId, $"IX_{nameof(Core.Entities.Provincia)}_{nameof(Core.Entities.Provincia.PaisId)}");
+        _ = builder
+            .HasOne(static d => d.Pais)
+            .WithMany(/*static p => p.Provincias*/)
+            .HasForeignKey(static d => d.PaisId)
+            .OnDelete(DeleteBehavior.Restrict)
+            .HasConstraintName($"FK_{nameof(Core.Entities.Provincia)}_{nameof(Core.Entities.Provincia.PaisId)}");
     }
 }

@@ -83,6 +83,7 @@
     <ItemGroup>
         <ProjectReference Include="..\..\Libs\GasStationPrices\Seedysoft.Libs.GasStationPrices.csproj" />
         <ProjectReference Include="..\..\Libs\Infrastructure\Seedysoft.Libs.Infrastructure.csproj" />
+        <ProjectReference Include="..\..\Libs\Rpt\Seedysoft.Libs.Rpt.csproj" />
         <ProjectReference Include="..\..\Libs\Update\Seedysoft.Libs.Update.csproj" />
         <ProjectReference Include="..\..\Outbox\Lib\Seedysoft.Outbox.Lib.csproj" />
         <ProjectReference Include="..\..\WebComparer\Lib\Seedysoft.WebComparer.Lib.csproj" />

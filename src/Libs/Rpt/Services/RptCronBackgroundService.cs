@@ -62,7 +62,7 @@ public sealed class RptCronBackgroundService : BackgroundServices.Cron
         HtmlAgilityPack.HtmlDocument topHtmlDocument = await HtmlWeb.LoadFromWebAsync(RptSettings.Url);
         var topHrefs = topHtmlDocument.DocumentNode.SelectNodes("//a[@href]")
             .Select(static x => x.GetAttributeValue("href", string.Empty))
-            .Where(static x => !string.IsNullOrWhiteSpace(x) && !x.StartsWith('#') && x.Contains("RPT"))
+            .Where(static x => !string.IsNullOrWhiteSpace(x) && !x.StartsWith('#') && x.Contains("RPT") && x.EndsWith(".html"))
             .Distinct()
             .ToFrozenSet();
 
@@ -90,60 +90,79 @@ public sealed class RptCronBackgroundService : BackgroundServices.Cron
 
     private async Task ParseFilesAsync()
     {
-        IEnumerable<string> PdfFileNames = Directory.EnumerateFiles("Temp", "*.pdf", SearchOption.TopDirectoryOnly);
-        foreach (string PdfFileName in PdfFileNames)
-            await ParsePdfAsync(PdfFileName);
+        //IEnumerable<string> PdfFileNames = Directory.EnumerateFiles("Temp", "*.pdf", SearchOption.TopDirectoryOnly);
+        //foreach (string PdfFileName in PdfFileNames)
+        //    await TryToParsePdfAsync(PdfFileName);
 
         IEnumerable<string> ExcelFileNames = Directory.EnumerateFiles("Temp", "*.xlsx", SearchOption.TopDirectoryOnly);
         foreach (string ExcelFileName in ExcelFileNames)
-            await ParseExcelAsync(ExcelFileName);
+            await TryToParseExcelAsync(ExcelFileName);
     }
 
-    private async Task ParsePdfAsync(string fullFilePath)
+    private async Task TryToParsePdfAsync(string fullFilePath)
     {
-        PdfSharp.Pdf.PdfDocument doc = PdfSharp.Pdf.IO.PdfReader.Open(fullFilePath, PdfSharp.Pdf.IO.PdfDocumentOpenMode.Import);
-        foreach (PdfSharp.Pdf.PdfPage page in doc.Pages)
+        try
         {
-            foreach (PdfSharp.Pdf.Advanced.PdfContent content in page.Contents)
+            PdfSharp.Pdf.PdfDocument doc = PdfSharp.Pdf.IO.PdfReader.Open(fullFilePath, PdfSharp.Pdf.IO.PdfDocumentOpenMode.Import);
+            foreach (PdfSharp.Pdf.PdfPage page in doc.Pages)
             {
-                var i = 0;
-                System.Text.Encoding.Latin1.GetString(content.Stream.Value);
+                foreach (PdfSharp.Pdf.Advanced.PdfContent content in page.Contents)
+                {
+                    int i = 0;
+                    _ = System.Text.Encoding.Latin1.GetString(content.Stream.Value);
+                }
             }
         }
-    }
-
-    private async Task ParseExcelAsync(string fullFilePath)
-    {
-        using var stream = new FileStream(fullFilePath, FileMode.Open);
-        stream.Position = 0;
-        NPOI.XSSF.UserModel.XSSFWorkbook xssWorkbook = new(stream);
-        NPOI.SS.UserModel.ISheet sheet = xssWorkbook.GetSheetAt(0);
-        NPOI.SS.UserModel.IRow headerRow = sheet.GetRow(0);
-        int cellCount = headerRow.LastCellNum;
-        for (int j = 0; j < cellCount; j++)
+        catch (Exception ex)
         {
-            NPOI.SS.UserModel.ICell cell = headerRow.GetCell(j);
-            if (cell == null || string.IsNullOrWhiteSpace(cell.ToString()))
-                continue;
-
+            Logger.LogCritical(ex, "Error parsing Pdf");
         }
 
-        for (int i = sheet.FirstRowNum + 1; i <= sheet.LastRowNum; i++)
+        await Task.CompletedTask;
+    }
+
+    private async Task TryToParseExcelAsync(string fullFilePath)
+    {
+        try
         {
-            NPOI.SS.UserModel.IRow row = sheet.GetRow(i);
-            if (row == null || row.Cells.All(d => d.CellType == NPOI.SS.UserModel.CellType.Blank))
-                continue;
+            using var stream = new FileStream(fullFilePath, FileMode.Open);
+            stream.Position = 0;
+            NPOI.XSSF.UserModel.XSSFWorkbook xssWorkbook = new(stream);
+            NPOI.SS.UserModel.ISheet sheet = xssWorkbook.GetSheetAt(0);
+            NPOI.SS.UserModel.IRow headerRow = sheet.GetRow(0);
+            int cellCount = headerRow.LastCellNum;
+            //for (int j = 0; j < cellCount; j++)
+            //{
+            //    NPOI.SS.UserModel.ICell cell = headerRow.GetCell(j);
+            //    if (cell == null || string.IsNullOrWhiteSpace(cell.ToString()))
+            //        continue;
+            //}
 
-            for (int j = row.FirstCellNum; j < cellCount; j++)
+            // First line with data is 4 on 0 based
+            for (int i = 4; i <= sheet.LastRowNum; i++)
             {
-                if (row.GetCell(j) != null)
-                {
-                    if (!string.IsNullOrEmpty(row.GetCell(j).ToString()) && !string.IsNullOrWhiteSpace(row.GetCell(j).ToString()))
-                    {
+                NPOI.SS.UserModel.IRow row = sheet.GetRow(i);
+                if (row == null || row.Cells.All(d => d.CellType == NPOI.SS.UserModel.CellType.Blank))
+                    continue;
 
+                for (int j = row.FirstCellNum; j < cellCount; j++)
+                {
+                    NPOI.SS.UserModel.ICell cell = row.GetCell(j);
+                    if (cell != null)
+                    {
+                        if (!string.IsNullOrEmpty(cell.ToString()) && !string.IsNullOrWhiteSpace(cell.ToString()))
+                        {
+
+                        }
                     }
                 }
             }
         }
+        catch (Exception ex)
+        {
+            Logger.LogCritical(ex, "Error parsing Excel");
+        }
+
+        await Task.CompletedTask;
     }
 }

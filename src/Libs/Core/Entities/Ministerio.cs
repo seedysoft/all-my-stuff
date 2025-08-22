@@ -6,5 +6,7 @@ public class Ministerio
 
     public required string MinisterioDenominacion { get; set; }
 
-    //public virtual ICollection<Puesto> Puesto { get; set; } = [];
+    //public virtual ICollection<CentroDirectivo> CentrosDirectivos { get; set; } = [];
+
+    //public virtual ICollection<Puesto> Puestos { get; set; } = [];
 }

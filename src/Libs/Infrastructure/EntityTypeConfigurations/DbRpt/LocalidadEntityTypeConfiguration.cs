@@ -17,5 +17,23 @@ internal sealed class LocalidadEntityTypeConfiguration : IEntityTypeConfiguratio
         _ = builder
             .ToTable(nameof(Core.Entities.Localidad))
             .HasKey(static x => x.LocalidadId);
+
+        _ = builder
+            .HasIndex(static e => e.PaisId, $"IX_{nameof(Core.Entities.Localidad)}_{nameof(Core.Entities.Localidad.PaisId)}");
+        _ = builder
+            .HasOne(static d => d.Pais)
+            .WithMany(/*static p => p.Localidades*/)
+            .HasForeignKey(static d => d.PaisId)
+            .OnDelete(DeleteBehavior.Restrict)
+            .HasConstraintName($"FK_{nameof(Core.Entities.Localidad)}_{nameof(Core.Entities.Localidad.PaisId)}");
+
+        _ = builder
+            .HasIndex(static e => e.ProvinciaId, $"IX_{nameof(Core.Entities.Localidad)}_{nameof(Core.Entities.Localidad.ProvinciaId)}");
+        _ = builder
+            .HasOne(static d => d.Provincia)
+            .WithMany(/*static p => p.Localidades*/)
+            .HasForeignKey(static d => d.ProvinciaId)
+            .OnDelete(DeleteBehavior.Restrict)
+            .HasConstraintName($"FK_{nameof(Core.Entities.Localidad)}_{nameof(Core.Entities.Localidad.ProvinciaId)}");
     }
 }

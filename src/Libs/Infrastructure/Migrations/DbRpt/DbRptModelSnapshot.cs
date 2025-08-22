@@ -25,7 +25,12 @@ namespace Seedysoft.Libs.Infrastructure.Migrations.DbRpt
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<int>("MinisterioId")
+                        .HasColumnType("INTEGER");
+
                     b.HasKey("CentroDirectivoId");
+
+                    b.HasIndex(new[] { "MinisterioId" }, "IX_CentroDirectivo_MinisterioId");
 
                     b.ToTable("CentroDirectivo", (string)null);
                 });
@@ -41,7 +46,19 @@ namespace Seedysoft.Libs.Infrastructure.Migrations.DbRpt
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("PaisId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ProvinciaId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
                     b.HasKey("LocalidadId");
+
+                    b.HasIndex(new[] { "PaisId" }, "IX_Localidad_PaisId");
+
+                    b.HasIndex(new[] { "ProvinciaId" }, "IX_Localidad_ProvinciaId");
 
                     b.ToTable("Localidad", (string)null);
                 });
@@ -83,11 +100,17 @@ namespace Seedysoft.Libs.Infrastructure.Migrations.DbRpt
                         .HasColumnType("TEXT")
                         .IsFixedLength();
 
+                    b.Property<string>("PaisId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("ProvinciaDenominacion")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.HasKey("ProvinciaId");
+
+                    b.HasIndex(new[] { "PaisId" }, "IX_Provincia_PaisId");
 
                     b.ToTable("Provincia", (string)null);
                 });
@@ -99,9 +122,6 @@ namespace Seedysoft.Libs.Infrastructure.Migrations.DbRpt
 
                     b.Property<string>("Adscripcion")
                         .HasColumnType("TEXT");
-
-                    b.Property<int>("CentroDirectivoId")
-                        .HasColumnType("INTEGER");
 
                     b.Property<decimal>("ComplementoEspecifico")
                         .HasPrecision(2)
@@ -122,9 +142,6 @@ namespace Seedysoft.Libs.Infrastructure.Migrations.DbRpt
 
                     b.Property<string>("LocalidadId")
                         .HasColumnType("TEXT");
-
-                    b.Property<int>("MinisterioId")
-                        .HasColumnType("INTEGER");
 
                     b.Property<int>("Nivel")
                         .HasColumnType("INTEGER");
@@ -149,15 +166,6 @@ namespace Seedysoft.Libs.Infrastructure.Migrations.DbRpt
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("ResidenciaLocalidadId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("ResidenciaPaisId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("ResidenciaProvinciaId")
-                        .HasColumnType("TEXT");
-
                     b.Property<string>("TipoPuesto")
                         .HasColumnType("TEXT");
 
@@ -169,21 +177,11 @@ namespace Seedysoft.Libs.Infrastructure.Migrations.DbRpt
 
                     b.HasKey("PuestoId");
 
-                    b.HasIndex(new[] { "CentroDirectivoId" }, "IX_Puesto_CentroDirectivoId");
-
                     b.HasIndex(new[] { "LocalidadId" }, "IX_Puesto_LocalidadId");
-
-                    b.HasIndex(new[] { "MinisterioId" }, "IX_Puesto_MinisterioId");
 
                     b.HasIndex(new[] { "PaisId" }, "IX_Puesto_PaisId");
 
                     b.HasIndex(new[] { "ProvinciaId" }, "IX_Puesto_ProvinciaId");
-
-                    b.HasIndex(new[] { "ResidenciaLocalidadId" }, "IX_Puesto_ResidenciaLocalidadId");
-
-                    b.HasIndex(new[] { "ResidenciaPaisId" }, "IX_Puesto_ResidenciaPaisId");
-
-                    b.HasIndex(new[] { "ResidenciaProvinciaId" }, "IX_Puesto_ResidenciaProvinciaId");
 
                     b.HasIndex(new[] { "UnidadId" }, "IX_Puesto_UnidadId");
 
@@ -195,76 +193,154 @@ namespace Seedysoft.Libs.Infrastructure.Migrations.DbRpt
                     b.Property<int>("UnidadId")
                         .HasColumnType("INTEGER");
 
+                    b.Property<int>("CentroDirectivoId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("LocalidadId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("PaisId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ProvinciaId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("UnidadDenominacion")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.HasKey("UnidadId");
 
+                    b.HasIndex(new[] { "CentroDirectivoId" }, "IX_Unidad_CentroDirectivoId");
+
+                    b.HasIndex(new[] { "LocalidadId" }, "IX_Unidad_LocalidadId");
+
+                    b.HasIndex(new[] { "PaisId" }, "IX_Unidad_PaisId");
+
+                    b.HasIndex(new[] { "ProvinciaId" }, "IX_Unidad_ProvinciaId");
+
                     b.ToTable("Unidad", (string)null);
+                });
+
+            modelBuilder.Entity("Seedysoft.Libs.Core.Entities.CentroDirectivo", b =>
+                {
+                    b.HasOne("Seedysoft.Libs.Core.Entities.Ministerio", "Ministerio")
+                        .WithMany()
+                        .HasForeignKey("MinisterioId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("FK_CentroDirectivo_MinisterioId");
+
+                    b.Navigation("Ministerio");
+                });
+
+            modelBuilder.Entity("Seedysoft.Libs.Core.Entities.Localidad", b =>
+                {
+                    b.HasOne("Seedysoft.Libs.Core.Entities.Pais", "Pais")
+                        .WithMany()
+                        .HasForeignKey("PaisId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("FK_Localidad_PaisId");
+
+                    b.HasOne("Seedysoft.Libs.Core.Entities.Provincia", "Provincia")
+                        .WithMany()
+                        .HasForeignKey("ProvinciaId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("FK_Localidad_ProvinciaId");
+
+                    b.Navigation("Pais");
+
+                    b.Navigation("Provincia");
+                });
+
+            modelBuilder.Entity("Seedysoft.Libs.Core.Entities.Provincia", b =>
+                {
+                    b.HasOne("Seedysoft.Libs.Core.Entities.Pais", "Pais")
+                        .WithMany()
+                        .HasForeignKey("PaisId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("FK_Provincia_PaisId");
+
+                    b.Navigation("Pais");
                 });
 
             modelBuilder.Entity("Seedysoft.Libs.Core.Entities.Puesto", b =>
                 {
-                    b.HasOne("Seedysoft.Libs.Core.Entities.CentroDirectivo", "CentroDirectivo")
-                        .WithMany()
-                        .HasForeignKey("CentroDirectivoId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("Seedysoft.Libs.Core.Entities.Localidad", "Localidad")
                         .WithMany()
-                        .HasForeignKey("LocalidadId");
-
-                    b.HasOne("Seedysoft.Libs.Core.Entities.Ministerio", "Ministerio")
-                        .WithMany()
-                        .HasForeignKey("MinisterioId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("LocalidadId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasConstraintName("FK_Puesto_LocalidadId");
 
                     b.HasOne("Seedysoft.Libs.Core.Entities.Pais", "Pais")
                         .WithMany()
-                        .HasForeignKey("PaisId");
+                        .HasForeignKey("PaisId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasConstraintName("FK_Puesto_PaisId");
 
                     b.HasOne("Seedysoft.Libs.Core.Entities.Provincia", "Provincia")
                         .WithMany()
-                        .HasForeignKey("ProvinciaId");
-
-                    b.HasOne("Seedysoft.Libs.Core.Entities.Localidad", "ResidenciaLocalidad")
-                        .WithMany()
-                        .HasForeignKey("ResidenciaLocalidadId");
-
-                    b.HasOne("Seedysoft.Libs.Core.Entities.Pais", "ResidenciaPais")
-                        .WithMany()
-                        .HasForeignKey("ResidenciaPaisId");
-
-                    b.HasOne("Seedysoft.Libs.Core.Entities.Provincia", "ResidenciaProvincia")
-                        .WithMany()
-                        .HasForeignKey("ResidenciaProvinciaId");
+                        .HasForeignKey("ProvinciaId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasConstraintName("FK_Puesto_ProvinciaId");
 
                     b.HasOne("Seedysoft.Libs.Core.Entities.Unidad", "Unidad")
                         .WithMany()
                         .HasForeignKey("UnidadId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("CentroDirectivo");
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("FK_Puesto_UnidadId");
 
                     b.Navigation("Localidad");
-
-                    b.Navigation("Ministerio");
 
                     b.Navigation("Pais");
 
                     b.Navigation("Provincia");
 
-                    b.Navigation("ResidenciaLocalidad");
-
-                    b.Navigation("ResidenciaPais");
-
-                    b.Navigation("ResidenciaProvincia");
-
                     b.Navigation("Unidad");
+                });
+
+            modelBuilder.Entity("Seedysoft.Libs.Core.Entities.Unidad", b =>
+                {
+                    b.HasOne("Seedysoft.Libs.Core.Entities.CentroDirectivo", "CentroDirectivo")
+                        .WithMany()
+                        .HasForeignKey("CentroDirectivoId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("FK_Unidad_CentroDirectivoId");
+
+                    b.HasOne("Seedysoft.Libs.Core.Entities.Localidad", "Localidad")
+                        .WithMany()
+                        .HasForeignKey("LocalidadId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasConstraintName("FK_Unidad_LocalidadId");
+
+                    b.HasOne("Seedysoft.Libs.Core.Entities.Pais", "Pais")
+                        .WithMany()
+                        .HasForeignKey("PaisId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("FK_Unidad_PaisId");
+
+                    b.HasOne("Seedysoft.Libs.Core.Entities.Provincia", "Provincia")
+                        .WithMany()
+                        .HasForeignKey("ProvinciaId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("FK_Unidad_ProvinciaId");
+
+                    b.Navigation("CentroDirectivo");
+
+                    b.Navigation("Localidad");
+
+                    b.Navigation("Pais");
+
+                    b.Navigation("Provincia");
                 });
 #pragma warning restore 612, 618
         }

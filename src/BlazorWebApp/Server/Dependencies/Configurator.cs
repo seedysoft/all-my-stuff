@@ -23,17 +23,16 @@ public sealed class Configurator : Libs.Core.Dependencies.ConfiguratorBase
         if (System.Diagnostics.Debugger.IsAttached)
             System.Diagnostics.Debugger.Break();
 
-        _ = hostApplicationBuilder.Services.AddHostedService<Libs.TelegramBot.Services.TelegramHostedService>();
+        _ = hostApplicationBuilder.Services.AddHostedService<Libs.Rpt.Services.RptCronBackgroundService>();
+        //_ = hostApplicationBuilder.Services.AddHostedService<Libs.TelegramBot.Services.TelegramHostedService>();
+        //_ = hostApplicationBuilder.Services.AddHostedService<Libs.Update.Services.UpdaterCronBackgroundService>();
 
-        _ = hostApplicationBuilder.Services.AddHostedService<Outbox.Lib.Services.OutboxCronBackgroundService>();
+        //_ = hostApplicationBuilder.Services.AddHostedService<Outbox.Lib.Services.OutboxCronBackgroundService>();
 
-        _ = hostApplicationBuilder.Services.AddHostedService<Pvpc.Lib.Services.PvpcCronBackgroundService>();
+        //_ = hostApplicationBuilder.Services.AddHostedService<Pvpc.Lib.Services.PvpcCronBackgroundService>();
+        //_ = hostApplicationBuilder.Services.AddHostedService<Pvpc.Lib.Services.TuyaManagerCronBackgroundService>();
 
-        _ = hostApplicationBuilder.Services.AddHostedService<Pvpc.Lib.Services.TuyaManagerCronBackgroundService>();
-
-        _ = hostApplicationBuilder.Services.AddHostedService<Libs.Update.Services.UpdaterCronBackgroundService>();
-
-        _ = hostApplicationBuilder.Services.AddHostedService<WebComparer.Lib.Services.WebComparerCronBackgroundService>();
+        //_ = hostApplicationBuilder.Services.AddHostedService<WebComparer.Lib.Services.WebComparerCronBackgroundService>();
 
         // Add services to the container.
         _ = hostApplicationBuilder.Services

@@ -60,66 +60,39 @@ internal sealed class PuestoEntityTypeConfiguration : IEntityTypeConfiguration<C
             .HasKey(static x => x.PuestoId);
 
         _ = builder
-            .HasIndex(static e => e.MinisterioId, "IX_Puesto_MinisterioId");
-        _ = builder
-            .HasOne(static d => d.Ministerio)
-            .WithMany(/*static p => p.Puesto*/)
-            .HasForeignKey(static d => d.MinisterioId);
-
-        _ = builder
-            .HasIndex(static e => e.CentroDirectivoId, "IX_Puesto_CentroDirectivoId");
-        _ = builder
-            .HasOne(static d => d.CentroDirectivo)
-            .WithMany(/*static p => p.Puesto*/)
-            .HasForeignKey(static d => d.CentroDirectivoId);
-
-        _ = builder
-            .HasIndex(static e => e.UnidadId, "IX_Puesto_UnidadId");
+            .HasIndex(static e => e.UnidadId, $"IX_{nameof(Core.Entities.Puesto)}_{nameof(Core.Entities.Puesto.UnidadId)}");
         _ = builder
             .HasOne(static d => d.Unidad)
-            .WithMany(/*static p => p.Puesto*/)
-            .HasForeignKey(static d => d.UnidadId);
+            .WithMany(/*static p => p.Puestos*/)
+            .HasForeignKey(static d => d.UnidadId)
+            .OnDelete(DeleteBehavior.Restrict)
+            .HasConstraintName($"FK_{nameof(Core.Entities.Puesto)}_{nameof(Core.Entities.Puesto.UnidadId)}");
 
         _ = builder
-            .HasIndex(static e => e.PaisId, "IX_Puesto_PaisId");
+            .HasIndex(static e => e.PaisId, $"IX_{nameof(Core.Entities.Puesto)}_{nameof(Core.Entities.Puesto.PaisId)}");
         _ = builder
             .HasOne(static d => d.Pais)
-            .WithMany(/*static p => p.PuestoPais*/)
-            .HasForeignKey(static d => d.PaisId);
+            .WithMany(/*static p => p.Puestos*/)
+            .HasForeignKey(static d => d.PaisId)
+            .OnDelete(DeleteBehavior.Restrict)
+            .HasConstraintName($"FK_{nameof(Core.Entities.Puesto)}_{nameof(Core.Entities.Puesto.PaisId)}");
 
         _ = builder
-            .HasIndex(static e => e.ProvinciaId, "IX_Puesto_ProvinciaId");
+            .HasIndex(static e => e.ProvinciaId, $"IX_{nameof(Core.Entities.Puesto)}_{nameof(Core.Entities.Puesto.ProvinciaId)}");
         _ = builder
             .HasOne(static d => d.Provincia)
-            .WithMany(/*static p => p.PuestoProvincia*/)
-            .HasForeignKey(static d => d.ProvinciaId);
+            .WithMany(/*static p => p.Puestos*/)
+            .HasForeignKey(static d => d.ProvinciaId)
+            .OnDelete(DeleteBehavior.Restrict)
+            .HasConstraintName($"FK_{nameof(Core.Entities.Puesto)}_{nameof(Core.Entities.Puesto.ProvinciaId)}");
 
         _ = builder
-            .HasIndex(static e => e.LocalidadId, "IX_Puesto_LocalidadId");
+            .HasIndex(static e => e.LocalidadId, $"IX_{nameof(Core.Entities.Puesto)}_{nameof(Core.Entities.Puesto.LocalidadId)}");
         _ = builder
             .HasOne(static d => d.Localidad)
-            .WithMany(/*static p => p.PuestoLocalidad*/)
-            .HasForeignKey(static d => d.LocalidadId);
-
-        _ = builder
-             .HasIndex(static e => e.ResidenciaPaisId, "IX_Puesto_ResidenciaPaisId");
-        _ = builder
-            .HasOne(static d => d.ResidenciaPais)
-            .WithMany(/*static p => p.PuestoResidenciaPais*/)
-            .HasForeignKey(static d => d.ResidenciaPaisId);
-
-        _ = builder
-            .HasIndex(static e => e.ResidenciaProvinciaId, "IX_Puesto_ResidenciaProvinciaId");
-        _ = builder
-            .HasOne(static d => d.ResidenciaProvincia)
-            .WithMany(/*static p => p.PuestoResidenciaProvincia*/)
-            .HasForeignKey(static d => d.ResidenciaProvinciaId);
-
-        _ = builder
-            .HasIndex(static e => e.ResidenciaLocalidadId, "IX_Puesto_ResidenciaLocalidadId");
-        _ = builder
-            .HasOne(static d => d.ResidenciaLocalidad)
-            .WithMany(/*static p => p.PuestoResidenciaLocalidad*/)
-            .HasForeignKey(static d => d.ResidenciaLocalidadId);
+            .WithMany(/*static p => p.Puestos*/)
+            .HasForeignKey(static d => d.LocalidadId)
+            .OnDelete(DeleteBehavior.Restrict)
+            .HasConstraintName($"FK_{nameof(Core.Entities.Puesto)}_{nameof(Core.Entities.Puesto.LocalidadId)}");
     }
 }

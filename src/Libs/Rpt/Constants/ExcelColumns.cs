@@ -1,0 +1,37 @@
+﻿namespace Seedysoft.Libs.Rpt.Constants;
+
+internal enum ExcelColumns
+{
+    MinisterioId = 0,
+    MinisterioDenominacion,
+    CentroDirectivoId,
+    CentroDirectivoDenominacion,
+    UnidadId,
+    UnidadDenominacion,
+    UnidadPaisId,
+    UnidadPaisDenominacion,
+    UnidadProvinciaId,
+    UnidadDenominacionProvincia,
+    UnidadLocalidadId,
+    UnidadDenominacionLocalidad,
+    Puesto,
+    PuestoDenominacionCorta,
+    PuestoDenominacionLarga,
+    Nivel,
+    ComplementoEspecifico,
+    TipoPuesto,
+    Provision,
+    AdscripcionPuesto,
+    GrupoSubgrupo,
+    AgrupacionCuerpo,
+    TitulacionAcademica,
+    FormacionEspecifica,
+    PaisId,
+    DenominacionPais,
+    ProvinciaId,
+    DenominacionProvincia,
+    LocalidadId,
+    DenominacionLocalidad,
+    Observaciones,
+    Estado
+}

@@ -36,30 +36,21 @@ public class Puesto
     //public required Estados Estado { get; set; }
     public required string Estado { get; set; }
 
-    public int MinisterioId { get; set; }
-    public required Ministerio Ministerio { get; set; }
+    //public int MinisterioId { get; set; }
+    //public required Ministerio Ministerio { get; set; }
 
-    public int CentroDirectivoId { get; set; }
-    public required CentroDirectivo CentroDirectivo { get; set; }
+    //public int CentroDirectivoId { get; set; }
+    //public required CentroDirectivo CentroDirectivo { get; set; }
 
     public int UnidadId { get; set; }
     public required Unidad Unidad { get; set; }
 
     public string? PaisId { get; set; }
-    public required Pais Pais { get; set; }
+    public Pais? Pais { get; set; }
 
     public string? ProvinciaId { get; set; }
-    public required Provincia Provincia { get; set; }
+    public Provincia? Provincia { get; set; }
 
     public string? LocalidadId { get; set; }
-    public required Localidad Localidad { get; set; }
-
-    public string? ResidenciaPaisId { get; set; }
-    public Pais? ResidenciaPais { get; set; }
-
-    public string? ResidenciaProvinciaId { get; set; }
-    public Provincia? ResidenciaProvincia { get; set; }
-
-    public string? ResidenciaLocalidadId { get; set; }
-    public Localidad? ResidenciaLocalidad { get; set; }
+    public Localidad? Localidad { get; set; }
 }

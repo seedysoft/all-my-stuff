@@ -6,5 +6,17 @@ public class Unidad
 
     public required string UnidadDenominacion { get; set; }
 
-    //public virtual ICollection<Puesto> Puesto { get; set; } = [];
+    public int CentroDirectivoId { get; set; }
+    public required CentroDirectivo CentroDirectivo { get; set; }
+
+    public required string PaisId { get; set; }
+    public required Pais Pais { get; set; }
+
+    public required string ProvinciaId { get; set; }
+    public required Provincia Provincia { get; set; }
+
+    public required string? LocalidadId { get; set; }
+    public required Localidad Localidad { get; set; }
+
+    //public virtual ICollection<Puesto> Puestos{ get; set; } = [];
 }

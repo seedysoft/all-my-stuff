@@ -6,5 +6,11 @@ public class CentroDirectivo
 
     public required string CentroDirectivoDenominacion { get; set; }
 
-    //public virtual ICollection<Puesto> Puesto { get; set; } = [];
+    public int MinisterioId { get; set; }
+
+    public required Ministerio Ministerio {  get; set; }
+
+    //public virtual ICollection<Unidad> Unidades { get; set; } = [];
+
+    //public virtual ICollection<Puesto> Puestos { get; set; } = [];
 }
