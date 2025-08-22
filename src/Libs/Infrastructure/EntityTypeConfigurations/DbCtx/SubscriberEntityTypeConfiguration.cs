@@ -8,7 +8,6 @@ internal sealed class SubscriberEntityTypeConfiguration : IEntityTypeConfigurati
     {
         _ = builder
             .Property(static e => e.SubscriberId)
-            .IsRequired()
             .ValueGeneratedOnAdd();
 
         _ = builder

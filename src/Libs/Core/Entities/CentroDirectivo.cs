@@ -4,5 +4,7 @@ public class CentroDirectivo
 {
     public int CentroDirectivoId { get; set; }
 
-    public string CentroDirectivoDenominacion { get; set; } = default!;
+    public required string CentroDirectivoDenominacion { get; set; }
+
+    //public virtual ICollection<Puesto> Puesto { get; set; } = [];
 }

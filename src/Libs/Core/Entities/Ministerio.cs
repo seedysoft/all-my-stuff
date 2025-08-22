@@ -4,5 +4,7 @@ public class Ministerio
 {
     public int MinisterioId { get; set; }
 
-    public string MinisterioDenominacion { get; set; } = default!;
+    public required string MinisterioDenominacion { get; set; }
+
+    //public virtual ICollection<Puesto> Puesto { get; set; } = [];
 }

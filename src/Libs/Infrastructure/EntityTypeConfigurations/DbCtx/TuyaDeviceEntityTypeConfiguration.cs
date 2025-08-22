@@ -17,12 +17,10 @@ internal sealed class TuyaDeviceEntityTypeConfiguration : IEntityTypeConfigurati
             .HasConversion<string>();
 
         _ = builder
-            .Property(static s => s.Version)
-            .IsRequired();
+            .Property(static s => s.Version);
 
         _ = builder
-            .Property(static s => s.LocalKey)
-            .IsRequired();
+            .Property(static s => s.LocalKey);
 
         _ = builder
             .ToTable(nameof(Core.Entities.TuyaDevice))

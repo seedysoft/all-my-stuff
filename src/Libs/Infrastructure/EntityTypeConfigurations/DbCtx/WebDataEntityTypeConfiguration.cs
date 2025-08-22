@@ -10,12 +10,10 @@ internal abstract class WebDataEntityTypeConfigurationT<T> : IEntityTypeConfigur
             .Property(static x => x.SubscriptionId);
 
         _ = builder
-            .Property(static x => x.WebUrl)
-            .IsRequired();
+            .Property(static x => x.WebUrl);
 
         _ = builder
-            .Property(static x => x.Description)
-            .IsRequired();
+            .Property(static x => x.Description);
 
         _ = builder
             .Property(static x => x.CurrentWebContent);

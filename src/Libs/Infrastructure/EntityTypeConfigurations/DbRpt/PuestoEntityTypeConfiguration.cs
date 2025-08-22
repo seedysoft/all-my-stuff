@@ -60,34 +60,66 @@ internal sealed class PuestoEntityTypeConfiguration : IEntityTypeConfiguration<C
             .HasKey(static x => x.PuestoId);
 
         _ = builder
-            .Navigation(static e => e.Ministerio);
+            .HasIndex(static e => e.MinisterioId, "IX_Puesto_MinisterioId");
+        _ = builder
+            .HasOne(static d => d.Ministerio)
+            .WithMany(/*static p => p.Puesto*/)
+            .HasForeignKey(static d => d.MinisterioId);
 
         _ = builder
-            .Navigation(static e => e.CentroDirectivo);
+            .HasIndex(static e => e.CentroDirectivoId, "IX_Puesto_CentroDirectivoId");
+        _ = builder
+            .HasOne(static d => d.CentroDirectivo)
+            .WithMany(/*static p => p.Puesto*/)
+            .HasForeignKey(static d => d.CentroDirectivoId);
 
         _ = builder
-            .Navigation(static e => e.Unidad);
+            .HasIndex(static e => e.UnidadId, "IX_Puesto_UnidadId");
+        _ = builder
+            .HasOne(static d => d.Unidad)
+            .WithMany(/*static p => p.Puesto*/)
+            .HasForeignKey(static d => d.UnidadId);
 
         _ = builder
-            .Navigation(static e => e.Pais);
+            .HasIndex(static e => e.PaisId, "IX_Puesto_PaisId");
+        _ = builder
+            .HasOne(static d => d.Pais)
+            .WithMany(/*static p => p.PuestoPais*/)
+            .HasForeignKey(static d => d.PaisId);
 
         _ = builder
-            .Navigation(static e => e.Provincia);
+            .HasIndex(static e => e.ProvinciaId, "IX_Puesto_ProvinciaId");
+        _ = builder
+            .HasOne(static d => d.Provincia)
+            .WithMany(/*static p => p.PuestoProvincia*/)
+            .HasForeignKey(static d => d.ProvinciaId);
 
         _ = builder
-            .Navigation(static e => e.Localidad);
+            .HasIndex(static e => e.LocalidadId, "IX_Puesto_LocalidadId");
+        _ = builder
+            .HasOne(static d => d.Localidad)
+            .WithMany(/*static p => p.PuestoLocalidad*/)
+            .HasForeignKey(static d => d.LocalidadId);
 
         _ = builder
-            .Navigation(static e => e.ResidenciaPais);
+             .HasIndex(static e => e.ResidenciaPaisId, "IX_Puesto_ResidenciaPaisId");
+        _ = builder
+            .HasOne(static d => d.ResidenciaPais)
+            .WithMany(/*static p => p.PuestoResidenciaPais*/)
+            .HasForeignKey(static d => d.ResidenciaPaisId);
 
         _ = builder
-            .Navigation(static e => e.ResidenciaProvincia);
+            .HasIndex(static e => e.ResidenciaProvinciaId, "IX_Puesto_ResidenciaProvinciaId");
+        _ = builder
+            .HasOne(static d => d.ResidenciaProvincia)
+            .WithMany(/*static p => p.PuestoResidenciaProvincia*/)
+            .HasForeignKey(static d => d.ResidenciaProvinciaId);
 
         _ = builder
-            .HasOne<Core.Entities.Localidad>(nameof(Core.Entities.Puesto.ResidenciaLocalidad))
-            .WithMany();
-
-        //_ = builder
-        //    .Navigation(static e => e.ResidenciaLocalidad);
+            .HasIndex(static e => e.ResidenciaLocalidadId, "IX_Puesto_ResidenciaLocalidadId");
+        _ = builder
+            .HasOne(static d => d.ResidenciaLocalidad)
+            .WithMany(/*static p => p.PuestoResidenciaLocalidad*/)
+            .HasForeignKey(static d => d.ResidenciaLocalidadId);
     }
 }

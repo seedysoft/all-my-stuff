@@ -8,17 +8,14 @@ internal abstract class OutboxTableEntityTypeConfigurationT<T> : IEntityTypeConf
     {
         _ = builder
             .Property(static x => x.OutboxId)
-            .IsRequired()
             .ValueGeneratedOnAdd();
 
         _ = builder
-            .Property(static x => x.Payload)
-            .IsRequired();
+            .Property(static x => x.Payload);
 
         _ = builder
             .Property(static x => x.SubscriptionName)
-            .HasConversion<string>()
-            .IsRequired();
+            .HasConversion<string>();
 
         _ = builder
             .Property(static x => x.SubscriptionId);

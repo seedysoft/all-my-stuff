@@ -7,7 +7,7 @@ dotnet ef migrations add CreatingRpt -v -c DbRpt -o .\Migrations\DbRpt -p .\src\
 
 Add-Migration Creating -Verbose -Context DbCxt -OutputDir .\Migrations\DbCxt -Project Libs\Seedysoft.Libs.Infrastructure -StartupProject Libs\Seedysoft.Libs.Infrastructure
 
-# Remove latest migration:
+# Remove latest migration (use -f to remove from database too):
 dotnet ef migrations remove -v -c DbCxt -p .\src\Libs\Infrastructure\Seedysoft.Libs.Infrastructure.csproj
 dotnet ef migrations remove -v -c DbRpt -p .\src\Libs\Infrastructure\Seedysoft.Libs.Infrastructure.csproj
 
@@ -24,3 +24,6 @@ dotnet ef database update CreatingCxt --no-build -v -c DbCxt -p .\src\Libs\Infra
 dotnet ef database update CreatingRpt --no-build -v -c DbRpt -p .\src\Libs\Infrastructure\Seedysoft.Libs.Infrastructure.csproj
 
 Update-Database CreatingCxt -Verbose -Context DbCxt -Project Libs\Seedysoft.Libs.Infrastructure
+
+# Scaffold
+dotnet ef dbcontext scaffold -v -c DbRpt --no-pluralize -o .\DbContexts -p .\src\Libs\Infrastructure\Seedysoft.Libs.Infrastructure.csproj --use-database-names

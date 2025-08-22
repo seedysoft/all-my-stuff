@@ -2,7 +2,11 @@
 
 public class Localidad
 {
-    public string LocalidadId { get; set; } = default!;
+    public required string LocalidadId { get; set; }
 
-    public string LocalidadDenominacion { get; set; } = default!;
+    public required string LocalidadDenominacion { get; set; }
+
+    //public virtual ICollection<Puesto> PuestoLocalidad { get; set; } = [];
+
+    //public virtual ICollection<Puesto> PuestoResidenciaLocalidad { get; set; } = [];
 }

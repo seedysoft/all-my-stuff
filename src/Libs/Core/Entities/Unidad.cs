@@ -4,5 +4,7 @@ public class Unidad
 {
     public int UnidadId { get; set; }
 
-    public string UnidadDenominacion { get; set; } = default!;
+    public required string UnidadDenominacion { get; set; }
+
+    //public virtual ICollection<Puesto> Puesto { get; set; } = [];
 }

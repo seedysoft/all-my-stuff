@@ -2,7 +2,11 @@
 
 public class Provincia
 {
-    public string ProvinciaId { get; set; } = default!;
+    public required string ProvinciaId { get; set; }
 
-    public string ProvinciaDenominacion { get; set; } = default!;
+    public required string ProvinciaDenominacion { get; set; }
+
+    //public virtual ICollection<Puesto> PuestoProvincia { get; set; } = [];
+
+    //public virtual ICollection<Puesto> PuestoResidenciaProvincia { get; set; } = [];
 }

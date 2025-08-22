@@ -2,7 +2,11 @@
 
 public class Pais
 {
-    public string PaisId { get; set; } = default!;
+    public required string PaisId { get; set; }
 
-    public string PaisDenominacion { get; set; } = default!;
+    public required string PaisDenominacion { get; set; }
+
+    //public virtual ICollection<Puesto> PuestoPais { get; set; } = [];
+
+    //public virtual ICollection<Puesto> PuestoResidenciaPais { get; set; } = [];
 }
