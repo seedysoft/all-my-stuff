@@ -18,11 +18,9 @@ internal sealed class CentroDirectivoEntityTypeConfiguration : IEntityTypeConfig
             .HasKey(static x => x.CentroDirectivoId);
 
         _ = builder
-            .HasIndex(static e => e.MinisterioId, $"IX_{nameof(Core.Entities.CentroDirectivo)}_{nameof(Core.Entities.CentroDirectivo.MinisterioId)}");
-        _ = builder
-            .HasOne(static d => d.Ministerio)
-            .WithMany(/*static p => p.CentrosDirectivos*/)
-            .HasForeignKey(static d => d.MinisterioId)
+            .HasOne(static x => x.Ministerio)
+            .WithMany(/*static x => x.CentrosDirectivos*/)
+            .HasForeignKey(static x => x.MinisterioId)
             .OnDelete(DeleteBehavior.Restrict)
             .HasConstraintName($"FK_{nameof(Core.Entities.CentroDirectivo)}_{nameof(Core.Entities.CentroDirectivo.MinisterioId)}");
     }

@@ -7,28 +7,28 @@ internal sealed class SubscriberEntityTypeConfiguration : IEntityTypeConfigurati
     public void Configure(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder<Core.Entities.Subscriber> builder)
     {
         _ = builder
-            .Property(static e => e.SubscriberId)
+            .Property(static x => x.SubscriberId)
             .ValueGeneratedOnAdd();
 
         _ = builder
-            .Property(static e => e.TelegramUserId);
+            .Property(static x => x.TelegramUserId);
 
         _ = builder
             .Property(static s => s.MailAddress);
 
         _ = builder
             .ToTable(nameof(Core.Entities.Subscriber))
-            .HasKey(static e => e.SubscriberId);
+            .HasKey(static x => x.SubscriberId);
 
         _ = builder
             .HasMany(static s => s.Subscriptions)
             .WithMany(static s => s.Subscribers)
             .UsingEntity<Core.Entities.SubscriberSubscription>(
-                static s => s.HasOne<Core.Entities.Subscription>().WithMany().HasForeignKey(static e => e.SubscriptionId).OnDelete(DeleteBehavior.Cascade),
-                static s => s.HasOne<Core.Entities.Subscriber>().WithMany().HasForeignKey(static e => e.SubscriberId).OnDelete(DeleteBehavior.Cascade),
+                static s => s.HasOne<Core.Entities.Subscription>().WithMany().HasForeignKey(static x => x.SubscriptionId).OnDelete(DeleteBehavior.Cascade),
+                static s => s.HasOne<Core.Entities.Subscriber>().WithMany().HasForeignKey(static x => x.SubscriberId).OnDelete(DeleteBehavior.Cascade),
                 static s => s.ToTable($"{nameof(Core.Entities.Subscriber)}{nameof(Core.Entities.Subscription)}").HasKey(static e => new { e.SubscriberId, e.SubscriptionId }));
 
         _ = builder
-            .Navigation(static e => e.Subscriptions);
+            .Navigation(static x => x.Subscriptions);
     }
 }

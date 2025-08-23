@@ -2,7 +2,7 @@
 
 public class Pais
 {
-    public required string PaisId { get; set; }
+    public required int PaisId { get; set; }
 
     public required string PaisDenominacion { get; set; }
 

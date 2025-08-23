@@ -2,13 +2,13 @@
 
 public class Puesto
 {
-    public int PuestoId { get; set; }
+    public required int PuestoId { get; set; }
 
     public required string PuestoDenominacionCorta { get; set; }
 
     public required string PuestoDenominacionLarga { get; set; }
 
-    public int Nivel { get; set; }
+    public required int Nivel { get; set; }
 
     public required decimal ComplementoEspecifico { get; set; }
 
@@ -42,15 +42,15 @@ public class Puesto
     //public int CentroDirectivoId { get; set; }
     //public required CentroDirectivo CentroDirectivo { get; set; }
 
-    public int UnidadId { get; set; }
-    public required Unidad Unidad { get; set; }
+    public required int UnidadId { get; set; }
+    public Unidad Unidad { get; set; } = default!;
 
-    public string? PaisId { get; set; }
+    public int? PaisId { get; set; }
     public Pais? Pais { get; set; }
 
-    public string? ProvinciaId { get; set; }
+    public int? ProvinciaId { get; set; }
     public Provincia? Provincia { get; set; }
 
-    public string? LocalidadId { get; set; }
+    public int? LocalidadId { get; set; }
     public Localidad? Localidad { get; set; }
 }

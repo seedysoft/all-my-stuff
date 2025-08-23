@@ -8,32 +8,27 @@ internal sealed class LocalidadEntityTypeConfiguration : IEntityTypeConfiguratio
     {
         _ = builder
             .Property(static x => x.LocalidadId)
-            .HasMaxLength(3)
-            .IsFixedLength();
+            .ValueGeneratedNever();
 
         _ = builder
             .Property(static x => x.LocalidadDenominacion);
 
         _ = builder
             .ToTable(nameof(Core.Entities.Localidad))
-            .HasKey(static x => x.LocalidadId);
+            .HasKey(static x => new { x.PaisId, x.ProvinciaId, x.LocalidadId });
 
         _ = builder
-            .HasIndex(static e => e.PaisId, $"IX_{nameof(Core.Entities.Localidad)}_{nameof(Core.Entities.Localidad.PaisId)}");
-        _ = builder
-            .HasOne(static d => d.Pais)
-            .WithMany(/*static p => p.Localidades*/)
-            .HasForeignKey(static d => d.PaisId)
+            .HasOne(static x => x.Pais)
+            .WithMany(/*static x => x.Localidades*/)
+            .HasForeignKey(static x => x.PaisId)
             .OnDelete(DeleteBehavior.Restrict)
             .HasConstraintName($"FK_{nameof(Core.Entities.Localidad)}_{nameof(Core.Entities.Localidad.PaisId)}");
 
         _ = builder
-            .HasIndex(static e => e.ProvinciaId, $"IX_{nameof(Core.Entities.Localidad)}_{nameof(Core.Entities.Localidad.ProvinciaId)}");
-        _ = builder
-            .HasOne(static d => d.Provincia)
-            .WithMany(/*static p => p.Localidades*/)
-            .HasForeignKey(static d => d.ProvinciaId)
+            .HasOne(static x => x.Provincia)
+            .WithMany(/*static x => x.Localidades*/)
+            .HasForeignKey(static x => new { x.PaisId, x.ProvinciaId })
             .OnDelete(DeleteBehavior.Restrict)
-            .HasConstraintName($"FK_{nameof(Core.Entities.Localidad)}_{nameof(Core.Entities.Localidad.ProvinciaId)}");
+            .HasConstraintName($"FK_{nameof(Core.Entities.Localidad)}_{nameof(Core.Entities.Localidad.Provincia)}");
     }
 }

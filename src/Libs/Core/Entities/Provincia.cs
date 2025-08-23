@@ -2,12 +2,12 @@
 
 public class Provincia
 {
-    public required string ProvinciaId { get; set; }
+    public required int ProvinciaId { get; set; }
 
     public required string ProvinciaDenominacion { get; set; }
 
-    public required string PaisId { get; set; }
-    public required Pais Pais { get; set; }
+    public required int PaisId { get; set; }
+    public Pais Pais { get; set; } = default!;
 
     //public virtual ICollection<Localidad> Localidades { get; set; } = [];
 

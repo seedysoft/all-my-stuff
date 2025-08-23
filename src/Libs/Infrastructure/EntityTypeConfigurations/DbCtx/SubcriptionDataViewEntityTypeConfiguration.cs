@@ -7,7 +7,7 @@ internal sealed class SubcriptionDataViewEntityTypeConfiguration : IEntityTypeCo
     public void Configure(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder<Core.Entities.SubcriptionDataView> builder)
     {
         _ = builder
-            .Property(static e => e.SubscriberId);
+            .Property(static x => x.SubscriberId);
 
         _ = builder
             .Property(static x => x.SubscriptionId);

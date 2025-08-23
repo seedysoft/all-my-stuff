@@ -19,7 +19,7 @@ internal sealed class SubscriptionEntityTypeConfiguration : IEntityTypeConfigura
             .HasKey(static s => s.SubscriptionId);
 
         _ = builder
-            .Navigation(static e => e.Subscribers)
+            .Navigation(static x => x.Subscribers)
             // System.InvalidOperationException: 'Cycle detected while auto-including navigations: 'Subscription.Subscribers', 'Subscriber.Subscriptions'. To fix this issue, either don't configure at least one navigation in the cycle as auto included in `OnModelCreating` or call 'IgnoreAutoInclude' method on the query.'
             /*.AutoInclude()*/;
     }

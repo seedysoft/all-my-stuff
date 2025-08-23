@@ -8,7 +8,7 @@ public class CentroDirectivo
 
     public int MinisterioId { get; set; }
 
-    public required Ministerio Ministerio {  get; set; }
+    public Ministerio Ministerio { get; set; } = default!;
 
     //public virtual ICollection<Unidad> Unidades { get; set; } = [];
 

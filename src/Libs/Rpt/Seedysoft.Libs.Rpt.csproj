@@ -29,5 +29,6 @@
     <ItemGroup>
         <ProjectReference Include="..\BackgroundServices\Seedysoft.Libs.BackgroundServices.csproj" />
         <ProjectReference Include="..\Core\Seedysoft.Libs.Core.csproj" />
+        <ProjectReference Include="..\Infrastructure\Seedysoft.Libs.Infrastructure.csproj" />
     </ItemGroup>
 </Project>

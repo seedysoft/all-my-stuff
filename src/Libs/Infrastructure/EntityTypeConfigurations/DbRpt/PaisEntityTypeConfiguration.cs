@@ -8,8 +8,7 @@ internal sealed class PaisEntityTypeConfiguration : IEntityTypeConfiguration<Cor
     {
         _ = builder
             .Property(static x => x.PaisId)
-            .HasMaxLength(3)
-            .IsFixedLength();
+            .ValueGeneratedNever();
 
         _ = builder
             .Property(static x => x.PaisDenominacion);

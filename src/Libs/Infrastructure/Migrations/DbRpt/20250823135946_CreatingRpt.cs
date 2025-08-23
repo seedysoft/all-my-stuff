@@ -26,7 +26,7 @@ namespace Seedysoft.Libs.Infrastructure.Migrations.DbRpt
                 name: "Pais",
                 columns: table => new
                 {
-                    PaisId = table.Column<string>(type: "TEXT", fixedLength: true, maxLength: 3, nullable: false),
+                    PaisId = table.Column<int>(type: "INTEGER", nullable: false),
                     PaisDenominacion = table.Column<string>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
@@ -57,13 +57,13 @@ namespace Seedysoft.Libs.Infrastructure.Migrations.DbRpt
                 name: "Provincia",
                 columns: table => new
                 {
-                    ProvinciaId = table.Column<string>(type: "TEXT", fixedLength: true, maxLength: 3, nullable: false),
-                    ProvinciaDenominacion = table.Column<string>(type: "TEXT", nullable: false),
-                    PaisId = table.Column<string>(type: "TEXT", nullable: false)
+                    ProvinciaId = table.Column<int>(type: "INTEGER", nullable: false),
+                    PaisId = table.Column<int>(type: "INTEGER", nullable: false),
+                    ProvinciaDenominacion = table.Column<string>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Provincia", x => x.ProvinciaId);
+                    table.PrimaryKey("PK_Provincia", x => new { x.PaisId, x.ProvinciaId });
                     table.ForeignKey(
                         name: "FK_Provincia_PaisId",
                         column: x => x.PaisId,
@@ -76,14 +76,14 @@ namespace Seedysoft.Libs.Infrastructure.Migrations.DbRpt
                 name: "Localidad",
                 columns: table => new
                 {
-                    LocalidadId = table.Column<string>(type: "TEXT", fixedLength: true, maxLength: 3, nullable: false),
-                    LocalidadDenominacion = table.Column<string>(type: "TEXT", nullable: false),
-                    PaisId = table.Column<string>(type: "TEXT", nullable: false),
-                    ProvinciaId = table.Column<string>(type: "TEXT", nullable: false)
+                    LocalidadId = table.Column<int>(type: "INTEGER", nullable: false),
+                    PaisId = table.Column<int>(type: "INTEGER", nullable: false),
+                    ProvinciaId = table.Column<int>(type: "INTEGER", nullable: false),
+                    LocalidadDenominacion = table.Column<string>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Localidad", x => x.LocalidadId);
+                    table.PrimaryKey("PK_Localidad", x => new { x.PaisId, x.ProvinciaId, x.LocalidadId });
                     table.ForeignKey(
                         name: "FK_Localidad_PaisId",
                         column: x => x.PaisId,
@@ -91,10 +91,10 @@ namespace Seedysoft.Libs.Infrastructure.Migrations.DbRpt
                         principalColumn: "PaisId",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Localidad_ProvinciaId",
-                        column: x => x.ProvinciaId,
+                        name: "FK_Localidad_Provincia",
+                        columns: x => new { x.PaisId, x.ProvinciaId },
                         principalTable: "Provincia",
-                        principalColumn: "ProvinciaId",
+                        principalColumns: new[] { "PaisId", "ProvinciaId" },
                         onDelete: ReferentialAction.Restrict);
                 });
 
@@ -105,13 +105,25 @@ namespace Seedysoft.Libs.Infrastructure.Migrations.DbRpt
                     UnidadId = table.Column<int>(type: "INTEGER", nullable: false),
                     UnidadDenominacion = table.Column<string>(type: "TEXT", nullable: false),
                     CentroDirectivoId = table.Column<int>(type: "INTEGER", nullable: false),
-                    PaisId = table.Column<string>(type: "TEXT", nullable: false),
-                    ProvinciaId = table.Column<string>(type: "TEXT", nullable: false),
-                    LocalidadId = table.Column<string>(type: "TEXT", nullable: true)
+                    PaisId = table.Column<int>(type: "INTEGER", nullable: false),
+                    ProvinciaId = table.Column<int>(type: "INTEGER", nullable: false),
+                    LocalidadId = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Unidad", x => x.UnidadId);
+                    table.ForeignKey(
+                        name: "FK_Puesto_PaisId",
+                        column: x => x.PaisId,
+                        principalTable: "Pais",
+                        principalColumn: "PaisId",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Puesto_Provincia",
+                        columns: x => new { x.PaisId, x.ProvinciaId },
+                        principalTable: "Provincia",
+                        principalColumns: new[] { "PaisId", "ProvinciaId" },
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Unidad_CentroDirectivoId",
                         column: x => x.CentroDirectivoId,
@@ -119,22 +131,10 @@ namespace Seedysoft.Libs.Infrastructure.Migrations.DbRpt
                         principalColumn: "CentroDirectivoId",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Unidad_LocalidadId",
-                        column: x => x.LocalidadId,
+                        name: "FK_Unidad_Localidad",
+                        columns: x => new { x.PaisId, x.ProvinciaId, x.LocalidadId },
                         principalTable: "Localidad",
-                        principalColumn: "LocalidadId",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Unidad_PaisId",
-                        column: x => x.PaisId,
-                        principalTable: "Pais",
-                        principalColumn: "PaisId",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Unidad_ProvinciaId",
-                        column: x => x.ProvinciaId,
-                        principalTable: "Provincia",
-                        principalColumn: "ProvinciaId",
+                        principalColumns: new[] { "PaisId", "ProvinciaId", "LocalidadId" },
                         onDelete: ReferentialAction.Restrict);
                 });
 
@@ -157,18 +157,18 @@ namespace Seedysoft.Libs.Infrastructure.Migrations.DbRpt
                     Observaciones = table.Column<string>(type: "TEXT", nullable: true),
                     Estado = table.Column<string>(type: "TEXT", nullable: false),
                     UnidadId = table.Column<int>(type: "INTEGER", nullable: false),
-                    PaisId = table.Column<string>(type: "TEXT", nullable: true),
-                    ProvinciaId = table.Column<string>(type: "TEXT", nullable: true),
-                    LocalidadId = table.Column<string>(type: "TEXT", nullable: true)
+                    PaisId = table.Column<int>(type: "INTEGER", nullable: true),
+                    ProvinciaId = table.Column<int>(type: "INTEGER", nullable: true),
+                    LocalidadId = table.Column<int>(type: "INTEGER", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Puesto", x => x.PuestoId);
                     table.ForeignKey(
-                        name: "FK_Puesto_LocalidadId",
-                        column: x => x.LocalidadId,
+                        name: "FK_Puesto_Localidad",
+                        columns: x => new { x.PaisId, x.ProvinciaId, x.LocalidadId },
                         principalTable: "Localidad",
-                        principalColumn: "LocalidadId",
+                        principalColumns: new[] { "PaisId", "ProvinciaId", "LocalidadId" },
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Puesto_PaisId",
@@ -177,10 +177,10 @@ namespace Seedysoft.Libs.Infrastructure.Migrations.DbRpt
                         principalColumn: "PaisId",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Puesto_ProvinciaId",
-                        column: x => x.ProvinciaId,
+                        name: "FK_Puesto_Provincia",
+                        columns: x => new { x.PaisId, x.ProvinciaId },
                         principalTable: "Provincia",
-                        principalColumn: "ProvinciaId",
+                        principalColumns: new[] { "PaisId", "ProvinciaId" },
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Puesto_UnidadId",
@@ -196,34 +196,9 @@ namespace Seedysoft.Libs.Infrastructure.Migrations.DbRpt
                 column: "MinisterioId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Localidad_PaisId",
-                table: "Localidad",
-                column: "PaisId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Localidad_ProvinciaId",
-                table: "Localidad",
-                column: "ProvinciaId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Provincia_PaisId",
-                table: "Provincia",
-                column: "PaisId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Puesto_LocalidadId",
+                name: "IX_Puesto_PaisId_ProvinciaId_LocalidadId",
                 table: "Puesto",
-                column: "LocalidadId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Puesto_PaisId",
-                table: "Puesto",
-                column: "PaisId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Puesto_ProvinciaId",
-                table: "Puesto",
-                column: "ProvinciaId");
+                columns: new[] { "PaisId", "ProvinciaId", "LocalidadId" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Puesto_UnidadId",
@@ -236,19 +211,9 @@ namespace Seedysoft.Libs.Infrastructure.Migrations.DbRpt
                 column: "CentroDirectivoId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Unidad_LocalidadId",
+                name: "IX_Unidad_PaisId_ProvinciaId_LocalidadId",
                 table: "Unidad",
-                column: "LocalidadId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Unidad_PaisId",
-                table: "Unidad",
-                column: "PaisId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Unidad_ProvinciaId",
-                table: "Unidad",
-                column: "ProvinciaId");
+                columns: new[] { "PaisId", "ProvinciaId", "LocalidadId" });
         }
 
         /// <inheritdoc />

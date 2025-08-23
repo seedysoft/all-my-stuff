@@ -1,6 +1,6 @@
 ﻿namespace Seedysoft.Libs.Rpt.Constants;
 
-internal enum ExcelColumns
+internal enum ExcelColumns : int
 {
     MinisterioId = 0,
     MinisterioDenominacion,
@@ -11,9 +11,9 @@ internal enum ExcelColumns
     UnidadPaisId,
     UnidadPaisDenominacion,
     UnidadProvinciaId,
-    UnidadDenominacionProvincia,
+    UnidadProvinciaDenominacion,
     UnidadLocalidadId,
-    UnidadDenominacionLocalidad,
+    UnidadLocalidadDenominacion,
     Puesto,
     PuestoDenominacionCorta,
     PuestoDenominacionLarga,
@@ -27,11 +27,15 @@ internal enum ExcelColumns
     TitulacionAcademica,
     FormacionEspecifica,
     PaisId,
-    DenominacionPais,
+    PaisDenominacion,
     ProvinciaId,
-    DenominacionProvincia,
+    ProvinciaDenominacion,
     LocalidadId,
-    DenominacionLocalidad,
+    LocalidadDenominacion,
     Observaciones,
-    Estado
+    Estado,
+    /// <summary>
+    /// Total # of columns
+    /// </summary>
+    Count
 }
