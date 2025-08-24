@@ -5,6 +5,25 @@ public static class GeometricHelper
     public static double DegreesToRadians(double degrees) => degrees * (Math.PI / Core.Constants.Earth.TotalDegrees / 2);
     public static double RadiansToDegrees(double radians) => radians * (Core.Constants.Earth.TotalDegrees / 2 / Math.PI);
 
+    public static Models.Shared.LatLngBoundsLiteral GetBounds(IEnumerable<Models.Shared.LatLngLiteral> routePoints, int maxDistanceInKm)
+    {
+        double North = routePoints.Max(x => x.Lat);
+        double South = routePoints.Min(x => x.Lat);
+        double East = routePoints.Max(x => x.Lng);
+        double West = routePoints.Min(x => x.Lng);
+
+        double LatExpanded = ExpandLatitude(North, West, maxDistanceInKm);
+        double LngExpanded = ExpandLongitude(South, East, maxDistanceInKm);
+
+        return new Models.Shared.LatLngBoundsLiteral()
+        {
+            North = LatExpanded,
+            South = South - (LatExpanded - South),
+            East = LngExpanded,
+            West = West - (LngExpanded - West),
+        };
+    }
+
     public static double ExpandLongitude(double latDegrees, double lonDegrees, double kilometers)
     {
         // Length of 1 degree of longitude = cosine(latitude) * [length of degree at equator]
@@ -17,7 +36,7 @@ public static class GeometricHelper
         static double GetOneDegreeLngKilometers(double latDegrees)
         {
             // Compute spherical coordinates
-            double EarthCircumferenceOnEquatorInKilometers = Core.Constants.Earth.MeanRadiusInMeters / 1_000d * 2 * Math.PI;
+            double EarthCircumferenceOnEquatorInKilometers = Core.Constants.Earth.MeanRadiusInKilometers * 2 * Math.PI;
 
             return Math.Cos(DegreesToRadians(latDegrees)) * EarthCircumferenceOnEquatorInKilometers / Core.Constants.Earth.TotalDegrees;
         }
@@ -45,21 +64,21 @@ public static class GeometricHelper
             double halfSideInKm = 0)
         {
             // Radius of Earth at given latitude
-            double EarthRadiusInKilometers = Core.Constants.Earth.MeanRadiusInMeters / 1_000;
-
             double latRadians = DegreesToRadians(latDegrees);
             // Radius of the parallel at given latitude
-            double pRadius = EarthRadiusInKilometers * Math.Cos(latRadians);
+            double pRadius = Core.Constants.Earth.MeanRadiusInKilometers * Math.Cos(latRadians);
 
-            double halfSide = 500d * halfSideInKm;
+            double halfSideInMeters = 500d * halfSideInKm;
 
-            double latRadiansMin = latRadians - (halfSide / EarthRadiusInKilometers);
-            double latRadiansMax = latRadians + (halfSide / EarthRadiusInKilometers);
+            double HalfSize = halfSideInMeters / Core.Constants.Earth.MeanRadiusInKilometers;
+            double latRadiansMin = latRadians - HalfSize;
+            double latRadiansMax = latRadians + HalfSize;
 
             double lonRadians = DegreesToRadians(lonDegrees);
 
-            double lonRadiansMin = lonRadians - (halfSide / pRadius);
-            double lonRadiansMax = lonRadians + (halfSide / pRadius);
+            double HalfRadius = halfSideInMeters / pRadius;
+            double lonRadiansMin = lonRadians - HalfRadius;
+            double lonRadiansMax = lonRadians + HalfRadius;
 
             return new()
             {
@@ -71,11 +90,15 @@ public static class GeometricHelper
         }
     }
 
-    private static class Haversine
+    public static class Haversine
     {
         /// <summary>
         /// Returns the distance in kilometers of any two latitude / longitude points.
         /// </summary>
+        /// <param name="fromLatDegrees">From point latitude</param>
+        /// <param name="fromLngDegrees">From point longitude</param>
+        /// <param name="toLatDegrees">To point latitude</param>
+        /// <param name="toLngDegrees">To point longitude</param>
         /// <returns></returns>
         public static double Distance(double fromLatDegrees, double fromLngDegrees, double toLatDegrees, double toLngDegrees)
         {
@@ -91,7 +114,41 @@ public static class GeometricHelper
 
             double c = 2 * Math.Asin(Math.Min(1, Math.Sqrt(a)));
 
-            return (double)(Core.Constants.Earth.MeanRadiusInMeters / 1_000 * c);
+            double DistanceInKilometers = (double)(Core.Constants.Earth.MeanRadiusInKilometers * c);
+            
+            return DistanceInKilometers;
         }
+    }
+
+    /// <summary>
+    /// Haversine formula to calculate great-circle (orthodromic) distance on Earth.
+    /// High Accuracy, Medium speed.
+    /// </summary>
+    /// <param name="from">LatLngLiteral: 1st point</param>
+    /// <param name="to">LatLngLiteral: 2nd point</param>
+    /// <returns>double: distance in kilometers</returns>
+    public static double DistanceHaversineInKilometers(Models.Shared.LatLngLiteral from, Models.Shared.LatLngLiteral to)
+    {
+        double _radLat1 = DegreesToRadians(from.Lat);
+        double _radLat2 = DegreesToRadians(to.Lat);
+
+        double _dLatHalf = (_radLat2 - _radLat1) / 2;
+        double _dLonHalf = Math.PI * (to.Lng - from.Lng) / Core.Constants.Earth.TotalDegrees;
+
+        // intermediate result
+        double _a = Math.Sin(_dLatHalf);
+        _a *= _a;
+
+        // intermediate result
+        double _b = Math.Sin(_dLonHalf);
+        _b *= _b * Math.Cos(_radLat1) * Math.Cos(_radLat2);
+
+        // central angle, aka arc segment angular distance
+        double _centralAngle = 2 * Math.Atan2(Math.Sqrt(_a + _b), Math.Sqrt(1 - _a - _b));
+
+        // great-circle (orthodromic) distance on Earth between 2 points
+        double DistanceInKilometers = Core.Constants.Earth.MeanRadiusInKilometers * _centralAngle;
+
+        return DistanceInKilometers;
     }
 }

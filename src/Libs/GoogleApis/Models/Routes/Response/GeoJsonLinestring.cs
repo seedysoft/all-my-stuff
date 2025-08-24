@@ -3,7 +3,7 @@
 /// <summary>
 /// Specifies a polyline using the <see href="https://tools.ietf.org/html/rfc7946#section-3.1.4">GeoJSON LineString format</see>.
 /// </summary>
-public record GeoJsonLinestring
+public class GeoJsonLinestring
 {
     /// <summary>
     /// "LineString".

@@ -72,7 +72,7 @@ dotnet workload install wasm-tools-net8
 dotnet tool list   -g
 dotnet tool update -g dotnet-ef
 # Keep .NET 8:
-dotnet tool install dotnet-ef -g --version 8.0.12 --allow-downgrade
+dotnet tool install dotnet-ef -g --version 8.* --allow-downgrade
 
 # MudBlazor Templates
 dotnet new install MudBlazor.Templates

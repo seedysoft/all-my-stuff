@@ -405,3 +405,6 @@ databases
 
 # global packages folder
 globalPackages
+
+# Temporal directory for RPT  
+src/BlazorWebApp/Server/Temp

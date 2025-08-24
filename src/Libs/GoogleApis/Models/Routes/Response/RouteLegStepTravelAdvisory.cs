@@ -3,7 +3,7 @@
 /// <summary>
 /// Contains the additional information that the user should be informed about, such as possible traffic zone restrictions on a leg step.
 /// </summary>
-public record RouteLegStepTravelAdvisory
+public class RouteLegStepTravelAdvisory
 {
     /// <summary>
     /// NOTE: This field is not currently populated.

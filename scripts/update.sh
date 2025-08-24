@@ -4,16 +4,13 @@ echo "${#} arguments in $0"
 
 # Check minimun required parameters
 if [[ $# -ne 1 ]]; then
-    echo "Must provide zip file name!"
+    echo "Must provide Uri to download!"
     exit 1
 fi
 
 source shared.sh
 
 echo "worker_service_name: ${WORKER_SERVICE_NAME}"
-
-# Stop service
-./stop-daemon.sh -s "${WORKER_SERVICE_NAME}"
 
 # Move working directory to WORKER_SERVICE_DIRECTORY
 WORKER_SERVICE_DIRECTORY="$(dirname "$(readlink -f "$0")")"
@@ -39,9 +36,17 @@ if [ "${WORKER_SERVICE_USER}" == "root" ] || [ "${WORKER_SERVICE_USER}" == "UNKN
   exit 1
 fi
 
+# Stop service
+./stop-daemon.sh -s "${WORKER_SERVICE_NAME}"
+
+echo "Downloading ..."
+ZIP_FILE_NAME="$(mktemp -p . --suffix=.zip)"
+wget -O $ZIP_FILE_NAME $1
+echo "Zip '${ZIP_FILE_NAME}' downloaded"
+
 # Extract files from zip
 echo "Extracting files"
-unzip -o -q $1 -d ./
+unzip -o -q $ZIP_FILE_NAME -d ./
 
 chown pi:pi *
 chmod ug+rw *
@@ -49,4 +54,4 @@ chmod ug+rw *
 # Start service
 sudo ./create-daemon.sh -f "${EXECUTABLE_FILE_NAME}" -s "${WORKER_SERVICE_NAME}"
 
-rm *.zip
+rm $ZIP_FILE_NAME

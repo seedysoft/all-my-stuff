@@ -1,6 +1,6 @@
 ﻿namespace Seedysoft.Libs.TelegramBot.Settings;
 
-public record class TelegramUserBase
+public record TelegramUserBase
 {
     private string id = default!;
     private string username = default!;

@@ -6,7 +6,7 @@ internal sealed class TuyaDeviceEntityTypeConfiguration : IEntityTypeConfigurati
 {
     public void Configure(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder<Core.Entities.TuyaDevice> builder)
     {
-        // TODO                           Encrypt
+        // TODO Encrypt ???
 
         _ = builder
             .Property(static s => s.Id)

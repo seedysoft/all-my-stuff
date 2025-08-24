@@ -3,6 +3,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <RuntimeIdentifiers>linux-arm64;win-x64</RuntimeIdentifiers>
+        <SelfContained>true</SelfContained>
         <StartupObject>Seedysoft.BlazorWebApp.Server.Program</StartupObject>
         <TargetFramework>net8.0</TargetFramework>
         <UserSecretsId>953853f7-9384-457c-a3c0-3492059196ab</UserSecretsId>
@@ -46,12 +47,12 @@
 
     <ItemGroup>
         <PackageReference Include="CommandLineParser" Version="2.9.1" />
-        <PackageReference Include="Cronos" Version="0.11.0" />
+        <PackageReference Include="Cronos" Version="0.11.1" />
         <PackageReference Include="DiffPlex" Version="1.8.0" />
         <PackageReference Include="EFCore.BulkExtensions.Sqlite" Version="[8.*,9)" />
         <PackageReference Include="EfCore.SchemaCompare" Version="[8.*,9)" />
         <PackageReference Include="FluentValidation" Version="12.0.0" />
-        <PackageReference Include="HtmlAgilityPack" Version="1.12.1" />
+        <PackageReference Include="HtmlAgilityPack" Version="1.12.2" />
         <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="[8.*,9)" />
         <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="[8.*,9)" />
         <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="[8.*,9)" />
@@ -70,13 +71,13 @@
         <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="[8.*,9)" />
         <PackageReference Include="Microsoft.Extensions.Hosting.Systemd" Version="[8.*,9)" />
         <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="[8.*,9)" />
-        <PackageReference Include="MudBlazor" Version="8.8.0" />
-        <PackageReference Include="NSwag.AspNetCore" Version="14.4.0" />
+        <PackageReference Include="MudBlazor" Version="8.11.0" />
+        <PackageReference Include="NSwag.AspNetCore" Version="14.5.0" />
         <PackageReference Include="Serilog" Version="4.3.0" />
         <PackageReference Include="Serilog.Extensions.Logging" Version="[8.*,9)" />
         <PackageReference Include="Serilog.Settings.Configuration" Version="[8.*,9)" />
         <PackageReference Include="System.IO.Hashing" Version="[8.*,9)" />
-        <PackageReference Include="Telegram.Bot" Version="22.5.1" />
+        <PackageReference Include="Telegram.Bot" Version="22.6.2" />
     </ItemGroup>
 
     <ItemGroup>

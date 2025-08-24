@@ -2,9 +2,12 @@
 
 @inherits SeedysoftComponentBase
 
-<ScriptsLoader Async="true"
-               Class="mt-4"
-               Defer="true"
+<style type="text/css">
+    @($"#{this.Id} {{ height: 100%; }} ")
+</style>
+
+<ScriptsLoader Async
+               Defer
                Id="@($"sl{Id}")"
                OnError="@OnScriptError"
                OnLoad="@OnScriptLoad"
@@ -14,3 +17,7 @@
 <div @ref="@Element" id="@Id" class="@ClassNames" style="@StyleNames" @attributes="@AdditionalAttributes">
 </div>
 
+<div class="alert d-none" id="alert">
+    <p>error</p>
+    <a href="#" class="close">&times;</a>
+</div>

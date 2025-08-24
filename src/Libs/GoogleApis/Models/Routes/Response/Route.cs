@@ -3,7 +3,7 @@
 /// <summary>
 /// Contains a route, which consists of a series of connected road segments that join beginning, ending, and intermediate waypoints.
 /// </summary>
-public record Route
+public class Route
 {
     /// <summary>
     /// Labels for the Route that are useful to identify specific properties of the route to compare against others.

@@ -37,8 +37,8 @@ public sealed class Configurator : Libs.Core.Dependencies.ConfiguratorBase
 
         // Add services to the container.
         _ = hostApplicationBuilder.Services
-            .AddRazorComponents(static razorComponentsServiceOptions => { })
-            .AddInteractiveServerComponents(static circuitOptions => { })
+            .AddRazorComponents(razorComponentsServiceOptions => razorComponentsServiceOptions.DetailedErrors = hostApplicationBuilder.Environment.IsDevelopment())
+            .AddInteractiveServerComponents(circuitOptions => circuitOptions.DetailedErrors = hostApplicationBuilder.Environment.IsDevelopment())
             .AddInteractiveWebAssemblyComponents();
 
         _ = hostApplicationBuilder.Services
@@ -48,7 +48,7 @@ public sealed class Configurator : Libs.Core.Dependencies.ConfiguratorBase
 
             .AddHttpClient() // Needed for server rendering
 
-            .AddControllers()
+            //.AddControllers()
         ;
 
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
