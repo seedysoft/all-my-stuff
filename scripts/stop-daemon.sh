@@ -11,7 +11,9 @@ Help(){
   echo "Usage: bash $0 [-h] -s service-name"
   echo "options:"
   echo "-h              Show this help"
+  # echo "-f  [REQUIRED]  Executable file name"
   echo "-s  [REQUIRED]  Service name"
+  # echo "-u  [pi]        User and group that executes service"
   # echo "      --favorite_food  |  -f     []                    chocolate or pizza?"
   # echo "      --secret         |  -s     [!@#%^&*?/.,[]{}+-|]  special characters"
   # echo "      --language       |  -lang  [C.UTF-8]             default value can be a variable"
@@ -30,8 +32,8 @@ Help(){
 
 # Check if the install script is running as root
 # if [ "$EUID" -ne 0 ]; then
-#   echo "${COLOR_RED_BOLD}ERROR${COLOR_NO}: Please run this script as root"
-#   exit 1
+  # echo "${COLOR_RED_BOLD}ERROR${COLOR_NO}: Please run this script as root"
+  # exit 1
 # fi
 
 echo "${#} arguments in $0"
@@ -46,11 +48,7 @@ while getopts ":f:h:s:u" option; do
       exit 1;;
 
     s) # Enter a service name
-      if [[ $OPTARG == *.service ]]; then
-        WORKER_SERVICE_NAME=$OPTARG
-      else
-        WORKER_SERVICE_NAME=$(echo $OPTARG.service)
-      fi;;
+      WORKER_SERVICE_NAME=$OPTARG;;
 
     \?) # Invalid option
       echo "Error: Invalid option '${option}'"

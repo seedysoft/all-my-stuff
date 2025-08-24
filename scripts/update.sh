@@ -37,21 +37,25 @@ if [ "${WORKER_SERVICE_USER}" == "root" ] || [ "${WORKER_SERVICE_USER}" == "UNKN
 fi
 
 # Stop service
+echo "Calling stop script"
 ./stop-daemon.sh -s "${WORKER_SERVICE_NAME}"
 
-echo "Downloading ..."
 ZIP_FILE_NAME="$(mktemp -p . --suffix=.zip)"
+echo "Downloading '${ZIP_FILE_NAME}'"
 wget -O $ZIP_FILE_NAME $1
 echo "Zip '${ZIP_FILE_NAME}' downloaded"
 
 # Extract files from zip
-echo "Extracting files"
+echo "Extracting files ..."
 unzip -o -q $ZIP_FILE_NAME -d ./
 
+echo "Changing owner and mod ..."
 chown pi:pi *
 chmod ug+rw *
 
 # Start service
+echo "Calling create script"
 sudo ./create-daemon.sh -f "${EXECUTABLE_FILE_NAME}" -s "${WORKER_SERVICE_NAME}"
 
+echo "Deleting zip file"
 rm $ZIP_FILE_NAME
