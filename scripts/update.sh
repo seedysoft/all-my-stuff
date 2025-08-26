@@ -31,9 +31,23 @@ if [ "${WORKER_SERVICE_USER}" == "root" ] || [ "${WORKER_SERVICE_USER}" == "UNKN
   exit 1
 fi
 
-# # Extract files from 7z
-# echo "Extracting 7z files"
-# 7z x -y *.7z
+# Stop service
+echo "Calling stop script"
+./stop-daemon.sh -s "${WORKER_SERVICE_NAME}"
+
+ZIP_FILE_NAME="$(mktemp -p . --suffix=.zip)"
+echo "Downloading '${ZIP_FILE_NAME}'"
+wget -O $ZIP_FILE_NAME $1
+echo "Zip '${ZIP_FILE_NAME}' downloaded"
+
+# Extract files from zip
+echo "Extracting files ..."
+unzip -o -q $ZIP_FILE_NAME -d ./
+
+echo "Changing owner and mod ..."
+chown pi:pi *
+chmod ug+rw *
+chmod ug+x Seedysoft.*
 
 # Start service
 ./create-daemon.sh -f "${EXECUTABLE_FILE_NAME}" -s "${WORKER_SERVICE_NAME}"

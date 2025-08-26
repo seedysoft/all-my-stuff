@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Seedysoft.Libs.Core.Extensions;
 
@@ -8,12 +9,16 @@ public sealed class UpdaterCronBackgroundService : BackgroundServices.Cron
 {
     private readonly Octokit.GitHubClient gitHubClient;
     private readonly ILogger<UpdaterCronBackgroundService> Logger;
+    private Settings.UpdateSettings Settings => (Settings.UpdateSettings)Config;
 
     public UpdaterCronBackgroundService(IServiceProvider serviceProvider, Microsoft.Extensions.Hosting.IHostApplicationLifetime hostApplicationLifetime)
         : base(serviceProvider, hostApplicationLifetime)
     {
         gitHubClient = ServiceProvider.GetRequiredService<Octokit.GitHubClient>();
         Logger = ServiceProvider.GetRequiredService<ILogger<UpdaterCronBackgroundService>>();
+
+        Config = ServiceProvider.GetRequiredService<IConfiguration>()
+            .GetSection(nameof(Update.Settings.UpdateSettings)).Get<Settings.UpdateSettings>()!;
     }
 
     public override async Task DoWorkAsync(CancellationToken cancellationToken)
