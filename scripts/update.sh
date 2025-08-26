@@ -52,6 +52,7 @@ unzip -o -q $ZIP_FILE_NAME -d ./
 echo "Changing owner and mod ..."
 chown pi:pi *
 chmod ug+rw *
+chmod ug+x Seedysoft.*
 
 # Start service
 echo "Calling create script"
