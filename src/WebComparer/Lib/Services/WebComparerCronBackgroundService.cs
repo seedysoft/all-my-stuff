@@ -340,11 +340,15 @@ public sealed class WebComparerCronBackgroundService : Libs.BackgroundServices.C
     {
         return lineChangeType switch
         {
-            DiffPlex.DiffBuilder.Model.ChangeType.Deleted => "-  ",
-            DiffPlex.DiffBuilder.Model.ChangeType.Inserted => "+  ",
-            DiffPlex.DiffBuilder.Model.ChangeType.Modified => "~  ",
-            DiffPlex.DiffBuilder.Model.ChangeType.Unchanged => "=  ",
+#pragma warning disable format
+            
+            DiffPlex.DiffBuilder.Model.ChangeType.Deleted        => "-  ",
+            DiffPlex.DiffBuilder.Model.ChangeType.Inserted       => "+  ",
+            DiffPlex.DiffBuilder.Model.ChangeType.Modified       => "~  ",
+            DiffPlex.DiffBuilder.Model.ChangeType.Unchanged      => "=  ",
             DiffPlex.DiffBuilder.Model.ChangeType.Imaginary or _ => string.Empty,
+
+#pragma warning restore format
         };
     }
 }
