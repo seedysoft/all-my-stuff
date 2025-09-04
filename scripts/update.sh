@@ -4,8 +4,20 @@ EXECUTABLE_FILE_NAME="Seedysoft.BlazorWebApp.Server"
 WORKER_SERVICE_NAME="ss-BlazorWebAppTest"
 WORKER_SERVICE_USER="pi"
 
-# Stop service
-./stop-daemon.sh -s "${WORKER_SERVICE_NAME}"
+# Check minimun required parameters
+if [[ $# -ne 1 ]]; then
+  echo "Must provide zip file name!"
+  exit 1
+fi
+
+ZIP_FILE_NAME=$1
+if [ -z "${ZIP_FILE_NAME}" ]; then
+  echo "No file to update"
+  exit 1
+fi
+
+source shared.sh
+echo "worker_service_name: ${WORKER_SERVICE_NAME}"
 
 # Move working directory to WORKER_SERVICE_DIRECTORY
 WORKER_SERVICE_DIRECTORY="$(dirname "$(readlink -f "$0")")"
@@ -31,25 +43,16 @@ if [ "${WORKER_SERVICE_USER}" == "root" ] || [ "${WORKER_SERVICE_USER}" == "UNKN
   exit 1
 fi
 
-# Stop service
 echo "Calling stop script"
-./stop-daemon.sh -s "${WORKER_SERVICE_NAME}"
+sudo ./stop-daemon.sh -s "${WORKER_SERVICE_NAME}"
 
-ZIP_FILE_NAME="$(mktemp -p . --suffix=.zip)"
-echo "Downloading '${ZIP_FILE_NAME}'"
-wget -O $ZIP_FILE_NAME $1
-echo "Zip '${ZIP_FILE_NAME}' downloaded"
-
-# Extract files from zip
 echo "Extracting files ..."
 unzip -o -q $ZIP_FILE_NAME -d ./
 
 echo "Changing owner and mod ..."
-chown pi:pi *
-chmod ug+rw *
-chmod ug+x Seedysoft.*
+chown pi:pi *; chmod ug+rw *; chmod ug+x *.sh; chmod ug+x Seedysoft.*;
 
-# Start service
-./create-daemon.sh -f "${EXECUTABLE_FILE_NAME}" -s "${WORKER_SERVICE_NAME}"
+echo "Calling create script"
+sudo ./create-daemon.sh -f "${EXECUTABLE_FILE_NAME}" -s "${WORKER_SERVICE_NAME}"
 
 # rm *.7z

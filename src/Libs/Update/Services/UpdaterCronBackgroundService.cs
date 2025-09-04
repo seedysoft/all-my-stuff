@@ -32,7 +32,7 @@ public sealed class UpdaterCronBackgroundService : BackgroundServices.Cron
 
         try
         {
-            Enums.UpdateResults UpgradeResult = await CheckAndUpgradeToNewVersion();
+            Enums.UpdateResults UpgradeResult = await DownloadLatestReleaseAsset(cancellationToken);
 
             Logger.LogInformation($"Updating result: {UpgradeResult}");
         }
@@ -42,7 +42,7 @@ public sealed class UpdaterCronBackgroundService : BackgroundServices.Cron
         Logger.LogInformation("End {ApplicationName}", AppName);
     }
 
-    internal async Task<Enums.UpdateResults> CheckAndUpgradeToNewVersion()
+    internal async Task<Enums.UpdateResults> DownloadLatestReleaseAsset(CancellationToken cancellationToken)
     {
         Octokit.Release? release = await GetLatestReleaseFromGithubAsync();
         if (release == null)
@@ -51,35 +51,45 @@ public sealed class UpdaterCronBackgroundService : BackgroundServices.Cron
             return Enums.UpdateResults.LatestReleaseFromGithubIsNull;
         }
 
-        var ExecutingAssembly = System.Reflection.Assembly.GetExecutingAssembly();
-        Version? CurrentVersion = ExecutingAssembly.GetName().Version;
-        Version? NewVersion = new(release.Name);
-
-        if (NewVersion <= CurrentVersion)
-        {
-            Logger.LogInformation($"Current version is: {CurrentVersion}. Latest version is: {NewVersion}");
-            return Enums.UpdateResults.NoNewVersionFound;
-        }
-
-        Octokit.ReleaseAsset? asset =
+        Octokit.ReleaseAsset? releaseAsset =
             release.Assets.FirstOrDefault(x => x.Name.Contains(System.Runtime.InteropServices.RuntimeInformation.RuntimeIdentifier, StringComparison.InvariantCultureIgnoreCase));
-        if (asset == null)
+        if (releaseAsset == null)
         {
             Logger.LogError($"Asset not found for {System.Runtime.InteropServices.RuntimeInformation.RuntimeIdentifier}.");
             return Enums.UpdateResults.AssetNotFound;
         }
 
-        if (!ExecuteUpdateScript(new Uri(asset.BrowserDownloadUrl)))
+        string assetName = releaseAsset.Name;
+        if (File.Exists(assetName))
         {
-            Logger.LogError("Cannot execute update script");
-            return Enums.UpdateResults.ErrorExecutingUpdateScript;
+            Logger.LogInformation($"New version '{new FileInfo(assetName).FullName}' waiting for deploy");
+            return Enums.UpdateResults.NewVersionAlreadyDownloaded;
         }
 
-        Logger.LogInformation("Update in progress...");
+        var ExecutingAssembly = System.Reflection.Assembly.GetExecutingAssembly();
+        Version? CurrentVersion = ExecutingAssembly.GetName().Version;
+        Version NewVersion = new(release.Name);
 
-        Environment.Exit(0);
+        if (NewVersion <= (CurrentVersion ?? new Version()))
+        {
+            Logger.LogInformation($"Current version is: {CurrentVersion}. Latest version is: {NewVersion}");
+            return Enums.UpdateResults.NoNewVersionFound;
+        }
 
-        return Enums.UpdateResults.Ok;
+        // Here, NewVersion is greather than CurrentVersion
+        using var httpClient = new HttpClient();
+        //httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("token my-token");
+        httpClient.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue(System.Net.Mime.MediaTypeNames.Application.Octet));
+        httpClient.DefaultRequestHeaders.UserAgent.ParseAdd(assetName);
+        using Stream streamToReadFrom = await httpClient.GetStreamAsync(releaseAsset.BrowserDownloadUrl, cancellationToken);
+        using Stream streamToWriteTo = File.Open(assetName, FileMode.Create);
+        await streamToReadFrom.CopyToAsync(streamToWriteTo, cancellationToken);
+
+        Logger.LogInformation("Update asset downloaded");
+
+        return ExecuteUpdateScript(ExecutingAssembly.Location, assetName)
+            ? Enums.UpdateResults.Ok
+            : Enums.UpdateResults.ErrorExecutingUpdateScript;
     }
 
     internal async Task<Octokit.Release?> GetLatestReleaseFromGithubAsync()
@@ -93,17 +103,22 @@ public sealed class UpdaterCronBackgroundService : BackgroundServices.Cron
         return releases.Any() ? releases[0] : null;
     }
 
-    internal async Task<string> DownloadReleaseFromGithubAsync(Octokit.Release release)
+    internal bool ExecuteUpdateScript(string executingAssemblyLocation, string assetName)
     {
         foreach (Octokit.ReleaseAsset? asset in release.Assets)
         {
-            if (!asset.Name.Contains($"{System.Runtime.InteropServices.RuntimeInformation.RuntimeIdentifier}", StringComparison.InvariantCultureIgnoreCase))
-                continue;
+            CreateNoWindow = true,
+            UseShellExecute = true,
+        };
 
-            using HttpClient httpClient = new();
-            httpClient.DefaultRequestHeaders.Add("User-Agent", "Anything");
-            httpClient.DefaultRequestHeaders.Add("Accept", "application/octet-stream");
-            //httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Core.Constants.Github.Token);
+        string runtimeIdentifier = System.Runtime.InteropServices.RuntimeInformation.RuntimeIdentifier;
+        switch (runtimeIdentifier)
+        {
+            case Core.Constants.SupportedRuntimeIdentifiers.LinuxArm64:
+                //case Core.Constants.SupportedRuntimeIdentifiers.LinuxX64:
+                processStartInfo.FileName = $"sudo systemd-run --on-active=60 --working-directory={Path.Combine(executingAssemblyLocation)} {Path.Combine(executingAssemblyLocation, "update.sh")} {assetName}";
+                processStartInfo.WorkingDirectory = Path.Combine(executingAssemblyLocation);
+                break;
 
             Logger.LogInformation("Try to download {assetBrowserDownloadUrl}", asset.BrowserDownloadUrl);
 
