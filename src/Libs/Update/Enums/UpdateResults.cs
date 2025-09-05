@@ -4,11 +4,13 @@ public enum UpdateResults : int
 {
     Ok = 0,
 
-    NoNewVersionFound,
-
     LatestReleaseFromGithubIsNull,
 
     AssetNotFound,
+
+    NewVersionAlreadyDownloaded,
+
+    NoNewVersionFound,
 
     ErrorExecutingUpdateScript,
 }

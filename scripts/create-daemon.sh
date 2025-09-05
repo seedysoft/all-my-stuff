@@ -32,8 +32,8 @@ Help(){
 
 # Check if the install script is running as root
 # if [ "$EUID" -ne 0 ]; then
-#   echo "${COLOR_RED_BOLD}ERROR${COLOR_NO}: Please run this script as root"
-#   exit 1
+  # echo "${COLOR_RED_BOLD}ERROR${COLOR_NO}: Please run this script as root"
+  # exit 1
 # fi
 
 echo "${#} arguments in $0"

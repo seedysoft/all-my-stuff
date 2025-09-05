@@ -41,7 +41,7 @@ if [ -d $DOTNET_ROOT ]; then
 fi
 export PATH
 
-sudo apt-get install chromium-chromedriver
+sudo apt-get install chromium-chromedriver unzip
 
 # Dotnet downloads:
 https://dotnet.microsoft.com/en-us/download/dotnet
