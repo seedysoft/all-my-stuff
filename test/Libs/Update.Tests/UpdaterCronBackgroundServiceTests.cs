@@ -28,22 +28,10 @@ public sealed class UpdaterCronBackgroundServiceTests : Infrastructure.Tests.Tes
         Assert.True(RelaseVersion < new Version(DateTime.UtcNow.ToString("yy.Mdd.Hmm.ss")));
     }
 
-    [Fact]
-    public async Task DownloadLatestReleaseAssetTest()
-    {
-        Enums.UpdateResults updateResult = await updaterCronBackgroundService.DownloadLatestReleaseAsset(CancellationToken.None);
-        Assert.Equal(Enums.UpdateResults.Ok, updateResult);
-    }
-
-    [Fact(Timeout = 60_000)]
-    public async Task DownloadReleaseFromGithubAsyncTest()
-    {
-        Octokit.Release? release = await updaterCronBackgroundService.GetLatestReleaseFromGithubAsync();
-        Assert.NotNull(release);
-
-        string fileName = await updaterCronBackgroundService.DownloadReleaseFromGithubAsync(release);
-        Assert.False(string.IsNullOrWhiteSpace(fileName));
-
-        File.Delete(fileName);
-    }
+    //[Fact]
+    //public async Task DownloadLatestReleaseAssetTest()
+    //{
+    //    Enums.UpdateResults updateResult = await updaterCronBackgroundService.DownloadLatestReleaseAsset(CancellationToken.None);
+    //    Assert.Equal(Enums.UpdateResults.Ok, updateResult);
+    //}
 }

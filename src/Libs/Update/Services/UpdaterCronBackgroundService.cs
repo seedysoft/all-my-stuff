@@ -105,7 +105,7 @@ public sealed class UpdaterCronBackgroundService : BackgroundServices.Cron
 
     internal bool ExecuteUpdateScript(string executingAssemblyLocation, string assetName)
     {
-        foreach (Octokit.ReleaseAsset? asset in release.Assets)
+        System.Diagnostics.ProcessStartInfo processStartInfo = new()
         {
             CreateNoWindow = true,
             UseShellExecute = true,
@@ -120,23 +120,16 @@ public sealed class UpdaterCronBackgroundService : BackgroundServices.Cron
                 processStartInfo.WorkingDirectory = Path.Combine(executingAssemblyLocation);
                 break;
 
-            Logger.LogInformation("Try to download {assetBrowserDownloadUrl}", asset.BrowserDownloadUrl);
+            //case Core.Constants.SupportedRuntimeIdentifiers.WinX64:
+            //    processStartInfo.FileName = $"update.bat {zipFileName}";
+            //    break;
 
-            HttpResponseMessage response = await httpClient.GetAsync(asset.BrowserDownloadUrl);
-
-            _ = response.EnsureSuccessStatusCode();
-
-            using (Stream stream = await response.Content.ReadAsStreamAsync())
-            {
-                using FileStream fileStream = File.Create(asset.Name);
-                await stream.CopyToAsync(fileStream);
-            }
-
-            Logger.LogInformation("Downloaded {assetName}", asset.Name);
-
-            return asset.Name;
+            default:
+                // TODO: use interpolated strings in all solution
+                Logger.LogError("RuntimeIdentifier {runtimeIdentifier} not supported", runtimeIdentifier);
+                return false;
         }
 
-        return string.Empty;
+        return System.Diagnostics.Process.Start(processStartInfo) != null;
     }
 }
