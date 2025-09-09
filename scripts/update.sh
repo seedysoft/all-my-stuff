@@ -1,8 +1,6 @@
 #!/bin/bash
 
-EXECUTABLE_FILE_NAME="Seedysoft.BlazorWebApp.Server"
-WORKER_SERVICE_NAME="ss-BlazorWebAppTest"
-WORKER_SERVICE_USER="pi"
+echo "${#} arguments in $0"
 
 # Check minimun required parameters
 if [[ $# -ne 1 ]]; then
@@ -43,7 +41,7 @@ if [ "${WORKER_SERVICE_USER}" == "root" ] || [ "${WORKER_SERVICE_USER}" == "UNKN
   exit 1
 fi
 
-echo "Calling stop script"
+echo "Calling stop script ..."
 sudo ./stop-daemon.sh -s "${WORKER_SERVICE_NAME}"
 
 echo "Extracting files ..."
@@ -52,7 +50,8 @@ unzip -o -q $ZIP_FILE_NAME -d ./
 echo "Changing owner and mod ..."
 chown pi:pi *; chmod ug+rw *; chmod ug+x *.sh; chmod ug+x Seedysoft.*;
 
-echo "Calling create script"
+echo "Calling create script ..."
 sudo ./create-daemon.sh -f "${EXECUTABLE_FILE_NAME}" -s "${WORKER_SERVICE_NAME}"
 
-# rm *.7z
+echo "Deleting zip file ..."
+rm $ZIP_FILE_NAME

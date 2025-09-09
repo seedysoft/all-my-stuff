@@ -23,13 +23,7 @@
         <None Include="..\..\..\scripts\create-daemon.sh" Link="create-daemon.sh">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
-        <None Include="..\..\..\scripts\create-BlazorWebApp-daemon.sh" Link="create-BlazorWebApp-daemon.sh">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
         <None Include="..\..\..\scripts\stop-daemon.sh" Link="stop-daemon.sh">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
-        <None Include="..\..\..\scripts\stop-BlazorWebApp-daemon.sh" Link="stop-BlazorWebApp-daemon.sh">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
         <None Include="..\..\..\scripts\update.sh" Link="update.sh">
@@ -86,7 +80,7 @@
         <PackageReference Include="Serilog.Settings.Configuration" Version="[8.*,9)" />
         <PackageReference Include="Serilog.Sinks.Console" Version="6.0.0" />
         <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
-        <PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" Version="2.1.11" />
+        <PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" Version="[2.*,3)" />
         <PackageReference Include="System.IO.Hashing" Version="[8.*,9)" />
         <PackageReference Include="Telegram.Bot" Version="22.7.2" />
     </ItemGroup>
