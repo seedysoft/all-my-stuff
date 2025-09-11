@@ -66,8 +66,9 @@ public sealed class UpdaterCronBackgroundService : BackgroundServices.Cron
             return Enums.UpdateResults.NewVersionAlreadyDownloaded;
         }
 
-        var ExecutingAssembly = System.Reflection.Assembly.GetExecutingAssembly();
-        Version? CurrentVersion = ExecutingAssembly.GetName().Version;
+        System.Reflection.Assembly EntryAssembly = System.Reflection.Assembly.GetEntryAssembly()!;
+        Logger.LogInformation($"Entry assembly is: {EntryAssembly}");
+        Version? CurrentVersion = EntryAssembly.GetName().Version;
         Version NewVersion = new(release.Name);
 
         if (NewVersion <= (CurrentVersion ?? new Version()))
@@ -87,7 +88,7 @@ public sealed class UpdaterCronBackgroundService : BackgroundServices.Cron
 
         Logger.LogInformation("Update asset downloaded");
 
-        return ExecuteUpdateScript(ExecutingAssembly.Location, assetName)
+        return ExecuteUpdateScript(Path.GetDirectoryName(EntryAssembly.Location)!, assetName)
             ? Enums.UpdateResults.Ok
             : Enums.UpdateResults.ErrorExecutingUpdateScript;
     }
@@ -103,8 +104,10 @@ public sealed class UpdaterCronBackgroundService : BackgroundServices.Cron
         return releases.Any() ? releases[0] : null;
     }
 
-    internal bool ExecuteUpdateScript(string executingAssemblyLocation, string assetName)
+    internal bool ExecuteUpdateScript(string asssemblyLocation, string assetName)
     {
+        Logger.LogInformation("Asssembly location is '{asssemblyLocation}'", asssemblyLocation);
+
         System.Diagnostics.ProcessStartInfo processStartInfo = new()
         {
             CreateNoWindow = true,
@@ -116,8 +119,8 @@ public sealed class UpdaterCronBackgroundService : BackgroundServices.Cron
         {
             case Core.Constants.SupportedRuntimeIdentifiers.LinuxArm64:
                 //case Core.Constants.SupportedRuntimeIdentifiers.LinuxX64:
-                processStartInfo.FileName = $"sudo systemd-run --on-active=60 --working-directory={Path.Combine(executingAssemblyLocation)} {Path.Combine(executingAssemblyLocation, "update.sh")} {assetName}";
-                processStartInfo.WorkingDirectory = Path.Combine(executingAssemblyLocation);
+                processStartInfo.FileName = $"sudo systemd-run --on-active=60 --working-directory={asssemblyLocation} {Path.Combine(asssemblyLocation, "update.sh")} {assetName}";
+                processStartInfo.WorkingDirectory = asssemblyLocation;
                 break;
 
             //case Core.Constants.SupportedRuntimeIdentifiers.WinX64:
