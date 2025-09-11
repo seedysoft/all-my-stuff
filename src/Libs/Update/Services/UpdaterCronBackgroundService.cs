@@ -70,7 +70,9 @@ public sealed class UpdaterCronBackgroundService : BackgroundServices.Cron
         }
         // Here, NewVersion is greather than CurrentVersion
 
-        return ExecuteUpdateScript(Path.GetDirectoryName(EntryAssembly.Location)!, releaseAsset.Name)
+        Logger.LogInformation("Update asset downloaded");
+
+        return ExecuteUpdateScript(Path.GetDirectoryName(EntryAssembly.Location)!, assetName)
             ? Enums.UpdateResults.Ok
             : Enums.UpdateResults.ErrorExecutingUpdateScript;
     }
@@ -88,6 +90,8 @@ public sealed class UpdaterCronBackgroundService : BackgroundServices.Cron
 
     internal bool ExecuteUpdateScript(string asssemblyLocation, string assetName)
     {
+        Logger.LogInformation("Asssembly location is '{asssemblyLocation}'", asssemblyLocation);
+
         System.Diagnostics.ProcessStartInfo processStartInfo = new()
         {
             CreateNoWindow = true,
