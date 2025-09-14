@@ -117,10 +117,8 @@ public sealed class UpdaterCronBackgroundService : BackgroundServices.Cron
         {
             case Core.Constants.SupportedRuntimeIdentifiers.LinuxArm64:
                 //case Core.Constants.SupportedRuntimeIdentifiers.LinuxX64:
-                processStartInfo.FileName = Settings.ProcessStartInfoFileName;
-                processStartInfo.Arguments = string.Format(Settings.ProcessStartInfoArguments, assetName);
-                processStartInfo.WorkingDirectory = $"{asssemblyLocation}{(Path.EndsInDirectorySeparator(asssemblyLocation) ? string.Empty : Path.DirectorySeparatorChar)}";
-                Logger.LogInformation($"Starting '{processStartInfo.FileName} {processStartInfo.Arguments} on working directory {processStartInfo.WorkingDirectory}'");
+                processStartInfo.FileName = $"sudo systemd-run --on-active=60 --working-directory={asssemblyLocation} {Path.Combine(asssemblyLocation, "update.sh")} {assetName}";
+                processStartInfo.WorkingDirectory = asssemblyLocation;
                 break;
 
             //case Core.Constants.SupportedRuntimeIdentifiers.WinX64:
