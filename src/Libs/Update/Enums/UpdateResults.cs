@@ -8,8 +8,6 @@ public enum UpdateResults : int
 
     AssetNotFound,
 
-    NewVersionAlreadyDownloaded,
-
     NoNewVersionFound,
 
     ErrorExecutingUpdateScript,
