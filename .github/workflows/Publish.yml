@@ -44,31 +44,30 @@ jobs:
       - name: Build Outbox
         run: |
           dotnet build "./src/Outbox/ConsoleApp/Seedysoft.Outbox.ConsoleApp.csproj" -c Release --nologo -v m
-          dotnet publish "./src/Outbox/ConsoleApp/Seedysoft.Outbox.ConsoleApp.csproj" -o "./${{ matrix.runtime.name }}/" -r "${{ matrix.runtime.name }}" -c Release --no-restore --nologo -p:PublishTrimmed=false --sc -v m
+          dotnet publish "./src/Outbox/ConsoleApp/Seedysoft.Outbox.ConsoleApp.csproj" -o "./${{ matrix.runtime.name }}/" -r "${{ matrix.runtime.name }}" -c Release --nologo -p:PublishTrimmed=false --sc -v m
       - name: Build Pvpc
         run: |
           dotnet build "./src/Pvpc/ConsoleApp/Seedysoft.Pvpc.ConsoleApp.csproj" -c Release --nologo -v m
-          dotnet publish "./src/Pvpc/ConsoleApp/Seedysoft.Pvpc.ConsoleApp.csproj" -o "./${{ matrix.runtime.name }}/" -r "${{ matrix.runtime.name }}" -c Release --no-restore --nologo -p:PublishTrimmed=false --sc -v m
+          dotnet publish "./src/Pvpc/ConsoleApp/Seedysoft.Pvpc.ConsoleApp.csproj" -o "./${{ matrix.runtime.name }}/" -r "${{ matrix.runtime.name }}" -c Release --nologo -p:PublishTrimmed=false --sc -v m
       - name: Build WebComparer
         run: |
           dotnet build "./src/WebComparer/ConsoleApp/Seedysoft.WebComparer.ConsoleApp.csproj" -c Release --nologo -v m
-          dotnet publish "./src/WebComparer/ConsoleApp/Seedysoft.WebComparer.ConsoleApp.csproj" -o "./${{ matrix.runtime.name }}/" -r "${{ matrix.runtime.name }}" -c Release --no-restore --nologo -p:PublishTrimmed=false --sc -v m
+          dotnet publish "./src/WebComparer/ConsoleApp/Seedysoft.WebComparer.ConsoleApp.csproj" -o "./${{ matrix.runtime.name }}/" -r "${{ matrix.runtime.name }}" -c Release --nologo -p:PublishTrimmed=false --sc -v m
       - name: Build BlazorWebApp
         run: |
           dotnet build "./src/BlazorWebApp/Server/Seedysoft.BlazorWebApp.Server.csproj" -c Release --nologo -v m
-          dotnet publish "./src/BlazorWebApp/Server/Seedysoft.BlazorWebApp.Server.csproj" -o "./${{ matrix.runtime.name }}/" -r "${{ matrix.runtime.name }}" -c Release --no-restore --nologo -p:PublishTrimmed=false --sc -v m
+          dotnet publish "./src/BlazorWebApp/Server/Seedysoft.BlazorWebApp.Server.csproj" -o "./${{ matrix.runtime.name }}/" -r "${{ matrix.runtime.name }}" -c Release --nologo -p:PublishTrimmed=false --sc -v m
       - name: Make linux files executable
         if: ${{ startsWith(matrix.runtime.name, 'linux') }}
         run: |
           cd ${{ matrix.runtime.name }}/
-          chmod -v ug+x *.ConsoleApp
-          chmod -v ug+x *.sh
-          chmod -v ug+x *.so
-          chmod -v ug+x *.Server
+          chmod ug+x *.sh
+          chmod ug+x *.so
+          chmod ug+x Seedysoft.*
       - name: Get Version from project file
         id: get-version
         run: |
-          echo "version=$(grep -m 1 '"Seedysoft.Libs.BackgroundServices/' ./${{ matrix.runtime.name }}/Seedysoft.BlazorWebApp.Server.deps.json | grep -Eo '[[:digit:]]{2}\.[[:digit:]]{1,4}\.[[:digit:]]{1,4}')" >> $GITHUB_OUTPUT
+          echo "version=$(grep -m 1 '"Seedysoft.Libs.BackgroundServices/' ./${{ matrix.runtime.name }}/Seedysoft.BlazorWebApp.Server.deps.json | grep -Eo '[[:digit:]]{2}\.[[:digit:]]{1,4}\.[[:digit:]]{1,4}.[[:digit:]]{1,2}')" >> $GITHUB_OUTPUT
           echo ${{ steps.get-version.outputs.version }}
       - name: Pack to ${{ matrix.runtime.name }}.${{ steps.get-version.outputs.version }}.zip
         id: pack

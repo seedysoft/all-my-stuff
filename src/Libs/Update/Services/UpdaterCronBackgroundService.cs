@@ -59,34 +59,34 @@ public sealed class UpdaterCronBackgroundService : BackgroundServices.Cron
             return Enums.UpdateResults.AssetNotFound;
         }
 
-        string assetName = releaseAsset.Name;
-        if (File.Exists(assetName))
-        {
-            Logger.LogInformation($"New version '{new FileInfo(assetName).FullName}' waiting for deploy");
-            return Enums.UpdateResults.NewVersionAlreadyDownloaded;
-        }
-
         System.Reflection.Assembly EntryAssembly = System.Reflection.Assembly.GetEntryAssembly()!;
-        Logger.LogInformation($"Entry assembly is: {EntryAssembly}");
-        Version? CurrentVersion = EntryAssembly.GetName().Version;
+        Version CurrentVersion = EntryAssembly.GetName().Version ?? new Version();
         Version NewVersion = new(release.Name);
 
-        if (NewVersion <= (CurrentVersion ?? new Version()))
+        if (NewVersion <= CurrentVersion)
         {
             Logger.LogInformation($"Current version is: {CurrentVersion}. Latest version is: {NewVersion}");
             return Enums.UpdateResults.NoNewVersionFound;
         }
-
         // Here, NewVersion is greather than CurrentVersion
-        using var httpClient = new HttpClient();
-        //httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("token my-token");
-        httpClient.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue(System.Net.Mime.MediaTypeNames.Application.Octet));
-        httpClient.DefaultRequestHeaders.UserAgent.ParseAdd(assetName);
-        using Stream streamToReadFrom = await httpClient.GetStreamAsync(releaseAsset.BrowserDownloadUrl, cancellationToken);
-        using Stream streamToWriteTo = File.Open(assetName, FileMode.Create);
-        await streamToReadFrom.CopyToAsync(streamToWriteTo, cancellationToken);
 
-        Logger.LogInformation("Update asset downloaded");
+        string assetName = releaseAsset.Name;
+        string assetFullPath = new FileInfo(assetName).FullName;
+        if (File.Exists(assetFullPath))
+        {
+            Logger.LogInformation($"New version '{assetFullPath}' waiting for deploy");
+        }
+        else
+        {
+            using var httpClient = new HttpClient();
+            //httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("token my-token");
+            httpClient.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue(System.Net.Mime.MediaTypeNames.Application.Octet));
+            httpClient.DefaultRequestHeaders.UserAgent.ParseAdd(assetName);
+            using Stream streamToReadFrom = await httpClient.GetStreamAsync(releaseAsset.BrowserDownloadUrl, cancellationToken);
+            using Stream streamToWriteTo = File.Open(assetFullPath, FileMode.Create);
+            await streamToReadFrom.CopyToAsync(streamToWriteTo, cancellationToken);
+            Logger.LogInformation($"Downloaded '{assetFullPath}'");
+        }
 
         return ExecuteUpdateScript(Path.GetDirectoryName(EntryAssembly.Location)!, assetName)
             ? Enums.UpdateResults.Ok
@@ -106,8 +106,6 @@ public sealed class UpdaterCronBackgroundService : BackgroundServices.Cron
 
     internal bool ExecuteUpdateScript(string asssemblyLocation, string assetName)
     {
-        Logger.LogInformation("Asssembly location is '{asssemblyLocation}'", asssemblyLocation);
-
         System.Diagnostics.ProcessStartInfo processStartInfo = new()
         {
             CreateNoWindow = true,
