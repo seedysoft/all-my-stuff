@@ -2,10 +2,6 @@
 
 public record UpdateSettings : BackgroundServices.ScheduleConfig
 {
-    //private string githubToken = default!;
-    //public required string GithubToken
-    //{
-    //    get => githubToken;
-    //    init => githubToken = /*Cryptography.Crypto.DecryptText(*/value/*, Core.Helpers.EnvironmentHelper.GetMasterKey())*/;
-    //}
+    public required string ProcessStartInfoFileName { get; init; }
+    public required string ProcessStartInfoArguments { get; init; }
 }
