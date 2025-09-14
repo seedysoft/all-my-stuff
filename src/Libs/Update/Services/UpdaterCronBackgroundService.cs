@@ -106,8 +106,6 @@ public sealed class UpdaterCronBackgroundService : BackgroundServices.Cron
 
     internal bool ExecuteUpdateScript(string asssemblyLocation, string assetName)
     {
-        Logger.LogInformation("Asssembly location is '{asssemblyLocation}'", asssemblyLocation);
-
         System.Diagnostics.ProcessStartInfo processStartInfo = new()
         {
             CreateNoWindow = true,
