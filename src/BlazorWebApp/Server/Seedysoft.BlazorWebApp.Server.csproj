@@ -23,6 +23,9 @@
         <None Include="..\..\..\scripts\create-daemon.sh" Link="create-daemon.sh">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
+        <None Include="..\..\..\scripts\shared.sh" Link="shared.sh">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
         <None Include="..\..\..\scripts\stop-daemon.sh" Link="stop-daemon.sh">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>

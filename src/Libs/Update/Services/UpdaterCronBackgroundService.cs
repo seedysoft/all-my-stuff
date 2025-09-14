@@ -59,35 +59,36 @@ public sealed class UpdaterCronBackgroundService : BackgroundServices.Cron
             return Enums.UpdateResults.AssetNotFound;
         }
 
-        string assetName = releaseAsset.Name;
-        if (File.Exists(assetName))
-        {
-            Logger.LogInformation($"New version '{new FileInfo(assetName).FullName}' waiting for deploy");
-            return Enums.UpdateResults.NewVersionAlreadyDownloaded;
-        }
-
-        var ExecutingAssembly = System.Reflection.Assembly.GetExecutingAssembly();
-        Version? CurrentVersion = ExecutingAssembly.GetName().Version;
+        System.Reflection.Assembly EntryAssembly = System.Reflection.Assembly.GetEntryAssembly()!;
+        Version CurrentVersion = EntryAssembly.GetName().Version ?? new Version();
         Version NewVersion = new(release.Name);
 
-        if (NewVersion <= (CurrentVersion ?? new Version()))
+        if (NewVersion <= CurrentVersion)
         {
             Logger.LogInformation($"Current version is: {CurrentVersion}. Latest version is: {NewVersion}");
             return Enums.UpdateResults.NoNewVersionFound;
         }
-
         // Here, NewVersion is greather than CurrentVersion
-        using var httpClient = new HttpClient();
-        //httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("token my-token");
-        httpClient.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue(System.Net.Mime.MediaTypeNames.Application.Octet));
-        httpClient.DefaultRequestHeaders.UserAgent.ParseAdd(assetName);
-        using Stream streamToReadFrom = await httpClient.GetStreamAsync(releaseAsset.BrowserDownloadUrl, cancellationToken);
-        using Stream streamToWriteTo = File.Open(assetName, FileMode.Create);
-        await streamToReadFrom.CopyToAsync(streamToWriteTo, cancellationToken);
 
-        Logger.LogInformation("Update asset downloaded");
+        string assetName = releaseAsset.Name;
+        string assetFullPath = new FileInfo(assetName).FullName;
+        if (File.Exists(assetFullPath))
+        {
+            Logger.LogInformation($"New version '{assetFullPath}' waiting for deploy");
+        }
+        else
+        {
+            using var httpClient = new HttpClient();
+            //httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("token my-token");
+            httpClient.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue(System.Net.Mime.MediaTypeNames.Application.Octet));
+            httpClient.DefaultRequestHeaders.UserAgent.ParseAdd(assetName);
+            using Stream streamToReadFrom = await httpClient.GetStreamAsync(releaseAsset.BrowserDownloadUrl, cancellationToken);
+            using Stream streamToWriteTo = File.Open(assetFullPath, FileMode.Create);
+            await streamToReadFrom.CopyToAsync(streamToWriteTo, cancellationToken);
+            Logger.LogInformation($"Downloaded '{assetFullPath}'");
+        }
 
-        return ExecuteUpdateScript(ExecutingAssembly.Location, assetName)
+        return ExecuteUpdateScript(Path.GetDirectoryName(EntryAssembly.Location)!, assetName)
             ? Enums.UpdateResults.Ok
             : Enums.UpdateResults.ErrorExecutingUpdateScript;
     }
@@ -103,7 +104,7 @@ public sealed class UpdaterCronBackgroundService : BackgroundServices.Cron
         return releases.Any() ? releases[0] : null;
     }
 
-    internal bool ExecuteUpdateScript(string executingAssemblyLocation, string assetName)
+    internal bool ExecuteUpdateScript(string asssemblyLocation, string assetName)
     {
         System.Diagnostics.ProcessStartInfo processStartInfo = new()
         {
@@ -116,8 +117,8 @@ public sealed class UpdaterCronBackgroundService : BackgroundServices.Cron
         {
             case Core.Constants.SupportedRuntimeIdentifiers.LinuxArm64:
                 //case Core.Constants.SupportedRuntimeIdentifiers.LinuxX64:
-                processStartInfo.FileName = $"sudo systemd-run --on-active=60 --working-directory={Path.Combine(executingAssemblyLocation)} {Path.Combine(executingAssemblyLocation, "update.sh")} {assetName}";
-                processStartInfo.WorkingDirectory = Path.Combine(executingAssemblyLocation);
+                processStartInfo.FileName = $"sudo systemd-run --on-active=60 --working-directory={asssemblyLocation} {Path.Combine(asssemblyLocation, "update.sh")} {assetName}";
+                processStartInfo.WorkingDirectory = asssemblyLocation;
                 break;
 
             //case Core.Constants.SupportedRuntimeIdentifiers.WinX64:
