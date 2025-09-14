@@ -31,7 +31,7 @@ jobs:
         runtime:
           - { name: linux-arm64, os: ubuntu-latest  }
           # - { name: linux-x64,   os: ubuntu-latest  }
-          - { name: win-x64,     os: windows-latest }
+          # - { name: win-x64,     os: windows-latest }
     steps:
       - name: Checkout Repository
         uses: actions/checkout@main
