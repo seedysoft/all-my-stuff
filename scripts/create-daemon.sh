@@ -1,7 +1,5 @@
 #!/bin/bash
 
-source shared.sh
-
 ############################################################
 # Help                                                     #
 ############################################################
@@ -32,7 +30,7 @@ Help(){
 
 # Check if the install script is running as root
 # if [ "$EUID" -ne 0 ]; then
-  # echo "${COLOR_RED_BOLD}ERROR${COLOR_NO}: Please run this script as root"
+  # echo "ERROR: Please run this script as root"
   # exit 1
 # fi
 
@@ -69,9 +67,19 @@ if [[ $# -ne 4 ]]; then
     exit 1
 fi
 
+# Move working directory to WORKER_SERVICE_DIRECTORY
+WORKER_SERVICE_DIRECTORY="$(dirname "$(readlink -f "$0")")"
+echo "'${WORKER_SERVICE_NAME}' will be installed in '${WORKER_SERVICE_DIRECTORY}' ..."
+if ! cd "${WORKER_SERVICE_DIRECTORY}"; then
+  echo "ERROR: Can not cd into '${WORKER_SERVICE_DIRECTORY}' folder"
+  exit 1
+fi
+
+source shared.sh
 if [[ ! $WORKER_SERVICE_NAME == *.service ]]; then
   WORKER_SERVICE_NAME=$(echo $WORKER_SERVICE_NAME.service)
 fi
+echo "worker_service_name: ${WORKER_SERVICE_NAME}"
 
 # Check if worker service is running
 echo "Checking if the service '${WORKER_SERVICE_NAME}' is running ..."
@@ -82,24 +90,16 @@ if systemctl is-active --quiet "${WORKER_SERVICE_NAME}"; then
   if systemctl stop "${WORKER_SERVICE_NAME}"; then
     echo "Service '${WORKER_SERVICE_NAME}' stopped"
   else
-    echo "${COLOR_RED_BOLD}ERROR${COLOR_NO}: The service '${WORKER_SERVICE_NAME}' Can not be stopped"
+    echo "ERROR: The service '${WORKER_SERVICE_NAME}' Can not be stopped"
     exit 1
   fi
 else
   echo "Service '${WORKER_SERVICE_NAME}' is not running"
 fi
 
-# Move working directory to WORKER_SERVICE_DIRECTORY
-WORKER_SERVICE_DIRECTORY="$(dirname "$(readlink -f "$0")")"
-echo "'${WORKER_SERVICE_NAME}' will be installed in '${WORKER_SERVICE_DIRECTORY}' ..."
-if ! cd "${WORKER_SERVICE_DIRECTORY}"; then
-  echo "${COLOR_RED_BOLD}ERROR${COLOR_NO}: Can not cd into '${WORKER_SERVICE_DIRECTORY}' folder"
-  exit 1
-fi
-
 # Check if we're running from worker's directory
 if [ ! -f ./$EXECUTABLE_FILE_NAME ]; then
-  echo "${COLOR_RED_BOLD}ERROR${COLOR_NO}: Can not locate '${EXECUTABLE_FILE_NAME}' file in '${WORKER_SERVICE_DIRECTORY}'"
+  echo "ERROR: Can not locate '${EXECUTABLE_FILE_NAME}' file in '${WORKER_SERVICE_DIRECTORY}'"
   echo "Is the script in the right directory?"
   exit 1
 fi
@@ -107,7 +107,7 @@ echo "'${EXECUTABLE_FILE_NAME}' file is in '${WORKER_SERVICE_DIRECTORY}'"
 
 # Check if worker's user owner is root
 if [ "${WORKER_SERVICE_USER}" == "root" ] || [ "${WORKER_SERVICE_USER}" == "UNKNOWN" ]; then
-  echo "${COLOR_RED_BOLD}ERROR${COLOR_NO}: The owner of '${WORKER_SERVICE_DIRECTORY}' directory is '${WORKER_SERVICE_USER}'"
+  echo "ERROR: The owner of '${WORKER_SERVICE_DIRECTORY}' directory is '${WORKER_SERVICE_USER}'"
   echo "Please, change the owner with the command 'chown <user>:<user> -R \"${WORKER_SERVICE_DIRECTORY}\"'"
   echo "The user <user> will be used to run '${WORKER_SERVICE_NAME}'"
   exit 1
@@ -152,7 +152,7 @@ WantedBy=multi-user.target
 
 EOL
 if [ $? -ne 0 ]; then
-  echo "${COLOR_RED_BOLD}ERROR${COLOR_NO}: Can not create the file '${WORKER_SERVICE_FULLPATH}'"
+  echo "ERROR: Can not create the file '${WORKER_SERVICE_FULLPATH}'"
   echo "The UnitPath of systemd changes from one distribution to another. You may have to edit the script and change the path manually"
   exit 1
 fi
@@ -160,21 +160,21 @@ fi
 # Reload systemd daemon
 echo "Installing '${WORKER_SERVICE_NAME}' ..."
 if ! systemctl daemon-reload; then
-  echo "${COLOR_RED_BOLD}ERROR${COLOR_NO}: Can not reload systemd daemon"
+  echo "ERROR: Can not reload systemd daemon"
   exit 1
 fi
 
 # Enable the service for following restarts
 if ! systemctl enable "${WORKER_SERVICE_NAME}"; then
-  echo "${COLOR_RED_BOLD}ERROR${COLOR_NO}: Can not enable the service '${WORKER_SERVICE_NAME}'"
+  echo "ERROR: Can not enable the service '${WORKER_SERVICE_NAME}'"
   exit 1
 fi
 echo "'${WORKER_SERVICE_NAME}' enabled"
 
 # Run the service
 if systemctl start "${WORKER_SERVICE_NAME}"; then
-  echo "${COLOR_GREEN_BOLD}Service '${WORKER_SERVICE_NAME}' successfully installed and launched!${COLOR_NO}"
+  echo "Service '${WORKER_SERVICE_NAME}' successfully installed and launched!"
 else
-  echo "${COLOR_RED_BOLD}ERROR${COLOR_NO}: Can not start the service '${WORKER_SERVICE_NAME}'"
+  echo "ERROR: Can not start the service '${WORKER_SERVICE_NAME}'"
   exit 1
 fi

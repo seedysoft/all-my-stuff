@@ -32,7 +32,7 @@ public sealed class UpdaterCronBackgroundService : BackgroundServices.Cron
 
         try
         {
-            Enums.UpdateResults UpgradeResult = await DownloadLatestReleaseAsset(cancellationToken);
+            Enums.UpdateResults UpgradeResult = await DownloadLatestReleaseAsset();
 
             Logger.LogInformation($"Updating result: {UpgradeResult}");
         }
@@ -42,7 +42,7 @@ public sealed class UpdaterCronBackgroundService : BackgroundServices.Cron
         Logger.LogInformation("End {ApplicationName}", AppName);
     }
 
-    internal async Task<Enums.UpdateResults> DownloadLatestReleaseAsset(CancellationToken cancellationToken)
+    internal async Task<Enums.UpdateResults> DownloadLatestReleaseAsset()
     {
         Octokit.Release? release = await GetLatestReleaseFromGithubAsync();
         if (release == null)
@@ -70,25 +70,7 @@ public sealed class UpdaterCronBackgroundService : BackgroundServices.Cron
         }
         // Here, NewVersion is greather than CurrentVersion
 
-        string assetName = releaseAsset.Name;
-        string assetFullPath = new FileInfo(assetName).FullName;
-        if (File.Exists(assetFullPath))
-        {
-            Logger.LogInformation($"New version '{assetFullPath}' waiting for deploy");
-        }
-        else
-        {
-            using var httpClient = new HttpClient();
-            //httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("token my-token");
-            httpClient.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue(System.Net.Mime.MediaTypeNames.Application.Octet));
-            httpClient.DefaultRequestHeaders.UserAgent.ParseAdd(assetName);
-            using Stream streamToReadFrom = await httpClient.GetStreamAsync(releaseAsset.BrowserDownloadUrl, cancellationToken);
-            using Stream streamToWriteTo = File.Open(assetFullPath, FileMode.Create);
-            await streamToReadFrom.CopyToAsync(streamToWriteTo, cancellationToken);
-            Logger.LogInformation($"Downloaded '{assetFullPath}'");
-        }
-
-        return ExecuteUpdateScript(Path.GetDirectoryName(EntryAssembly.Location)!, assetName)
+        return ExecuteUpdateScript(Path.GetDirectoryName(EntryAssembly.Location)!, releaseAsset.Name)
             ? Enums.UpdateResults.Ok
             : Enums.UpdateResults.ErrorExecutingUpdateScript;
     }
@@ -109,7 +91,7 @@ public sealed class UpdaterCronBackgroundService : BackgroundServices.Cron
         System.Diagnostics.ProcessStartInfo processStartInfo = new()
         {
             CreateNoWindow = true,
-            UseShellExecute = true,
+            UseShellExecute = false,
         };
 
         string runtimeIdentifier = System.Runtime.InteropServices.RuntimeInformation.RuntimeIdentifier;
@@ -117,8 +99,8 @@ public sealed class UpdaterCronBackgroundService : BackgroundServices.Cron
         {
             case Core.Constants.SupportedRuntimeIdentifiers.LinuxArm64:
                 //case Core.Constants.SupportedRuntimeIdentifiers.LinuxX64:
-                processStartInfo.FileName = $"sudo systemd-run --on-active=60 --working-directory={asssemblyLocation} {Path.Combine(asssemblyLocation, "update.sh")} {assetName}";
-                processStartInfo.WorkingDirectory = asssemblyLocation;
+                processStartInfo.FileName = "/bin/bash";
+                processStartInfo.Arguments = $"-c \"sudo systemd-run --on-active=30 {Path.Combine(asssemblyLocation, "update.sh")} {assetName}\"";
                 break;
 
             //case Core.Constants.SupportedRuntimeIdentifiers.WinX64:
