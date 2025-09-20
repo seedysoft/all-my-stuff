@@ -107,6 +107,8 @@ jobs:
         with:
           name: ${{ needs.publish_and_pack_job.outputs.tag_version }}
           fail_on_unmatched_files: true
-          files: ./artifacts/*/*.zip
+          # When more than one file exists, "An extra directory with the artifact name will be created for each download"
+          # files: ./artifacts/*/*.zip
+          files: ./artifacts/*.zip
           generate_release_notes: true
           tag_name: ${{ needs.publish_and_pack_job.outputs.tag_version }}
