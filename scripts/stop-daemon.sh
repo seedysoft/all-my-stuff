@@ -1,7 +1,5 @@
 #!/bin/bash
 
-source shared.sh
-
 ############################################################
 # Help                                                     #
 ############################################################
@@ -32,7 +30,7 @@ Help(){
 
 # Check if the install script is running as root
 # if [ "$EUID" -ne 0 ]; then
-  # echo "${COLOR_RED_BOLD}ERROR${COLOR_NO}: Please run this script as root"
+  # echo "ERROR: Please run this script as root"
   # exit 1
 # fi
 
@@ -76,7 +74,7 @@ if systemctl is-active --quiet "${WORKER_SERVICE_NAME}"; then
   if systemctl stop "${WORKER_SERVICE_NAME}"; then
     echo "Service '${WORKER_SERVICE_NAME}' stopped"
   else
-    echo "${COLOR_RED_BOLD}ERROR${COLOR_NO}: The service '${WORKER_SERVICE_NAME}' Can not be stopped"
+    echo "ERROR: The service '${WORKER_SERVICE_NAME}' Can not be stopped"
     exit 1
   fi
 else
