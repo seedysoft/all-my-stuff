@@ -3,11 +3,11 @@ using Microsoft.Extensions.Hosting;
 using Seedysoft.Libs.Infrastructure.Extensions;
 using Xunit;
 
-namespace Seedysoft.Libs.Update.Tests;
+namespace Seedysoft.Libs.Update.Tests.Services;
 
 public sealed class UpdaterCronBackgroundServiceTests : Infrastructure.Tests.TestClassBase
 {
-    private readonly Services.UpdaterCronBackgroundService updaterCronBackgroundService = default!;
+    private readonly Update.Services.UpdaterCronBackgroundService updaterCronBackgroundService = default!;
 
     public UpdaterCronBackgroundServiceTests(Xunit.Abstractions.ITestOutputHelper testOutputHelper) : base(testOutputHelper)
     {
@@ -15,7 +15,7 @@ public sealed class UpdaterCronBackgroundServiceTests : Infrastructure.Tests.Tes
         _ = appBuilder.AddAllMyDependencies();
         ServiceProvider serviceProvider = appBuilder.Services.BuildServiceProvider();
 
-        updaterCronBackgroundService = serviceProvider.GetRequiredService<Services.UpdaterCronBackgroundService>();
+        updaterCronBackgroundService = serviceProvider.GetRequiredService<Update.Services.UpdaterCronBackgroundService>();
     }
 
     [Fact]

@@ -3,11 +3,11 @@ using Microsoft.Extensions.Hosting;
 using Seedysoft.Libs.Infrastructure.Extensions;
 using Xunit;
 
-namespace Seedysoft.Libs.GasStationPrices.Tests;
+namespace Seedysoft.Libs.GasStationPrices.Tests.Services;
 
 public sealed class GasStationPricesServiceTests : Infrastructure.Tests.TestClassBase
 {
-    private readonly Services.GasStationPricesService GasStationPricesService = default!;
+    private readonly GasStationPrices.Services.GasStationPricesService GasStationPricesService = default!;
 
     public GasStationPricesServiceTests(Xunit.Abstractions.ITestOutputHelper testOutputHelper) : base(testOutputHelper)
     {
@@ -15,7 +15,7 @@ public sealed class GasStationPricesServiceTests : Infrastructure.Tests.TestClas
         _ = appBuilder.AddAllMyDependencies();
         ServiceProvider serviceProvider = appBuilder.Services.BuildServiceProvider();
 
-        GasStationPricesService = serviceProvider.GetRequiredService<Services.GasStationPricesService>();
+        GasStationPricesService = serviceProvider.GetRequiredService<GasStationPrices.Services.GasStationPricesService>();
     }
 
     //[Fact]

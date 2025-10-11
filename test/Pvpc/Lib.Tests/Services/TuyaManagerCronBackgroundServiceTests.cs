@@ -4,11 +4,11 @@ using Microsoft.Extensions.Hosting.Internal;
 using Microsoft.Extensions.Logging.Abstractions;
 using Xunit;
 
-namespace Seedysoft.Pvpc.Lib.Tests;
+namespace Seedysoft.Pvpc.Lib.Tests.Services;
 
 public sealed class TuyaManagerCronBackgroundServiceTests : Libs.Infrastructure.Tests.TestClassBase, IDisposable
 {
-    private readonly Services.TuyaManagerCronBackgroundService TuyaManagerService = default!;
+    private readonly Lib.Services.TuyaManagerCronBackgroundService TuyaManagerService = default!;
     private bool disposedValue;
 
     public TuyaManagerCronBackgroundServiceTests(Xunit.Abstractions.ITestOutputHelper testOutputHelper) : base(testOutputHelper)
@@ -21,7 +21,7 @@ public sealed class TuyaManagerCronBackgroundServiceTests : Libs.Infrastructure.
         IServiceCollection services = new ServiceCollection();
         _ = services
             .AddSingleton(configuration)
-            .AddSingleton<Microsoft.Extensions.Logging.ILogger<Services.TuyaManagerCronBackgroundService>>(new NullLogger<Services.TuyaManagerCronBackgroundService>());
+            .AddSingleton<Microsoft.Extensions.Logging.ILogger<Lib.Services.TuyaManagerCronBackgroundService>>(new NullLogger<Lib.Services.TuyaManagerCronBackgroundService>());
 
         AddDbContext(services);
 
@@ -43,10 +43,8 @@ public sealed class TuyaManagerCronBackgroundServiceTests : Libs.Infrastructure.
         if (!disposedValue)
         {
             if (disposing)
-            {
                 // TODO: dispose managed state (managed objects)
                 TuyaManagerService?.Dispose();
-            }
 
             // TODO: free unmanaged resources (unmanaged objects) and override finalizer
             // TODO: set large fields to null
