@@ -55,7 +55,8 @@ public sealed class PvpcCronBackgroundServiceTests : Libs.Infrastructure.Tests.T
         bool res = Lib.Services.PvpcCronBackgroundService.IsTimeToCharge(
             [],
             TimeToQuery,
-            tuyaManagerSettings);
+            tuyaManagerSettings,
+            new NullLogger<PvpcCronBackgroundServiceTests>());
 
         Assert.False(res);
     }
@@ -73,7 +74,8 @@ public sealed class PvpcCronBackgroundServiceTests : Libs.Infrastructure.Tests.T
         bool res = Lib.Services.PvpcCronBackgroundService.IsTimeToCharge(
             Prices,
             TimeToQuery,
-            tuyaManagerSettings);
+            tuyaManagerSettings,
+            new NullLogger<PvpcCronBackgroundServiceTests>());
 
         Assert.True(res);
     }
@@ -90,7 +92,8 @@ public sealed class PvpcCronBackgroundServiceTests : Libs.Infrastructure.Tests.T
         bool res = Lib.Services.PvpcCronBackgroundService.IsTimeToCharge(
             Prices,
             TimeToQuery,
-            tuyaManagerSettings);
+            tuyaManagerSettings,
+            new NullLogger<PvpcCronBackgroundServiceTests>());
 
         Assert.Equal(res, Prices.Any(x => x.KWhPriceInEuros <= MinPriceAllowed));
     }
