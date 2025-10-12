@@ -143,12 +143,14 @@ public sealed class PvpcCronBackgroundService : Libs.BackgroundServices.Cron
             return true;
         }
 
-        if (CurrentHourPrice.KWhPriceInEuros < pvpcs.OrderBy(x => x.KWhPriceInEuros).Take(tuyaManagerSettings.ChargingHoursPerDay).Max(x => x.KWhPriceInEuros))
+        decimal MaxOfTheCheapestHours = pvpcs.OrderBy(x => x.KWhPriceInEuros).Take(tuyaManagerSettings.ChargingHoursPerDay).Max(x => x.KWhPriceInEuros);
+        if (CurrentHourPrice.KWhPriceInEuros < MaxOfTheCheapestHours)
         {
-            logger.LogInformation("Allowed to charge because current hour price {CurrentHourPrice} is below the max of the {ChargingHoursPerDay} cheapest hours {MaxOfTheCheapestHours}", CurrentHourPrice.KWhPriceInEuros, tuyaManagerSettings.ChargingHoursPerDay, pvpcs.OrderBy(x => x.KWhPriceInEuros).Take(tuyaManagerSettings.ChargingHoursPerDay).Max(x => x.KWhPriceInEuros));
+            logger.LogInformation("Allowed to charge because current hour price {CurrentHourPrice} is below the max of the {ChargingHoursPerDay} cheapest hours {MaxOfTheCheapestHours}", CurrentHourPrice.KWhPriceInEuros, tuyaManagerSettings.ChargingHoursPerDay, MaxOfTheCheapestHours);
             return true;
         }
 
+        logger.LogInformation("Not allowed to charge because current hour price {CurrentHourPrice} is above {AllowChargeWhenKWhPriceInEurosIsBelowThan} and above the max of the {ChargingHoursPerDay} cheapest hours {MaxOfTheCheapestHours}", CurrentHourPrice.KWhPriceInEuros, tuyaManagerSettings.AllowChargeWhenKWhPriceInEurosIsBelowThan, tuyaManagerSettings.ChargingHoursPerDay, MaxOfTheCheapestHours);
         return false;
     }
 

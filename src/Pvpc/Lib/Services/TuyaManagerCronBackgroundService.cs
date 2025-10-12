@@ -65,7 +65,6 @@ public sealed class TuyaManagerCronBackgroundService : Libs.BackgroundServices.C
             Logger.LogInformation("Obtained {PricesForDayPvpcs} PVPCs", PricesForDayPvpcs.Length);
 
             bool IsTimeToCharge = PvpcCronBackgroundService.IsTimeToCharge(PricesForDayPvpcs, timeToCheckDateTimeOffset, Settings, Logger);
-            Logger.LogInformation("Time to charge: {IsTimeToCharge}", IsTimeToCharge);
 
             for (int i = 0; i < Devices.Length; i++)
             {

@@ -11,6 +11,8 @@ public abstract class PvpcBase
     public decimal KWhPriceInEuros => decimal.Divide(MWhPriceInEuros, 1_000M);
 
     protected internal string GetDebuggerDisplay => $"{UtcDateTime:yy.MM.dd HHzz} @ {KWhPriceInEuros:N5} €/kWh";
+
+    public override string ToString() => GetDebuggerDisplay;
 }
 
 /// <summary>
