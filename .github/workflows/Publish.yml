@@ -38,7 +38,7 @@ jobs:
       - name: Setup dotnet
         uses: actions/setup-dotnet@main
         with:
-          dotnet-version: 8
+          dotnet-version: 10
       - name: Make publish folder "./${{ matrix.runtime.name }}/"
         run: mkdir -p "./${{ matrix.runtime.name }}/"
       - name: Build Outbox
