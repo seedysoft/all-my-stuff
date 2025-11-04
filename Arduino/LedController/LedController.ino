@@ -13,7 +13,7 @@ const char* host = "esp8266-LED";
 WiFiServer server(80);
 
 void setup() {
-  Serial.begin(baud);
+  Serial.begin(115200);
   Serial.println("Booting");
 
   // pinMode(LED_BUILTIN, OUTPUT);
