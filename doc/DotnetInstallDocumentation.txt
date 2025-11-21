@@ -4,61 +4,45 @@ https://learn.microsoft.com/en-us/dotnet/core/tools/global-tools
 # Entity Framework Core Documentation:
 https://learn.microsoft.com/en-us/ef/core/cli/dotnet
 
-# Manual installation documentation:
-https://learn.microsoft.com/en-us/dotnet/core/install/linux-scripted-manual#manual-install
-
-dotnet tool update --global PowerShell
-
 # NOTE: On first installation, export variables:
+# 
 #   Windows (PS>):
 [Environment]::SetEnvironmentVariable("SEEDY_MASTER_KEY", "", [System.EnvironmentVariableTarget]::User)
-#   WSL (PS>):
-[Environment]::SetEnvironmentVariable("WSLENV", $env:WSLENV + "SEEDY_MASTER_KEY:", [System.EnvironmentVariableTarget]::User)
-
+# 
+# 
 #   Raspberrypi ($>):
 sudo nano /etc/environment
-
+# 
 #   then paste this:
-
-DOTNET_ROOT=/opt/dotnet/
-prgDir=/mnt/wd/_prog/seedysoft/
-pubDir=/mnt/st/Seedysoft/
-
 SEEDY_MASTER_KEY=""
 
-#   next:
-sudo nano /etc/profile
+sudo apt-get install -y chromium-chromedriver unzip
 
-#   then put $DOTNET_ROOT like this:
+# Get OS version info which adds the $ID and $VERSION_ID variables
+source /etc/os-release
 
-if [ "$(id -u)" -eq 0 ]; then
-  PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
-else
-  PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/local/games:/usr/games"
-fi
-if [ -d $DOTNET_ROOT ]; then
-  PATH=$PATH:$DOTNET_ROOT
-fi
-export PATH
+# Download the Microsoft keys
+sudo apt-get install -y gpg wget
+wget https://packages.microsoft.com/keys/microsoft.asc
+cat microsoft.asc | gpg --dearmor -o microsoft.asc.gpg
 
-sudo apt-get install chromium-chromedriver unzip
+# Add the Microsoft repository to the system's sources list
+wget https://packages.microsoft.com/config/$ID/$VERSION_ID/prod.list
+sudo mv prod.list /etc/apt/sources.list.d/microsoft-prod.list
 
-# Dotnet downloads:
-https://dotnet.microsoft.com/en-us/download/dotnet
-wget 
-DOTNET_FILE=
+# Move the key to the appropriate place
+sudo mv microsoft.asc.gpg $(cat /etc/apt/sources.list.d/microsoft-prod.list | grep -oP "(?<=signed-by=).*(?=\])")
 
-# Extract compressed file in current directory (/opt/dotnet/):
-tar zxvf "$DOTNET_FILE" -C "$DOTNET_ROOT"
+# Update packages and install .NET
+sudo apt-get update
+REM does not works sudo apt-get install -y aspnetcore-runtime-8.0 
+sudo apt-get install -y aspnetcore-runtime-10.0
 
 # Help commands:
 dotnet --list-sdks; dotnet --list-runtimes;
 
-# Remove old versions:
-find . -type d -name "9.0.0" -exec rm -rf "{}" \;
-
-#   ONLY WHEN SDK IS INSTALLED:
-
+#   ONLY WHEN SDK IS INSTALLED
+# 
 # Install workloads:
 # NOTE: Must be root (sudo su): root@raspberrypi4:/opt/dotnet#
 # ./dotnet workload search [<SEARCH_STRING>] [-v|--verbosity <LEVEL>]
@@ -67,12 +51,17 @@ dotnet workload install wasm-tools
 dotnet workload update
 # Keep .NET 8:
 dotnet workload install wasm-tools-net8
-
+# 
 # Update Entity Framework global tools:
 dotnet tool list   -g
 dotnet tool update -g dotnet-ef
 # Keep .NET 8:
 dotnet tool install dotnet-ef -g --version 8.* --allow-downgrade
+# 
+#   ONLY WHEN SDK IS INSTALLED
 
 # MudBlazor Templates
 dotnet new install MudBlazor.Templates
+
+#   ONLY FOR WINDOWS:
+dotnet tool update --global PowerShell

@@ -32,7 +32,7 @@ jobs:
       - name: Setup dotnet
         uses: actions/setup-dotnet@main
         with:
-          dotnet-version: 8
+          dotnet-version: 10
 
       - name: Build
         run: dotnet build Seedysoft.Tests.sln -c Release -v n
