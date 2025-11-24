@@ -43,6 +43,9 @@ dotnet --list-sdks; dotnet --list-runtimes;
 
 #   ONLY WHEN SDK IS INSTALLED
 # 
+# Show installed workloads:
+# dotnet workload --info
+# 
 # Install workloads:
 # NOTE: Must be root (sudo su): root@raspberrypi4:/opt/dotnet#
 # ./dotnet workload search [<SEARCH_STRING>] [-v|--verbosity <LEVEL>]
@@ -50,7 +53,7 @@ dotnet --list-sdks; dotnet --list-runtimes;
 dotnet workload install wasm-tools
 dotnet workload update
 # Keep .NET 8:
-dotnet workload install wasm-tools-net8
+# dotnet workload install wasm-tools-net8
 # 
 # Update Entity Framework global tools:
 dotnet tool list   -g
