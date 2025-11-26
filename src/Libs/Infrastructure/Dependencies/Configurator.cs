@@ -40,14 +40,16 @@ public sealed class Configurator : Core.Dependencies.ConfiguratorBase
                 if (System.Diagnostics.Debugger.IsAttached)
                     System.Diagnostics.Debugger.Break();
 #endif
-                logger.LogDebug("Database file {FullFilePath} does not exists", FullFilePath);
+                if (logger.IsEnabled(LogLevel.Debug))
+                    logger.LogDebug("Database file {FullFilePath} does not exists", FullFilePath);
                 FullFilePath = Path.GetFullPath(ConnectionString = ConnectionString.Insert(0, "../"));
             }
 
             if (!File.Exists(FullFilePath))
                 throw new FileNotFoundException("Database file not found.", FullFilePath);
 
-            logger.LogInformation("Using database file {FullFilePath}", FullFilePath);
+            if (logger.IsEnabled(LogLevel.Information))
+                logger.LogInformation("Using database file {FullFilePath}", FullFilePath);
             _ = dbContextOptionsBuilder.UseSqlite($"{Core.Constants.DatabaseStrings.DataSource}{FullFilePath}");
             dbContextOptionsBuilder.ConfigureDebugOptions();
         },

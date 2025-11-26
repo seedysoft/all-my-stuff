@@ -29,7 +29,8 @@ public sealed class WebComparerCronBackgroundService : Libs.BackgroundServices.C
         if (System.Diagnostics.Debugger.IsAttached)
             System.Diagnostics.Debugger.Break();
 
-        Logger.LogInformation("Called {ApplicationName} version {Version}", GetType().FullName, System.Reflection.Assembly.GetExecutingAssembly().GetName().Version);
+        if (Logger.IsEnabled(LogLevel.Information))
+            Logger.LogInformation("Called {ApplicationName} version {Version}", GetType().FullName, System.Reflection.Assembly.GetExecutingAssembly().GetName().Version);
 
         _ = FindDifferencesAsync(cancellationToken);
 
@@ -50,7 +51,8 @@ public sealed class WebComparerCronBackgroundService : Libs.BackgroundServices.C
             Libs.Core.Entities.WebData[] WebDatas = await WebDatasWithSubscribers
                 .Distinct()
                 .ToArrayAsync(cancellationToken);
-            Logger.LogInformation("Obtained {WebDatas} URLs to check", WebDatas.Length);
+            if (Logger.IsEnabled(LogLevel.Information))
+                Logger.LogInformation("Obtained {WebDatas} URLs to check", WebDatas.Length);
 
             for (int i = 0; i < WebDatas.Length; i++)
             {

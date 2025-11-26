@@ -24,7 +24,8 @@ public sealed class Program : Libs.Core.ProgramBase
 
         string AppName = host.Services.GetRequiredService<IHostEnvironment>().ApplicationName;
 
-        Logger.LogInformation("Called {ApplicationName} version {Version}", AppName, System.Reflection.Assembly.GetExecutingAssembly().GetName().Version);
+        if (Logger.IsEnabled(LogLevel.Information))
+            Logger.LogInformation("Called {ApplicationName} version {Version}", AppName, System.Reflection.Assembly.GetExecutingAssembly().GetName().Version);
 
         try
         {
@@ -49,7 +50,8 @@ public sealed class Program : Libs.Core.ProgramBase
                     System.Globalization.DateTimeStyles.None,
                     out ForDate))
             {
-                Logger.LogInformation($"You can provide the date in {Libs.Core.Constants.Formats.YearMonthDay} format as an argument");
+                if (Logger.IsEnabled(LogLevel.Information))
+                    Logger.LogInformation($"You can provide the date in {Libs.Core.Constants.Formats.YearMonthDay} format as an argument");
                 ForDate = DateTimeOffset.UtcNow.AddDays(1).Date;
             }
 
@@ -58,7 +60,8 @@ public sealed class Program : Libs.Core.ProgramBase
             using (Lib.Services.PvpcCronBackgroundService pvpcCronBackgroundService = host.Services.GetRequiredService<Lib.Services.PvpcCronBackgroundService>())
                 await pvpcCronBackgroundService.GetPvpcFromReeForDateAsync(ForDate, CancelTokenSource.Token);
 
-            Logger.LogInformation("End {ApplicationName}", AppName);
+            if (Logger.IsEnabled(LogLevel.Information))
+                Logger.LogInformation("End {ApplicationName}", AppName);
         }
         catch (TaskCanceledException) { /* ignored */ }
         catch (Exception e) { _ = Logger.LogAndHandle(e, "Unexpected Error"); }

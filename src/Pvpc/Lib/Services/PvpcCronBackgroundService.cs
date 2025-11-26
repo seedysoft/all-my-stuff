@@ -42,12 +42,15 @@ public sealed class PvpcCronBackgroundService : Libs.BackgroundServices.Cron
     {
         string? AppName = GetType().FullName;
 
-        Logger.LogInformation("Called {ApplicationName} version {Version}", AppName, System.Reflection.Assembly.GetExecutingAssembly().GetName().Version);
+        if (Logger.IsEnabled(LogLevel.Information))
+            Logger.LogInformation("Called {ApplicationName} version {Version}", AppName, System.Reflection.Assembly.GetExecutingAssembly().GetName().Version);
 
-        Logger.LogInformation("Obtaining PVPC for the day {ForDate}", forDate.ToString(Libs.Core.Constants.Formats.YearMonthDay));
+        if (Logger.IsEnabled(LogLevel.Information))
+            Logger.LogInformation("Obtaining PVPC for the day {ForDate}", forDate.ToString(Libs.Core.Constants.Formats.YearMonthDay));
 
         string UrlString = string.Format(Settings.DataUrlTemplate, forDate);
-        Logger.LogInformation("From {UrlString}", UrlString);
+        if (Logger.IsEnabled(LogLevel.Information))
+            Logger.LogInformation("From {UrlString}", UrlString);
 
         try
         {
@@ -66,14 +69,16 @@ public sealed class PvpcCronBackgroundService : Libs.BackgroundServices.Cron
         catch (TaskCanceledException e) when (Logger.LogAndHandle(e, "Task request to '{WebUrl}' cancelled", UrlString)) { }
         catch (Exception e) when (Logger.LogAndHandle(e, "Request to '{WebUrl}' failed", UrlString)) { }
 
-        Logger.LogInformation("End {ApplicationName}", AppName);
+        if (Logger.IsEnabled(LogLevel.Information))
+            Logger.LogInformation("End {ApplicationName}", AppName);
     }
 
     private async Task<int?> ProcessPricesAsync(HashSet<Libs.Core.Entities.Pvpc>? NewEntities, CancellationToken stoppingToken)
     {
         if (NewEntities == null || NewEntities.Count == 0)
         {
-            Logger.LogInformation("No entities obtained");
+            if (Logger.IsEnabled(LogLevel.Information))
+                Logger.LogInformation("No entities obtained");
             return null;
         }
 
@@ -114,12 +119,14 @@ public sealed class PvpcCronBackgroundService : Libs.BackgroundServices.Cron
 
             _ = await dbCxt.SaveChangesAsync(stoppingToken);
 
-            Logger.LogInformation("Obtained {NewEntities} entities", NewEntities.Count);
+            if (Logger.IsEnabled(LogLevel.Information))
+                Logger.LogInformation("Obtained {NewEntities} entities", NewEntities.Count);
 
             return Prices.Count;
         }
 
-        Logger.LogInformation("No changes");
+        if (Logger.IsEnabled(LogLevel.Information))
+            Logger.LogInformation("No changes");
 
         return 0;
     }
@@ -133,24 +140,29 @@ public sealed class PvpcCronBackgroundService : Libs.BackgroundServices.Cron
         if (pvpcs.Length == 0)
             return false;
 
-        logger.LogInformation("Checking if it's time to charge at {timeToCheckDateTimeOffset}", timeToCheckDateTimeOffset);
+        if (logger.IsEnabled(LogLevel.Information))
+            logger.LogInformation("Checking if it's time to charge at {timeToCheckDateTimeOffset}", timeToCheckDateTimeOffset);
         Libs.Core.Entities.Pvpc CurrentHourPrice = pvpcs.OrderBy(x => x.AtDateTimeOffset).Last(x => x.AtDateTimeOffset <= timeToCheckDateTimeOffset);
-        logger.LogInformation("Current hour price: {CurrentHourPrice}", CurrentHourPrice);
+        if (logger.IsEnabled(LogLevel.Information))
+            logger.LogInformation("Current hour price: {CurrentHourPrice}", CurrentHourPrice);
 
         if (CurrentHourPrice.KWhPriceInEuros < tuyaManagerSettings.AllowChargeWhenKWhPriceInEurosIsBelowThan)
         {
-            logger.LogInformation("Allowed to charge because current hour price {CurrentHourPrice} is below {AllowChargeWhenKWhPriceInEurosIsBelowThan}", CurrentHourPrice.KWhPriceInEuros, tuyaManagerSettings.AllowChargeWhenKWhPriceInEurosIsBelowThan);
+            if (logger.IsEnabled(LogLevel.Information))
+                logger.LogInformation("Allowed to charge because current hour price {CurrentHourPrice} is below {AllowChargeWhenKWhPriceInEurosIsBelowThan}", CurrentHourPrice.KWhPriceInEuros, tuyaManagerSettings.AllowChargeWhenKWhPriceInEurosIsBelowThan);
             return true;
         }
 
         decimal MaxOfTheCheapestHours = pvpcs.OrderBy(x => x.KWhPriceInEuros).Take(tuyaManagerSettings.ChargingHoursPerDay).Max(x => x.KWhPriceInEuros);
         if (CurrentHourPrice.KWhPriceInEuros < MaxOfTheCheapestHours)
         {
-            logger.LogInformation("Allowed to charge because current hour price {CurrentHourPrice} is below the max of the {ChargingHoursPerDay} cheapest hours {MaxOfTheCheapestHours}", CurrentHourPrice.KWhPriceInEuros, tuyaManagerSettings.ChargingHoursPerDay, MaxOfTheCheapestHours);
+            if (logger.IsEnabled(LogLevel.Information))
+                logger.LogInformation("Allowed to charge because current hour price {CurrentHourPrice} is below the max of the {ChargingHoursPerDay} cheapest hours {MaxOfTheCheapestHours}", CurrentHourPrice.KWhPriceInEuros, tuyaManagerSettings.ChargingHoursPerDay, MaxOfTheCheapestHours);
             return true;
         }
 
-        logger.LogInformation("Not allowed to charge because current hour price {CurrentHourPrice} is above {AllowChargeWhenKWhPriceInEurosIsBelowThan} and above the max of the {ChargingHoursPerDay} cheapest hours {MaxOfTheCheapestHours}", CurrentHourPrice.KWhPriceInEuros, tuyaManagerSettings.AllowChargeWhenKWhPriceInEurosIsBelowThan, tuyaManagerSettings.ChargingHoursPerDay, MaxOfTheCheapestHours);
+        if (logger.IsEnabled(LogLevel.Information))
+            logger.LogInformation("Not allowed to charge because current hour price {CurrentHourPrice} is above {AllowChargeWhenKWhPriceInEurosIsBelowThan} and above the max of the {ChargingHoursPerDay} cheapest hours {MaxOfTheCheapestHours}", CurrentHourPrice.KWhPriceInEuros, tuyaManagerSettings.AllowChargeWhenKWhPriceInEurosIsBelowThan, tuyaManagerSettings.ChargingHoursPerDay, MaxOfTheCheapestHours);
         return false;
     }
 

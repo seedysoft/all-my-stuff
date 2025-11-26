@@ -28,18 +28,21 @@ public sealed class UpdaterCronBackgroundService : BackgroundServices.Cron
 
         string? AppName = GetType().FullName;
 
-        Logger.LogInformation("Called {ApplicationName} version {Version}", AppName, System.Reflection.Assembly.GetExecutingAssembly().GetName().Version);
+        if (Logger.IsEnabled(LogLevel.Information))
+            Logger.LogInformation("Called {ApplicationName} version {Version}", AppName, System.Reflection.Assembly.GetExecutingAssembly().GetName().Version);
 
         try
         {
             Enums.UpdateResults UpgradeResult = await DownloadLatestReleaseAsset();
 
-            Logger.LogInformation($"Updating result: {UpgradeResult}");
+            if (Logger.IsEnabled(LogLevel.Information))
+                Logger.LogInformation($"Updating result: {UpgradeResult}");
         }
         catch (Exception e) when (Logger.LogAndHandle(e, "Unexpected error")) { }
         finally { await Task.CompletedTask; }
 
-        Logger.LogInformation("End {ApplicationName}", AppName);
+        if (Logger.IsEnabled(LogLevel.Information))
+            Logger.LogInformation("End {ApplicationName}", AppName);
     }
 
     internal async Task<Enums.UpdateResults> DownloadLatestReleaseAsset()
@@ -47,7 +50,8 @@ public sealed class UpdaterCronBackgroundService : BackgroundServices.Cron
         Octokit.Release? release = await GetLatestReleaseFromGithubAsync();
         if (release == null)
         {
-            Logger.LogError("LatestReleaseFromGithub is null.");
+            if (Logger.IsEnabled(LogLevel.Error))
+                Logger.LogError("LatestReleaseFromGithub is null.");
             return Enums.UpdateResults.LatestReleaseFromGithubIsNull;
         }
 
@@ -55,7 +59,8 @@ public sealed class UpdaterCronBackgroundService : BackgroundServices.Cron
             release.Assets.FirstOrDefault(x => x.Name.Contains(System.Runtime.InteropServices.RuntimeInformation.RuntimeIdentifier, StringComparison.InvariantCultureIgnoreCase));
         if (releaseAsset == null)
         {
-            Logger.LogError($"Asset not found for {System.Runtime.InteropServices.RuntimeInformation.RuntimeIdentifier}.");
+            if (Logger.IsEnabled(LogLevel.Error)) 
+                Logger.LogError($"Asset not found for {System.Runtime.InteropServices.RuntimeInformation.RuntimeIdentifier}.");
             return Enums.UpdateResults.AssetNotFound;
         }
 
@@ -65,7 +70,8 @@ public sealed class UpdaterCronBackgroundService : BackgroundServices.Cron
 
         if (NewVersion <= CurrentVersion)
         {
-            Logger.LogInformation($"Current version is: {CurrentVersion}. Latest version is: {NewVersion}");
+            if (Logger.IsEnabled(LogLevel.Information))
+                Logger.LogInformation($"Current version is: {CurrentVersion}. Latest version is: {NewVersion}");
             return Enums.UpdateResults.NoNewVersionFound;
         }
         // Here, NewVersion is greather than CurrentVersion
@@ -81,7 +87,8 @@ public sealed class UpdaterCronBackgroundService : BackgroundServices.Cron
         IReadOnlyList<Octokit.Release> releases =
             await gitHubClient.Repository.Release.GetAll(Core.Constants.Github.OwnerName, Core.Constants.Github.RepositoryName);
 
-        Logger.LogInformation("Obtained {releasesCount} releases", releases.Count);
+        if (Logger.IsEnabled(LogLevel.Information))
+            Logger.LogInformation("Obtained {releasesCount} releases", releases.Count);
 
         return releases.Any() ? releases[0] : null;
     }
@@ -108,7 +115,8 @@ public sealed class UpdaterCronBackgroundService : BackgroundServices.Cron
             //    break;
 
             default:
-                Logger.LogError($"RuntimeIdentifier {runtimeIdentifier} not supported");
+                if (Logger.IsEnabled(LogLevel.Error))
+                    Logger.LogError($"RuntimeIdentifier {runtimeIdentifier} not supported");
                 return false;
         }
 

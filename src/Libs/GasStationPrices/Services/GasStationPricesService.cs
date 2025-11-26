@@ -34,7 +34,8 @@ public sealed class GasStationPricesService(IServiceProvider serviceProvider)
         var StationsInsideBounds = MineturResponse.EstacionesTerrestres.Where(e => e.IsInside(Bounds)).ToFrozenSet();
 
         sw.Stop();
-        Logger.LogInformation("Decode polyline in {Elapsed} secs.", sw.Elapsed.ToString(@"s\.fff"));
+        if (Logger.IsEnabled(LogLevel.Information))
+            Logger.LogInformation("Decode polyline in {Elapsed} secs.", sw.Elapsed.ToString(@"s\.fff"));
 
         sw = System.Diagnostics.Stopwatch.StartNew();
 
@@ -47,7 +48,8 @@ public sealed class GasStationPricesService(IServiceProvider serviceProvider)
             yield return item;
 
         sw.Stop();
-        Logger.LogInformation("Filtered near gas stations in {Elapsed} secs.", sw.Elapsed.ToString(@"s\.fff"));
+        if (Logger.IsEnabled(LogLevel.Information))
+            Logger.LogInformation("Filtered near gas stations in {Elapsed} secs.", sw.Elapsed.ToString(@"s\.fff"));
     }
 
     //public async Task<ViewModels.GasStationModel> GetGasStationModelAsync(long stationId, CancellationToken cancellationToken)
@@ -88,7 +90,8 @@ public sealed class GasStationPricesService(IServiceProvider serviceProvider)
         }
 
         sw.Stop();
-        Logger.LogInformation("Loaded gas stations in {Elapsed} secs.", sw.Elapsed.ToString(@"s\.fff"));
+        if (Logger.IsEnabled(LogLevel.Information))
+            Logger.LogInformation("Loaded gas stations in {Elapsed} secs.", sw.Elapsed.ToString(@"s\.fff"));
 
         return MineturResponse != null;
     }

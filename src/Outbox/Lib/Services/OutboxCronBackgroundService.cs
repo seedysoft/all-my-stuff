@@ -30,7 +30,8 @@ public sealed class OutboxCronBackgroundService : Libs.BackgroundServices.Cron
 
         string? AppName = GetType().FullName;
 
-        Logger.LogInformation("Called {ApplicationName} version {Version}", AppName, System.Reflection.Assembly.GetExecutingAssembly().GetName().Version);
+        if (Logger.IsEnabled(LogLevel.Information))
+            Logger.LogInformation("Called {ApplicationName} version {Version}", AppName, System.Reflection.Assembly.GetExecutingAssembly().GetName().Version);
 
         try
         {
@@ -40,17 +41,20 @@ public sealed class OutboxCronBackgroundService : Libs.BackgroundServices.Cron
 
             if (PendingMessages.Length == 0)
             {
-                Logger.LogInformation("NO pending messages");
+                if (Logger.IsEnabled(LogLevel.Information))
+                    Logger.LogInformation("NO pending messages");
             }
             else
             {
-                Logger.LogInformation("Obtained {PendingMessages} pending messages", PendingMessages.Length);
+                if (Logger.IsEnabled(LogLevel.Information))
+                    Logger.LogInformation("Obtained {PendingMessages} pending messages", PendingMessages.Length);
 
                 Libs.Core.Entities.Subscriber[]? AllSubscribers = await dbCtx.Subscribers
                     .Include(x => x.Subscriptions)
                     .AsNoTracking()
                     .ToArrayAsync(stoppingToken);
-                Logger.LogInformation("Obtained {AllSubscribers} subscribers", AllSubscribers.Length);
+                if (Logger.IsEnabled(LogLevel.Information))
+                    Logger.LogInformation("Obtained {AllSubscribers} subscribers", AllSubscribers.Length);
 
                 Libs.TelegramBot.Services.TelegramHostedService telegramHostedService = ServiceProvider.GetRequiredService<Libs.TelegramBot.Services.TelegramHostedService>();
 
@@ -100,12 +104,14 @@ public sealed class OutboxCronBackgroundService : Libs.BackgroundServices.Cron
             const int KeepDays = 20;
             DateTimeOffset dateTimeOffset = DateTimeOffset.UtcNow.AddDays(-KeepDays);
             await dbCtx.BulkDeleteAsync(dbCtx.Outbox.Where(x => x.SentAtDateTimeOffset < dateTimeOffset), cancellationToken: stoppingToken);
-            Logger.LogDebug("Removed {Entities} old entities", await dbCtx.SaveChangesAsync(stoppingToken));
+            if (Logger.IsEnabled(LogLevel.Debug))
+                Logger.LogDebug("Removed {Entities} old entities", await dbCtx.SaveChangesAsync(stoppingToken));
         }
         catch (Exception e) when (Logger.LogAndHandle(e, "Unexpected error")) { }
         finally { await Task.CompletedTask; }
 
-        Logger.LogInformation("End {ApplicationName}", AppName);
+        if (Logger.IsEnabled(LogLevel.Information))
+            Logger.LogInformation("End {ApplicationName}", AppName);
     }
 
     private static string GetHtmlBodyMail(string payload)
