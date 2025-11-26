@@ -112,7 +112,7 @@ public class TelegramHostedService : Core.NonBackgroundServiceBase, IHostedServi
                 if (Logger.IsEnabled(LogLevel.Error))
                     Logger.LogError("{ex}", exception);
                 break;
-        };
+        }
 
         await Task.CompletedTask;
     }

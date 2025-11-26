@@ -21,6 +21,13 @@ public sealed class UpdaterCronBackgroundService : BackgroundServices.Cron
             .GetSection(nameof(Update.Settings.UpdateSettings)).Get<Settings.UpdateSettings>()!;
     }
 
+    public override async Task StartAsync(CancellationToken cancellationToken)
+    {
+        await DoWorkAsync(cancellationToken);
+
+        await base.StartAsync(cancellationToken);
+    }
+
     public override async Task DoWorkAsync(CancellationToken cancellationToken)
     {
         if (System.Diagnostics.Debugger.IsAttached)
@@ -59,7 +66,7 @@ public sealed class UpdaterCronBackgroundService : BackgroundServices.Cron
             release.Assets.FirstOrDefault(x => x.Name.Contains(System.Runtime.InteropServices.RuntimeInformation.RuntimeIdentifier, StringComparison.InvariantCultureIgnoreCase));
         if (releaseAsset == null)
         {
-            if (Logger.IsEnabled(LogLevel.Error)) 
+            if (Logger.IsEnabled(LogLevel.Error))
                 Logger.LogError($"Asset not found for {System.Runtime.InteropServices.RuntimeInformation.RuntimeIdentifier}.");
             return Enums.UpdateResults.AssetNotFound;
         }
