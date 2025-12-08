@@ -76,6 +76,16 @@ public sealed class TuyaManagerCronBackgroundService : Libs.BackgroundServices.C
                 var tuyaDeviceBase = tuyaDevice.ToTuyaDeviceBase();
                 //_ = tuyaDeviceBase.GetStatus();
 
+                try
+                {
+                    // Intentar que no se quede pillado el dispositivo
+                    _ = tuyaDeviceBase.TurnOn();
+                    _ = tuyaDeviceBase.TurnOff();
+                    _ = tuyaDeviceBase.TurnOn();
+                    _ = tuyaDeviceBase.TurnOff();
+                }
+                catch (Exception) { }
+
                 object? TurnResult = IsTimeToCharge ? tuyaDeviceBase.TurnOn() : tuyaDeviceBase.TurnOff();
                 if (TurnResult is Dictionary<string, object> dict)
                 {
@@ -92,7 +102,7 @@ public sealed class TuyaManagerCronBackgroundService : Libs.BackgroundServices.C
         catch (Exception e) when (Logger.LogAndHandle(e, "Unexpected error")) { }
         finally { await Task.CompletedTask; }
 
-        if (Logger.IsEnabled(LogLevel.Debug)) 
+        if (Logger.IsEnabled(LogLevel.Debug))
             Logger.LogDebug("End {ApplicationName}", AppName);
     }
 }

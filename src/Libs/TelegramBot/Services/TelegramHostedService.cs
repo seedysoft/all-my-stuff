@@ -88,14 +88,21 @@ public class TelegramHostedService : Core.NonBackgroundServiceBase, IHostedServi
         //Enums.UpdateType[] UpdatesAllowed = { Enums.UpdateType.Message | Enums.UpdateType.Unknown };
         //receiverOptions.AllowedUpdates = UpdatesAllowed;
 
-        LocalTelegramBotClient.StartReceiving(HandleUpdateAsync, HandleErrorAsync, OptionsReceiver, stoppingToken);
+        LocalTelegramBotClient.StartReceiving(
+            updateHandler: HandleUpdateAsync,
+            errorHandler: HandleErrorAsync,
+            receiverOptions: OptionsReceiver,
+            cancellationToken: stoppingToken);
     }
 
     private async Task HandleErrorAsync(
         ITelegramBotClient botClient,
         Exception exception,
+        HandleErrorSource handleErrorSource,
         CancellationToken cancellationToken)
     {
+        // TODO Cuando se cae la conexión, evitar que llene los logs
+
         switch (exception)
         {
             case ApiRequestException apiRequestException:
