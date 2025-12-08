@@ -105,7 +105,7 @@ public class TelegramHostedService : Core.NonBackgroundServiceBase, IHostedServi
 
             case RequestException requestException:
                 if (Logger.IsEnabled(LogLevel.Error))
-                    Logger.LogError("Telegram API Error:\n[{HttpStatusCode}]\n{Message}", requestException.HttpStatusCode, requestException.Message);
+                    Logger.LogError("Telegram API Error:\n[{HttpStatusCode}]\n{Message}", requestException.HttpStatusCode.GetValueOrDefault(), requestException.Message);
                 break;
 
             default:
