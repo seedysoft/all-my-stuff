@@ -7,15 +7,16 @@
 		<SeedysoftProject>false</SeedysoftProject>
 		<SeedysoftProject Condition="$(MSBuildProjectName.StartsWith('Seedysoft'))">true</SeedysoftProject>
 	</PropertyGroup>
-	
+
 	<!--
 	Source - https://stackoverflow.com/a/78238645
 	Posted by Jonathan Dodds
 	Retrieved 2025-12-08, License - CC BY-SA 4.0
 	-->
 	<PropertyGroup>
-		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 		<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+		<Features>strict</Features>
 	</PropertyGroup>
 
 	<!-- Set the Product and Version info for our own projects -->
