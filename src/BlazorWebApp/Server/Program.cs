@@ -16,6 +16,11 @@ public class Program : Libs.Core.ProgramBase
         // TODO         Learn how it works
         _ = webApplicationBuilder.Configuration.AddInMemoryCollection(Libs.Core.Models.Config.RuntimeSettings.GetValues(Settings));
 
+        // Add services to the container.
+        _ = webApplicationBuilder.Services.AddRazorComponents()
+            .AddInteractiveServerComponents()
+            .AddInteractiveWebAssemblyComponents();
+
         WebApplication webApplication = webApplicationBuilder.Build();
 
         // Configure the HTTP request pipeline.
@@ -36,16 +41,16 @@ public class Program : Libs.Core.ProgramBase
         }
 
         _ = webApplication
+            .UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true)
             .UseHttpsRedirection()
-            .UseStaticFiles()
             .UseAntiforgery();
+
+        _ = webApplication.MapStaticAssets();
 
         _ = webApplication.MapRazorComponents<Components.App>()
             .AddInteractiveServerRenderMode()
             .AddInteractiveWebAssemblyRenderMode()
             .AddAdditionalAssemblies(typeof(Client._Imports).Assembly);
-
-        //_ = webApplication.MapControllers();
 
         await webApplication.RunAsync();
     }
