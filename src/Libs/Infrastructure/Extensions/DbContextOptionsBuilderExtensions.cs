@@ -2,14 +2,16 @@
 
 public static class DbContextOptionsBuilderExtensions
 {
-    public static void ConfigureDebugOptions(this Microsoft.EntityFrameworkCore.DbContextOptionsBuilder dbContextOptionsBuilder)
+    public static Microsoft.EntityFrameworkCore.DbContextOptionsBuilder ConfigureDebugOptions(this Microsoft.EntityFrameworkCore.DbContextOptionsBuilder dbContextOptionsBuilder)
     {
         if (System.Diagnostics.Debugger.IsAttached)
         {
-            _ = dbContextOptionsBuilder
+            dbContextOptionsBuilder = dbContextOptionsBuilder
                 .EnableDetailedErrors()
                 .EnableSensitiveDataLogging()
-                .LogTo(Console.WriteLine, Microsoft.Extensions.Logging.LogLevel.Trace);
+                .LogTo(Console.WriteLine, Microsoft.Extensions.Logging.LogLevel.Debug);
         }
+
+        return dbContextOptionsBuilder;
     }
 }

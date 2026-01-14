@@ -11,7 +11,7 @@ public sealed class WebComparerCronBackgroundService : Libs.BackgroundServices.C
 {
     private static readonly TimeSpan FiveSecondsTimeSpan = TimeSpan.FromSeconds(5);
     private readonly ILogger<WebComparerCronBackgroundService> Logger;
-    private Settings.WebComparerSettings Settings => (Settings.WebComparerSettings)Config;
+    //private Settings.WebComparerSettings Settings => (Settings.WebComparerSettings)Config;
 
     public WebComparerCronBackgroundService(
         IServiceProvider serviceProvider,
@@ -21,7 +21,7 @@ public sealed class WebComparerCronBackgroundService : Libs.BackgroundServices.C
         Logger = ServiceProvider.GetRequiredService<ILogger<WebComparerCronBackgroundService>>();
 
         Config = ServiceProvider.GetRequiredService<IConfiguration>()
-            .GetSection(nameof(Lib.Settings.WebComparerSettings)).Get<Settings.WebComparerSettings>()!;
+            .GetSection(nameof(Settings.WebComparerSettings)).Get<Settings.WebComparerSettings>()!;
     }
 
     public override async Task DoWorkAsync(CancellationToken cancellationToken)
@@ -343,13 +343,11 @@ public sealed class WebComparerCronBackgroundService : Libs.BackgroundServices.C
         return lineChangeType switch
         {
 #pragma warning disable format
-            
             DiffPlex.DiffBuilder.Model.ChangeType.Deleted        => "-  ",
             DiffPlex.DiffBuilder.Model.ChangeType.Inserted       => "+  ",
             DiffPlex.DiffBuilder.Model.ChangeType.Modified       => "~  ",
             DiffPlex.DiffBuilder.Model.ChangeType.Unchanged      => "=  ",
             DiffPlex.DiffBuilder.Model.ChangeType.Imaginary or _ => string.Empty,
-
 #pragma warning restore format
         };
     }

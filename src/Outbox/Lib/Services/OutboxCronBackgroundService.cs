@@ -10,7 +10,7 @@ namespace Seedysoft.Outbox.Lib.Services;
 public sealed class OutboxCronBackgroundService : Libs.BackgroundServices.Cron
 {
     private readonly ILogger<OutboxCronBackgroundService> Logger;
-    private Settings.OutboxSettings Settings => (Settings.OutboxSettings)Config;
+    //private Settings.OutboxSettings Settings => (Settings.OutboxSettings)Config;
 
     public OutboxCronBackgroundService(
         IServiceProvider serviceProvider,
@@ -20,7 +20,7 @@ public sealed class OutboxCronBackgroundService : Libs.BackgroundServices.Cron
         Logger = ServiceProvider.GetRequiredService<ILogger<OutboxCronBackgroundService>>();
 
         Config = ServiceProvider.GetRequiredService<IConfiguration>()
-            .GetSection(nameof(Lib.Settings.OutboxSettings)).Get<Settings.OutboxSettings>()!;
+            .GetSection(nameof(Settings.OutboxSettings)).Get<Settings.OutboxSettings>()!;
     }
 
     public override async Task DoWorkAsync(CancellationToken stoppingToken)

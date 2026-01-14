@@ -17,8 +17,9 @@ public abstract class TestClassBase(Xunit.Abstractions.ITestOutputHelper testOut
         _ = services
             .AddDbContext<DbContexts.DbCxt>((dbContextOptionsBuilder) =>
             {
-                _ = dbContextOptionsBuilder.UseSqlite(connection);
-                dbContextOptionsBuilder.ConfigureDebugOptions();
+                _ = dbContextOptionsBuilder
+                    .UseSqlite(connection)
+                    .ConfigureDebugOptions();
             }
             , ServiceLifetime.Transient
             , ServiceLifetime.Transient);
