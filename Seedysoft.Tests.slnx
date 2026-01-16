@@ -1,0 +1,66 @@
+<Solution>
+  <Folder Name="/Libs/">
+    <Project Path="src/Libs/BackgroundServices/Seedysoft.Libs.BackgroundServices.csproj" />
+    <Project Path="src/Libs/Core/Seedysoft.Libs.Core.csproj" />
+    <Project Path="src/Libs/Cryptography/Seedysoft.Libs.Cryptography.csproj" />
+    <Project Path="src/Libs/GasStationPrices/Seedysoft.Libs.GasStationPrices.csproj" />
+    <Project Path="src/Libs/GoogleApis/Seedysoft.Libs.GoogleApis.csproj" />
+    <Project Path="src/Libs/GoogleMapsRazorClassLib/Seedysoft.Libs.GoogleMapsRazorClassLib.csproj" />
+    <Project Path="src/Libs/Infrastructure/Seedysoft.Libs.Infrastructure.csproj" />
+    <Project Path="src/Libs/SmtpService/Seedysoft.Libs.SmtpService.csproj" />
+    <Project Path="src/Libs/TelegramBot/Seedysoft.Libs.TelegramBot.csproj" />
+    <Project Path="src/Libs/TuyaDeviceControl/Seedysoft.Libs.TuyaDeviceControl.csproj" />
+    <Project Path="src/Libs/Update/Seedysoft.Libs.Update.csproj" />
+    <Project Path="test/Libs/Core.Tests/Seedysoft.Libs.Core.Tests.csproj" />
+    <Project Path="test/Libs/Cryptography.Tests/Seedysoft.Libs.Cryptography.Tests.csproj" />
+    <Project Path="test/Libs/GasStationPrices.Tests/Seedysoft.Libs.GasStationPrices.Tests.csproj" />
+    <Project Path="test/Libs/GoogleApis.Tests/Seedysoft.Libs.GoogleApis.Tests.csproj" />
+    <Project Path="test/Libs/Infrastructure.Tests/Seedysoft.Libs.Infrastructure.Tests.csproj" />
+    <Project Path="test/Libs/Update.Tests/Seedysoft.Libs.Update.Tests.csproj" />
+  </Folder>
+  <Folder Name="/Outbox/">
+    <Project Path="src/Outbox/ConsoleApp/Seedysoft.Outbox.ConsoleApp.csproj" />
+    <Project Path="src/Outbox/Lib/Seedysoft.Outbox.Lib.csproj" />
+  </Folder>
+  <Folder Name="/Pvpc/">
+    <Project Path="src/Pvpc/ConsoleApp/Seedysoft.Pvpc.ConsoleApp.csproj" />
+    <Project Path="src/Pvpc/Lib/Seedysoft.Pvpc.Lib.csproj" />
+    <Project Path="test/Pvpc/Lib.Tests/Seedysoft.Pvpc.Lib.Tests.csproj" />
+  </Folder>
+  <Folder Name="/WebComparer/">
+    <Project Path="src/WebComparer/ConsoleApp/Seedysoft.WebComparer.ConsoleApp.csproj" />
+    <Project Path="src/WebComparer/Lib/Seedysoft.WebComparer.Lib.csproj" />
+  </Folder>
+  <Folder Name="/_SolutionItems/">
+    <File Path=".editorconfig" />
+    <File Path=".gitattributes" />
+    <File Path=".gitignore" />
+    <File Path=".runsettings" />
+    <File Path="nuget.config" />
+    <File Path="src/Directory.Build.props" />
+    <File Path="testEnvironments.json" />
+    <File Path="xunit.runner.json" />
+  </Folder>
+  <Folder Name="/_SolutionItems/.github/">
+    <File Path=".github/dependabot.yml" />
+  </Folder>
+  <Folder Name="/_SolutionItems/.github/workflows/">
+    <File Path=".github/workflows/CI.yml" />
+    <File Path=".github/workflows/delete-old-runs.yml" />
+    <File Path=".github/workflows/Publish.yml" />
+  </Folder>
+  <Folder Name="/_SolutionItems/doc/">
+    <File Path="doc/DotnetInstallDocumentation.txt" />
+    <File Path="doc/KnownErrors.txt" />
+    <File Path="doc/MigrationCommands.txt" />
+    <File Path="doc/PublishCommands.txt" />
+  </Folder>
+  <Folder Name="/_SolutionItems/scripts/">
+    <File Path="scripts/create-daemon.sh" />
+    <File Path="scripts/shared.sh" />
+    <File Path="scripts/stop-daemon.sh" />
+    <File Path="scripts/update.sh" />
+  </Folder>
+  <Project Path="src/BlazorWebApp/Client/Seedysoft.BlazorWebApp.Client.csproj" />
+  <Project Path="src/BlazorWebApp/Server/Seedysoft.BlazorWebApp.Server.csproj" />
+</Solution>
