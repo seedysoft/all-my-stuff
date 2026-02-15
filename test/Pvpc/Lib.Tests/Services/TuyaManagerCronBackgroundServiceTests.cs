@@ -11,7 +11,7 @@ public sealed class TuyaManagerCronBackgroundServiceTests : Libs.Infrastructure.
     private readonly Lib.Services.TuyaManagerCronBackgroundService TuyaManagerService = default!;
     private bool disposedValue;
 
-    public TuyaManagerCronBackgroundServiceTests(Xunit.Abstractions.ITestOutputHelper testOutputHelper) : base(testOutputHelper)
+    public TuyaManagerCronBackgroundServiceTests(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
     {
         IConfiguration configuration = new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
@@ -33,7 +33,7 @@ public sealed class TuyaManagerCronBackgroundServiceTests : Libs.Infrastructure.
     [Fact]
     public async Task DoWorkAsyncTest()
     {
-        await TuyaManagerService.DoWorkAsync(default);
+        await TuyaManagerService.DoWorkAsync(TestContext.Current.CancellationToken);
 
         Assert.True(true);
     }

@@ -2,9 +2,9 @@
 
 public abstract class XUnitTestClassBase
 {
-    protected internal Xunit.Abstractions.ITestOutputHelper TestOutputHelper { get; }
+    protected internal Xunit.ITestOutputHelper TestOutputHelper { get; }
 
-    public XUnitTestClassBase(Xunit.Abstractions.ITestOutputHelper testOutputHelper)
+    public XUnitTestClassBase(Xunit.ITestOutputHelper testOutputHelper)
     {
         TestOutputHelper = testOutputHelper;
 

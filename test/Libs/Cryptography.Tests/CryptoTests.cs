@@ -2,7 +2,7 @@
 
 namespace Seedysoft.Libs.Cryptography.Tests;
 
-public sealed class CryptoTests(Xunit.Abstractions.ITestOutputHelper testOutputHelper) : Core.Tests.XUnitTestClassBase(testOutputHelper)
+public sealed class CryptoTests(ITestOutputHelper testOutputHelper) : Core.Tests.XUnitTestClassBase(testOutputHelper)
 {
     [InlineData("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam nulla tellus, elementum sit amet nunc.")]
     [Theory]

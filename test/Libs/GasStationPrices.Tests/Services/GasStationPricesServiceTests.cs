@@ -9,7 +9,7 @@ public sealed class GasStationPricesServiceTests : Infrastructure.Tests.TestClas
 {
     private readonly GasStationPrices.Services.GasStationPricesService GasStationPricesService = default!;
 
-    public GasStationPricesServiceTests(Xunit.Abstractions.ITestOutputHelper testOutputHelper) : base(testOutputHelper)
+    public GasStationPricesServiceTests(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
     {
         HostApplicationBuilder appBuilder = new();
         _ = appBuilder.AddAllMyDependencies();
@@ -42,7 +42,7 @@ public sealed class GasStationPricesServiceTests : Infrastructure.Tests.TestClas
         }
 
         Console.WriteLine($"Obtained {Total} gas tations");
-        await Task.Delay(TimeSpan.FromSeconds(1));
+        await Task.Delay(TimeSpan.FromSeconds(1), TestContext.Current.CancellationToken);
     }
 
     //protected override void Dispose(bool disposing) => Dispose();

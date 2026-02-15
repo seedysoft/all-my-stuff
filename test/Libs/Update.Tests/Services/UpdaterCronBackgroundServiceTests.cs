@@ -9,7 +9,7 @@ public sealed class UpdaterCronBackgroundServiceTests : Infrastructure.Tests.Tes
 {
     private readonly Update.Services.UpdaterCronBackgroundService updaterCronBackgroundService = default!;
 
-    public UpdaterCronBackgroundServiceTests(Xunit.Abstractions.ITestOutputHelper testOutputHelper) : base(testOutputHelper)
+    public UpdaterCronBackgroundServiceTests(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
     {
         HostApplicationBuilder appBuilder = new();
         _ = appBuilder.AddAllMyDependencies();
