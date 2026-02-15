@@ -20,6 +20,8 @@ public abstract class WebDataBase
 
     public long TakeAboveBelowLines { get; set; }
 
+    // TODO: Remove in future versions
+    //[Obsolete("UseHttpClient is obsolete and will be removed in future versions.")]
     public bool UseHttpClient { get; set; }
 }
 

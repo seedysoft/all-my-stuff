@@ -578,7 +578,7 @@ public class TelegramHostedService : Core.NonBackgroundServiceBase, IHostedServi
         Core.Entities.WebData? webData = await dbCtx.WebDatas.FirstOrDefaultAsync(x => x.WebUrl == FirstWordReceived, cancellationToken);
         if (webData == null)
         {
-            webData = new Core.Entities.WebData(FirstWordReceived, $"Recibido a través de Telegram el {message.Date}");
+            webData = new Core.Entities.WebData(FirstWordReceived, $"{Core.Constants.Strings.TextForNewSubscription}{message.Date}");
             _ = await dbCtx.WebDatas.AddAsync(webData, cancellationToken);
 
             _ = await MessageSendSimpleTextAsync(SenderChatId, "Añadida URL para seguimiento", cancellationToken);

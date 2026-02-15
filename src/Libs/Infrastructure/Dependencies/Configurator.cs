@@ -22,36 +22,51 @@ public sealed class Configurator : Core.Dependencies.ConfiguratorBase
 
     protected override void AddDbContexts(IHostApplicationBuilder hostApplicationBuilder)
     {
+#if DEBUG
+        if (System.Diagnostics.Debugger.IsAttached)
+            System.Diagnostics.Debugger.Break();
+#endif
+        string FullFilePath = default!;
+
         _ = hostApplicationBuilder.Services.AddDbContext<DbContexts.DbCxt>(dbContextOptionsBuilder =>
         {
-            using ILoggerFactory loggerFactory = LoggerFactory.Create(builder =>
-            {
-                builder.SetMinimumLevel(LogLevel.Debug);
-                builder.AddConsole();
-            });
-            Microsoft.Extensions.Logging.ILogger logger = loggerFactory.CreateLogger(nameof(AddDbContexts));
+            if (string.IsNullOrEmpty(FullFilePath))
+                FullFilePath = FindDatabaseFullFilePath(hostApplicationBuilder);
 
-            string ConnectionStringName = nameof(DbContexts.DbCxt);
-            string ConnectionString = hostApplicationBuilder.Configuration.GetConnectionString($"{ConnectionStringName}") ?? throw new KeyNotFoundException($"Connection string '{ConnectionStringName}' not found.");
-            string FullFilePath = Path.GetFullPath(ConnectionString);
-            while (!File.Exists(FullFilePath))
+            _ = dbContextOptionsBuilder
+                .UseSqlite($"{Core.Constants.DatabaseStrings.DataSource}{FullFilePath}")
+                .ConfigureDebugOptions();
+
+            static string FindDatabaseFullFilePath(IHostApplicationBuilder hostApplicationBuilder)
             {
-#if DEBUG
-                if (System.Diagnostics.Debugger.IsAttached)
-                    System.Diagnostics.Debugger.Break();
-#endif
-                if (logger.IsEnabled(LogLevel.Debug))
-                    logger.LogDebug("Database file {FullFilePath} does not exists", FullFilePath);
-                FullFilePath = Path.GetFullPath(ConnectionString = ConnectionString.Insert(0, "../"));
+                using ILoggerFactory loggerFactory = LoggerFactory.Create(builder =>
+                {
+                    _ = builder
+                        .SetMinimumLevel(LogLevel.Debug)
+                        .AddConsole();
+                });
+                Microsoft.Extensions.Logging.ILogger logger = loggerFactory.CreateLogger(nameof(AddDbContexts));
+
+                string ConnectionStringName = nameof(DbContexts.DbCxt);
+                string ConnectionString = hostApplicationBuilder.Configuration.GetConnectionString($"{ConnectionStringName}") ?? throw new KeyNotFoundException($"Connection string '{ConnectionStringName}' not found.");
+                string FullFilePath = Path.GetFullPath(ConnectionString);
+
+                while (!File.Exists(FullFilePath))
+                {
+                    if (logger.IsEnabled(LogLevel.Debug))
+                        logger.LogDebug("Database file {FullFilePath} does not exists", FullFilePath);
+
+                    FullFilePath = Path.GetFullPath(ConnectionString = ConnectionString.Insert(0, "../"));
+                }
+
+                if (!File.Exists(FullFilePath))
+                    throw new FileNotFoundException("Database file not found.", FullFilePath);
+
+                if (logger.IsEnabled(LogLevel.Information))
+                    logger.LogInformation("Using database file {FullFilePath}", FullFilePath);
+
+                return FullFilePath;
             }
-
-            if (!File.Exists(FullFilePath))
-                throw new FileNotFoundException("Database file not found.", FullFilePath);
-
-            if (logger.IsEnabled(LogLevel.Information))
-                logger.LogInformation("Using database file {FullFilePath}", FullFilePath);
-            _ = dbContextOptionsBuilder.UseSqlite($"{Core.Constants.DatabaseStrings.DataSource}{FullFilePath}");
-            dbContextOptionsBuilder.ConfigureDebugOptions();
         },
         ServiceLifetime.Transient,
         ServiceLifetime.Transient);
