@@ -150,12 +150,14 @@ public sealed class WebComparerCronBackgroundService : Libs.BackgroundServices.C
 
                 static string NormalizeTextLine(string text)
                 {
+#pragma warning disable format
                     return text
                         .Replace("\r\n", string.Empty)
-                        .Replace("\n", string.Empty)
-                        .Replace("\r", string.Empty)
-                        .Replace("\t", string.Empty)
+                        .Replace("\n",   string.Empty)
+                        .Replace("\r",   string.Empty)
+                        .Replace("\t",   string.Empty)
                         .Trim();
+#pragma warning restore format
                 }
             }
 
@@ -186,8 +188,9 @@ public sealed class WebComparerCronBackgroundService : Libs.BackgroundServices.C
             /// </summary>
             static Dictionary<int, string> GetDataForMail(Libs.Core.Entities.WebData webData, DiffPlex.DiffBuilder.Model.DiffPaneModel DiffModel)
             {
+#pragma warning disable IDE0028 // Simplify collection initialization
                 Dictionary<int, string> DataForMail = new(DiffModel.Lines.Count);
-
+#pragma warning restore IDE0028 // Simplify collection initialization
                 for (int RealLineIndex = 0; RealLineIndex < DiffModel.Lines.Count; RealLineIndex++)
                 {
                     DiffPlex.DiffBuilder.Model.DiffPiece CurrentLine = DiffModel.Lines[RealLineIndex];
@@ -267,17 +270,19 @@ public sealed class WebComparerCronBackgroundService : Libs.BackgroundServices.C
             {
                 using OpenQA.Selenium.Chrome.ChromeDriver WebDriver = GetWebDriver();
                 {
-                    //WebDriver.Navigate().GoToUrl(webData.WebUrl);
                     await WebDriver.Navigate().GoToUrlAsync(webData.WebUrl);
 
                     if (webData.Description.StartsWith(Libs.Core.Constants.Strings.TextForNewSubscription))
                         webData.Description = WebDriver.Title;
 
+                    TryToPerformWebDriverActions(WebDriver);
+
                     System.Collections.ObjectModel.ReadOnlyCollection<OpenQA.Selenium.IWebElement> webElements = WebDriver.FindElements(OpenQA.Selenium.By.CssSelector(webData.CssSelector));
                     for (int i = 0; i < webElements.Count; i++)
                     {
                         OpenQA.Selenium.IWebElement webElement = webElements[i];
-                        _ = ContentStringBuilder.Append(ObtainContentWithPagination(WebDriver, webElement));
+
+                        _ = ContentStringBuilder.Append(webElement.Text);
                     }
 
                     WebDriver.Quit();
@@ -342,43 +347,9 @@ public sealed class WebComparerCronBackgroundService : Libs.BackgroundServices.C
 
             return chromeDriver;
         }
-
-        string ObtainContentWithPagination(OpenQA.Selenium.Chrome.ChromeDriver webDriver, OpenQA.Selenium.IWebElement webElement)
-        {
-            TryPerformWebDriverActions(webDriver);
-
-            System.Text.StringBuilder ContentStringBuilder = new(webElement.Text);
-
-            // Pagination
-            while (ExistsNextPage(webDriver, webElement))
-                _ = ContentStringBuilder.Append(ObtainContentWithPagination(webDriver, webElement));
-
-            return ContentStringBuilder.ToString();
-
-            bool ExistsNextPage(OpenQA.Selenium.Chrome.ChromeDriver webDriver, OpenQA.Selenium.IWebElement webElement)
-            {
-                try
-                {
-                    // TODO Personalizar cada web con lo que podemos hacer antes de obtener datos  
-                    System.Collections.ObjectModel.ReadOnlyCollection<OpenQA.Selenium.IWebElement> SiguienteWebElements = webElement.FindElements(OpenQA.Selenium.By.LinkText("siguiente ›"));
-                    if (SiguienteWebElements.Count == 0)
-                        return false;
-
-                    SiguienteWebElements.First().Click();
-                    TryPerformWebDriverActions(webDriver);
-
-                    return true;
-                }
-                catch (OpenQA.Selenium.NoSuchElementException) { }
-                catch (OpenQA.Selenium.StaleElementReferenceException) { }
-                catch (Exception e) when (Logger.LogAndHandle(e, "ExistsNextPage failed")) { }
-
-                return false;
-            }
-        }
     }
 
-    private void TryPerformWebDriverActions(OpenQA.Selenium.Chrome.ChromeDriver webDriver)
+    private void TryToPerformWebDriverActions(OpenQA.Selenium.Chrome.ChromeDriver webDriver)
     {
         int RetryCount = 2;
 
@@ -390,18 +361,28 @@ public sealed class WebComparerCronBackgroundService : Libs.BackgroundServices.C
                 // SubscriptionId: 3 JCyL Convocatorias
                 if (webDriver.PageSource.Contains("elemento-invisible"))
                     webDriver.ExecuteJavaScript("jQuery('.elemento-invisible').removeClass('elemento-invisible');");
+                // SubscriptionId: 3 JCyL Convocatorias
 
                 // SubscriptionId: 7 Dip Burgos Convocatorias
-                if (webDriver.PageSource.Contains("class=\"collapse\""))
+                if (webDriver.PageSource.Contains("views-exposed-form-empleo-empleo-fijo"))
+                {
+                    OpenQA.Selenium.IWebElement FormEmpleoFijoWebElement = webDriver.FindElement(OpenQA.Selenium.By.Id("views-exposed-form-empleo-empleo-fijo"));
+                    OpenQA.Selenium.IWebElement TextFilterWebElement = FormEmpleoFijoWebElement.FindElement(OpenQA.Selenium.By.Id("edit-title"));
+                    TextFilterWebElement.Clear();
+                    TextFilterWebElement.SendKeys("prog");
+                    FormEmpleoFijoWebElement.FindElement(OpenQA.Selenium.By.Id("edit-submit-empleo")).Click();
                     webDriver.ExecuteJavaScript("jQuery('.collapse').removeClass('collapse');");
+                }
+                // SubscriptionId: 7 Dip Burgos Convocatorias
 
                 // SubscriptionId: 20 Inscripción de Pruebas Selectivas
                 if (webDriver.PageSource.Contains("view-more-link"))
                     ((OpenQA.Selenium.IWebElement?)webDriver.FindElement(OpenQA.Selenium.By.Id("view-more-link")))?.Click();
+                // SubscriptionId: 20 Inscripción de Pruebas Selectivas
 
                 RetryCount = 0;
             }
-            catch (Exception e) when (Logger.LogAndHandle(e, "{MethodName} failed", nameof(TryPerformWebDriverActions))) { RetryCount--; }
+            catch (Exception e) when (Logger.LogAndHandle(e, "{MethodName} failed", nameof(TryToPerformWebDriverActions))) { RetryCount--; }
         }
         while (RetryCount > 0);
     }
