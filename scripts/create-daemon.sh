@@ -117,7 +117,7 @@ echo "'${WORKER_SERVICE_NAME}' will be executed with the user '${WORKER_SERVICE_
 # Write the systemd service descriptor
 WORKER_SERVICE_FULLPATH="/etc/systemd/system/${WORKER_SERVICE_NAME}"
 echo "Creating '${WORKER_SERVICE_NAME}' unit file in '${WORKER_SERVICE_FULLPATH}' ..."
-cat > "${WORKER_SERVICE_FULLPATH}" <<EOL
+cat > "${WORKER_SERVICE_FULLPATH}" << EOL
 [Unit]
 Description=Long running daemon created from .NET worker template
 After=network.target

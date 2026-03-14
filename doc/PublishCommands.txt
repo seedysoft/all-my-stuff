@@ -1,4 +1,7 @@
-# FIRST SET VARIABLES (PS>):
+# FIRST UPGRADE NUGET PACKAGES (PS>):
+dotnet package update
+
+# THEN SET VARIABLES (PS>):
 
 $PublishDirectory="$env:OneDriveCommercial\_Syncthing\Seedysoft\linux-arm64\"
 

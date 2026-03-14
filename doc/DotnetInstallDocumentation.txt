@@ -56,7 +56,7 @@ dotnet workload update
 # dotnet workload install wasm-tools-net8
 # 
 # Update Entity Framework global tools:
-dotnet tool list   -g
+dotnet tool update -g --all
 dotnet tool update -g dotnet-ef
 # Keep .NET 8:
 dotnet tool install dotnet-ef -g --version 8.* --allow-downgrade
