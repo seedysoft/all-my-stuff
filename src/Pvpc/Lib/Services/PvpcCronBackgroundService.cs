@@ -90,7 +90,9 @@ public sealed class PvpcCronBackgroundService : Libs.BackgroundServices.Cron
             .Where(p => p.AtDateTimeOffset >= MinDateTimeOffset && p.AtDateTimeOffset <= MaxDateTimeOffset)
             .ToArrayAsync(stoppingToken);
 
+#pragma warning disable IDE0028 // Simplify collection initialization
         List<Libs.Core.Entities.PvpcBase> Prices = new(24);
+#pragma warning restore IDE0028 // Simplify collection initialization
         foreach ((Libs.Core.Entities.Pvpc NewEntity, Libs.Core.Entities.Pvpc ExistingEntity) in
             from Libs.Core.Entities.Pvpc NewEntity in NewEntities
             let ExistingEntity = ExistingPvpcs.FirstOrDefault(x => x.AtDateTimeOffset == NewEntity.AtDateTimeOffset)
@@ -154,15 +156,15 @@ public sealed class PvpcCronBackgroundService : Libs.BackgroundServices.Cron
         }
 
         decimal MaxOfTheCheapestHours = pvpcs.OrderBy(x => x.KWhPriceInEuros).Take(tuyaManagerSettings.ChargingHoursPerDay).Max(x => x.KWhPriceInEuros);
-        if (CurrentHourPrice.KWhPriceInEuros < MaxOfTheCheapestHours)
+        if (CurrentHourPrice.KWhPriceInEuros <= MaxOfTheCheapestHours)
         {
             if (logger.IsEnabled(LogLevel.Information))
-                logger.LogInformation("Allowed to charge because current hour price {CurrentHourPrice} is below the max of the {ChargingHoursPerDay} cheapest hours {MaxOfTheCheapestHours}", CurrentHourPrice.KWhPriceInEuros, tuyaManagerSettings.ChargingHoursPerDay, MaxOfTheCheapestHours);
+                logger.LogInformation("Allowed to charge because current hour price {CurrentHourPrice} is below or equal to the max of the {ChargingHoursPerDay} cheapest hours: {MaxOfTheCheapestHours}", CurrentHourPrice.KWhPriceInEuros, tuyaManagerSettings.ChargingHoursPerDay, MaxOfTheCheapestHours);
             return true;
         }
 
         if (logger.IsEnabled(LogLevel.Information))
-            logger.LogInformation("Not allowed to charge because current hour price {CurrentHourPrice} is above {AllowChargeWhenKWhPriceInEurosIsBelowThan} and above the max of the {ChargingHoursPerDay} cheapest hours {MaxOfTheCheapestHours}", CurrentHourPrice.KWhPriceInEuros, tuyaManagerSettings.AllowChargeWhenKWhPriceInEurosIsBelowThan, tuyaManagerSettings.ChargingHoursPerDay, MaxOfTheCheapestHours);
+            logger.LogInformation("Not allowed to charge because current hour price {CurrentHourPrice} is above {AllowChargeWhenKWhPriceInEurosIsBelowThan} and above the max of the {ChargingHoursPerDay} cheapest hours: {MaxOfTheCheapestHours}", CurrentHourPrice.KWhPriceInEuros, tuyaManagerSettings.AllowChargeWhenKWhPriceInEurosIsBelowThan, tuyaManagerSettings.ChargingHoursPerDay, MaxOfTheCheapestHours);
         return false;
     }
 
