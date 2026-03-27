@@ -5,12 +5,13 @@
 
 version: 2
 updates:
-  - package-ecosystem: nuget
-    directory: /
-    target-branch: "main"
+  - package-ecosystem: "nuget"
+    directory: "/"
     schedule:
-      interval: daily
-    allow:
-      - dependency-name: "*"
+      interval: "daily"
+    # allow:
+    #   - dependency-type: "direct"
+    # Use the 'ignore' section to prevent Dependabot from updating specific dependencies.
+    # Uncomment and modify the lines below if you want to ignore updates for certain packages, such as Selenium.
     # ignore:
     #   - dependency-name: Selenium.*
