@@ -1,6 +1,6 @@
 # -v  | --verbosity <LEVEL> # Allowed values are q[uiet], m[inimal], n[ormal], d[etailed], and diag[nostic]. The default is minimal.
 
-name: Publish
+name: "Publish Release"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -23,7 +23,7 @@ jobs:
   publish_and_pack_job:
     name: Publish and pack
     outputs:
-      tag_version: ${{ steps.get-version.outputs.version }} 
+      tag_version: ${{ steps.setVersionStep.outputs.version }} 
     runs-on: ${{ matrix.runtime.os }}
     strategy:
       fail-fast: true
@@ -42,26 +42,26 @@ jobs:
       - name: Make publish folder "./${{ matrix.runtime.name }}/"
         run: mkdir -p "./${{ matrix.runtime.name }}/"
       - name: Get Version for all projects
-        id: get-version
+        id: setVersionStep
         run: |
           echo "version=$(date --utc +'%y.%-m%d.%-H%M.%-S')" >> $GITHUB_OUTPUT
-          echo ${{ steps.get-version.outputs.version }}
+          echo $version
       - name: Build Outbox
         run: |
           dotnet build "./src/Outbox/ConsoleApp/Seedysoft.Outbox.ConsoleApp.csproj" -c Release --nologo -v m
-          dotnet publish "./src/Outbox/ConsoleApp/Seedysoft.Outbox.ConsoleApp.csproj" -o "./${{ matrix.runtime.name }}/" -r "${{ matrix.runtime.name }}" -c Release --nologo -p:PublishTrimmed=false -p:AssemblyVersion=${{ steps.get-version.outputs.version }} --sc -v m
+          dotnet publish "./src/Outbox/ConsoleApp/Seedysoft.Outbox.ConsoleApp.csproj" -o "./${{ matrix.runtime.name }}/" -r "${{ matrix.runtime.name }}" -c Release --nologo -p:PublishTrimmed=false -p:AssemblyVersion=${{ steps.setVersionStep.outputs.version }} --sc -v m
       - name: Build Pvpc
         run: |
           dotnet build "./src/Pvpc/ConsoleApp/Seedysoft.Pvpc.ConsoleApp.csproj" -c Release --nologo -v m
-          dotnet publish "./src/Pvpc/ConsoleApp/Seedysoft.Pvpc.ConsoleApp.csproj" -o "./${{ matrix.runtime.name }}/" -r "${{ matrix.runtime.name }}" -c Release --nologo -p:PublishTrimmed=false -p:AssemblyVersion=${{ steps.get-version.outputs.version }} --sc -v m
+          dotnet publish "./src/Pvpc/ConsoleApp/Seedysoft.Pvpc.ConsoleApp.csproj" -o "./${{ matrix.runtime.name }}/" -r "${{ matrix.runtime.name }}" -c Release --nologo -p:PublishTrimmed=false -p:AssemblyVersion=${{ steps.setVersionStep.outputs.version }} --sc -v m
       - name: Build WebComparer
         run: |
           dotnet build "./src/WebComparer/ConsoleApp/Seedysoft.WebComparer.ConsoleApp.csproj" -c Release --nologo -v m
-          dotnet publish "./src/WebComparer/ConsoleApp/Seedysoft.WebComparer.ConsoleApp.csproj" -o "./${{ matrix.runtime.name }}/" -r "${{ matrix.runtime.name }}" -c Release --nologo -p:PublishTrimmed=false -p:AssemblyVersion=${{ steps.get-version.outputs.version }} --sc -v m
+          dotnet publish "./src/WebComparer/ConsoleApp/Seedysoft.WebComparer.ConsoleApp.csproj" -o "./${{ matrix.runtime.name }}/" -r "${{ matrix.runtime.name }}" -c Release --nologo -p:PublishTrimmed=false -p:AssemblyVersion=${{ steps.setVersionStep.outputs.version }} --sc -v m
       - name: Build BlazorWebApp
         run: |
           dotnet build "./src/BlazorWebApp/Server/Seedysoft.BlazorWebApp.Server.csproj" -c Release --nologo -v m
-          dotnet publish "./src/BlazorWebApp/Server/Seedysoft.BlazorWebApp.Server.csproj" -o "./${{ matrix.runtime.name }}/" -r "${{ matrix.runtime.name }}" -c Release --nologo -p:PublishTrimmed=false -p:AssemblyVersion=${{ steps.get-version.outputs.version }} --sc -v m
+          dotnet publish "./src/BlazorWebApp/Server/Seedysoft.BlazorWebApp.Server.csproj" -o "./${{ matrix.runtime.name }}/" -r "${{ matrix.runtime.name }}" -c Release --nologo -p:PublishTrimmed=false -p:AssemblyVersion=${{ steps.setVersionStep.outputs.version }} --sc -v m
       - name: Make linux files executable
         if: ${{ startsWith(matrix.runtime.name, 'linux') }}
         run: |
@@ -70,23 +70,23 @@ jobs:
           chmod ug+x *.so
           chmod ug+x Seedysoft.*
       # - name: Get Version from project file
-      #   id: get-version
+      #   id: setVersionStep
       #   run: |
       #     echo "version=$(grep -m 1 '"Seedysoft.Libs.BackgroundServices/' ./${{ matrix.runtime.name }}/Seedysoft.BlazorWebApp.Server.deps.json | grep -Eo '[[:digit:]]{2}\.[[:digit:]]{1,4}\.[[:digit:]]{1,4}.[[:digit:]]{1,2}')" >> $GITHUB_OUTPUT
-      #     echo ${{ steps.get-version.outputs.version }}
-      - name: Pack to ${{ matrix.runtime.name }}.${{ steps.get-version.outputs.version }}.zip
+      #     echo ${{ steps.setVersionStep.outputs.version }}
+      - name: Pack to ${{ matrix.runtime.name }}.${{ steps.setVersionStep.outputs.version }}.zip
         id: pack
         run: |
           cd ${{ matrix.runtime.name }}/
           # -t[7z|zip|gzip|bzip2|tar] https://documentation.help/7-Zip/type.htm
-          7z a -mx9 -tzip -y "../${{ matrix.runtime.name }}.${{ steps.get-version.outputs.version }}.zip" *
+          7z a -mx9 -tzip -y "../${{ matrix.runtime.name }}.${{ steps.setVersionStep.outputs.version }}.zip" *
           cd ..
-      - name: Upload artifact ${{ matrix.runtime.name }}.${{ steps.get-version.outputs.version }}.zip
+      - name: Upload artifact ${{ matrix.runtime.name }}.${{ steps.setVersionStep.outputs.version }}.zip
         if: steps.pack.outcome == 'success'
         uses: actions/upload-artifact@main
         with:
-          name: ${{ matrix.runtime.name }}.${{ steps.get-version.outputs.version }}.zip
-          path: ${{ matrix.runtime.name }}.${{ steps.get-version.outputs.version }}.zip
+          name: ${{ matrix.runtime.name }}.${{ steps.setVersionStep.outputs.version }}.zip
+          path: ${{ matrix.runtime.name }}.${{ steps.setVersionStep.outputs.version }}.zip
           compression-level: 0
           if-no-files-found: error # `warn` or `ignore` are also available, defaults to `warn`
           
