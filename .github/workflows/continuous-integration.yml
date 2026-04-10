@@ -1,6 +1,6 @@
 # -v  | --verbosity <LEVEL> # Allowed values are q[uiet], m[inimal], n[ormal], d[etailed], and diag[nostic]. The default is minimal.
 
-name: CI
+name: "CI"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}

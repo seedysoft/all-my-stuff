@@ -18,18 +18,18 @@ on:
 
 permissions:
   contents: write
-  
+
 jobs:
   publish_and_pack_job:
     name: Publish and pack
     outputs:
-      tag_version: ${{ steps.setVersionStep.outputs.version }} 
+      tag_version: ${{ steps.setVersionStep.outputs.version }}
     runs-on: ${{ matrix.runtime.os }}
     strategy:
       fail-fast: true
       matrix:
         runtime:
-          - { name: linux-arm64, os: ubuntu-latest  }
+          - { name: linux-arm64, os: ubuntu-latest }
           # - { name: linux-x64,   os: ubuntu-latest  }
           # - { name: win-x64,     os: windows-latest }
     steps:
@@ -38,7 +38,9 @@ jobs:
       - name: Setup dotnet
         uses: actions/setup-dotnet@main
         with:
-          dotnet-version: 10
+          dotnet-version: |
+            10
+          workloads: wasm-tools
       - name: Make publish folder "./${{ matrix.runtime.name }}/"
         run: mkdir -p "./${{ matrix.runtime.name }}/"
       - name: Get Version for all projects
@@ -89,7 +91,7 @@ jobs:
           path: ${{ matrix.runtime.name }}.${{ steps.setVersionStep.outputs.version }}.zip
           compression-level: 0
           if-no-files-found: error # `warn` or `ignore` are also available, defaults to `warn`
-          
+
   release_job:
     name: Create a release
     needs: publish_and_pack_job
