@@ -25,14 +25,16 @@ on:
 jobs:
   build-and-test:
     name: Build and test
-    runs-on: [ ubuntu-latest ]
-    
+    runs-on: [ubuntu-latest]
+
     steps:
       - uses: actions/checkout@main
       - name: Setup dotnet
         uses: actions/setup-dotnet@main
         with:
-          dotnet-version: 10
+          dotnet-version: |
+            10
+          workloads: wasm-tools
 
       - name: Build
         run: dotnet build Seedysoft.Tests.slnx -c Release -v n
