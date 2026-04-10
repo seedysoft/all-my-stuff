@@ -41,14 +41,6 @@
     <File Path="testEnvironments.json" />
     <File Path="xunit.runner.json" />
   </Folder>
-  <Folder Name="/_SolutionItems/.github/">
-    <File Path=".github/dependabot.yml" />
-  </Folder>
-  <Folder Name="/_SolutionItems/.github/workflows/">
-    <File Path=".github/workflows/CI.yml" />
-    <File Path=".github/workflows/delete-old-runs.yml" />
-    <File Path=".github/workflows/Publish.yml" />
-  </Folder>
   <Folder Name="/_SolutionItems/doc/">
     <File Path="doc/DotnetInstallDocumentation.txt" />
     <File Path="doc/KnownErrors.txt" />
