@@ -90,8 +90,8 @@ public class OneOfJsonConverterFactory : JsonConverterFactory
         public override void Write(Utf8JsonWriter writer, OneOf<T0, T1> value, JsonSerializerOptions options)
         {
             using JsonDocument doc = value.Match(
-                t0 => JsonSerializer.SerializeToDocument(t0, typeof(T0), options),
-                t1 => JsonSerializer.SerializeToDocument(t1, typeof(T1), options)
+                t0 => JsonSerializer.SerializeToDocument(t0, options),
+                t1 => JsonSerializer.SerializeToDocument(t1, options)
             );
 
             if (doc.RootElement.ValueKind is JsonValueKind.Object and not JsonValueKind.Null)
@@ -137,9 +137,9 @@ public class OneOfJsonConverterFactory : JsonConverterFactory
         public override void Write(Utf8JsonWriter writer, OneOf<T0, T1, T2> value, JsonSerializerOptions options)
         {
             using JsonDocument doc = value.Match(
-                t0 => JsonSerializer.SerializeToDocument(t0, typeof(T0), options),
-                t1 => JsonSerializer.SerializeToDocument(t1, typeof(T1), options),
-                t2 => JsonSerializer.SerializeToDocument(t2, typeof(T2), options)
+                t0 => JsonSerializer.SerializeToDocument(t0, options),
+                t1 => JsonSerializer.SerializeToDocument(t1, options),
+                t2 => JsonSerializer.SerializeToDocument(t2, options)
             );
 
             if (doc.RootElement.ValueKind is JsonValueKind.Object and not JsonValueKind.Null)

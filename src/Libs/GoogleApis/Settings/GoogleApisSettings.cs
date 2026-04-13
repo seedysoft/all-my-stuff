@@ -2,12 +2,11 @@
 
 public record GoogleApisSettings
 {
-    private string apiKey = default!;
     public required string ApiKey
     {
-        get => apiKey;
-        init => apiKey = Cryptography.Crypto.DecryptText(value, Core.Helpers.EnvironmentHelper.GetMasterKey());
-    }
+        get;
+        init => field = Cryptography.Crypto.DecryptText(value, Core.Helpers.EnvironmentHelper.GetMasterKey());
+    } = default!;
 
     public required string FieldMask { get; init; }
 

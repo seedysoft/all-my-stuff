@@ -2,12 +2,11 @@
 
 public record TelegramBotUser : TelegramUserBase
 {
-    private string token = default!;
     public string Token
     {
-        get => token;
-        init => token = Cryptography.Crypto.DecryptText(value, Core.Helpers.EnvironmentHelper.GetMasterKey());
-    }
+        get;
+        init => field = Cryptography.Crypto.DecryptText(value, Core.Helpers.EnvironmentHelper.GetMasterKey());
+    } = default!;
 
     public Telegram.Bot.Types.User? SenderUser { get; protected set; }
 
