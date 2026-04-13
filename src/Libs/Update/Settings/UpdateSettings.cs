@@ -1,11 +1,3 @@
 ﻿namespace Seedysoft.Libs.Update.Settings;
 
-public record UpdateSettings : BackgroundServices.ScheduleConfig
-{
-    //private string githubToken = default!;
-    //public required string GithubToken
-    //{
-    //    get => githubToken;
-    //    init => githubToken = /*Cryptography.Crypto.DecryptText(*/value/*, Core.Helpers.EnvironmentHelper.GetMasterKey())*/;
-    //}
-}
+public record UpdateSettings : BackgroundServices.ScheduleConfig { }

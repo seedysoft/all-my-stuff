@@ -1,6 +1,6 @@
 # -v  | --verbosity <LEVEL> # Allowed values are q[uiet], m[inimal], n[ormal], d[etailed], and diag[nostic]. The default is minimal.
 
-name: CI
+name: "CI"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -25,19 +25,21 @@ on:
 jobs:
   build-and-test:
     name: Build and test
-    runs-on: [ ubuntu-latest ]
-    
+    runs-on: [ubuntu-latest]
+
     steps:
       - uses: actions/checkout@main
       - name: Setup dotnet
         uses: actions/setup-dotnet@main
         with:
-          dotnet-version: 8
+          dotnet-version: |
+            10
+          workloads: wasm-tools
 
       - name: Build
-        run: dotnet build Seedysoft.Tests.sln -c Release -v n
+        run: dotnet build Seedysoft.Tests.slnx -c Release -v n
 
       - name: Test
         env:
           SEEDY_MASTER_KEY: ${{ secrets.SEEDY_MASTER_KEY }}
-        run: dotnet test Seedysoft.Tests.sln -c Release --no-build -v n
+        run: dotnet test Seedysoft.Tests.slnx -c Release --no-build -v n

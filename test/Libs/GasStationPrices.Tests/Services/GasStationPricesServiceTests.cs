@@ -3,19 +3,19 @@ using Microsoft.Extensions.Hosting;
 using Seedysoft.Libs.Infrastructure.Extensions;
 using Xunit;
 
-namespace Seedysoft.Libs.GasStationPrices.Tests;
+namespace Seedysoft.Libs.GasStationPrices.Tests.Services;
 
 public sealed class GasStationPricesServiceTests : Infrastructure.Tests.TestClassBase
 {
-    private readonly Services.GasStationPricesService GasStationPricesService = default!;
+    private readonly GasStationPrices.Services.GasStationPricesService GasStationPricesService = default!;
 
-    public GasStationPricesServiceTests(Xunit.Abstractions.ITestOutputHelper testOutputHelper) : base(testOutputHelper)
+    public GasStationPricesServiceTests(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
     {
         HostApplicationBuilder appBuilder = new();
         _ = appBuilder.AddAllMyDependencies();
         ServiceProvider serviceProvider = appBuilder.Services.BuildServiceProvider();
 
-        GasStationPricesService = serviceProvider.GetRequiredService<Services.GasStationPricesService>();
+        GasStationPricesService = serviceProvider.GetRequiredService<GasStationPrices.Services.GasStationPricesService>();
     }
 
     //[Fact]
@@ -42,7 +42,7 @@ public sealed class GasStationPricesServiceTests : Infrastructure.Tests.TestClas
         }
 
         Console.WriteLine($"Obtained {Total} gas tations");
-        await Task.Delay(TimeSpan.FromSeconds(1));
+        await Task.Delay(TimeSpan.FromSeconds(1), TestContext.Current.CancellationToken);
     }
 
     //protected override void Dispose(bool disposing) => Dispose();

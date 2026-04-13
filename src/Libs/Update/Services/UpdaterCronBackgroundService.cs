@@ -7,20 +7,25 @@ namespace Seedysoft.Libs.Update.Services;
 
 public sealed class UpdaterCronBackgroundService : BackgroundServices.Cron
 {
-    private readonly Octokit.GitHubClient GitHubClient;
+    private readonly Octokit.GitHubClient gitHubClient;
     private readonly ILogger<UpdaterCronBackgroundService> Logger;
+    //private Settings.UpdateSettings Settings => (Settings.UpdateSettings)Config;
 
     public UpdaterCronBackgroundService(IServiceProvider serviceProvider, Microsoft.Extensions.Hosting.IHostApplicationLifetime hostApplicationLifetime)
         : base(serviceProvider, hostApplicationLifetime)
     {
-        GitHubClient = serviceProvider.GetRequiredService<Octokit.GitHubClient>();
-        //string GitHubToken = "--- token goes here ---";
-        //var tokenAuth = new Octokit.Credentials(GitHubToken);
-        //client.Credentials = tokenAuth;
-
-        Config = ServiceProvider.GetRequiredService<IConfiguration>().GetSection(nameof(Settings.UpdateSettings)).Get<Settings.UpdateSettings>()!;
-
+        gitHubClient = ServiceProvider.GetRequiredService<Octokit.GitHubClient>();
         Logger = ServiceProvider.GetRequiredService<ILogger<UpdaterCronBackgroundService>>();
+
+        Config = ServiceProvider.GetRequiredService<IConfiguration>()
+            .GetSection(nameof(Settings.UpdateSettings)).Get<Settings.UpdateSettings>()!;
+    }
+
+    public override async Task StartAsync(CancellationToken cancellationToken)
+    {
+        await DoWorkAsync(cancellationToken);
+
+        await base.StartAsync(cancellationToken);
     }
 
     public override async Task DoWorkAsync(CancellationToken cancellationToken)
@@ -30,77 +35,77 @@ public sealed class UpdaterCronBackgroundService : BackgroundServices.Cron
 
         string? AppName = GetType().FullName;
 
-        Logger.LogInformation("Called {ApplicationName} version {Version}", AppName, System.Reflection.Assembly.GetExecutingAssembly().GetName().Version);
+        if (Logger.IsEnabled(LogLevel.Information))
+            Logger.LogInformation("Called {ApplicationName} version {Version}", AppName, System.Reflection.Assembly.GetExecutingAssembly().GetName().Version);
 
         try
         {
-            Enums.UpdateResults UpgradeResult = await CheckAndUpgradeToNewVersion();
+            Enums.UpdateResults UpgradeResult = await DownloadLatestReleaseAsset();
 
-            Logger.LogInformation($"Updating result: {UpgradeResult}");
+            if (Logger.IsEnabled(LogLevel.Information))
+                Logger.LogInformation($"Updating result: {UpgradeResult}");
         }
         catch (Exception e) when (Logger.LogAndHandle(e, "Unexpected error")) { }
         finally { await Task.CompletedTask; }
 
-        Logger.LogInformation("End {ApplicationName}", AppName);
+        if (Logger.IsEnabled(LogLevel.Information))
+            Logger.LogInformation("End {ApplicationName}", AppName);
     }
 
-    internal async Task<Enums.UpdateResults> CheckAndUpgradeToNewVersion()
+    internal async Task<Enums.UpdateResults> DownloadLatestReleaseAsset()
     {
         Octokit.Release? release = await GetLatestReleaseFromGithubAsync();
         if (release == null)
         {
-            Logger.LogError("LatestReleaseFromGithub is null.");
+            if (Logger.IsEnabled(LogLevel.Error))
+                Logger.LogError("LatestReleaseFromGithub is null.");
             return Enums.UpdateResults.LatestReleaseFromGithubIsNull;
         }
 
-        var ExecutingAssembly = System.Reflection.Assembly.GetExecutingAssembly();
-        Version? CurrentVersion = ExecutingAssembly.GetName().Version;
-        Version? NewVersion = new(release.Name);
-
-        if (NewVersion <= CurrentVersion)
-        {
-            Logger.LogInformation($"Current version is: {CurrentVersion}. Latest version is: {NewVersion}");
-            return Enums.UpdateResults.NoNewVersionFound;
-        }
-
-        Octokit.ReleaseAsset? asset =
+        Octokit.ReleaseAsset? releaseAsset =
             release.Assets.FirstOrDefault(x => x.Name.Contains(System.Runtime.InteropServices.RuntimeInformation.RuntimeIdentifier, StringComparison.InvariantCultureIgnoreCase));
-        if (asset == null)
+        if (releaseAsset == null)
         {
-            Logger.LogError($"Asset not found for {System.Runtime.InteropServices.RuntimeInformation.RuntimeIdentifier}.");
+            if (Logger.IsEnabled(LogLevel.Error))
+                Logger.LogError($"Asset not found for {System.Runtime.InteropServices.RuntimeInformation.RuntimeIdentifier}.");
             return Enums.UpdateResults.AssetNotFound;
         }
 
-        if (!ExecuteUpdateScript(new Uri(asset.BrowserDownloadUrl)))
+        System.Reflection.Assembly EntryAssembly = System.Reflection.Assembly.GetEntryAssembly()!;
+        Version CurrentVersion = EntryAssembly.GetName().Version ?? new Version();
+        Version NewVersion = new(release.Name);
+
+        if (NewVersion <= CurrentVersion)
         {
-            Logger.LogError("Cannot execute update script");
-            return Enums.UpdateResults.ErrorExecutingUpdateScript;
+            if (Logger.IsEnabled(LogLevel.Information))
+                Logger.LogInformation($"Current version is: {CurrentVersion}. Latest version is: {NewVersion}");
+            return Enums.UpdateResults.NoNewVersionFound;
         }
+        // Here, NewVersion is greather than CurrentVersion
 
-        Logger.LogInformation("Update in progress...");
-
-        Environment.Exit(0);
-
-        return Enums.UpdateResults.Ok;
+        return ExecuteUpdateScript(Path.GetDirectoryName(EntryAssembly.Location)!, releaseAsset.Name)
+            ? Enums.UpdateResults.Ok
+            : Enums.UpdateResults.ErrorExecutingUpdateScript;
     }
 
     internal async Task<Octokit.Release?> GetLatestReleaseFromGithubAsync()
     {
         // Retrieve a List of Releases in the Repository, and get latest using [0]-subscript
         IReadOnlyList<Octokit.Release> releases =
-            await GitHubClient.Repository.Release.GetAll(Core.Constants.Github.OwnerName, Core.Constants.Github.RepositoryName);
+            await gitHubClient.Repository.Release.GetAll(Core.Constants.Github.OwnerName, Core.Constants.Github.RepositoryName);
 
-        Logger.LogInformation("Obtained {releasesCount} releases", releases.Count);
+        if (Logger.IsEnabled(LogLevel.Information))
+            Logger.LogInformation("Obtained {releasesCount} releases", releases.Count);
 
         return releases.Any() ? releases[0] : null;
     }
 
-    internal bool ExecuteUpdateScript(Uri assetUri)
+    internal bool ExecuteUpdateScript(string asssemblyLocation, string assetName)
     {
         System.Diagnostics.ProcessStartInfo processStartInfo = new()
         {
-            CreateNoWindow = false,
-            UseShellExecute = true,
+            CreateNoWindow = true,
+            UseShellExecute = false,
         };
 
         string runtimeIdentifier = System.Runtime.InteropServices.RuntimeInformation.RuntimeIdentifier;
@@ -108,7 +113,8 @@ public sealed class UpdaterCronBackgroundService : BackgroundServices.Cron
         {
             case Core.Constants.SupportedRuntimeIdentifiers.LinuxArm64:
                 //case Core.Constants.SupportedRuntimeIdentifiers.LinuxX64:
-                processStartInfo.FileName = $"sudo ./update.sh {assetUri}";
+                processStartInfo.FileName = "/bin/bash";
+                processStartInfo.Arguments = $"-c \"sudo systemd-run --on-active=30 {Path.Combine(asssemblyLocation, "update.sh")} {assetName}\"";
                 break;
 
             //case Core.Constants.SupportedRuntimeIdentifiers.WinX64:
@@ -116,8 +122,8 @@ public sealed class UpdaterCronBackgroundService : BackgroundServices.Cron
             //    break;
 
             default:
-                // TODO: use interpolated strings in all solution
-                Logger.LogError("RuntimeIdentifier {runtimeIdentifier} not supported", runtimeIdentifier);
+                if (Logger.IsEnabled(LogLevel.Error))
+                    Logger.LogError($"RuntimeIdentifier {runtimeIdentifier} not supported");
                 return false;
         }
 

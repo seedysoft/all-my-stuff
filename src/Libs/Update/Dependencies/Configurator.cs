@@ -20,7 +20,7 @@ public sealed class Configurator : Core.Dependencies.ConfiguratorBase
             hostApplicationBuilder.Configuration.GetSection(nameof(Settings.UpdateSettings)).Get<Settings.UpdateSettings>()!);
 
         hostApplicationBuilder.Services.TryAddSingleton(new Octokit.GitHubClient(new Octokit.ProductHeaderValue(Core.Constants.Github.RepositoryName)));
-
+        
         hostApplicationBuilder.Services.TryAddSingleton<Services.UpdaterCronBackgroundService>();
     }
 }

@@ -14,15 +14,13 @@ public class TuyaDeviceBase
     private bool DevTypeAuto { get; set; }
     private string LastDevType { get; set; }
 
-    private int ConnTimeout;
     public int ConnectionTimeout
     {
-        get => ConnTimeout;
+        get;
         set
         {
-            ConnTimeout = value;
-            if (Socket != null)
-                Socket.ReceiveTimeout = Socket.SendTimeout = (int)TimeSpan.FromSeconds(value).TotalMilliseconds;
+            field = value;
+            _ = (Socket?.ReceiveTimeout = Socket.SendTimeout = (int)TimeSpan.FromSeconds(value).TotalMilliseconds);
         }
     }
 
@@ -31,13 +29,12 @@ public class TuyaDeviceBase
     private int Port { get; set; }
     private Socket? Socket { get; set; }
 
-    private bool IsSockPersistant;
     private bool IsSocketPersistent
     {
-        get => IsSockPersistant;
+        get;
         set
         {
-            IsSockPersistant = value;
+            field = value;
             if (Socket != null && !value)
             {
                 Socket.Close();
@@ -46,13 +43,12 @@ public class TuyaDeviceBase
         }
     }
 
-    private bool IsSockNoDelay;
     private bool IsSocketNoDelay
     {
-        get => IsSockNoDelay;
+        get;
         set
         {
-            IsSockNoDelay = value;
+            field = value;
             Socket?.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.NoDelay, value);
         }
     }
@@ -60,19 +56,18 @@ public class TuyaDeviceBase
     private int SocketRetryLimit { get; set; }
     private int SocketRetryDelay { get; set; }
 
-    private float Vers;
     private float Version
     {
-        get => Vers;
+        get;
         set
         {
-            Vers = value;
+            field = value;
             PayloadDict = null;
         }
     }
 
-    private string VersionStr => string.Create(System.Globalization.CultureInfo.InvariantCulture, $"v{Vers:0.0}");
-    private byte[] VersionBytes => System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(Vers);
+    private string VersionStr => string.Create(System.Globalization.CultureInfo.InvariantCulture, $"v{Version:0.0}");
+    private byte[] VersionBytes => System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(Version);
     private byte[] VersionHeader => [.. VersionBytes, .. ProtocolVersionsAndHeaders.PROTOCOL_3x_HEADER];
 
     private Dictionary<string, object?> DpsToRequest { get; set; }
@@ -203,11 +198,8 @@ public class TuyaDeviceBase
                     if (NegotiateSessionKey())
                         return ErrorCode.NoError;
 
-                    if (Socket != null)
-                    {
-                        Socket.Close();
-                        Socket = null;
-                    }
+                    Socket?.Close();
+                    Socket = null;
 
                     return ErrorCode.ERR_KEY_OR_VER;
                 }
@@ -224,11 +216,8 @@ public class TuyaDeviceBase
                     err = ErrorCode.ERR_CONNECT;
                 }
 
-                if (Socket != null)
-                {
-                    Socket.Close();
-                    Socket = null;
-                }
+                Socket?.Close();
+                Socket = null;
 
                 if (retries < SocketRetryLimit)
                     Task.Delay(TimeSpan.FromSeconds(SocketRetryDelay)).Wait();
@@ -307,7 +296,7 @@ public class TuyaDeviceBase
         RemoteNonce = payload[..16];
         byte[] hmacCheck = System.Security.Cryptography.HMACSHA256.HashData(LocalKey, LocalNonce);
         Debug.WriteLine($"{nameof(hmacCheck)} = {Convert.ToHexString(hmacCheck)} len = {hmacCheck.Length}");
-        if (!hmacCheck.SequenceEqual(payload[16..48]))
+        if (!hmacCheck.SequenceEqual(payload.AsSpan()[16..48]))
         {
             Debug.WriteLine($"session key negotiation step 2 failed HMAC check! wanted={Convert.ToHexString(hmacCheck)} but got={Convert.ToHexString(payload[16..48])}");
             return null;
@@ -562,7 +551,7 @@ public class TuyaDeviceBase
             byte[] preMd5String =
                 [.. "data="u8.ToArray(), .. payload, .. "||lpv="u8.ToArray(), .. ProtocolVersionsAndHeaders.PROTOCOL_VERSION_BYTES_31, .. "||"u8.ToArray(), .. LocalKey];
 
-            string hexDigest = BitConverter.ToString(System.Security.Cryptography.MD5.HashData(preMd5String)).Replace("-", string.Empty);
+            string hexDigest = Convert.ToHexString(System.Security.Cryptography.MD5.HashData(preMd5String));
             // #some tuya libraries strip 8: to :24
             // #payload = (PROTOCOL_VERSION_BYTES_31 + hexdigest[8:][:16].encode("latin1") + payload)
             payload = [.. ProtocolVersionsAndHeaders.PROTOCOL_VERSION_BYTES_31, .. System.Text.Encoding.Latin1.GetBytes(hexDigest[8..]).Concat(payload)];

@@ -7,21 +7,24 @@ using Seedysoft.Libs.Core.Extensions;
 
 namespace Seedysoft.WebComparer.Lib.Services;
 
+/// <summary>
+/// A background service that periodically checks for differences in web content.
+/// </summary>
 public sealed class WebComparerCronBackgroundService : Libs.BackgroundServices.Cron
 {
     private static readonly TimeSpan FiveSecondsTimeSpan = TimeSpan.FromSeconds(5);
     private readonly ILogger<WebComparerCronBackgroundService> Logger;
-    private Settings.WebComparerSettings Settings => (Settings.WebComparerSettings)Config;
+    //private Settings.WebComparerSettings Settings => (Settings.WebComparerSettings)Config;
 
-    public WebComparerCronBackgroundService(
-        IServiceProvider serviceProvider,
-        Microsoft.Extensions.Hosting.IHostApplicationLifetime hostApplicationLifetime)
+    // TODO: Move to inline methods when private static methods has only one usage
+
+    public WebComparerCronBackgroundService(IServiceProvider serviceProvider, Microsoft.Extensions.Hosting.IHostApplicationLifetime hostApplicationLifetime)
         : base(serviceProvider, hostApplicationLifetime)
     {
         Logger = ServiceProvider.GetRequiredService<ILogger<WebComparerCronBackgroundService>>();
 
         Config = ServiceProvider.GetRequiredService<IConfiguration>()
-            .GetSection(nameof(Lib.Settings.WebComparerSettings)).Get<Settings.WebComparerSettings>()!;
+            .GetSection(nameof(Settings.WebComparerSettings)).Get<Settings.WebComparerSettings>()!;
     }
 
     public override async Task DoWorkAsync(CancellationToken cancellationToken)
@@ -29,7 +32,8 @@ public sealed class WebComparerCronBackgroundService : Libs.BackgroundServices.C
         if (System.Diagnostics.Debugger.IsAttached)
             System.Diagnostics.Debugger.Break();
 
-        Logger.LogInformation("Called {ApplicationName} version {Version}", GetType().FullName, System.Reflection.Assembly.GetExecutingAssembly().GetName().Version);
+        if (Logger.IsEnabled(LogLevel.Information))
+            Logger.LogInformation("Called {ApplicationName} version {Version}", GetType().FullName, System.Reflection.Assembly.GetExecutingAssembly().GetName().Version);
 
         _ = FindDifferencesAsync(cancellationToken);
 
@@ -50,7 +54,9 @@ public sealed class WebComparerCronBackgroundService : Libs.BackgroundServices.C
             Libs.Core.Entities.WebData[] WebDatas = await WebDatasWithSubscribers
                 .Distinct()
                 .ToArrayAsync(cancellationToken);
-            Logger.LogInformation("Obtained {WebDatas} URLs to check", WebDatas.Length);
+
+            if (Logger.IsEnabled(LogLevel.Information))
+                Logger.LogInformation("Obtained {WebDatas} URLs to check", WebDatas.Length);
 
             for (int i = 0; i < WebDatas.Length; i++)
             {
@@ -75,12 +81,9 @@ public sealed class WebComparerCronBackgroundService : Libs.BackgroundServices.C
         finally { await Task.CompletedTask; }
     }
 
-    private async Task FindDataToSendAsync(
-        Libs.Infrastructure.DbContexts.DbCxt dbCtx,
-        Libs.Core.Entities.WebData webData,
-        CancellationToken cancellationToken)
+    private async Task FindDataToSendAsync(Libs.Infrastructure.DbContexts.DbCxt dbCtx, Libs.Core.Entities.WebData webData, CancellationToken cancellationToken)
     {
-        string Content = GetContent(webData);
+        string Content = await GetContentAsync(webData);
 
         webData.DataToSend = GetDifferencesOrNull(webData, Content);
 
@@ -100,23 +103,166 @@ public sealed class WebComparerCronBackgroundService : Libs.BackgroundServices.C
         }
 
         _ = await dbCtx.SaveChangesAsync(cancellationToken);
+
+        /// <summary>
+        /// Compares the current web content with the obtained string and returns the differences, if any.
+        /// </summary>
+        static string? GetDifferencesOrNull(Libs.Core.Entities.WebData webData, string obtainedString)
+        {
+            if (string.IsNullOrWhiteSpace(obtainedString))
+                return null;
+
+            string ObtainedTextNormalized = NormalizeObtainedText(obtainedString);
+
+            if (string.IsNullOrWhiteSpace(ObtainedTextNormalized))
+                return null;
+
+            webData.SeenAtDateTimeOffset = DateTimeOffset.Now;
+
+            DiffPlex.DiffBuilder.Model.DiffPaneModel DiffModel = DiffPlex.DiffBuilder.InlineDiffBuilder.Diff(
+                oldText: webData.CurrentWebContent ?? string.Empty,
+                newText: ObtainedTextNormalized,
+                ignoreWhiteSpace: true,
+                ignoreCase: true);
+
+            if (ShouldIgnoreChanges(DiffModel, webData))
+                return null;
+
+            webData.CurrentWebContent = ObtainedTextNormalized;
+
+            Dictionary<int, string> DataForMail = GetDataForMail(webData, DiffModel);
+
+            return string.Join(Environment.NewLine, DataForMail.OrderBy(static x => x.Key).Select(static x => x.Value));
+
+            static string NormalizeObtainedText(string obtainedString)
+            {
+                IEnumerable<string> ObtainedLinesNormalized =
+                    from l in DiffPlex.Chunkers.LineChunker.Instance.Chunk(obtainedString)
+                    let nl = NormalizeTextLine(l)
+                    where !string.IsNullOrWhiteSpace(nl)
+                    select nl;
+
+                // Subscriptions: Ayto Burgos y Dip Burgos Tablones
+                if (ObtainedLinesNormalized.ElementAtOrDefault(0)?.StartsWith("Descripción Tablón Fecha") ?? false)
+                    ObtainedLinesNormalized = ObtainedLinesNormalized.Take(1).Union(ObtainedLinesNormalized.Where(static x => x.EndsWith("Personal")));
+
+                return string.Join(Environment.NewLine, ObtainedLinesNormalized);
+
+                static string NormalizeTextLine(string text)
+                {
+#pragma warning disable format
+                    return text
+                        .Replace("\r\n", string.Empty)
+                        .Replace("\n",   string.Empty)
+                        .Replace("\r",   string.Empty)
+                        .Replace("\t",   string.Empty)
+                        .Trim();
+#pragma warning restore format
+                }
+            }
+
+            /// <summary>
+            /// Determines whether the changes in the diff model should be ignored based on the web data's ignore criteria.
+            /// </summary>
+            static bool ShouldIgnoreChanges(DiffPlex.DiffBuilder.Model.DiffPaneModel diffModel, Libs.Core.Entities.WebData webData)
+            {
+                if (!diffModel.HasDifferences)
+                    return true;
+
+                DiffPlex.DiffBuilder.Model.DiffPiece[] ChangedLines = [.. diffModel.Lines.Where(static x => x.Type != DiffPlex.DiffBuilder.Model.ChangeType.Unchanged)];
+                string[]? IgnoreTexts = webData.IgnoreChangeWhen?.Split(';', StringSplitOptions.RemoveEmptyEntries);
+                for (int j = 0; j < IgnoreTexts?.Length; j++)
+                {
+                    for (int i = 0; i < ChangedLines.Length; i++)
+                    {
+                        if (ChangedLines[i].Text.Contains(IgnoreTexts[j]))
+                            return true;
+                    }
+                }
+
+                return false;
+            }
+
+            /// <summary>
+            /// Extracts the relevant data for email notifications from the web data and diff model.
+            /// </summary>
+            static Dictionary<int, string> GetDataForMail(Libs.Core.Entities.WebData webData, DiffPlex.DiffBuilder.Model.DiffPaneModel DiffModel)
+            {
+#pragma warning disable IDE0028 // Simplify collection initialization
+                Dictionary<int, string> DataForMail = new(DiffModel.Lines.Count);
+#pragma warning restore IDE0028 // Simplify collection initialization
+                for (int RealLineIndex = 0; RealLineIndex < DiffModel.Lines.Count; RealLineIndex++)
+                {
+                    DiffPlex.DiffBuilder.Model.DiffPiece CurrentLine = DiffModel.Lines[RealLineIndex];
+
+                    switch (CurrentLine.Type)
+                    {
+                        case DiffPlex.DiffBuilder.Model.ChangeType.Deleted:
+                        case DiffPlex.DiffBuilder.Model.ChangeType.Inserted:
+                        case DiffPlex.DiffBuilder.Model.ChangeType.Modified:
+                            // Add Current Line
+                            _ = DataForMail.TryAdd(RealLineIndex, $"{GetChangeTypePreffix(CurrentLine.Type)}{CurrentLine.Text}");
+
+                            // Then add X previous and X next lines.
+                            int indexToAdd;
+                            DiffPlex.DiffBuilder.Model.DiffPiece diffPiece;
+                            for (int j = 1; j <= webData.TakeAboveBelowLines; j++)
+                            {
+                                indexToAdd = Math.Max(RealLineIndex - j, 0);
+                                diffPiece = DiffModel.Lines[indexToAdd];
+                                _ = DataForMail.TryAdd(indexToAdd, $"{GetChangeTypePreffix(diffPiece.Type)}{diffPiece.Text}");
+
+                                indexToAdd = Math.Min(RealLineIndex + j, DiffModel.Lines.Count - 1);
+                                diffPiece = DiffModel.Lines[indexToAdd];
+                                _ = DataForMail.TryAdd(indexToAdd, $"{GetChangeTypePreffix(diffPiece.Type)}{diffPiece.Text}");
+                            }
+
+                            break;
+
+                        case DiffPlex.DiffBuilder.Model.ChangeType.Unchanged:
+                        case DiffPlex.DiffBuilder.Model.ChangeType.Imaginary:
+                        default:
+                            break;
+                    }
+                }
+
+                return DataForMail;
+
+                /// <summary>
+                /// Gets the prefix for the change type.
+                /// </summary>
+                static string GetChangeTypePreffix(DiffPlex.DiffBuilder.Model.ChangeType lineChangeType)
+                {
+                    return lineChangeType switch
+                    {
+#pragma warning disable format
+                        DiffPlex.DiffBuilder.Model.ChangeType.Deleted        => "-  ",
+                        DiffPlex.DiffBuilder.Model.ChangeType.Inserted       => "+  ",
+                        DiffPlex.DiffBuilder.Model.ChangeType.Modified       => "~  ",
+                        DiffPlex.DiffBuilder.Model.ChangeType.Unchanged      => "=  ",
+                        DiffPlex.DiffBuilder.Model.ChangeType.Imaginary or _ => string.Empty,
+#pragma warning restore format
+                    };
+                }
+            }
+        }
     }
 
-    private string GetContent(Libs.Core.Entities.WebData webData)
+    private async Task<string> GetContentAsync(Libs.Core.Entities.WebData webData)
     {
-        string Content = default!;
+        System.Text.StringBuilder ContentStringBuilder = new();
 
         if (webData.UseHttpClient)
         {
             HtmlAgilityPack.HtmlWeb htmlWeb = new()
             {
                 UseCookies = true,
-                UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36",
+                UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36",
                 UsingCache = false,
             };
             HtmlAgilityPack.HtmlDocument htmlDocument = htmlWeb.Load(webData.WebUrl);
 
-            Content = htmlDocument.DocumentNode.SelectSingleNode("//body")?.InnerText ?? default!;
+            _ = ContentStringBuilder.Append(htmlDocument.DocumentNode.SelectSingleNode("//body")?.InnerText ?? default!);
         }
         else
         {
@@ -124,74 +270,86 @@ public sealed class WebComparerCronBackgroundService : Libs.BackgroundServices.C
             {
                 using OpenQA.Selenium.Chrome.ChromeDriver WebDriver = GetWebDriver();
                 {
-                    WebDriver.Navigate().GoToUrl(webData.WebUrl);
+                    await WebDriver.Navigate().GoToUrlAsync(webData.WebUrl);
 
-                    TryPerformWebDriverActions(WebDriver);
+                    if (webData.Description.StartsWith(Libs.Core.Constants.Strings.TextForNewSubscription))
+                        webData.Description = WebDriver.Title;
 
-                    Content = WebDriver.FindElement(OpenQA.Selenium.By.CssSelector(webData.CssSelector)).Text;
+                    TryToPerformWebDriverActions(WebDriver);
+
+                    System.Collections.ObjectModel.ReadOnlyCollection<OpenQA.Selenium.IWebElement> webElements = WebDriver.FindElements(OpenQA.Selenium.By.CssSelector(webData.CssSelector));
+                    for (int i = 0; i < webElements.Count; i++)
+                    {
+                        OpenQA.Selenium.IWebElement webElement = webElements[i];
+
+                        _ = ContentStringBuilder.Append(webElement.Text);
+                    }
 
                     WebDriver.Quit();
                 }
             }
             catch (Exception e) when (Logger.LogAndHandle(e, "GetContent failed with ChromeDriver for '{WebUrl}'", webData.WebUrl))
             {
-                Content = default!;
+                _ = ContentStringBuilder.Clear();
             }
         }
 
-        return Content;
-    }
+        return ContentStringBuilder.ToString();
 
-    private static OpenQA.Selenium.Chrome.ChromeDriver GetWebDriver()
-    {
-        OpenQA.Selenium.Chrome.ChromeOptions Options = new()
+        /// <summary>
+        /// Creates a new instance of the ChromeDriver with the specified options.
+        /// </summary>
+        static OpenQA.Selenium.Chrome.ChromeDriver GetWebDriver()
         {
-            AcceptInsecureCertificates = true,
-            BrowserVersion = "stable",
-            LeaveBrowserRunning = false,
-        };
-        //Options.AddArgument("start-maximized");
-        //Options.AddArgument("disable-infobars");
-        //Options.AddArgument("--disable-extensions");
-        //Options.AddArgument("--disable-dev-shm-usage");
-        //Options.AddArgument("--no-sandbox");
-        Options.AddArgument("--headless");
+            OpenQA.Selenium.Chrome.ChromeOptions Options = new()
+            {
+                AcceptInsecureCertificates = true,
+                BrowserVersion = "stable",
+                LeaveBrowserRunning = false,
+            };
+            //Options.AddArgument("start-maximized");
+            //Options.AddArgument("disable-infobars");
+            //Options.AddArgument("--disable-extensions");
+            //Options.AddArgument("--disable-dev-shm-usage");
+            //Options.AddArgument("--no-sandbox");
+            Options.AddArgument("--headless");
 
-        OpenQA.Selenium.Chrome.ChromeDriver chromeDriver;
-        OpenQA.Selenium.Chrome.ChromeDriverService chromeDriverService;
-        switch (System.Runtime.InteropServices.RuntimeInformation.RuntimeIdentifier)
-        {
-            case Libs.Core.Constants.SupportedRuntimeIdentifiers.LinuxArm64:
-                Options.BinaryLocation = "/usr/bin/chromium-browser";
+            OpenQA.Selenium.Chrome.ChromeDriver chromeDriver;
+            OpenQA.Selenium.Chrome.ChromeDriverService chromeDriverService;
+            switch (System.Runtime.InteropServices.RuntimeInformation.RuntimeIdentifier)
+            {
+                case Libs.Core.Constants.SupportedRuntimeIdentifiers.LinuxArm64:
+                    Options.BinaryLocation = "/usr/bin/chromium-browser";
 
-                chromeDriverService = OpenQA.Selenium.Chrome.ChromeDriverService.CreateDefaultService("/usr/bin/", "chromedriver");
+                    chromeDriverService = OpenQA.Selenium.Chrome.ChromeDriverService.CreateDefaultService("/usr/bin/", "chromedriver");
 
-                chromeDriver = new(chromeDriverService, Options);
-                break;
+                    chromeDriver = new(chromeDriverService, Options);
+                    break;
 
-            //case Libs.Core.Constants.SupportedRuntimeIdentifiers.LinuxX64:
-            //    Options.BinaryLocation = "/usr/lib/chromium-browser/chromium-browser";
+                //case Libs.Core.Constants.SupportedRuntimeIdentifiers.LinuxX64:
+                //    Options.BinaryLocation = "/usr/lib/chromium-browser/chromium-browser";
 
-            //    chromeDriverService = OpenQA.Selenium.Chrome.ChromeDriverService.CreateDefaultService("/usr/lib/chromium-browser/", "chromedriver");
+                //    chromeDriverService = OpenQA.Selenium.Chrome.ChromeDriverService.CreateDefaultService("/usr/lib/chromium-browser/", "chromedriver");
 
-            //    chromeDriver = new(chromeDriverService, Options);
-            //    break;
+                //    chromeDriver = new(chromeDriverService, Options);
+                //    break;
 
-            default:
-                chromeDriver = new(Options);
-                break;
+                default:
+                    chromeDriver = new(Options);
+                    break;
+            }
+
+            // TODO Add TimeoutsTimeSpan setting (best for each website?)
+            var TimeoutsTimeSpan = TimeSpan.FromMinutes(2);
+            chromeDriver.Manage().Timeouts().AsynchronousJavaScript = TimeoutsTimeSpan;
+            //chromeDriver.Manage().Timeouts().ImplicitWait = TimeoutsTimeSpan;
+            chromeDriver.Manage().Timeouts().PageLoad = TimeoutsTimeSpan;
+
+            return chromeDriver;
         }
-
-        // TODO Add TimeoutsTimeSpan setting (best for each website?)
-        var TimeoutsTimeSpan = TimeSpan.FromMinutes(2);
-        chromeDriver.Manage().Timeouts().AsynchronousJavaScript = TimeoutsTimeSpan;
-        chromeDriver.Manage().Timeouts().ImplicitWait = TimeoutsTimeSpan;
-        chromeDriver.Manage().Timeouts().PageLoad = TimeoutsTimeSpan;
-
-        return chromeDriver;
     }
 
-    private void TryPerformWebDriverActions(OpenQA.Selenium.Chrome.ChromeDriver webDriver)
+    private void TryToPerformWebDriverActions(OpenQA.Selenium.Chrome.ChromeDriver webDriver)
     {
         int RetryCount = 2;
 
@@ -203,148 +361,29 @@ public sealed class WebComparerCronBackgroundService : Libs.BackgroundServices.C
                 // SubscriptionId: 3 JCyL Convocatorias
                 if (webDriver.PageSource.Contains("elemento-invisible"))
                     webDriver.ExecuteJavaScript("jQuery('.elemento-invisible').removeClass('elemento-invisible');");
+                // SubscriptionId: 3 JCyL Convocatorias
 
-                // SubscriptionId: 20 Inscripción en Pruebas Selectivas
+                // SubscriptionId: 7 Dip Burgos Convocatorias
+                if (webDriver.PageSource.Contains("views-exposed-form-empleo-empleo-fijo"))
+                {
+                    OpenQA.Selenium.IWebElement FormEmpleoFijoWebElement = webDriver.FindElement(OpenQA.Selenium.By.Id("views-exposed-form-empleo-empleo-fijo"));
+                    OpenQA.Selenium.IWebElement TextFilterWebElement = FormEmpleoFijoWebElement.FindElement(OpenQA.Selenium.By.Id("edit-title"));
+                    TextFilterWebElement.Clear();
+                    TextFilterWebElement.SendKeys("prog");
+                    FormEmpleoFijoWebElement.FindElement(OpenQA.Selenium.By.Id("edit-submit-empleo")).Click();
+                    webDriver.ExecuteJavaScript("jQuery('.collapse').removeClass('collapse');");
+                }
+                // SubscriptionId: 7 Dip Burgos Convocatorias
+
+                // SubscriptionId: 20 Inscripción de Pruebas Selectivas
                 if (webDriver.PageSource.Contains("view-more-link"))
                     ((OpenQA.Selenium.IWebElement?)webDriver.FindElement(OpenQA.Selenium.By.Id("view-more-link")))?.Click();
+                // SubscriptionId: 20 Inscripción de Pruebas Selectivas
 
                 RetryCount = 0;
             }
-            catch (Exception e) when (Logger.LogAndHandle(e, "{MethodName} failed", nameof(TryPerformWebDriverActions))) { RetryCount--; }
+            catch (Exception e) when (Logger.LogAndHandle(e, "{MethodName} failed", nameof(TryToPerformWebDriverActions))) { RetryCount--; }
         }
         while (RetryCount > 0);
-    }
-
-    private static string? GetDifferencesOrNull(
-        Libs.Core.Entities.WebData webData,
-        string obtainedString)
-    {
-        if (string.IsNullOrWhiteSpace(obtainedString))
-            return null;
-
-        string ObtainedTextNormalized = NormalizeObtainedText(obtainedString);
-
-        if (string.IsNullOrWhiteSpace(ObtainedTextNormalized))
-            return null;
-
-        webData.SeenAtDateTimeOffset = DateTimeOffset.Now;
-
-        DiffPlex.DiffBuilder.Model.DiffPaneModel DiffModel = DiffPlex.DiffBuilder.InlineDiffBuilder.Diff(
-            oldText: webData.CurrentWebContent ?? string.Empty,
-            newText: ObtainedTextNormalized,
-            ignoreWhiteSpace: true,
-            ignoreCase: true);
-
-        if (ShouldIgnoreChanges(DiffModel, webData))
-            return null;
-
-        webData.CurrentWebContent = ObtainedTextNormalized;
-
-        Dictionary<int, string> DataForMail = GetDataForMail(webData, DiffModel);
-
-        return string.Join(Environment.NewLine, DataForMail.OrderBy(static x => x.Key).Select(static x => x.Value));
-    }
-
-    private static Dictionary<int, string> GetDataForMail(
-        Libs.Core.Entities.WebData webData,
-        DiffPlex.DiffBuilder.Model.DiffPaneModel DiffModel)
-    {
-        Dictionary<int, string> DataForMail = new(DiffModel.Lines.Count);
-
-        for (int RealLineIndex = 0; RealLineIndex < DiffModel.Lines.Count; RealLineIndex++)
-        {
-            DiffPlex.DiffBuilder.Model.DiffPiece CurrentLine = DiffModel.Lines[RealLineIndex];
-
-            switch (CurrentLine.Type)
-            {
-                case DiffPlex.DiffBuilder.Model.ChangeType.Deleted:
-                case DiffPlex.DiffBuilder.Model.ChangeType.Inserted:
-                case DiffPlex.DiffBuilder.Model.ChangeType.Modified:
-                    // Add Current Line
-                    _ = DataForMail.TryAdd(RealLineIndex, $"{GetChangeTypePreffix(CurrentLine.Type)}{CurrentLine.Text}");
-
-                    // Then add X previous and X next lines.
-                    int indexToAdd;
-                    DiffPlex.DiffBuilder.Model.DiffPiece diffPiece;
-                    for (int j = 1; j <= webData.TakeAboveBelowLines; j++)
-                    {
-                        indexToAdd = Math.Max(RealLineIndex - j, 0);
-                        diffPiece = DiffModel.Lines[indexToAdd];
-                        _ = DataForMail.TryAdd(indexToAdd, $"{GetChangeTypePreffix(diffPiece.Type)}{diffPiece.Text}");
-
-                        indexToAdd = Math.Min(RealLineIndex + j, DiffModel.Lines.Count - 1);
-                        diffPiece = DiffModel.Lines[indexToAdd];
-                        _ = DataForMail.TryAdd(indexToAdd, $"{GetChangeTypePreffix(diffPiece.Type)}{diffPiece.Text}");
-                    }
-
-                    break;
-
-                case DiffPlex.DiffBuilder.Model.ChangeType.Unchanged:
-                case DiffPlex.DiffBuilder.Model.ChangeType.Imaginary:
-                default:
-                    break;
-            }
-        }
-
-        return DataForMail;
-    }
-
-    private static string NormalizeObtainedText(string obtainedString)
-    {
-        IEnumerable<string> ObtainedLinesNormalized =
-            from l in DiffPlex.Chunkers.LineChunker.Instance.Chunk(obtainedString)
-            let nl = NormalizeTextLine(l)
-            where !string.IsNullOrWhiteSpace(nl)
-            select nl;
-
-        // Subscriptions: Ayto Burgos y Dip Burgos Tablones
-        if (ObtainedLinesNormalized.ElementAtOrDefault(0)?.StartsWith("Descripción Tablón Fecha") ?? false)
-            ObtainedLinesNormalized = ObtainedLinesNormalized.Take(1).Union(ObtainedLinesNormalized.Where(static x => x.EndsWith("Personal")));
-
-        return string.Join(Environment.NewLine, ObtainedLinesNormalized);
-    }
-
-    private static string NormalizeTextLine(string text)
-    {
-        return text
-            .Replace("\r\n", string.Empty)
-            .Replace("\n", string.Empty)
-            .Replace("\r", string.Empty)
-            .Replace("\t", string.Empty)
-            .Trim();
-    }
-
-    private static bool ShouldIgnoreChanges(
-        DiffPlex.DiffBuilder.Model.DiffPaneModel diffModel,
-        Libs.Core.Entities.WebData webData)
-    {
-        if (!diffModel.HasDifferences)
-            return true;
-
-        DiffPlex.DiffBuilder.Model.DiffPiece[] ChangedLines = [.. diffModel.Lines.Where(static x => x.Type != DiffPlex.DiffBuilder.Model.ChangeType.Unchanged)];
-        string[]? IgnoreTexts = webData.IgnoreChangeWhen?.Split(';', StringSplitOptions.RemoveEmptyEntries);
-        for (int j = 0; j < IgnoreTexts?.Length; j++)
-        {
-            for (int i = 0; i < ChangedLines.Length; i++)
-            {
-                if (ChangedLines[i].Text.Contains(IgnoreTexts[j]))
-                    return true;
-            }
-        }
-
-        return false;
-    }
-
-    private static string GetChangeTypePreffix(
-        DiffPlex.DiffBuilder.Model.ChangeType lineChangeType)
-    {
-        return lineChangeType switch
-        {
-            DiffPlex.DiffBuilder.Model.ChangeType.Deleted => "-  ",
-            DiffPlex.DiffBuilder.Model.ChangeType.Inserted => "+  ",
-            DiffPlex.DiffBuilder.Model.ChangeType.Modified => "~  ",
-            DiffPlex.DiffBuilder.Model.ChangeType.Unchanged => "=  ",
-            DiffPlex.DiffBuilder.Model.ChangeType.Imaginary or _ => string.Empty,
-        };
     }
 }

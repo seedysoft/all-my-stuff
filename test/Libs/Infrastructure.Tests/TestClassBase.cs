@@ -4,7 +4,7 @@ using Seedysoft.Libs.Infrastructure.Extensions;
 
 namespace Seedysoft.Libs.Infrastructure.Tests;
 
-public abstract class TestClassBase(Xunit.Abstractions.ITestOutputHelper testOutputHelper) : Core.Tests.XUnitTestClassBase(testOutputHelper)
+public abstract class TestClassBase(Xunit.ITestOutputHelper testOutputHelper) : Core.Tests.XUnitTestClassBase(testOutputHelper)
 {
     public static void AddDbContext(IServiceCollection services)
     {
@@ -17,8 +17,9 @@ public abstract class TestClassBase(Xunit.Abstractions.ITestOutputHelper testOut
         _ = services
             .AddDbContext<DbContexts.DbCxt>((dbContextOptionsBuilder) =>
             {
-                _ = dbContextOptionsBuilder.UseSqlite(connection);
-                dbContextOptionsBuilder.ConfigureDebugOptions();
+                _ = dbContextOptionsBuilder
+                    .UseSqlite(connection)
+                    .ConfigureDebugOptions();
             }
             , ServiceLifetime.Transient
             , ServiceLifetime.Transient);

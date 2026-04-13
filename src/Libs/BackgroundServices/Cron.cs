@@ -12,7 +12,7 @@ public abstract class Cron(
 
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
-        if (!await WaitForAppStartup(hostApplicationLifetime, cancellationToken))
+        if (!await WaitForAppStartupAsync(hostApplicationLifetime, cancellationToken))
             return;
 
         try
@@ -39,7 +39,7 @@ public abstract class Cron(
         finally { await Task.CompletedTask; }
     }
 
-    private static async Task<bool> WaitForAppStartup(
+    private static async Task<bool> WaitForAppStartupAsync(
         IHostApplicationLifetime lifetime,
         CancellationToken cancellationToken)
     {

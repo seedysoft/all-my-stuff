@@ -47,8 +47,6 @@ public sealed class Configurator : Libs.Core.Dependencies.ConfiguratorBase
             .AddMudServices()
 
             .AddHttpClient() // Needed for server rendering
-
-            //.AddControllers()
         ;
 
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

@@ -66,6 +66,7 @@ public sealed class SmtpService(IServiceProvider serviceProvider, IConfiguration
         else
             await MailSender.SendMailAsync(message, cancellationToken);
 
-        Logger.LogInformation("Message {message} sent.", message);
+        if (Logger.IsEnabled(LogLevel.Information))
+            Logger.LogInformation("Message {message} sent.", message);
     }
 }

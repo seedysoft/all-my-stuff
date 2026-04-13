@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Seedysoft.Libs.Infrastructure.Extensions;
 
 namespace Seedysoft.Libs.Infrastructure.DbContexts;
 
@@ -18,12 +19,12 @@ public sealed partial class DbCxt : DbContext
         {
             string DatabasePath = "../databases/db.sqlite3";
             string FullFilePath = Path.GetFullPath(DatabasePath);
+
+            if (System.Diagnostics.Debugger.IsAttached)
+                System.Diagnostics.Debugger.Break();
+
             while (!File.Exists(FullFilePath))
-            {
-                if (System.Diagnostics.Debugger.IsAttached)
-                    System.Diagnostics.Debugger.Break();
                 FullFilePath = Path.GetFullPath(DatabasePath = DatabasePath.Insert(0, "../"));
-            }
 
             if (!File.Exists(FullFilePath))
                 throw new FileNotFoundException("Database file not found.", FullFilePath);
@@ -31,7 +32,9 @@ public sealed partial class DbCxt : DbContext
             string ConnectionString = $"{Core.Constants.DatabaseStrings.DataSource}{FullFilePath}";
             Console.WriteLine(ConnectionString);
 
-            _ = optionsBuilder.UseSqlite(ConnectionString);
+            _ = optionsBuilder
+                .UseSqlite(ConnectionString)
+                .ConfigureDebugOptions();
         }
     }
 #endif

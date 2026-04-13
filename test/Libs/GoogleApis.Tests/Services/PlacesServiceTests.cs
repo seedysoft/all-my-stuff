@@ -9,7 +9,7 @@ public sealed class PlacesServiceTests : Infrastructure.Tests.TestClassBase
 {
     private readonly GoogleApis.Services.PlacesService PlacesService = default!;
 
-    public PlacesServiceTests(Xunit.Abstractions.ITestOutputHelper testOutputHelper) : base(testOutputHelper)
+    public PlacesServiceTests(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
     {
         HostApplicationBuilder appBuilder = new();
         _ = appBuilder.AddAllMyDependencies();

@@ -39,7 +39,8 @@ public class TelegramHostedService : Core.NonBackgroundServiceBase, IHostedServi
         if (System.Diagnostics.Debugger.IsAttached)
             System.Diagnostics.Debugger.Break();
 
-        Logger.LogInformation("Called {ApplicationName} version {Version}", GetType().FullName, System.Reflection.Assembly.GetExecutingAssembly().GetName().Version);
+        if (Logger.IsEnabled(LogLevel.Information))
+            Logger.LogInformation("Called {ApplicationName} version {Version}", GetType().FullName, System.Reflection.Assembly.GetExecutingAssembly().GetName().Version);
 
         BotCommand[] Commands = GetMyCommands();
 
@@ -50,7 +51,8 @@ public class TelegramHostedService : Core.NonBackgroundServiceBase, IHostedServi
     public async Task StopAsync(
         CancellationToken cancellationToken)
     {
-        Logger.LogInformation("End {ApplicationName}", GetType().FullName);
+        if (Logger.IsEnabled(LogLevel.Information))
+            Logger.LogInformation("End {ApplicationName}", GetType().FullName);
 
         await Task.CompletedTask;
     }
@@ -86,28 +88,38 @@ public class TelegramHostedService : Core.NonBackgroundServiceBase, IHostedServi
         //Enums.UpdateType[] UpdatesAllowed = { Enums.UpdateType.Message | Enums.UpdateType.Unknown };
         //receiverOptions.AllowedUpdates = UpdatesAllowed;
 
-        LocalTelegramBotClient.StartReceiving(HandleUpdateAsync, HandleErrorAsync, OptionsReceiver, stoppingToken);
+        LocalTelegramBotClient.StartReceiving(
+            updateHandler: HandleUpdateAsync,
+            errorHandler: HandleErrorAsync,
+            receiverOptions: OptionsReceiver,
+            cancellationToken: stoppingToken);
     }
 
     private async Task HandleErrorAsync(
         ITelegramBotClient botClient,
         Exception exception,
+        HandleErrorSource handleErrorSource,
         CancellationToken cancellationToken)
     {
+        // TODO Cuando se cae la conexión, evitar que llene los logs
+
         switch (exception)
         {
             case ApiRequestException apiRequestException:
-                Logger.LogError("Telegram API Error:\n[{ErrorCode}]\n{Message}", apiRequestException.ErrorCode, apiRequestException.Message);
+                if (Logger.IsEnabled(LogLevel.Error))
+                    Logger.LogError("Telegram API Error:\n[{ErrorCode}]\n{Message}", apiRequestException.ErrorCode, apiRequestException.Message);
                 break;
 
             case RequestException requestException:
-                Logger.LogError("Telegram API Error:\n[{HttpStatusCode}]\n{Message}", requestException.HttpStatusCode, requestException.Message);
+                if (Logger.IsEnabled(LogLevel.Error))
+                    Logger.LogError("Telegram API Error:\n[{HttpStatusCode}]\n{Message}", requestException.HttpStatusCode.GetValueOrDefault(), requestException.Message);
                 break;
 
             default:
-                Logger.LogError("{ex}", exception);
+                if (Logger.IsEnabled(LogLevel.Error))
+                    Logger.LogError("{ex}", exception);
                 break;
-        };
+        }
 
         await Task.CompletedTask;
     }
@@ -262,7 +274,8 @@ public class TelegramHostedService : Core.NonBackgroundServiceBase, IHostedServi
         CallbackQuery callbackQuery,
         CancellationToken cancellationToken)
     {
-        Logger.LogDebug("Received CallbackQuery: {Data}", callbackQuery.Data);
+        if (Logger.IsEnabled(LogLevel.Debug))
+            Logger.LogDebug("Received CallbackQuery: {Data}", callbackQuery.Data);
 
         var CallbackQueryDatas = CallbackData.Parse(callbackQuery.Data);
         string? ResponseText = (CallbackQueryDatas?.BotActionName) switch
@@ -315,7 +328,8 @@ public class TelegramHostedService : Core.NonBackgroundServiceBase, IHostedServi
         ChosenInlineResult chosenInlineResult,
         CancellationToken cancellationToken)
     {
-        Logger.LogDebug("Received ChosenInlineResult: {ResultId}", chosenInlineResult.ResultId);
+        if (Logger.IsEnabled(LogLevel.Debug))
+            Logger.LogDebug("Received ChosenInlineResult: {ResultId}", chosenInlineResult.ResultId);
 
         _ = await botClient.SendMessage(
             chatId: chosenInlineResult.From.Id,
@@ -328,7 +342,8 @@ public class TelegramHostedService : Core.NonBackgroundServiceBase, IHostedServi
         InlineQuery inlineQuery,
         CancellationToken cancellationToken)
     {
-        Logger.LogDebug("Received inline query from: {Id}", inlineQuery.From.Id);
+        if (Logger.IsEnabled(LogLevel.Debug))
+            Logger.LogDebug("Received inline query from: {Id}", inlineQuery.From.Id);
 
         // displayed result
         InlineQueryResult[] results = [
@@ -349,7 +364,8 @@ public class TelegramHostedService : Core.NonBackgroundServiceBase, IHostedServi
     private Task BotOnMessageAutoDeleteTimerChangedReceived(
         Message message)
     {
-        Logger.LogInformation("Establecido tiempo de autoborrado en {MessageAutoDeleteTime} segundos", message.MessageAutoDeleteTimerChanged!.MessageAutoDeleteTime);
+        if (Logger.IsEnabled(LogLevel.Information))
+            Logger.LogInformation("Establecido tiempo de autoborrado en {MessageAutoDeleteTime} segundos", message.MessageAutoDeleteTimerChanged!.MessageAutoDeleteTime);
 
         return Task.CompletedTask;
     }
@@ -370,14 +386,16 @@ public class TelegramHostedService : Core.NonBackgroundServiceBase, IHostedServi
 
         Message sentMessage = await handler;
 
-        Logger.LogDebug("The message was sent with Id: {MessageId}", sentMessage.MessageId);
+        if (Logger.IsEnabled(LogLevel.Debug))
+            Logger.LogDebug("The message was sent with Id: {MessageId}", sentMessage.MessageId);
     }
 
     private async Task BotOnMessageReceivedAsync(
         Message message,
         CancellationToken cancellationToken)
     {
-        Logger.LogDebug("Receive message type: {Type}", message.Type);
+        if (Logger.IsEnabled(LogLevel.Debug))
+            Logger.LogDebug("Receive message type: {Type}", message.Type);
 
         Task handler = message.Type switch
         {
@@ -535,7 +553,8 @@ public class TelegramHostedService : Core.NonBackgroundServiceBase, IHostedServi
 
         Message sentMessage = await NextAction;
 
-        Logger.LogDebug("The message was sent with Id: {MessageId}", sentMessage.MessageId);
+        if (Logger.IsEnabled(LogLevel.Debug))
+            Logger.LogDebug("The message was sent with Id: {MessageId}", sentMessage.MessageId);
     }
 
     private Task<Message> AmazFindAsync(
@@ -559,7 +578,7 @@ public class TelegramHostedService : Core.NonBackgroundServiceBase, IHostedServi
         Core.Entities.WebData? webData = await dbCtx.WebDatas.FirstOrDefaultAsync(x => x.WebUrl == FirstWordReceived, cancellationToken);
         if (webData == null)
         {
-            webData = new Core.Entities.WebData(FirstWordReceived, $"Recibido a través de Telegram el {message.Date}");
+            webData = new Core.Entities.WebData(FirstWordReceived, $"{Core.Constants.Strings.TextForNewSubscription}{message.Date}");
             _ = await dbCtx.WebDatas.AddAsync(webData, cancellationToken);
 
             _ = await MessageSendSimpleTextAsync(SenderChatId, "Añadida URL para seguimiento", cancellationToken);
@@ -598,7 +617,8 @@ public class TelegramHostedService : Core.NonBackgroundServiceBase, IHostedServi
         Message message,
         CancellationToken cancellationToken)
     {
-        Logger.LogInformation("{Text}", message.Text);
+        if (Logger.IsEnabled(LogLevel.Information))
+            Logger.LogInformation("{Text}", message.Text);
 
         await Task.Delay(TimeSpan.FromSeconds(0.1), cancellationToken);
     }

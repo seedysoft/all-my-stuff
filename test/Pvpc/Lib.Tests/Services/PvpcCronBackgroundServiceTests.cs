@@ -2,17 +2,17 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
 using Xunit;
 
-namespace Seedysoft.Pvpc.Lib.Tests;
+namespace Seedysoft.Pvpc.Lib.Tests.Services;
 
 public sealed class PvpcCronBackgroundServiceTests : Libs.Infrastructure.Tests.TestClassBase, IDisposable
 {
-    private readonly Services.PvpcCronBackgroundService PvpcService = default!;
+    private readonly Lib.Services.PvpcCronBackgroundService PvpcService = default!;
     private readonly Libs.Core.Entities.Pvpc[] Prices = default!;
     private readonly DateTimeOffset TimeToQuery = default!;
     private readonly decimal MinPriceAllowed = default!;
     private bool disposedValue;
 
-    public PvpcCronBackgroundServiceTests(Xunit.Abstractions.ITestOutputHelper testOutputHelper) : base(testOutputHelper)
+    public PvpcCronBackgroundServiceTests(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
     {
         Settings.PvpcSettings pvpcSettings = new()
         {
@@ -25,7 +25,7 @@ public sealed class PvpcCronBackgroundServiceTests : Libs.Infrastructure.Tests.T
         IServiceCollection services = new ServiceCollection();
         _ = services
             .AddSingleton(pvpcSettings)
-            .AddSingleton<Microsoft.Extensions.Logging.ILogger<Services.PvpcCronBackgroundService>>(new NullLogger<Services.PvpcCronBackgroundService>());
+            .AddSingleton<Microsoft.Extensions.Logging.ILogger<Lib.Services.PvpcCronBackgroundService>>(new NullLogger<Lib.Services.PvpcCronBackgroundService>());
 
         //AddDbContext(services);
 
@@ -34,7 +34,7 @@ public sealed class PvpcCronBackgroundServiceTests : Libs.Infrastructure.Tests.T
         //    new ApplicationLifetime(new NullLogger<ApplicationLifetime>()));
 
         TimeToQuery = DateTimeOffset.UtcNow;
-        MinPriceAllowed = 0.05M;
+        MinPriceAllowed = 0.07M;
         Prices = [.. Enumerable.Range(0, 24)
             .Select(i => new Libs.Core.Entities.Pvpc(
                 TimeToQuery.UtcDateTime.AddHours(i),
@@ -52,10 +52,11 @@ public sealed class PvpcCronBackgroundServiceTests : Libs.Infrastructure.Tests.T
             ChargingHoursPerDay = 4,
         };
 
-        bool res = Services.PvpcCronBackgroundService.IsTimeToCharge(
+        bool res = Lib.Services.PvpcCronBackgroundService.IsTimeToCharge(
             [],
             TimeToQuery,
-            tuyaManagerSettings);
+            tuyaManagerSettings,
+            new NullLogger<PvpcCronBackgroundServiceTests>());
 
         Assert.False(res);
     }
@@ -70,10 +71,11 @@ public sealed class PvpcCronBackgroundServiceTests : Libs.Infrastructure.Tests.T
             ChargingHoursPerDay = 4,
         };
 
-        bool res = Services.PvpcCronBackgroundService.IsTimeToCharge(
+        bool res = Lib.Services.PvpcCronBackgroundService.IsTimeToCharge(
             Prices,
             TimeToQuery,
-            tuyaManagerSettings);
+            tuyaManagerSettings,
+            new NullLogger<PvpcCronBackgroundServiceTests>());
 
         Assert.True(res);
     }
@@ -87,10 +89,11 @@ public sealed class PvpcCronBackgroundServiceTests : Libs.Infrastructure.Tests.T
             AllowChargeWhenKWhPriceInEurosIsBelowThan = MinPriceAllowed,
             ChargingHoursPerDay = 4,
         };
-        bool res = Services.PvpcCronBackgroundService.IsTimeToCharge(
+        bool res = Lib.Services.PvpcCronBackgroundService.IsTimeToCharge(
             Prices,
             TimeToQuery,
-            tuyaManagerSettings);
+            tuyaManagerSettings,
+            new NullLogger<PvpcCronBackgroundServiceTests>());
 
         Assert.Equal(res, Prices.Any(x => x.KWhPriceInEuros <= MinPriceAllowed));
     }
@@ -100,18 +103,16 @@ public sealed class PvpcCronBackgroundServiceTests : Libs.Infrastructure.Tests.T
         if (!disposedValue)
         {
             if (disposing)
-            {
-                // TODO: dispose managed state (managed objects)
+                // dispose managed state (managed objects)
                 PvpcService?.Dispose();
-            }
 
-            // TODO: free unmanaged resources (unmanaged objects) and override finalizer
-            // TODO: set large fields to null
+            // free unmanaged resources (unmanaged objects) and override finalizer
+            // set large fields to null
             disposedValue = true;
         }
     }
 
-    // // TODO: override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
+    // // override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
     // ~PvpcCronBackgroundServiceTests()
     // {
     //     // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method

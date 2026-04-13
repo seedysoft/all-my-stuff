@@ -42,7 +42,8 @@ public partial class TravelSearch
     {
         await base.OnInitializedAsync();
 
-        Logger.LogInformation($"Called {nameof(OnInitializedAsync)}");
+        if (Logger.IsEnabled(LogLevel.Information))
+            Logger.LogInformation($"Called {nameof(OnInitializedAsync)}");
 
         googleApisSettings = Configuration
             .GetSection(nameof(Libs.GoogleApis.Settings.GoogleApisSettings))

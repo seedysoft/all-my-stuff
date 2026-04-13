@@ -24,7 +24,8 @@ public sealed class Program : Libs.Core.ProgramBase
 
         string AppName = host.Services.GetRequiredService<IHostEnvironment>().ApplicationName;
 
-        Logger.LogInformation("Called {ApplicationName} version {Version}", AppName, System.Reflection.Assembly.GetExecutingAssembly().GetName().Version);
+        if (Logger.IsEnabled(LogLevel.Information))
+            Logger.LogInformation("Called {ApplicationName} version {Version}", AppName, System.Reflection.Assembly.GetExecutingAssembly().GetName().Version);
 
         try
         {
@@ -44,7 +45,8 @@ public sealed class Program : Libs.Core.ProgramBase
             using (Lib.Services.OutboxCronBackgroundService outboxCronBackgroundService = host.Services.GetRequiredService<Lib.Services.OutboxCronBackgroundService>())
                 await outboxCronBackgroundService.DoWorkAsync(CancelTokenSource.Token);
 
-            Logger.LogInformation("End {ApplicationName}", AppName);
+            if (Logger.IsEnabled(LogLevel.Information))
+                Logger.LogInformation("End {ApplicationName}", AppName);
         }
         catch (TaskCanceledException) { /* ignored */  }
         catch (Exception e) { _ = Logger.LogAndHandle(e, "Unexpected Error"); }

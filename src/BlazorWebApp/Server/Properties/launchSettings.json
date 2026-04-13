@@ -1,55 +1,51 @@
 ﻿{
   "$schema": "http://json.schemastore.org/launchsettings.json",
-  "profiles": {
-    "http": {
-      "commandName": "Project",
-      "commandLineArgs": "-d 2",
-      "launchBrowser": true,
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      },
-      "dotnetRunMessages": true,
-      "inspectUri": "{wsProtocol}://{url.hostname}:{url.port}/_framework/debug/ws-proxy?browser={browserInspectUri}",
-      "applicationUrl": "http://localhost:5062"
-    },
-    "https": {
-      "commandName": "Project",
-      "commandLineArgs": "-d 2",
-      "launchBrowser": true,
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      },
-      "dotnetRunMessages": true,
-      "inspectUri": "{wsProtocol}://{url.hostname}:{url.port}/_framework/debug/ws-proxy?browser={browserInspectUri}",
-      "applicationUrl": "https://localhost:7028;http://localhost:5062"
-    },
-    "IIS Express": {
-      "commandName": "IISExpress",
-      "commandLineArgs": "-d 2",
-      "launchBrowser": true,
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      },
-      "inspectUri": "{wsProtocol}://{url.hostname}:{url.port}/_framework/debug/ws-proxy?browser={browserInspectUri}"
-    },
-    "WSL": {
-      "commandName": "WSL2",
-      "commandLineArgs": "\"{OutDir}Seedysoft.BlazorWebApp.Server.dll\" -d 2",
-      "launchBrowser": true,
-      "launchUrl": "https://localhost:7028",
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development",
-        "ASPNETCORE_URLS": "https://localhost:7028;http://localhost:5062"
-      },
-      "distributionName": ""
-    }
-  },
   "iisSettings": {
-    "windowsAuthentication": false,
-    "anonymousAuthentication": true,
     "iisExpress": {
       "applicationUrl": "http://localhost:6723",
       "sslPort": 44393
+    }
+  },
+  "profiles": {
+    "http": {
+      "applicationUrl": "http://seedysoft.dev.localhost:5062",
+      "commandLineArgs": "-d 2",
+      "commandName": "Project",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "inspectUri": "{wsProtocol}://{url.hostname}:{url.port}/_framework/debug/ws-proxy?browser={browserInspectUri}",
+      "launchBrowser": true
+    },
+    "https": {
+      "applicationUrl": "https://seedysoft.dev.localhost:5364;http://seedysoft.dev.localhost:5062",
+      "commandLineArgs": "-d 2",
+      "commandName": "Project",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "inspectUri": "{wsProtocol}://{url.hostname}:{url.port}/_framework/debug/ws-proxy?browser={browserInspectUri}",
+      "launchBrowser": true
+    },
+    "IIS Express": {
+      "commandLineArgs": "-d 2",
+      "commandName": "IISExpress",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "inspectUri": "{wsProtocol}://{url.hostname}:{url.port}/_framework/debug/ws-proxy?browser={browserInspectUri}",
+      "launchBrowser": true
+    },
+    "WSL": {
+      "commandLineArgs": "\"{OutDir}Seedysoft.BlazorWebApp.Server.dll\" -d 2",
+      "commandName": "WSL2",
+      "distributionName": "",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ASPNETCORE_URLS": "https://seedysoft.dev.localhost:5364;http://seedysoft.dev.localhost:5062"
+      },
+      "launchBrowser": true,
+      "launchUrl": "https://seedysoft.dev.localhost:5364"
     }
   }
 }

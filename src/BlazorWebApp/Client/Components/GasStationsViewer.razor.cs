@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Components;
+using MudBlazor.Extensions;
 
 using Model = Seedysoft.Libs.GasStationPrices.ViewModels.GasStationModel;
 
@@ -23,7 +24,7 @@ public partial class GasStationsViewer
     protected override Task OnInitializedAsync() => base.OnInitializedAsync();
 
     private string RowClassFuncion(Model element, int rowNumber)
-        => element.Equals(DataGridRef.SelectedItem) ? "cursor-pointer mud-primary" : "cursor-pointer";
+        => element.Equals(DataGridRef.GetState(x => x.SelectedItem)) ? "cursor-pointer mud-primary" : "cursor-pointer";
 
     //private async Task OnSelectedItemChangedLocal(Model element)
     //{
