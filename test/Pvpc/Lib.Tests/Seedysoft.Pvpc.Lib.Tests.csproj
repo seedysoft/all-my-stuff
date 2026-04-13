@@ -35,7 +35,7 @@
         <PackageReference Include="Serilog.Settings.Configuration" Version="10.0.0" />
         <PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" Version="3.0.2" />
         <PackageReference Include="System.IO.Hashing" Version="10.0.6" />
-        <PackageReference Include="xunit.v3" Version="3.2.2" />
+        <PackageReference Include="TUnit" Version="1.32.0" />
     </ItemGroup>
 
     <ItemGroup>

@@ -1,10 +1,10 @@
 ﻿namespace Seedysoft.Libs.Core.Tests;
 
-public abstract class XUnitTestClassBase
+public abstract class TUnitTestClassBase
 {
-    protected internal Xunit.ITestOutputHelper TestOutputHelper { get; }
+    protected internal TUnit.ITestOutputHelper TestOutputHelper { get; }
 
-    public XUnitTestClassBase(Xunit.ITestOutputHelper testOutputHelper)
+    public TUnitTestClassBase(TUnit.ITestOutputHelper testOutputHelper)
     {
         TestOutputHelper = testOutputHelper;
 

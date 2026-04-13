@@ -1,11 +1,11 @@
-﻿using Xunit;
+﻿using System.Threading.Tasks;
 
 namespace Seedysoft.Libs.Cryptography.Tests;
 
-public sealed class CryptoTests(ITestOutputHelper testOutputHelper) : Core.Tests.XUnitTestClassBase(testOutputHelper)
+public sealed class CryptoTests(ITestOutputHelper testOutputHelper) : Core.Tests.TUnitTestClassBase(testOutputHelper)
 {
-    [InlineData("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam nulla tellus, elementum sit amet nunc.")]
-    [Theory]
+    [TUnit.Assertions.Attributes.GenerateAssertion. InlineData("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam nulla tellus, elementum sit amet nunc.")]
+    [TUnit.Theory]
     public void EncryptThenDecryptTest(string textToEncrypt)
     {
         string Key = System.Security.Cryptography.RandomNumberGenerator.GetString("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 32);
@@ -16,7 +16,7 @@ public sealed class CryptoTests(ITestOutputHelper testOutputHelper) : Core.Tests
         string decryptedText = Crypto.DecryptText(encryptedText, Key);
         TestOutputHelper.WriteLine(decryptedText);
 
-        Assert.Equal(textToEncrypt, decryptedText);
+        _ = TUnit.Assertions.Assert.Equals(textToEncrypt, decryptedText);
     }
 
     [InlineData("BwIllPBt5jYQNI4cSUS/5RXVIkco/jzejRzw3Zto+Z+dICI2G5hdvtZJXWX5Pgtz/XryRkuWvO6bYkQ5ZRcbog==")]
@@ -30,7 +30,7 @@ public sealed class CryptoTests(ITestOutputHelper testOutputHelper) : Core.Tests
     [InlineData("YELrW9up56lqpc3AsdmF/aZATyIg1ezCNd/4nzL8nr2K0C7fN0vgNpd0F2w26wVK")]
     [InlineData("glciZvLOPOCZSeNiWATEH/7rffo+16DEyTi4wOOmzO8wnSDtR1+d1wS8T8kEcPGU")]
     [Theory]
-    public void ChangePasswordsCipherMode(string pass)
+    public async Task ChangePasswordsCipherMode(string pass)
     {
         if (Crypto.CanDecryptText(pass, Core.Helpers.EnvironmentHelper.GetMasterKey(), System.Security.Cryptography.CipherMode.ECB))
         {
@@ -43,6 +43,6 @@ public sealed class CryptoTests(ITestOutputHelper testOutputHelper) : Core.Tests
             Assert.Fail();
         }
 
-        Assert.True(Crypto.CanDecryptText(pass, Core.Helpers.EnvironmentHelper.GetMasterKey()));
+        _ = await Assert.That(Crypto.CanDecryptText(pass, Core.Helpers.EnvironmentHelper.GetMasterKey())).IsTrue();
     }
 }

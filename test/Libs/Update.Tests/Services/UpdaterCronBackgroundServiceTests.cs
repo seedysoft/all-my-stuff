@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Seedysoft.Libs.Infrastructure.Extensions;
-using Xunit;
+using System.Threading.Tasks;
 
 namespace Seedysoft.Libs.Update.Tests.Services;
 
@@ -9,7 +9,7 @@ public sealed class UpdaterCronBackgroundServiceTests : Infrastructure.Tests.Tes
 {
     private readonly Update.Services.UpdaterCronBackgroundService updaterCronBackgroundService = default!;
 
-    public UpdaterCronBackgroundServiceTests(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
+    public UpdaterCronBackgroundServiceTests() : base(testOutputHelper)
     {
         HostApplicationBuilder appBuilder = new();
         _ = appBuilder.AddAllMyDependencies();
@@ -18,14 +18,14 @@ public sealed class UpdaterCronBackgroundServiceTests : Infrastructure.Tests.Tes
         updaterCronBackgroundService = serviceProvider.GetRequiredService<Update.Services.UpdaterCronBackgroundService>();
     }
 
-    [Fact]
+    [Test]
     public async Task GetLatestReleaseFromGithubAsyncTest()
     {
         Octokit.Release? release = await updaterCronBackgroundService.GetLatestReleaseFromGithubAsync();
         Assert.NotNull(release);
 
         var RelaseVersion = new Version(release.Name);
-        Assert.True(RelaseVersion < new Version(DateTime.UtcNow.ToString("yy.Mdd.Hmm.ss")));
+        await Assert.That(RelaseVersion < new Version(DateTime.UtcNow.ToString("yy.Mdd.Hmm.ss"))).IsTrue();
     }
 
     //[Fact]
