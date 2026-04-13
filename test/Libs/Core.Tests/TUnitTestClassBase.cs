@@ -2,12 +2,8 @@
 
 public abstract class TUnitTestClassBase
 {
-    protected internal TUnit.ITestOutputHelper TestOutputHelper { get; }
-
-    public TUnitTestClassBase(TUnit.ITestOutputHelper testOutputHelper)
+    public TUnitTestClassBase()
     {
-        TestOutputHelper = testOutputHelper;
-
         string NewEnvironment =
 #if DEBUG
             "Development"

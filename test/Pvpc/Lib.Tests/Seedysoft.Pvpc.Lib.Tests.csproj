@@ -43,13 +43,4 @@
         <ProjectReference Include="..\..\..\src\Pvpc\Lib\Seedysoft.Pvpc.Lib.csproj" />
         <ProjectReference Include="..\..\Libs\Infrastructure.Tests\Seedysoft.Libs.Infrastructure.Tests.csproj" />
     </ItemGroup>
-
-    <ItemGroup>
-        <Content Include="..\..\..\xunit.runner.json" Link="xunit.runner.json">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </Content>
-        <Content Include="appsettings.TuyaManagerSettings.Tests.json">
-          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </Content>
-    </ItemGroup>
 </Project>

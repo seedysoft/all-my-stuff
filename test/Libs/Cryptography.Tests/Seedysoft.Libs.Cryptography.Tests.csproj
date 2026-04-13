@@ -22,10 +22,4 @@
         <ProjectReference Include="..\..\..\src\Libs\Cryptography\Seedysoft.Libs.Cryptography.csproj" />
         <ProjectReference Include="..\Core.Tests\Seedysoft.Libs.Core.Tests.csproj" />
     </ItemGroup>
-
-    <ItemGroup>
-        <Content Include="..\..\..\xunit.runner.json" Link="xunit.runner.json">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </Content>
-    </ItemGroup>
 </Project>

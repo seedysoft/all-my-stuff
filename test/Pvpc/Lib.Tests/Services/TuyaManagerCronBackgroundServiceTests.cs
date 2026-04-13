@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting.Internal;
 using Microsoft.Extensions.Logging.Abstractions;
+using TUnit.Core;
 
 namespace Seedysoft.Pvpc.Lib.Tests.Services;
 
@@ -10,7 +11,7 @@ public sealed class TuyaManagerCronBackgroundServiceTests : Libs.Infrastructure.
     private readonly Lib.Services.TuyaManagerCronBackgroundService TuyaManagerService = default!;
     private bool disposedValue;
 
-    public TuyaManagerCronBackgroundServiceTests() : base(testOutputHelper)
+    public TuyaManagerCronBackgroundServiceTests()
     {
         IConfiguration configuration = new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
@@ -32,9 +33,9 @@ public sealed class TuyaManagerCronBackgroundServiceTests : Libs.Infrastructure.
     [Test]
     public async Task DoWorkAsyncTest()
     {
-        await TuyaManagerService.DoWorkAsync(TestContext.Current.CancellationToken);
+        await TuyaManagerService.DoWorkAsync(CancellationToken.None);
 
-        await Assert.That(true).IsTrue();
+        await TUnit.Assertions.Assert.That(true).IsTrue();
     }
 
     private void Dispose(bool disposing)

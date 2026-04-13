@@ -4,7 +4,7 @@ using Seedysoft.Libs.Infrastructure.Extensions;
 
 namespace Seedysoft.Libs.Infrastructure.Tests;
 
-public abstract class TestClassBase(TUnit.ITestOutputHelper testOutputHelper) : Core.Tests.TUnitTestClassBase(testOutputHelper)
+public abstract class TestClassBase : Core.Tests.TUnitTestClassBase
 {
     public static void AddDbContext(IServiceCollection services)
     {

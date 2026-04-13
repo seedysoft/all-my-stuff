@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
 using System.Threading.Tasks;
+using TUnit.Core;
 
 namespace Seedysoft.Pvpc.Lib.Tests.Services;
 
@@ -12,7 +13,7 @@ public sealed class PvpcCronBackgroundServiceTests : Libs.Infrastructure.Tests.T
     private readonly decimal MinPriceAllowed = default!;
     private bool disposedValue;
 
-    public PvpcCronBackgroundServiceTests() : base(testOutputHelper)
+    public PvpcCronBackgroundServiceTests()
     {
         Settings.PvpcSettings pvpcSettings = new()
         {
@@ -58,7 +59,7 @@ public sealed class PvpcCronBackgroundServiceTests : Libs.Infrastructure.Tests.T
             tuyaManagerSettings,
             new NullLogger<PvpcCronBackgroundServiceTests>());
 
-        await Assert.That(res).IsFalse();
+        await TUnit.Assertions.Assert.That(res).IsFalse();
     }
 
     [Test]
@@ -77,7 +78,7 @@ public sealed class PvpcCronBackgroundServiceTests : Libs.Infrastructure.Tests.T
             tuyaManagerSettings,
             new NullLogger<PvpcCronBackgroundServiceTests>());
 
-        await Assert.That(res).IsTrue();
+        await TUnit.Assertions.Assert.That(res).IsTrue();
     }
 
     [Test]
@@ -95,7 +96,7 @@ public sealed class PvpcCronBackgroundServiceTests : Libs.Infrastructure.Tests.T
             tuyaManagerSettings,
             new NullLogger<PvpcCronBackgroundServiceTests>());
 
-        await Assert.That(Prices.Any(x => x.KWhPriceInEuros <= MinPriceAllowed)).IsEqualTo(res);
+        await TUnit.Assertions.Assert.That(Prices.Any(x => x.KWhPriceInEuros <= MinPriceAllowed)).IsEqualTo(res);
     }
 
     private void Dispose(bool disposing)

@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Hosting;
 using Seedysoft.Libs.Infrastructure.Extensions;
 using System.Threading.Tasks;
+using TUnit.Core;
 
 namespace Seedysoft.Libs.GoogleApis.Tests.Services;
 
@@ -9,7 +10,7 @@ public sealed class PlacesServiceTests : Infrastructure.Tests.TestClassBase
 {
     private readonly GoogleApis.Services.PlacesService PlacesService = default!;
 
-    public PlacesServiceTests() : base(testOutputHelper)
+    public PlacesServiceTests()
     {
         HostApplicationBuilder appBuilder = new();
         _ = appBuilder.AddAllMyDependencies();
@@ -27,6 +28,6 @@ public sealed class PlacesServiceTests : Infrastructure.Tests.TestClassBase
         IEnumerable<string> Res =
             await PlacesService.FindPlacesAsync(textToFind, CancellationToken.None);
 
-        await Assert.That(Res.Any()).IsTrue();
+        await TUnit.Assertions.Assert.That(Res.Any()).IsTrue();
     }
 }
