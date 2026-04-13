@@ -3,7 +3,6 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <NoDefaultLaunchSettingsFile>true</NoDefaultLaunchSettingsFile>
         <Nullable>enable</Nullable>
-        <RunAOTCompilation>true</RunAOTCompilation>
         <StaticWebAssetProjectMode>Default</StaticWebAssetProjectMode>
         <TargetFramework>net10.0</TargetFramework>
         <WasmBuildNative>true</WasmBuildNative>
