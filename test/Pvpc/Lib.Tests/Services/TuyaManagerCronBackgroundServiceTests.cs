@@ -2,7 +2,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting.Internal;
 using Microsoft.Extensions.Logging.Abstractions;
-using TUnit.Core;
 
 namespace Seedysoft.Pvpc.Lib.Tests.Services;
 
@@ -23,7 +22,7 @@ public sealed class TuyaManagerCronBackgroundServiceTests : Libs.Infrastructure.
             .AddSingleton(configuration)
             .AddSingleton<Microsoft.Extensions.Logging.ILogger<Lib.Services.TuyaManagerCronBackgroundService>>(new NullLogger<Lib.Services.TuyaManagerCronBackgroundService>());
 
-        AddDbContext(services);
+        services = AddDbContext(services);
 
         TuyaManagerService = new(
             services.BuildServiceProvider(),
@@ -31,12 +30,7 @@ public sealed class TuyaManagerCronBackgroundServiceTests : Libs.Infrastructure.
     }
 
     [Test]
-    public async Task DoWorkAsyncTest()
-    {
-        await TuyaManagerService.DoWorkAsync(CancellationToken.None);
-
-        await TUnit.Assertions.Assert.That(true).IsTrue();
-    }
+    public async Task DoWorkAsyncTest() => await TuyaManagerService.DoWorkAsync(TestContext.Current?.Execution.CancellationToken ?? CancellationToken.None);
 
     private void Dispose(bool disposing)
     {
@@ -65,4 +59,7 @@ public sealed class TuyaManagerCronBackgroundServiceTests : Libs.Infrastructure.
         Dispose(disposing: true);
         GC.SuppressFinalize(this);
     }
+
+    [After(Test)]
+    public async Task Cleanup() => TuyaManagerService?.Dispose();
 }

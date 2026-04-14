@@ -6,7 +6,7 @@ namespace Seedysoft.Libs.Infrastructure.Tests;
 
 public abstract class TestClassBase : Core.Tests.TUnitTestClassBase
 {
-    public static void AddDbContext(IServiceCollection services)
+    public static IServiceCollection AddDbContext(IServiceCollection services)
     {
         Microsoft.Data.Sqlite.SqliteConnection connection = new("Filename=:memory:");
         connection.Open();
@@ -23,5 +23,7 @@ public abstract class TestClassBase : Core.Tests.TUnitTestClassBase
             }
             , ServiceLifetime.Transient
             , ServiceLifetime.Transient);
+
+        return services;
     }
 }

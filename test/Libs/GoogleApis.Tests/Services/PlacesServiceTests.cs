@@ -1,8 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Seedysoft.Libs.Infrastructure.Extensions;
-using System.Threading.Tasks;
-using TUnit.Core;
 
 namespace Seedysoft.Libs.GoogleApis.Tests.Services;
 
@@ -10,7 +8,7 @@ public sealed class PlacesServiceTests : Infrastructure.Tests.TestClassBase
 {
     private readonly GoogleApis.Services.PlacesService PlacesService = default!;
 
-    public PlacesServiceTests()
+    public PlacesServiceTests() : base()
     {
         HostApplicationBuilder appBuilder = new();
         _ = appBuilder.AddAllMyDependencies();
@@ -26,8 +24,8 @@ public sealed class PlacesServiceTests : Infrastructure.Tests.TestClassBase
     public async Task FindPlacesAsyncTest(string textToFind)
     {
         IEnumerable<string> Res =
-            await PlacesService.FindPlacesAsync(textToFind, CancellationToken.None);
+            await PlacesService.FindPlacesAsync(textToFind, TestContext.Current?.Execution.CancellationToken ?? CancellationToken.None);
 
-        await TUnit.Assertions.Assert.That(Res.Any()).IsTrue();
+        _ = await Assert.That(Res.Any()).IsTrue();
     }
 }

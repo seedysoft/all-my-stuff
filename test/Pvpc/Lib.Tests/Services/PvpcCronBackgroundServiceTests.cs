@@ -1,7 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
-using System.Threading.Tasks;
-using TUnit.Core;
 
 namespace Seedysoft.Pvpc.Lib.Tests.Services;
 
@@ -59,7 +57,7 @@ public sealed class PvpcCronBackgroundServiceTests : Libs.Infrastructure.Tests.T
             tuyaManagerSettings,
             new NullLogger<PvpcCronBackgroundServiceTests>());
 
-        await TUnit.Assertions.Assert.That(res).IsFalse();
+        _ = await Assert.That(res).IsFalse();
     }
 
     [Test]
@@ -78,7 +76,7 @@ public sealed class PvpcCronBackgroundServiceTests : Libs.Infrastructure.Tests.T
             tuyaManagerSettings,
             new NullLogger<PvpcCronBackgroundServiceTests>());
 
-        await TUnit.Assertions.Assert.That(res).IsTrue();
+        _ = await Assert.That(res).IsTrue();
     }
 
     [Test]
@@ -96,7 +94,7 @@ public sealed class PvpcCronBackgroundServiceTests : Libs.Infrastructure.Tests.T
             tuyaManagerSettings,
             new NullLogger<PvpcCronBackgroundServiceTests>());
 
-        await TUnit.Assertions.Assert.That(Prices.Any(x => x.KWhPriceInEuros <= MinPriceAllowed)).IsEqualTo(res);
+        _ = await Assert.That(Prices.Any(x => x.KWhPriceInEuros <= MinPriceAllowed)).IsEqualTo(res);
     }
 
     private void Dispose(bool disposing)

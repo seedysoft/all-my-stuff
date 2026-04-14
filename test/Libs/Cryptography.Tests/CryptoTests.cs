@@ -1,7 +1,4 @@
-﻿using System.Threading.Tasks;
-using TUnit.Core;
-
-namespace Seedysoft.Libs.Cryptography.Tests;
+﻿namespace Seedysoft.Libs.Cryptography.Tests;
 
 public sealed class CryptoTests : Core.Tests.TUnitTestClassBase
 {
@@ -17,7 +14,7 @@ public sealed class CryptoTests : Core.Tests.TUnitTestClassBase
         string decryptedText = Crypto.DecryptText(encryptedText, Key);
         Console.WriteLine(decryptedText);
 
-        _ = TUnit.Assertions.Assert.Equals(textToEncrypt, decryptedText);
+        _ = Equals(textToEncrypt, decryptedText);
     }
 
     [Test]
