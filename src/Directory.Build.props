@@ -6,7 +6,6 @@
 		<!-- Specifies whether it's one of our own libraries -->
 		<SeedysoftProject>false</SeedysoftProject>
 		<SeedysoftProject Condition="$(MSBuildProjectName.StartsWith('Seedysoft'))">true</SeedysoftProject>
-        <TestingPlatformDotnetTestSupport>true</TestingPlatformDotnetTestSupport>
 	</PropertyGroup>
 
 	<!--
