@@ -12,8 +12,8 @@
         <PackageReference Include="CommandLineParser" Version="2.9.1" />
         <PackageReference Include="EfCore.SchemaCompare" Version="10.0.0" />
         <PackageReference Include="FluentValidation" Version="12.1.1" />
-        <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="10.0.5" />
-        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.5" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="10.0.6" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.6" />
         <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.5" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="10.0.5" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite.Core" Version="10.0.5" />
