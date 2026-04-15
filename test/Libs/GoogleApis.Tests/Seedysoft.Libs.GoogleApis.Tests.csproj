@@ -4,16 +4,14 @@
         <IsPackable>false</IsPackable>
         <IsTestProject>true</IsTestProject>
         <Nullable>enable</Nullable>
+        <OutputType>Exe</OutputType>
         <RuntimeIdentifiers>linux-arm64</RuntimeIdentifiers>
         <TargetFramework>net10.0</TargetFramework>
+        <UseTestingPlatform>true</UseTestingPlatform>
     </PropertyGroup>
 
     <ItemGroup>
         <PackageReference Include="CommandLineParser" Version="2.9.1" />
-        <PackageReference Include="coverlet.collector" Version="8.0.1">
-            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-            <PrivateAssets>all</PrivateAssets>
-        </PackageReference>
         <PackageReference Include="EfCore.SchemaCompare" Version="10.0.0" />
         <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.6" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="10.0.6" />
@@ -28,24 +26,17 @@
 		<PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.6" />
 		<PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="10.0.6" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Console" Version="10.0.6" />
-		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.4.0" />
 		<PackageReference Include="OneOf" Version="3.0.271" />
 		<PackageReference Include="RestSharp" Version="114.0.0" />
         <PackageReference Include="Serilog" Version="4.3.1" />
         <PackageReference Include="Serilog.Extensions.Logging" Version="10.0.0" />
         <PackageReference Include="Serilog.Settings.Configuration" Version="10.0.0" />
         <PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" Version="3.0.2" />
-        <PackageReference Include="xunit.v3" Version="3.2.2" />
+        <PackageReference Include="TUnit" Version="1.34.5" />
     </ItemGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\..\..\src\Libs\GoogleApis\Seedysoft.Libs.GoogleApis.csproj" />
         <ProjectReference Include="..\Infrastructure.Tests\Seedysoft.Libs.Infrastructure.Tests.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <Content Include="..\..\..\xunit.runner.json" Link="xunit.runner.json">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </Content>
     </ItemGroup>
 </Project>

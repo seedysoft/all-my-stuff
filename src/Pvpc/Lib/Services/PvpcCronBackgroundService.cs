@@ -90,9 +90,7 @@ public sealed class PvpcCronBackgroundService : Libs.BackgroundServices.Cron
             .Where(p => p.AtDateTimeOffset >= MinDateTimeOffset && p.AtDateTimeOffset <= MaxDateTimeOffset)
             .ToArrayAsync(stoppingToken);
 
-#pragma warning disable IDE0028 // Simplify collection initialization
         List<Libs.Core.Entities.PvpcBase> Prices = new(24);
-#pragma warning restore IDE0028 // Simplify collection initialization
         foreach ((Libs.Core.Entities.Pvpc NewEntity, Libs.Core.Entities.Pvpc ExistingEntity) in
             from Libs.Core.Entities.Pvpc NewEntity in NewEntities
             let ExistingEntity = ExistingPvpcs.FirstOrDefault(x => x.AtDateTimeOffset == NewEntity.AtDateTimeOffset)

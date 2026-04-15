@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Seedysoft.Libs.Infrastructure.Extensions;
-using Xunit;
 
 namespace Seedysoft.Libs.Update.Tests.Services;
 
@@ -9,7 +8,7 @@ public sealed class UpdaterCronBackgroundServiceTests : Infrastructure.Tests.Tes
 {
     private readonly Update.Services.UpdaterCronBackgroundService updaterCronBackgroundService = default!;
 
-    public UpdaterCronBackgroundServiceTests(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
+    public UpdaterCronBackgroundServiceTests() : base()
     {
         HostApplicationBuilder appBuilder = new();
         _ = appBuilder.AddAllMyDependencies();
@@ -18,20 +17,20 @@ public sealed class UpdaterCronBackgroundServiceTests : Infrastructure.Tests.Tes
         updaterCronBackgroundService = serviceProvider.GetRequiredService<Update.Services.UpdaterCronBackgroundService>();
     }
 
-    [Fact]
+    [Test]
     public async Task GetLatestReleaseFromGithubAsyncTest()
     {
         Octokit.Release? release = await updaterCronBackgroundService.GetLatestReleaseFromGithubAsync();
-        Assert.NotNull(release);
+        _ = await Assert.That(release).IsNotNull();
 
         var RelaseVersion = new Version(release.Name);
-        Assert.True(RelaseVersion < new Version(DateTime.UtcNow.ToString("yy.Mdd.Hmm.ss")));
+        _ = await Assert.That(RelaseVersion < new Version(DateTime.UtcNow.ToString("yy.Mdd.Hmm.ss"))).IsTrue();
     }
 
     //[Fact]
     //public async Task DownloadLatestReleaseAssetTest()
     //{
-    //    Enums.UpdateResults updateResult = await updaterCronBackgroundService.DownloadLatestReleaseAsset(CancellationToken.None);
+    //    Enums.UpdateResults updateResult = await updaterCronBackgroundService.DownloadLatestReleaseAsset(TestContext.Current?.Execution.CancellationToken??CancellationToken.None);
     //    Assert.Equal(Enums.UpdateResults.Ok, updateResult);
     //}
 }

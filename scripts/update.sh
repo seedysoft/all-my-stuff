@@ -5,7 +5,7 @@ echo "Zip file name: ${ZIP_FILE_NAME}"
 
 # Move working directory to WORKER_SERVICE_DIRECTORY
 WORKER_SERVICE_DIRECTORY="$(dirname "$(readlink -f "$0")")"
-echo "'${WORKER_SERVICE_NAME}' will be installed in '${WORKER_SERVICE_DIRECTORY}' ..."
+echo "will be installed in '${WORKER_SERVICE_DIRECTORY}' ..."
 if ! cd "${WORKER_SERVICE_DIRECTORY}"; then
   echo "ERROR: Can not cd into '${WORKER_SERVICE_DIRECTORY}' folder"
   exit 1

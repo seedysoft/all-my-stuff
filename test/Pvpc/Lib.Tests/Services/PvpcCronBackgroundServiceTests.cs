@@ -1,6 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
-using Xunit;
 
 namespace Seedysoft.Pvpc.Lib.Tests.Services;
 
@@ -12,7 +11,7 @@ public sealed class PvpcCronBackgroundServiceTests : Libs.Infrastructure.Tests.T
     private readonly decimal MinPriceAllowed = default!;
     private bool disposedValue;
 
-    public PvpcCronBackgroundServiceTests(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
+    public PvpcCronBackgroundServiceTests()
     {
         Settings.PvpcSettings pvpcSettings = new()
         {
@@ -42,8 +41,8 @@ public sealed class PvpcCronBackgroundServiceTests : Libs.Infrastructure.Tests.T
         Prices.Last(x => x.AtDateTimeOffset <= TimeToQuery).MWhPriceInEuros = 49M; // 0.049 KWhPriceInEuros
     }
 
-    [Fact]
-    public void IsTimeToChargeNoPricesTest()
+    [Test]
+    public async Task IsTimeToChargeNoPricesTest()
     {
         Settings.TuyaManagerSettings tuyaManagerSettings = new()
         {
@@ -58,11 +57,11 @@ public sealed class PvpcCronBackgroundServiceTests : Libs.Infrastructure.Tests.T
             tuyaManagerSettings,
             new NullLogger<PvpcCronBackgroundServiceTests>());
 
-        Assert.False(res);
+        _ = await Assert.That(res).IsFalse();
     }
 
-    [Fact]
-    public void IsTimeToChargeAllowBelowDecimalMaxValueTest()
+    [Test]
+    public async Task IsTimeToChargeAllowBelowDecimalMaxValueTest()
     {
         Settings.TuyaManagerSettings tuyaManagerSettings = new()
         {
@@ -77,11 +76,11 @@ public sealed class PvpcCronBackgroundServiceTests : Libs.Infrastructure.Tests.T
             tuyaManagerSettings,
             new NullLogger<PvpcCronBackgroundServiceTests>());
 
-        Assert.True(res);
+        _ = await Assert.That(res).IsTrue();
     }
 
-    [Fact]
-    public void IsTimeToChargeIfAnyPriceBelowTest()
+    [Test]
+    public async Task IsTimeToChargeIfAnyPriceBelowTest()
     {
         Settings.TuyaManagerSettings tuyaManagerSettings = new()
         {
@@ -95,7 +94,7 @@ public sealed class PvpcCronBackgroundServiceTests : Libs.Infrastructure.Tests.T
             tuyaManagerSettings,
             new NullLogger<PvpcCronBackgroundServiceTests>());
 
-        Assert.Equal(res, Prices.Any(x => x.KWhPriceInEuros <= MinPriceAllowed));
+        _ = await Assert.That(Prices.Any(x => x.KWhPriceInEuros <= MinPriceAllowed)).IsEqualTo(res);
     }
 
     private void Dispose(bool disposing)
