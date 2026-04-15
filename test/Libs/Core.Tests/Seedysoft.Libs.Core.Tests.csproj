@@ -19,6 +19,6 @@
         <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.6" />
         <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="10.0.6" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.4.0" />
-        <PackageReference Include="TUnit" Version="1.34.0" />
+        <PackageReference Include="TUnit" Version="1.34.5" />
     </ItemGroup>
 </Project>

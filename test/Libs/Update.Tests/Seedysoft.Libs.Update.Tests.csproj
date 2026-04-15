@@ -39,7 +39,7 @@
         <PackageReference Include="Serilog.Sinks.Console" Version="6.1.1" />
         <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
         <PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" Version="3.0.2" />
-        <PackageReference Include="TUnit" Version="1.34.0" />
+        <PackageReference Include="TUnit" Version="1.34.5" />
     </ItemGroup>
 
     <ItemGroup>
