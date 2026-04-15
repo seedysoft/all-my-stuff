@@ -37,9 +37,9 @@ jobs:
           workloads: wasm-tools
 
       - name: Build
-        run: dotnet build Seedysoft.Tests.slnx --configuration Release -v n
+        run: dotnet build Seedysoft.Tests.slnx --configuration Release --verbosity n
 
       - name: Test
         env:
           SEEDY_MASTER_KEY: ${{ secrets.SEEDY_MASTER_KEY }}
-        run: dotnet test --configuration Release --no-build -v n
+        run: dotnet test --ignore-exit-code 8

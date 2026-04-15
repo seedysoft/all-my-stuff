@@ -36,9 +36,9 @@
     <File Path=".gitattributes" />
     <File Path=".gitignore" />
     <File Path=".runsettings" />
+    <File Path="global.json" />
     <File Path="nuget.config" />
     <File Path="src/Directory.Build.props" />
-    <File Path="testEnvironments.json" />
   </Folder>
   <Folder Name="/_SolutionItems/doc/">
     <File Path="doc/DotnetInstallDocumentation.txt" />
