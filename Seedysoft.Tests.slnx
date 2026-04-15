@@ -39,7 +39,6 @@
     <File Path="nuget.config" />
     <File Path="src/Directory.Build.props" />
     <File Path="testEnvironments.json" />
-    <File Path="xunit.runner.json" />
   </Folder>
   <Folder Name="/_SolutionItems/doc/">
     <File Path="doc/DotnetInstallDocumentation.txt" />
