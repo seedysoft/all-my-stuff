@@ -42,4 +42,4 @@ jobs:
       - name: Test
         env:
           SEEDY_MASTER_KEY: ${{ secrets.SEEDY_MASTER_KEY }}
-        run: dotnet test --solution Seedysoft.Tests.slnx -c Release --no-build -v n
+        run: dotnet test Seedysoft.Tests.slnx -c Release --no-build -v n
