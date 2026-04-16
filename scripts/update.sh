@@ -40,6 +40,9 @@ echo "Zip downloaded"
 echo "Calling stop script ..."
 sudo ./stop-daemon.sh -s "${WORKER_SERVICE_NAME}"
 
+echo "Deleting old files ..."
+sudo rm -rf ./wwwroot/_framework
+
 echo "Extracting files ..."
 unzip -o -q $ZIP_FILE_NAME -d ./
 
