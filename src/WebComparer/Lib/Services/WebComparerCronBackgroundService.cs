@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using OpenQA.Selenium.Support.Extensions;
 using Seedysoft.Libs.Core.Extensions;
 
 namespace Seedysoft.WebComparer.Lib.Services;
@@ -358,7 +357,7 @@ public sealed class WebComparerCronBackgroundService : Libs.BackgroundServices.C
             {
                 // SubscriptionId: 3 JCyL Convocatorias
                 if (webDriver.PageSource.Contains("elemento-invisible"))
-                    webDriver.ExecuteJavaScript("jQuery('.elemento-invisible').removeClass('elemento-invisible');");
+                    _ = webDriver.ExecuteScript("jQuery('.elemento-invisible').removeClass('elemento-invisible');");
                 // SubscriptionId: 3 JCyL Convocatorias
 
                 // SubscriptionId: 7 Dip Burgos Convocatorias
@@ -369,7 +368,7 @@ public sealed class WebComparerCronBackgroundService : Libs.BackgroundServices.C
                     TextFilterWebElement.Clear();
                     TextFilterWebElement.SendKeys("prog");
                     FormEmpleoFijoWebElement.FindElement(OpenQA.Selenium.By.Id("edit-submit-empleo")).Click();
-                    webDriver.ExecuteJavaScript("jQuery('.collapse').removeClass('collapse');");
+                    _ = webDriver.ExecuteScript("jQuery('.collapse').removeClass('collapse');");
                 }
                 // SubscriptionId: 7 Dip Burgos Convocatorias
 
