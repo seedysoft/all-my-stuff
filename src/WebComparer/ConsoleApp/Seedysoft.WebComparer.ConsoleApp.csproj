@@ -25,7 +25,7 @@
         <PackageReference Include="DiffPlex" Version="1.9.0" />
         <PackageReference Include="EfCore.SchemaCompare" Version="10.0.0" />
         <PackageReference Include="HtmlAgilityPack" Version="1.12.4" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.6" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.7" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="10.0.6" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.0.6" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite.Core" Version="10.0.6" />
