@@ -36,11 +36,11 @@
     </ItemGroup>
 
     <ItemGroup Condition="'$(Configuration)' == 'Debug'">
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.6">
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.7">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.6">
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.7">
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
             <PrivateAssets>all</PrivateAssets>
         </PackageReference>
@@ -54,15 +54,15 @@
         <PackageReference Include="EfCore.SchemaCompare" Version="10.0.0" />
         <PackageReference Include="FluentValidation" Version="12.1.1" />
         <PackageReference Include="HtmlAgilityPack" Version="1.12.4" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.6" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="10.0.6" />
-        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.6" />
-        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="10.0.6" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite.Core" Version="10.0.6" />
-        <PackageReference Include="Microsoft.Extensions.DependencyModel" Version="10.0.6" />
-        <PackageReference Include="Microsoft.Extensions.Hosting.Systemd" Version="10.0.6" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.7" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="10.0.7" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.7" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="10.0.7" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite.Core" Version="10.0.7" />
+        <PackageReference Include="Microsoft.Extensions.DependencyModel" Version="10.0.7" />
+        <PackageReference Include="Microsoft.Extensions.Hosting.Systemd" Version="10.0.7" />
         <PackageReference Include="MudBlazor" Version="9.3.0" />
-        <PackageReference Include="NSwag.AspNetCore" Version="14.7.0" />
+        <PackageReference Include="NSwag.AspNetCore" Version="14.7.1" />
         <PackageReference Include="Octokit" Version="14.0.0" />
         <PackageReference Include="OneOf" Version="3.0.271" />
         <PackageReference Include="RestSharp" Version="114.0.0" />
@@ -72,7 +72,7 @@
         <PackageReference Include="Serilog.Sinks.Console" Version="6.1.1" />
         <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
         <PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" Version="3.0.2" />
-        <PackageReference Include="System.IO.Hashing" Version="10.0.6" />
+        <PackageReference Include="System.IO.Hashing" Version="10.0.7" />
         <PackageReference Include="Telegram.Bot" Version="22.9.6.1" />
     </ItemGroup>
 
