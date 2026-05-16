@@ -4,7 +4,9 @@ public sealed class CryptoTests : Core.Tests.TUnitTestClassBase
 {
     [Test]
     [CombinedDataSources]
-    public void EncryptThenDecryptTest([Arguments("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam nulla tellus, elementum sit amet nunc.")] string textToEncrypt)
+    public void EncryptThenDecryptTest(
+        [Arguments("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam nulla tellus, elementum sit amet nunc.")]
+        string textToEncrypt)
     {
         string Key = System.Security.Cryptography.RandomNumberGenerator.GetString("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 32);
 
