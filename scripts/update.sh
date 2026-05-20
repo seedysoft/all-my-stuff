@@ -29,7 +29,7 @@ echo "'${EXECUTABLE_FILE_NAME}' file is in '${WORKER_SERVICE_DIRECTORY}'"
 if [ "${WORKER_SERVICE_USER}" == "root" ] || [ "${WORKER_SERVICE_USER}" == "UNKNOWN" ]; then
   echo "ERROR: The owner of '${WORKER_SERVICE_DIRECTORY}' directory is '${WORKER_SERVICE_USER}'"
   echo "Please, change the owner with the command 'chown <user>:<user> -R \"${WORKER_SERVICE_DIRECTORY}\"'"
-  echo "The user <user> will be used to run '${WORKER_SERVICE_NAME}'"
+  echo "The user '${WORKER_SERVICE_USER}' will be used to run '${WORKER_SERVICE_NAME}'"
   exit 1
 fi
 
@@ -47,7 +47,7 @@ echo "Extracting files ..."
 unzip -o -q $ZIP_FILE_NAME -d ./
 
 echo "Changing owner and mod ..."
-chown pi:pi *; chmod ug+rw *; chmod ug+x *.sh; chmod ug+x Seedysoft.*;
+sudo chown pi:pi --recursive --silent *; chmod ug+rw --recursive --silent *; chmod ug+x --silent *.sh; chmod ug+x --silent Seedysoft.*;
 
 echo "Calling create script ..."
 sudo ./create-daemon.sh -f "${EXECUTABLE_FILE_NAME}" -s "${WORKER_SERVICE_NAME}"
