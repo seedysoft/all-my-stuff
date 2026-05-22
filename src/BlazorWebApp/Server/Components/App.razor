@@ -8,6 +8,7 @@
 
     <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet" />
     <link href="_content/MudBlazor/MudBlazor.min.css?v=@(MudBlazor.Metadata.Version)" rel="stylesheet" />
+    @* <link href="_content/Seedysoft.Libs.MapRazorClassLib/Seedysoft.Libs.MapRazorClassLib.styles.css" rel="stylesheet" /> *@
     <link href="app.css" rel="stylesheet" />
 
     <link href="favicon.ico" rel="icon" type="image/png" />
@@ -16,11 +17,18 @@
 
 <body>
     <Routes @rendermode="new InteractiveServerRenderMode(false)" />
-    <script src="_framework/blazor.web.js"></script>
-    <script src="_content/MudBlazor/MudBlazor.min.js?v=@(MudBlazor.Metadata.Version)"></script>
-    <script type="text/javascript">window.seedysoft = window.seedysoft || {};</script>
-    <script src="_content/Seedysoft.Libs.GoogleMapsRazorClassLib/seedysoft.scriptloader.js"></script>
-    <script src="_content/Seedysoft.Libs.GoogleMapsRazorClassLib/seedysoft.googlemaps.js"></script>
+    <script type="text/javascript" src="_framework/blazor.web.js"></script>
+    <script type="text/javascript" src="_content/MudBlazor/MudBlazor.min.js?v=@(MudBlazor.Metadata.Version)"></script>
+    <script type="text/javascript">; window.seedysoft = window.seedysoft || {};</script>
+    <script type="text/javascript" src="_content/Seedysoft.Libs.GoogleMapsRazorClassLib/seedysoft.scriptloader.js"></script>
+    <script type="text/javascript" src="_content/Seedysoft.Libs.GoogleMapsRazorClassLib/seedysoft.googlemaps.js"></script>
+
+    <!-- Ficheros javascript de la API del IGN -->
+    <script type="text/javascript" src="https://componentes.idee.es/api-idee/vendor/browser-polyfill.js"></script>
+    <script type="text/javascript" src="https://componentes.idee.es/api-idee/js/apiidee.ol.min.js"></script>
+    <script type="text/javascript" src="https://componentes.idee.es/api-idee/js/configuration.js"></script>
+
+    <script type="text/javascript" src="_content/Seedysoft.Libs.MapRazorClassLib/map.js"></script>
 </body>
 
 </html>

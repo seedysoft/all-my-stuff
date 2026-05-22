@@ -38,5 +38,6 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\Libs\GoogleMapsRazorClassLib\Seedysoft.Libs.GoogleMapsRazorClassLib.csproj" />
+      <ProjectReference Include="..\..\Libs\MapRazorClassLib\Seedysoft.Libs.MapRazorClassLib.csproj" />
     </ItemGroup>
 </Project>

@@ -7,6 +7,7 @@
     <Project Path="src/Libs/GoogleApis/Seedysoft.Libs.GoogleApis.csproj" />
     <Project Path="src/Libs/GoogleMapsRazorClassLib/Seedysoft.Libs.GoogleMapsRazorClassLib.csproj" />
     <Project Path="src/Libs/Infrastructure/Seedysoft.Libs.Infrastructure.csproj" />
+    <Project Path="src/Libs/MapRazorClassLib/Seedysoft.Libs.MapRazorClassLib.csproj" />
     <Project Path="src/Libs/SmtpService/Seedysoft.Libs.SmtpService.csproj" />
     <Project Path="src/Libs/TelegramBot/Seedysoft.Libs.TelegramBot.csproj" />
     <Project Path="src/Libs/TuyaDeviceControl/Seedysoft.Libs.TuyaDeviceControl.csproj" />
