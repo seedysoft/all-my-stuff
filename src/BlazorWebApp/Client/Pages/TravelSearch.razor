@@ -4,6 +4,7 @@
 
 @using Seedysoft.BlazorWebApp.Client.Components
 @using Seedysoft.Libs.GoogleMapsRazorClassLib.GoogleMap
+@using Seedysoft.Libs.MapRazorClassLib
 
 @{
     Variant variant = Variant.Outlined;
@@ -91,7 +92,12 @@
         </MudItem>
 
         <MudItem>
-            <Seedysoft.Libs.MapRazorClassLib.Component1 Id="@Guid.NewGuid().ToString()" />
+            <MapComponent @ref="@TravelMap"
+                          Id="@nameof(TravelMap)"
+                          Center="@(new LatLng(Seedysoft.Libs.Core.Constants.Earth.Home.Lat, Seedysoft.Libs.Core.Constants.Earth.Home.Lng))"
+                          Height="450" HeightUnit="@Libs.Core.Enums.CssUnit.Px"
+                          Width="100" WidthUnit="@Libs.Core.Enums.CssUnit.Percentage"
+                          Zoom="14" />
         </MudItem>
 
         <MudItem xs="12">

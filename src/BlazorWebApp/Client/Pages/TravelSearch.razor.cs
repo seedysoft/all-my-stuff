@@ -20,6 +20,7 @@ public partial class TravelSearch
     private Libs.GoogleApis.Settings.GoogleApisSettings googleApisSettings = default!;
 
     private Libs.GoogleMapsRazorClassLib.GoogleMap.Map TravelGoogleMap { get; set; } = default!;
+    private Libs.MapRazorClassLib.MapComponent TravelMap { get; set; } = default!;
 
     private readonly Libs.GasStationPrices.ViewModels.TravelQueryModel travelQueryModel = new()
     {
