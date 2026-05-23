@@ -4,9 +4,16 @@
         <Nullable>enable</Nullable>
         <TargetFramework>net10.0</TargetFramework>
     </PropertyGroup>
+    <ItemGroup>
+      <Content Remove="appsettings.GoogleApisSettings.Production.json" />
+    </ItemGroup>
 
     <ItemGroup>
         <Compile Include="..\..\Usings.cs" Link="Usings.cs" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Include="appsettings.MapRazorClassLibSettings.Production.json" />
     </ItemGroup>
 
     <ItemGroup>
@@ -19,5 +26,15 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Core\Seedysoft.Libs.Core.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Update="appsettings.MapRazorClassLibSettings.Development.json">
+        <DependentUpon>appsettings.MapRazorClassLibSettings.json</DependentUpon>
+      </Content>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Helpers\" />
     </ItemGroup>
 </Project>

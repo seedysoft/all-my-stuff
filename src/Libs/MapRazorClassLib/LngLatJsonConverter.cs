@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using Seedysoft.Libs.MapRazorClassLib.Models;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace Seedysoft.Libs.MapRazorClassLib;

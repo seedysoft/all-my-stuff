@@ -1,4 +1,4 @@
-﻿namespace Seedysoft.Libs.MapRazorClassLib;
+﻿namespace Seedysoft.Libs.MapRazorClassLib.Models;
 
 /// <summary>
 /// To avoid use a pair of double values to represent a geographic coordinate, this record is used to represent a latitude and longitude pair.

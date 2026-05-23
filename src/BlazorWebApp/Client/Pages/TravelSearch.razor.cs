@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Components;
 using RestSharp;
 using Seedysoft.Libs.Core.Extensions;
+using Seedysoft.Libs.MapRazorClassLib.Services;
+using Seedysoft.Libs.MapRazorClassLib.Settings;
 
 namespace Seedysoft.BlazorWebApp.Client.Pages;
 
@@ -14,11 +16,8 @@ public partial class TravelSearch
     [Inject] private MudBlazor.ISnackbar Snackbar { get; set; } = default!;
     [Inject] private IConfiguration Configuration { get; set; } = default!;
     [Inject] private Libs.GasStationPrices.Services.GasStationPricesService GasStationPricesService { get; set; } = default!;
-    [Inject] private Libs.GoogleApis.Services.PlacesService PlacesService { get; set; } = default!;
+    [Inject] private PlacesService PlacesService { get; set; } = default!;
 
-    private Libs.GoogleApis.Settings.GoogleApisSettings googleApisSettings = default!;
-
-    //private Libs.GoogleMapsRazorClassLib.GoogleMap.Map TravelGoogleMap { get; set; } = default!;
     private Libs.MapRazorClassLib.MapComponent TravelMap { get; set; } = default!;
 
     private readonly Libs.GasStationPrices.ViewModels.TravelQueryModel travelQueryModel = new()
@@ -46,8 +45,8 @@ public partial class TravelSearch
             Logger.LogInformation($"Called {nameof(OnInitializedAsync)}");
 
         googleApisSettings = Configuration
-            .GetSection(nameof(Libs.GoogleApis.Settings.GoogleApisSettings))
-            .Get<Libs.GoogleApis.Settings.GoogleApisSettings>()!;
+            .GetSection(nameof(GoogleApisSettings))
+            .Get<GoogleApisSettings>()!;
     }
 
     private async Task OnGasStationSelectedItemChanged(Libs.GasStationPrices.ViewModels.GasStationModel gasStationModel)
