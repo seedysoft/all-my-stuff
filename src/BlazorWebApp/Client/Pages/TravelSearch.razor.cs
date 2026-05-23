@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Components;
 using RestSharp;
 using Seedysoft.Libs.Core.Extensions;
-using Seedysoft.Libs.GoogleMapsRazorClassLib.Extensions;
 
 namespace Seedysoft.BlazorWebApp.Client.Pages;
 
@@ -19,7 +18,7 @@ public partial class TravelSearch
 
     private Libs.GoogleApis.Settings.GoogleApisSettings googleApisSettings = default!;
 
-    private Libs.GoogleMapsRazorClassLib.GoogleMap.Map TravelGoogleMap { get; set; } = default!;
+    //private Libs.GoogleMapsRazorClassLib.GoogleMap.Map TravelGoogleMap { get; set; } = default!;
     private Libs.MapRazorClassLib.MapComponent TravelMap { get; set; } = default!;
 
     private readonly Libs.GasStationPrices.ViewModels.TravelQueryModel travelQueryModel = new()
@@ -53,10 +52,10 @@ public partial class TravelSearch
 
     private async Task OnGasStationSelectedItemChanged(Libs.GasStationPrices.ViewModels.GasStationModel gasStationModel)
     {
-        if (gasStationModel == null)
-            await TravelGoogleMap.ResetViewportAsync();
-        else
-            await TravelGoogleMap.ClickOnMarkerAsync(gasStationModel.ToMarker(travelQueryModel.PetroleumProductsSelectedIds));
+        //if (gasStationModel == null)
+        //    await TravelGoogleMap.ResetViewportAsync();
+        //else
+        //    await TravelGoogleMap.ClickOnMarkerAsync(gasStationModel.ToMarker(travelQueryModel.PetroleumProductsSelectedIds));
     }
 
     private async Task OnClickGmapRouteAsync(string encodedPolyline)
@@ -94,8 +93,8 @@ public partial class TravelSearch
 
     private async Task ClearDataAsync()
     {
-        await TravelGoogleMap.RemoveAllMarkersAsync();
-        GasStationItems.Clear();
+        //await TravelGoogleMap.RemoveAllMarkersAsync();
+        //GasStationItems.Clear();
     }
 
     private async Task ValidateSearch()
@@ -114,8 +113,8 @@ public partial class TravelSearch
 
     private async Task LoadGoogleRoutesAsync()
     {
-        await ClearDataAsync();
+        //await ClearDataAsync();
 
-        await TravelGoogleMap.SearchRoutesAsync(travelQueryModel.Origin, travelQueryModel.Destination);
+        //await TravelGoogleMap.SearchRoutesAsync(travelQueryModel.Origin, travelQueryModel.Destination);
     }
 }

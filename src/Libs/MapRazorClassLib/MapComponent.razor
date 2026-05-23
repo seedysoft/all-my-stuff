@@ -2,14 +2,7 @@
     @($"#{Id} {{ height: 100%; }}")
 </style>
 
-<div class="my-component">
-    This component is defined in the <strong>Seedysoft.Libs.MapRazorClassLib</strong> library.
-</div>
-
-@* class="@ClassNames" @attributes="@AdditionalAttributes" *@
-<div @ref="@Element" id="@Id" class="m-container" style="@StyleNames"></div>
-
-<div class="alert d-none" id="alert">
-    <p>error</p>
-    <a href="#" class="close">&times;</a>
+<div class="container row">
+    <div @ref="@Element" id="@Id" class="@ClassNames" style="@StyleNames">
+    </div>
 </div>

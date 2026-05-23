@@ -3,16 +3,27 @@
 
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    @* <meta name="viewport" content="width=device-width, initial-scale=1.0" /> *@
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
     <base href="/" />
 
-    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet" />
-    <link href="_content/MudBlazor/MudBlazor.min.css?v=@(MudBlazor.Metadata.Version)" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet" type="text/css" />
+    <link href="_content/MudBlazor/MudBlazor.min.css?v=@(MudBlazor.Metadata.Version)" rel="stylesheet" type="text/css" />
     @* <link href="_content/Seedysoft.Libs.MapRazorClassLib/Seedysoft.Libs.MapRazorClassLib.styles.css" rel="stylesheet" /> *@
-    <link href="app.css" rel="stylesheet" />
+
+    <link href="app.css" rel="stylesheet" type="text/css" />
 
     <link href="favicon.ico" rel="icon" type="image/png" />
     <HeadOutlet @rendermode="InteractiveAuto" />
+
+    <!-- Estilo de la API del IGN -->
+    <link href="https://componentes.idee.es/api-idee/assets/css/apiidee.ol.min.css" rel="stylesheet" type="text/css">
+    <!-- Dependencias del plugin Layerswitcher del IGN -->
+    <link href="https://componentes.idee.es/api-idee/plugins/layerswitcher/layerswitcher.ol.min.css" rel="stylesheet" type="text/css" />
+    <!-- Dependencias del plugin Measurebar del IGN -->
+    <link href="https://componentes.idee.es/api-idee/plugins/measurebar/measurebar.ol.min.css" rel="stylesheet" type="text/css" />
 </head>
 
 <body>
@@ -27,6 +38,14 @@
     <script type="text/javascript" src="https://componentes.idee.es/api-idee/vendor/browser-polyfill.js"></script>
     <script type="text/javascript" src="https://componentes.idee.es/api-idee/js/apiidee.ol.min.js"></script>
     <script type="text/javascript" src="https://componentes.idee.es/api-idee/js/configuration.js"></script>
+    <!-- Ficheros javascript de los plugins añadidos del IGN -->
+    <script type="text/javascript" src="https://componentes.idee.es/api-idee/plugins/locator/locator.ol.min.js"></script>
+    <script type="text/javascript" src="https://componentes.idee.es/api-idee/plugins/sharemap/sharemap.ol.min.js"></script>
+    <script type="text/javascript" src="https://componentes.idee.es/api-idee/plugins/viewmanagement/viewmanagement.ol.min.js"></script>
+    <script type="text/javascript" src="https://componentes.idee.es/api-idee/plugins/mousesrs/mousesrs.ol.min.js"></script>
+    <script type="text/javascript" src="https://componentes.idee.es/api-idee/plugins/layerswitcher/layerswitcher.ol.min.js"></script>
+    <!-- Dependencias del plugin Measurebar del IGN -->
+    <script type="text/javascript" src="https://componentes.idee.es/api-idee/plugins/measurebar/measurebar.ol.min.js"></script>
 
     <script type="text/javascript" src="_content/Seedysoft.Libs.MapRazorClassLib/map.js"></script>
 </body>
