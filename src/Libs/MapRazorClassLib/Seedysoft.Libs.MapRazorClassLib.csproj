@@ -1,5 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
     <PropertyGroup>
+        <EnableDefaultContentItems>false</EnableDefaultContentItems>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <RuntimeIdentifiers>linux-arm64</RuntimeIdentifiers>
@@ -10,13 +11,13 @@
         <Compile Include="..\..\Usings.cs" Link="Usings.cs" />
     </ItemGroup>
 
-    <!--<ItemGroup>
+    <ItemGroup>
         <Content Include="appsettings.MapRazorClassLibSettings.json">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
-    </ItemGroup>-->
+    </ItemGroup>
 
-    <!--<ItemGroup Condition="'$(Configuration)' == 'Debug'">
+    <ItemGroup Condition="'$(Configuration)' == 'Debug'">
         <Content Include="appsettings.MapRazorClassLibSettings.Development.json">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
             <DependentUpon>appsettings.MapRazorClassLibSettings.json</DependentUpon>
@@ -25,9 +26,9 @@
             <CopyToOutputDirectory>Never</CopyToOutputDirectory>
             <DependentUpon>appsettings.MapRazorClassLibSettings.json</DependentUpon>
         </None>
-    </ItemGroup>-->
+    </ItemGroup>
 
-    <!--<ItemGroup Condition="'$(Configuration)' == 'Release'">
+    <ItemGroup Condition="'$(Configuration)' == 'Release'">
         <None Include="appsettings.MapRazorClassLibSettings.Development.json">
             <CopyToOutputDirectory>Never</CopyToOutputDirectory>
             <DependentUpon>appsettings.MapRazorClassLibSettings.json</DependentUpon>
@@ -36,10 +37,12 @@
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
             <DependentUpon>appsettings.MapRazorClassLibSettings.json</DependentUpon>
         </Content>
-    </ItemGroup>-->
+    </ItemGroup>
 
     <ItemGroup>
         <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="10.0.8" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.8" />
+        <PackageReference Include="RestSharp" Version="114.0.0" />
     </ItemGroup>
 
     <ItemGroup>

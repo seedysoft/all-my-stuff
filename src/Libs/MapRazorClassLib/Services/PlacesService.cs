@@ -1,74 +1,38 @@
-﻿//using Microsoft.Extensions.Configuration;
-//using Microsoft.Extensions.Logging;
-//using RestSharp;
-//using Seedysoft.Libs.Core.Extensions;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using RestSharp;
+using Seedysoft.Libs.Core.Extensions;
 
-//namespace Seedysoft.Libs.MapRazorClassLib.Services;
+namespace Seedysoft.Libs.MapRazorClassLib.Services;
 
-//public class PlacesService(IConfiguration configuration, ILogger<PlacesService> logger)
-//{
-//    public async Task<IEnumerable<string>> FindPlacesAsync(
-//        string textToFind,
-//        CancellationToken cancellationToken)
-//    {
-//        try
-//        {
-//            if (string.IsNullOrWhiteSpace(textToFind))
-//                return [];
+public class PlacesService(IConfiguration configuration, ILogger<PlacesService> logger)
+{
+    protected Settings.MapRazorClassLibSettings MapRazorClassLibSettings => configuration
+        .GetSection(nameof(Settings.MapRazorClassLibSettings)).Get<Settings.MapRazorClassLibSettings>()!;
 
-//            RestRequest restRequest = BuildFindPlacesRequest(textToFind);
-//            RestClient restClient = new(GoogleApisSettings.PlacesApi.UrlFormat);
-//            Models.Places.Response.Body? body = null;
-//            RestResponse restResponse = await restClient.ExecutePostAsync(restRequest, cancellationToken);
-//            if (restResponse.IsSuccessStatusCode)
-//                body = restResponse.Content!.FromJson<Models.Places.Response.Body>();
-//            if (body == null)
-//                return [];
+    public async Task<IEnumerable<string>> FindPlacesAsync(
+        string textToFind,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(textToFind))
+                return [];
 
-//            IEnumerable<string> places =
-//                from p in body.Suggestions.Select(x => x.PlacePrediction)
-//                where !string.IsNullOrWhiteSpace(p.Text?.Text)
-//                select p.Text!.Text;
+            RestClient restClient = new(MapRazorClassLibSettings.PlacesApi.UrlFormat);
+            Models.PlaceModel[]? restResponse = await restClient.GetAsync<Models.PlaceModel[]>(string.Format(MapRazorClassLibSettings.PlacesApi.UrlFormat, textToFind), cancellationToken);
 
-//            return places.ToHashSet();
-//        }
-//        catch (Exception e) when (logger.LogAndHandle(e, "Unexpected error")) { }
+            if (restResponse == null)
+                return [];
 
-//        return [];
+            IEnumerable<string> places = restResponse
+                .Where(p => !string.IsNullOrWhiteSpace(p.Address))
+                .Select(p => p.Address!);
 
-//        RestRequest BuildFindPlacesRequest(string textToFind)
-//        {
-//            RestRequest restRequest = new();
-//            restRequest = restRequest.AddHeader("X-Goog-Api-Key", GoogleApisSettings.ApiKey);
-//            restRequest = restRequest.AddHeader("X-Goog-FieldMask", GoogleApisSettings.FieldMask);
+            return places.ToHashSet();
+        }
+        catch (Exception e) when (logger.LogAndHandle(e, "Unexpected error")) { }
 
-//            Models.Places.Request.Body PlacesRequestBody = new()
-//            {
-//                // Required
-//                Input = textToFind,
-//                // Optional
-//                IncludedPrimaryTypes = ["geocode", "locality", "route", "street_address"],
-//                IncludeQueryPredictions = false,
-//                //IncludedRegionCodes = [""],
-//                //LanguageCode = "",
-//                //LocationBias = new()
-//                //{
-//                //    Rectangle = new()
-//                //    {
-//                //        High = new() { Latitude = 1.1, Longitude = 1.1, },
-//                //        Low = new() { Latitude = 2.2, Longitude = 2.2, },
-//                //    }
-//                //},
-//                //LocationRestriction = new()
-//                //{
-//                //    Circle = new() { Center = new() { Latitude = 3.3, Longitude = 3.3, }, }
-//                //},
-//                //RegionCode = "",
-//                //Origin = new() { Latitude = 5.5, Longitude = 5.5, },
-//                //SessionToken = string.Empty,
-//            };
-
-//            return restRequest.AddJsonBody(PlacesRequestBody.ToJson(), ContentType.Json);
-//        }
-//    }
-//}
+        return [];
+    }
+}

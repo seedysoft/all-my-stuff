@@ -2,6 +2,9 @@
 
 public record PlacesApi
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public required string UrlFormat { get; init; }
 
     //public static string GetUrl(string urlFormat, Json.Google.Response.Route route, IEnumerable<double[]> wayPoints)
