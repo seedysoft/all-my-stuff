@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
+using Seedysoft.Libs.Core.Constants;
 using Seedysoft.Libs.Core.Extensions;
-using Seedysoft.Libs.MapRazorClassLib.Models;
 
 namespace Seedysoft.Libs.MapRazorClassLib;
 

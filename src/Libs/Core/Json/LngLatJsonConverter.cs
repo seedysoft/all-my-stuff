@@ -1,8 +1,8 @@
-﻿using Seedysoft.Libs.MapRazorClassLib.Models;
+﻿using Seedysoft.Libs.Core.Constants;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace Seedysoft.Libs.MapRazorClassLib;
+namespace Seedysoft.Libs.Core.Json;
 
 public class LngLatJsonConverter() : JsonConverter<LngLat>
 {

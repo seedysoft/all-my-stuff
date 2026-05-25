@@ -1,4 +1,6 @@
-﻿namespace Seedysoft.Libs.MapRazorClassLib.Models;
+﻿using Seedysoft.Libs.Core.Json;
+
+namespace Seedysoft.Libs.Core.Constants;
 
 /// <summary>
 /// To avoid use a pair of double values to represent a geographic coordinate, this record is used to represent a latitude and longitude pair.
@@ -13,10 +15,10 @@
 /// </param>
 [System.Diagnostics.DebuggerDisplay("{GetDebuggerDisplay,nq}")]
 [K(typeof(LngLatJsonConverter))]
-public class LngLat(double lng, double lat)
+public record LngLat(double Lng, double Lat)
 {
-    public double Lat { get; set; } = lat;
-    public double Lng { get; set; } = lng;
+    //public double Lat { get; set; } = Lat;
+    //public double Lng { get; set; } = Lng;
 
     private string GetDebuggerDisplay => $"Lon:{Lng} - Lat:{Lat}";
 }

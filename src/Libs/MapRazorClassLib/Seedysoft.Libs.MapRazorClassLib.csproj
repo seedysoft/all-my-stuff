@@ -1,40 +1,52 @@
-<Project Sdk="Microsoft.NET.Sdk.Razor">
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
     <PropertyGroup>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <RuntimeIdentifiers>linux-arm64</RuntimeIdentifiers>
         <TargetFramework>net10.0</TargetFramework>
     </PropertyGroup>
-    <ItemGroup>
-      <Content Remove="appsettings.GoogleApisSettings.Production.json" />
-    </ItemGroup>
 
     <ItemGroup>
         <Compile Include="..\..\Usings.cs" Link="Usings.cs" />
     </ItemGroup>
 
-    <ItemGroup>
-      <None Include="appsettings.MapRazorClassLibSettings.Production.json" />
-    </ItemGroup>
+    <!--<ItemGroup>
+        <Content Include="appsettings.MapRazorClassLibSettings.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+    </ItemGroup>-->
 
-    <ItemGroup>
-        <SupportedPlatform Include="browser" />
-    </ItemGroup>
+    <!--<ItemGroup Condition="'$(Configuration)' == 'Debug'">
+        <Content Include="appsettings.MapRazorClassLibSettings.Development.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <DependentUpon>appsettings.MapRazorClassLibSettings.json</DependentUpon>
+        </Content>
+        <None Include="appsettings.MapRazorClassLibSettings.Production.json">
+            <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+            <DependentUpon>appsettings.MapRazorClassLibSettings.json</DependentUpon>
+        </None>
+    </ItemGroup>-->
+
+    <!--<ItemGroup Condition="'$(Configuration)' == 'Release'">
+        <None Include="appsettings.MapRazorClassLibSettings.Development.json">
+            <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+            <DependentUpon>appsettings.MapRazorClassLibSettings.json</DependentUpon>
+        </None>
+        <Content Include="appsettings.MapRazorClassLibSettings.Production.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <DependentUpon>appsettings.MapRazorClassLibSettings.json</DependentUpon>
+        </Content>
+    </ItemGroup>-->
 
     <ItemGroup>
         <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="10.0.8" />
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Core\Seedysoft.Libs.Core.csproj" />
+        <ProjectReference Include="..\Core\Seedysoft.Libs.Core.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-      <Content Update="appsettings.MapRazorClassLibSettings.Development.json">
-        <DependentUpon>appsettings.MapRazorClassLibSettings.json</DependentUpon>
-      </Content>
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Helpers\" />
+        <SupportedPlatform Include="browser" />
     </ItemGroup>
 </Project>

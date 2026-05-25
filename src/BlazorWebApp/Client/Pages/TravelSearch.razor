@@ -81,7 +81,7 @@
         <MudItem>
             <MapComponent @ref="@TravelMap"
                           Id="@nameof(TravelMap)"
-                          Center="@(new LngLat(Seedysoft.Libs.Core.Constants.Earth.Home.Lng, Seedysoft.Libs.Core.Constants.Earth.Home.Lat))"
+                          Center="@(Seedysoft.Libs.Core.Constants.Earth.Home.ToLngLat())"
                           Height="900" HeightUnit="@Libs.Core.Enums.CssUnit.Px"
                           Width="1600" WidthUnit="@Libs.Core.Enums.CssUnit.Px"
                           Zoom="8" />

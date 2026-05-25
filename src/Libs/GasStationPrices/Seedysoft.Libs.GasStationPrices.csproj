@@ -9,6 +9,10 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <Compile Include="..\..\Usings.cs" Link="Usings.cs" />
+    </ItemGroup>
+
+    <ItemGroup>
         <Content Include="appsettings.GasStationPricesSettings.json">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
@@ -64,21 +68,6 @@
     <ItemGroup>
         <ProjectReference Include="..\..\Libs\Infrastructure\Seedysoft.Libs.Infrastructure.csproj" />
         <ProjectReference Include="..\Cryptography\Seedysoft.Libs.Cryptography.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <Using Include="System.Text.Json.Serialization.JsonConverterAttribute">
-            <Alias>K</Alias>
-        </Using>
-        <Using Include="System.Text.Json.Serialization.JsonIgnoreAttribute">
-            <Alias>I</Alias>
-        </Using>
-        <Using Include="System.Text.Json.Serialization.JsonIgnoreCondition">
-            <Alias>C</Alias>
-        </Using>
-        <Using Include="System.Text.Json.Serialization.JsonPropertyNameAttribute">
-            <Alias>J</Alias>
-        </Using>
     </ItemGroup>
 
     <ItemGroup>
