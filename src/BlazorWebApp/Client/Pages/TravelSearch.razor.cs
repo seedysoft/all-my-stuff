@@ -13,7 +13,7 @@ public partial class TravelSearch
     [Inject] private MudBlazor.ISnackbar Snackbar { get; set; } = default!;
     [Inject] private IConfiguration Configuration { get; set; } = default!;
     [Inject] private Libs.GasStationPrices.Services.GasStationPricesService GasStationPricesService { get; set; } = default!;
-    [Inject] private Libs.MapRazorClassLib.Services.PlacesService PlacesService { get; set; } = default!;
+    [Inject] private Libs.Geography.Services.PlacesService PlacesService { get; set; } = default!;
 
     private Libs.MapRazorClassLib.MapComponent TravelMap { get; set; } = default!;
 

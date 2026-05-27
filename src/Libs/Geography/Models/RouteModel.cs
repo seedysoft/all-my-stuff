@@ -1,4 +1,4 @@
-﻿namespace Seedysoft.Libs.MapRazorClassLib.Models;
+﻿namespace Seedysoft.Libs.Geography.Models;
 
 /// <summary>
 /// Represents a routing result containing bounding box, total distance, estimated time, encoded geometry, origin and destination coordinates, computation info, and navigation instructions.

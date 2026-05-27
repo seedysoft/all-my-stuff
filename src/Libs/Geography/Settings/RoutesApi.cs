@@ -1,9 +1,9 @@
-﻿namespace Seedysoft.Libs.MapRazorClassLib.Settings;
+﻿namespace Seedysoft.Libs.Geography.Settings;
 
-public record RoutesApi
+public readonly record struct RoutesApi
 {
     /// <summary>
-    /// http://www.cartociudad.es/services/api/route?orig=x,y&dest=x,y&locale=es&vehicle=WALK
+    /// http://www.cartociudad.es/services/api/route?orig=x,y&dest=x,y&locale=es&vehicle=[CAR|WALK]
     /// </summary>
     /// <remarks>
     /// Hay que introducir la latitud y la longitud geográficas en grado con decimales de la siguiente forma latitud, longitud.

@@ -13,7 +13,7 @@ namespace Seedysoft.Libs.MapRazorClassLib;
 /// The map element is identified by its <see cref="Id"/> parameter and styled based on the provided 
 /// CSS parameters and style attributes.
 /// </remarks
-public partial class MapComponent : ComponentBase, IAsyncDisposable
+public partial class MapComponent : ComponentBase
 {
     /// <summary>
     /// Gets or sets the unique identifier for the map component element.
@@ -31,6 +31,7 @@ public partial class MapComponent : ComponentBase, IAsyncDisposable
     /// <remarks>
     /// Default value is <see langword="default" />.
     /// </remarks>
+    [EditorRequired]
     [Parameter] public LngLat Center { get; set; } = default!;
 
     /// <summary>
@@ -134,8 +135,6 @@ public partial class MapComponent : ComponentBase, IAsyncDisposable
     /// </summary>
     [Inject] protected IJSRuntime JsRuntime { get; set; } = default!;
 
-    private IJSObjectReference? _module;
-
     /// <summary>
     /// Executes after the component has rendered, initializing the map via JavaScript interop.
     /// </summary>
@@ -149,11 +148,7 @@ public partial class MapComponent : ComponentBase, IAsyncDisposable
         await base.OnAfterRenderAsync(firstRender);
 
         if (firstRender)
-        {
-            _module ??= await JsRuntime.InvokeAsync<IJSObjectReference>("import", $"./_content/Seedysoft.Libs.MapRazorClassLib/map.js");
-
-            await _module.InvokeVoidAsync($"createMap", Id, Center, Zoom);
-        }
+            await JsRuntime.InvokeVoidAsync($"createMap", Id, Center, Zoom);
     }
 
     /// <summary>
@@ -200,12 +195,5 @@ public partial class MapComponent : ComponentBase, IAsyncDisposable
             _ = list.Add(userDefinedCssStyle.Trim());
 
         return list.Count == 0 ? string.Empty : string.Join(';', list);
-    }
-
-    public ValueTask DisposeAsync()
-    {
-        GC.SuppressFinalize(this);
-
-        return _module?.DisposeAsync() ?? default;
     }
 }

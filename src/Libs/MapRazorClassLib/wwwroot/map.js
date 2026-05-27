@@ -18,7 +18,7 @@ window.seedysoft.maps = window.seedysoft.maps || {
  * @param {double} zoom       - The zoom level for the mapjs
  * @return {IDEE.Map}         - The mapjs instance
  */
-export function createMap(elementId, center, zoom) {
+function createMap(elementId, center, zoom) {
   var mapjs;
 
   mapjs = window.seedysoft.maps.instances[elementId];
@@ -29,8 +29,8 @@ export function createMap(elementId, center, zoom) {
 
       // controls: ['panzoombar','panzoom', 'scale*true', 'scaleline', 'rotate', 'location', 'backgroundlayers'],
 
-      // controls: ['panzoombar', 'panzoom', 'scale*true', 'scaleline', 'location'],
-      controls: ['panzoom', 'scale*true'],
+      // controls: ['panzoombar', 'panzoom', 'scaleline'],
+      controls: ['location', 'panzoom', 'scale*true'],
       zoom: zoom,
       maxZoom: 20,
       minZoom: 4,

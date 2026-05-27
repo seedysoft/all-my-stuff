@@ -1,9 +1,9 @@
-﻿namespace Seedysoft.Libs.MapRazorClassLib.Models;
+﻿namespace Seedysoft.Libs.Geography.Models;
 
 /// <summary>
 /// Represents a geocoding result with identifiers, administrative divisions, address details and geographic coordinates.
 /// </summary>
-public record PlaceModel
+public readonly record struct PlaceModel
 {
     /// <summary>
     /// Identificador de la referencia.

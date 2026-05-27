@@ -1,7 +1,8 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Seedysoft.Libs.Geography.Services;
 
-namespace Seedysoft.Libs.MapRazorClassLib.Dependencies;
+namespace Seedysoft.Libs.Geography.Dependencies;
 
 public sealed class Configurator : Core.Dependencies.ConfiguratorBase
 {
@@ -10,15 +11,15 @@ public sealed class Configurator : Core.Dependencies.ConfiguratorBase
         string CurrentEnvironmentName = hostApplicationBuilder.Environment.EnvironmentName;
 
         _ = hostApplicationBuilder.Configuration
-            .AddJsonFile($"appsettings.{nameof(Settings.MapRazorClassLibSettings)}.json", optional: false, reloadOnChange: true)
-            .AddJsonFile($"appsettings.{nameof(Settings.MapRazorClassLibSettings)}.{CurrentEnvironmentName}.json", optional: false, reloadOnChange: true);
+            .AddJsonFile($"appsettings.{nameof(Settings.GeographySettings)}.json", optional: false, reloadOnChange: true)
+            .AddJsonFile($"appsettings.{nameof(Settings.GeographySettings)}.{CurrentEnvironmentName}.json", optional: false, reloadOnChange: true);
     }
 
     protected override void AddDbContexts(Microsoft.Extensions.Hosting.IHostApplicationBuilder hostApplicationBuilder) { /* No DbContexts */ }
 
     protected override void AddMyServices(Microsoft.Extensions.Hosting.IHostApplicationBuilder hostApplicationBuilder)
     {
-        hostApplicationBuilder.Services.TryAddScoped<Services.PlacesService>();
-        hostApplicationBuilder.Services.TryAddScoped<Services.RoutesService>();
+        hostApplicationBuilder.Services.TryAddScoped<PlacesService>();
+        hostApplicationBuilder.Services.TryAddScoped<RoutesService>();
     }
 }

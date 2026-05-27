@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 using RestSharp;
 using Seedysoft.Libs.Core.Extensions;
 
-namespace Seedysoft.Libs.MapRazorClassLib.Services;
+namespace Seedysoft.Libs.Geography.Services;
 
 public class RoutesService(IConfiguration configuration, ILogger<RoutesService> logger)
 {

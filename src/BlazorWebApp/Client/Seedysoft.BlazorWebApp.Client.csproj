@@ -38,6 +38,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\Libs\GasStationPrices\Seedysoft.Libs.GasStationPrices.csproj" />
+      <ProjectReference Include="..\..\Libs\Geography\Seedysoft.Libs.Geography.csproj" />
       <ProjectReference Include="..\..\Libs\MapRazorClassLib\Seedysoft.Libs.MapRazorClassLib.csproj" />
     </ItemGroup>
 </Project>

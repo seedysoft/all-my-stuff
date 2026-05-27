@@ -1,6 +1,6 @@
-﻿namespace Seedysoft.Libs.MapRazorClassLib.Settings;
+﻿namespace Seedysoft.Libs.Geography.Settings;
 
-public record MapRazorClassLibSettings
+public readonly record struct GeographySettings
 {
     /// <summary>
     /// 

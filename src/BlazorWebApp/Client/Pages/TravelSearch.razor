@@ -31,7 +31,11 @@
                              SelectOnActivation
                              ShowProgressIndicator
                              T="string"
-                             Variant="@variant" />
+                             Variant="@variant">
+                <NoItemsTemplate>
+                    <p>No items</p>
+                </NoItemsTemplate>
+            </MudAutocomplete>
         </MudItem>
 
         <MudItem xs="12" md="6">
@@ -78,7 +82,7 @@
             </MudButton>
         </MudItem>
 
-        <MudItem>
+        <MudItem xs="12">
             <MapComponent @ref="@TravelMap"
                           Id="@nameof(TravelMap)"
                           Center="@(Seedysoft.Libs.Core.Constants.Earth.Home.ToLngLat())"
