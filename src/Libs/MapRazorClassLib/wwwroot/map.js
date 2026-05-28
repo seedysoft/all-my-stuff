@@ -21,21 +21,24 @@ window.seedysoft.maps = window.seedysoft.maps || {
 function createMap(elementId, center, zoom) {
   var mapjs;
 
+  debugger
+
   mapjs = window.seedysoft.maps.instances[elementId];
   if (!mapjs) {
     // Configuración del mapa
     mapjs = IDEE.map({
       container: elementId,
 
-      // controls: ['panzoombar','panzoom', 'scale*true', 'scaleline', 'rotate', 'location', 'backgroundlayers'],
-
-      // controls: ['panzoombar', 'panzoom', 'scaleline'],
-      controls: ['location', 'panzoom', 'scale*true'],
+      // controls: ['getfeatureinfo', 'panzoom', 'scale*true', 'scaleline', 'rotate', 'location', 'backgroundlayers', 'layerswitcher'],
+      controls: ['panzoombar', 'scaleline'],
       zoom: zoom,
       maxZoom: 20,
       minZoom: 4,
-      center: center,
+      // center: center,
+      projection: "EPSG:4326"
     });
+
+    // mapjs.setCenter(center);
 
     // Otras formas de añadir controles
     //mapjs.addControls(['scale', 'location', 'backgroundlayers']);
@@ -55,31 +58,31 @@ function createMap(elementId, center, zoom) {
     // ctrlLocation.deactivate(); //para desactivarlo
 
     // Configuración de los plugins
-    const mp = new IDEE.plugin.Locator({
-      position: 'BC',
-    });
+    // const mp = new IDEE.plugin.Locator({
+    //   position: 'BC',
+    // });
     // const mp1 = new IDEE.plugin.ShareMap({
     //   baseUrl: 'https://componentes.idee.es/api-idee/',
     //   position: 'BL',
     // });
-    const mp2 = new IDEE.plugin.ViewManagement();
-    const mp3 = new IDEE.plugin.MouseSRS({
-      srs: 'EPSG:4326',
-      label: 'WGS84',
-      precision: 6,
-      geoDecimalDigits: 4,
-      utmDecimalDigits: 2,
-    });
-    const mp4 = new IDEE.plugin.Layerswitcher({
-      collapsed: true,
-      collapsible: true,
-      position: 'TR',
-    });
+    // const mp2 = new IDEE.plugin.ViewManagement();
+    // const mp3 = new IDEE.plugin.MouseSRS({
+    //   srs: 'EPSG:4326',
+    //   label: 'WGS84',
+    //   precision: 6,
+    //   geoDecimalDigits: 4,
+    //   utmDecimalDigits: 2,
+    // });
+    // const mp4 = new IDEE.plugin.Layerswitcher({
+    //   collapsed: true,
+    //   collapsible: true,
+    //   position: 'TR',
+    // });
 
     // mapjs.addPlugin(mp);
     // // mapjs.addPlugin(mp1);
     // mapjs.addPlugin(mp2);
-     mapjs.addPlugin(mp3);
+    // mapjs.addPlugin(mp3);
     // mapjs.addPlugin(mp4);
 
     window.seedysoft.maps.instances[elementId] = (mapjs);

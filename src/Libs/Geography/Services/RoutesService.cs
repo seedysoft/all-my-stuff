@@ -1,7 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using RestSharp;
-using Seedysoft.Libs.Core.Extensions;
 
 namespace Seedysoft.Libs.Geography.Services;
 

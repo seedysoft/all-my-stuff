@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
-using Seedysoft.Libs.Core.Constants;
 using Seedysoft.Libs.Core.Extensions;
 
 namespace Seedysoft.Libs.MapRazorClassLib;
@@ -32,7 +31,7 @@ public partial class MapComponent : ComponentBase
     /// Default value is <see langword="default" />.
     /// </remarks>
     [EditorRequired]
-    [Parameter] public LngLat Center { get; set; } = default!;
+    [Parameter] public NetTopologySuite.Geometries.Coordinate Center { get; set; } = Geography.Constants.Earth.Home.Center;
 
     /// <summary>
     /// Gets or sets additional CSS class names to apply to the map component container.
@@ -148,7 +147,7 @@ public partial class MapComponent : ComponentBase
         await base.OnAfterRenderAsync(firstRender);
 
         if (firstRender)
-            await JsRuntime.InvokeVoidAsync($"createMap", Id, Center, Zoom);
+            await JsRuntime.InvokeVoidAsync($"createMap", Id, new { x = Center.X, y = Center.Y }, Zoom);
     }
 
     /// <summary>

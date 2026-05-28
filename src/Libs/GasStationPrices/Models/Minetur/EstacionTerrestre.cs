@@ -51,7 +51,7 @@ public record class EstacionTerrestre
     public required string Longitud { get; init; }
     public double Lng => double.Parse(Longitud, Core.Constants.Globalization.NumberFormatInfoES);
 
-    public Core.Constants.LngLat LngLat => new(Lng, Lat);
+    public NetTopologySuite.Geometries.Coordinate Coordinate => new(Lng, Lat);
 
     public required string Margen { get; init; }
 

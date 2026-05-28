@@ -68,6 +68,7 @@
     <ItemGroup>
         <ProjectReference Include="..\..\Libs\Infrastructure\Seedysoft.Libs.Infrastructure.csproj" />
         <ProjectReference Include="..\Cryptography\Seedysoft.Libs.Cryptography.csproj" />
+        <ProjectReference Include="..\Geography\Seedysoft.Libs.Geography.csproj" />
     </ItemGroup>
 
     <ItemGroup>
