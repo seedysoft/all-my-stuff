@@ -31,7 +31,7 @@ public partial class MapComponent : ComponentBase
     /// Default value is <see langword="default" />.
     /// </remarks>
     [EditorRequired]
-    [Parameter] public NetTopologySuite.Geometries.Coordinate Center { get; set; } = Geography.Constants.Earth.Home.Center;
+    [Parameter] public NetTopologySuite.Geometries.Point Center { get; set; } = Geography.Constants.Earth.Home.Center;
 
     /// <summary>
     /// Gets or sets additional CSS class names to apply to the map component container.

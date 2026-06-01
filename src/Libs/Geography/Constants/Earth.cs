@@ -2,28 +2,6 @@
 
 public static class Earth
 {
-    ///// <summary>
-    ///// North Pole: 90d
-    ///// </summary>
-    //public const int MaxLatitudeInDegrees = TotalDegrees / 4;
-    ///// <summary>
-    ///// South Pole: -90d
-    ///// </summary>
-    //public const int MinLatitudeInDegrees = -MaxLatitudeInDegrees;
-    ///// <summary>
-    ///// East from Prime Meridian: 180d
-    ///// </summary>
-    //public const int MaxLongitudeInDegrees = TotalDegrees / 2;
-    ///// <summary>
-    ///// West from Prime Meridian: -180d
-    ///// </summary>
-    //public const int MinLongitudeInDegrees = -MaxLongitudeInDegrees;
-
-    //private const double MeanRadiusInMeters = 6_371_008.8d;
-    //public const double MeanRadiusInKilometers = MeanRadiusInMeters / 1_000d;
-
-    //public const int TotalDegrees = 360;
-
     /// <summary>
     /// 
     /// </summary>
@@ -34,14 +12,24 @@ public static class Earth
 
         public Home() { }
 
-        public static NetTopologySuite.Geometries.Coordinate Center { get; } = new(Lng, Lat);
+        public static NetTopologySuite.Geometries.Point Center { get; } = new(Lng, Lat) { SRID = (int)ProjNet.CoordinateSystems.GeographicCoordinateSystem.WGS84.AuthorityCode };
 
-        // center: '235061.9,4141933.04',
+        //public static void Asdfassdfasdf()
+        //{
+        //    // EPSG:4326 (WGS84 Lat/Lon)
+        //    GeographicCoordinateSystem Wgs84GeographicCoordinateSystem = GeographicCoordinateSystem.WGS84;
 
-        // -3.6957,  42.3410,   854.22,EPSG:4258
-        // 442692.88,4687870.56,854.22,EPSG:25830
+        //    // EPSG:3857 (Web Mercator)
+        //    ProjectedCoordinateSystem WebMercatorProjectedCoordinateSystem = ProjectedCoordinateSystem.WebMercator;
 
-        //"Latitud":  42.364111
-        //"Longitud": -3.622139
+        //    // Create transformation
+        //    CoordinateTransformationFactory coordinateTransformationFactory = new();
+        //    ICoordinateTransformation CoordinateTransformation = coordinateTransformationFactory.CreateFromCoordinateSystems(Wgs84GeographicCoordinateSystem, WebMercatorProjectedCoordinateSystem);
+
+        //    double[] mercator = CoordinateTransformation.MathTransform.Transform([Lng, Lat]);
+
+        //    Console.WriteLine($"Lat/Lon: ({Lat}, {Lng})");
+        //    Console.WriteLine($"EPSG:3857: X={mercator[0]:F2}, Y={mercator[1]:F2}");
+        //}
     }
 }

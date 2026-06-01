@@ -5,6 +5,12 @@
         <RuntimeIdentifiers>linux-arm64</RuntimeIdentifiers>
         <TargetFramework>net10.0</TargetFramework>
     </PropertyGroup>
+    <ItemGroup>
+      <Content Include="MapComponent.razor.js">
+        <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      </Content>
+    </ItemGroup>
 
     <ItemGroup>
         <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="10.0.8" />
@@ -17,5 +23,9 @@
 
     <ItemGroup>
         <SupportedPlatform Include="browser" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="wwwroot\" />
     </ItemGroup>
 </Project>
