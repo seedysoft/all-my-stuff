@@ -8,7 +8,7 @@
   },
   "profiles": {
     "http": {
-      "applicationUrl": "http://seedysoft.dev.localhost:5062",
+      "applicationUrl": "http://localhost:5364",
       "commandLineArgs": "-d 2",
       "commandName": "Project",
       "environmentVariables": {
@@ -18,7 +18,7 @@
       "launchBrowser": true
     },
     "https": {
-      "applicationUrl": "https://seedysoft.dev.localhost:5364;http://seedysoft.dev.localhost:5062",
+      "applicationUrl": "https://localhost:5364;http://localhost:5062",
       "commandLineArgs": "-d 2",
       "commandName": "Project",
       "environmentVariables": {
@@ -35,17 +35,17 @@
       },
       "inspectUri": "{wsProtocol}://{url.hostname}:{url.port}/_framework/debug/ws-proxy?browser={browserInspectUri}",
       "launchBrowser": true
-    },
-    "WSL": {
-      "commandLineArgs": "\"{OutDir}Seedysoft.BlazorWebApp.Server.dll\" -d 2",
-      "commandName": "WSL2",
-      "distributionName": "",
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development",
-        "ASPNETCORE_URLS": "https://seedysoft.dev.localhost:5364;http://seedysoft.dev.localhost:5062"
-      },
-      "launchBrowser": true,
-      "launchUrl": "https://seedysoft.dev.localhost:5364"
     }
+    //, "WSL": {
+    //  "commandLineArgs": "\"{OutDir}Seedysoft.BlazorWebApp.Server.dll\" -d 2",
+    //  "commandName": "WSL2",
+    //  "distributionName": "",
+    //  "environmentVariables": {
+    //    "ASPNETCORE_ENVIRONMENT": "Development",
+    //    "ASPNETCORE_URLS": "https://seedysoft.dev.localhost:5364;http://seedysoft.dev.localhost:5062"
+    //  },
+    //  "launchBrowser": true,
+    //  "launchUrl": "https://seedysoft.dev.localhost:5364"
+    //}
   }
 }

@@ -18,34 +18,34 @@
     <link href="favicon.ico" rel="icon" type="image/png" />
     <HeadOutlet @rendermode="InteractiveAuto" />
 
-    <!-- Estilo de la API del IGN -->
+    <!-- Estilo de la API -->
     <link href="https://componentes.idee.es/api-idee/assets/css/apiidee.ol.min.css" rel="stylesheet" type="text/css">
-    <!-- Dependencias del plugin Layerswitcher del IGN -->
-    <link href="https://componentes.idee.es/api-idee/plugins/layerswitcher/layerswitcher.ol.min.css" rel="stylesheet" type="text/css" />
-    <!-- Dependencias del plugin Measurebar del IGN -->
+    <!-- Estilos de los plugins añadidos -->
     <link href="https://componentes.idee.es/api-idee/plugins/measurebar/measurebar.ol.min.css" rel="stylesheet" type="text/css" />
+    <link href="https://componentes.idee.es/api-idee/plugins/locator/locator.ol.min.css" rel="stylesheet" type="text/css" />
+    <link href="https://componentes.idee.es/api-idee/plugins/sharemap/sharemap.ol.min.css" rel="stylesheet" type="text/css" />
+    <link href="https://componentes.idee.es/api-idee/plugins/mousesrs/mousesrs.ol.min.css" rel="stylesheet" type="text/css" />
+    <link href="https://componentes.idee.es/api-idee/plugins/viewmanagement/viewmanagement.ol.min.css" rel="stylesheet" type="text/css" />
+    <link href="https://componentes.idee.es/api-idee/plugins/layerswitcher/layerswitcher.ol.min.css" rel="stylesheet" type="text/css" />
 </head>
 
 <body>
     <Routes @rendermode="new InteractiveServerRenderMode(false)" />
-    <script type="text/javascript" src="_framework/blazor.web.js"></script>
-    <script type="text/javascript" src="_content/MudBlazor/MudBlazor.min.js?v=@(MudBlazor.Metadata.Version)"></script>
+    <script src="_framework/blazor.web.js" type="text/javascript"></script>
+    <script src="_content/MudBlazor/MudBlazor.min.js?v=@(MudBlazor.Metadata.Version)" type="text/javascript"></script>
 
     <!-- Ficheros javascript de la API del IGN -->
-    <script type="text/javascript" src="https://componentes.idee.es/api-idee/vendor/browser-polyfill.js"></script>
-    <script type="text/javascript" src="https://componentes.idee.es/api-idee/js/apiidee.ol.min.js"></script>
-    <script type="text/javascript" src="https://componentes.idee.es/api-idee/js/configuration.js"></script>
-    <!-- Ficheros javascript de los plugins añadidos del IGN -->
-    <script type="text/javascript" src="https://componentes.idee.es/api-idee/plugins/locator/locator.ol.min.js"></script>
-    <script type="text/javascript" src="https://componentes.idee.es/api-idee/plugins/sharemap/sharemap.ol.min.js"></script>
-    <script type="text/javascript" src="https://componentes.idee.es/api-idee/plugins/viewmanagement/viewmanagement.ol.min.js"></script>
-    <script type="text/javascript" src="https://componentes.idee.es/api-idee/plugins/mousesrs/mousesrs.ol.min.js"></script>
-    <script type="text/javascript" src="https://componentes.idee.es/api-idee/plugins/layerswitcher/layerswitcher.ol.min.js"></script>
-    <!-- Dependencias del plugin Measurebar del IGN -->
-    <script type="text/javascript" src="https://componentes.idee.es/api-idee/plugins/measurebar/measurebar.ol.min.js"></script>
+    <script src="https://componentes.idee.es/api-idee/vendor/browser-polyfill.js" type="text/javascript"></script>
+    <script src="https://componentes.idee.es/api-idee/js/apiidee.ol.min.js" type="text/javascript"></script>
+    <script src="https://componentes.idee.es/api-idee/js/configuration.js" type="text/javascript"></script>
+    <script src="https://componentes.idee.es/api-idee/plugins/locator/locator.ol.min.js" type="text/javascript"></script>
+    <script src="https://componentes.idee.es/api-idee/plugins/sharemap/sharemap.ol.min.js" type="text/javascript"></script>
+    <script src="https://componentes.idee.es/api-idee/plugins/viewmanagement/viewmanagement.ol.min.js" type="text/javascript"></script>
+    <script src="https://componentes.idee.es/api-idee/plugins/mousesrs/mousesrs.ol.min.js" type="text/javascript"></script>
+    <script src="https://componentes.idee.es/api-idee/plugins/layerswitcher/layerswitcher.ol.min.js" type="text/javascript"></script>
 
     <script type="text/javascript">; window.seedysoft = window.seedysoft || {};</script>
-    <script type="text/javascript" src="_content/Seedysoft.Libs.MapRazorClassLib/MapComponent.razor.js"></script>
+    <script src="_content/Seedysoft.Libs.MapRazorClassLib/MapComponent.razor.js" type="text/javascript"></script>
 </body>
 
 </html>

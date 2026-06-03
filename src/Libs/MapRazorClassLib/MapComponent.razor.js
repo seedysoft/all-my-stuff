@@ -25,26 +25,23 @@ function createMap(elementId, center, zoom) {
 
   mapjs = window.seedysoft.maps.instances[elementId];
   if (!mapjs) {
-    // Configuración del mapa
-    mapjs = IDEE.map({
-      container: elementId,
+    // debugger
 
-      // controls: ["scale*exactScale","scaleline","panzoombar","panzoom","location*tracking*highAccuracy","getfeatureinfo","rotate","backgroundlayers","attributions","implementationswitcher"]
-      //zoom: zoom,
-      //maxZoom: 20,
-      //minZoom: 4,
-      //projection: 'EPSG:4326*d'
+    mapjs = IDEE.map({
+      center: { x: center.x, y: center.y, draw: true },
+      container: elementId,
+      maxZoom: 20,
+      minZoom: 4,
+      //projection: { code: 'EPSG:4326', datum: 'd', asDefault: true },
+      zoom: zoom
     });
 
     // console.log(IDEE.impl.ol.js.projections.getSupportedProjs());
 
-    // debugger
-
-    mapjs.setProjection('EPSG:4326', true);
-
-    mapjs.setCenter({ x: center.x, y: center.y, draw: true });
-
-    mapjs.setZoom(zoom);
+    // mapjs = mapjs
+    //   .setProjection('EPSG:4326', true)
+    //   .setCenter({ x: center.x, y: center.y, draw: true })
+    //   .setZoom(zoom);
 
     // Otras formas de añadir controles
     //mapjs.addControls(['scale', 'location', 'backgroundlayers']);
@@ -63,15 +60,15 @@ function createMap(elementId, center, zoom) {
       // new IDEE.control.Panzoombar(),
       // new IDEE.control.PredefinedZoomControl(),
       // new IDEE.control.Rotate(),
-      // new IDEE.control.Scale(),
-      new IDEE.control.ScaleLine(),
+      new IDEE.control.Scale(),
+      // new IDEE.control.ScaleLine(),
       // new IDEE.control.ShareMapControl(),
       // new IDEE.control.ViewHistoryControl(),
       // new IDEE.control.ViewManagementControl(),
       // new IDEE.control.WMCSelector(),
       // new IDEE.control.XYLocatorControl(),
       // new IDEE.control.ZoomExtentControl(),
-      new IDEE.control.ZoomPanelControl()
+      // new IDEE.control.ZoomPanelControl()
     ]);
 
     // Obtener array de controles del mapa

@@ -51,7 +51,7 @@ public record class EstacionTerrestre
     public required string Longitud { get; init; }
     public double Lng => double.Parse(Longitud, Core.Constants.Globalization.NumberFormatInfoES);
 
-    public NetTopologySuite.Geometries.Point Point => new(Lng, Lat) { SRID = (int)ProjNet.CoordinateSystems.GeographicCoordinateSystem.WGS84.AuthorityCode };
+    public (double Lng, double Lat) Point => new(Lng, Lat) ;
 
     public required string Margen { get; init; }
 

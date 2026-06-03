@@ -31,7 +31,7 @@ public partial class MapComponent : ComponentBase
     /// Default value is <see langword="default" />.
     /// </remarks>
     [EditorRequired]
-    [Parameter] public NetTopologySuite.Geometries.Point Center { get; set; } = Geography.Constants.Earth.Home.Center;
+    [Parameter] public (double Lng, double Lat) Center { get; set; } = Geography.Constants.Earth.Home.Center;
 
     /// <summary>
     /// Gets or sets additional CSS class names to apply to the map component container.
@@ -147,7 +147,10 @@ public partial class MapComponent : ComponentBase
         await base.OnAfterRenderAsync(firstRender);
 
         if (firstRender)
-            await JsRuntime.InvokeVoidAsync($"createMap", Id, new { x = Center.X, y = Center.Y }, Zoom);
+        {
+            (double X, double Y) = Geography.Transformation.LatLonToMercator(Center.Lng, Center.Lat);
+            await JsRuntime.InvokeVoidAsync($"createMap", Id, new { x = X, y = Y }, Zoom);
+        }
     }
 
     /// <summary>
