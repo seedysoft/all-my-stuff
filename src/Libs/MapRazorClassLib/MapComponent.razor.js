@@ -12,6 +12,10 @@ window.seedysoft.maps = window.seedysoft.maps || {
   instances: []
 }
 
+// console.log(IDEE.getQuickLayers());
+// // Ejemplo cambiando el valor por defecto de IDEE.config.baseLayer
+// IDEE.config('baseLayer', 'TMS*PNOA-MA*https://tms-pnoa-ma.idee.es/1.0.0/pnoa-ma/{z}/{x}/{-y}.jpeg*true*false*19');
+
 /**
  * @param {string} elementId  - The name of the div container for the mapjs
  * @param {LngLat} center     - The LngLat where mapjs starts
@@ -25,16 +29,33 @@ function createMap(elementId, center, zoom) {
 
   mapjs = window.seedysoft.maps.instances[elementId];
   if (!mapjs) {
-    // debugger
-
     mapjs = IDEE.map({
       center: { x: center.x, y: center.y, draw: true },
       container: elementId,
+      controls: ["backgroundlayers", "location"], // ["scale","scaleline","panzoombar","panzoom","location","getfeatureinfo","rotate","backgroundlayers","attributions","implementationswitcher"]
       maxZoom: 20,
       minZoom: 4,
       //projection: { code: 'EPSG:4326', datum: 'd', asDefault: true },
       zoom: zoom
     });
+
+    // const layer = new IDEE.layer.WMS({
+    //   url: 'https://geoportalgasolineras.es/cgi-bin/mapserv?request=GetCapabilities&service=WMS',
+    //   name: 'Estaciones de servicio',
+    //   legend: 'Estaciones de servicio',
+    //   maxZoom: 20,
+    //   minZoom: 6,
+    //   visibility: true,
+    //   tiled: false,
+    // }, {});
+    // mapjs.addWMS(layer);
+
+    // const estacionesLayer = new IDEE.layer.KML({
+    //   url: 'https://geoportalgasolineras.es/kml/estaciones',
+    //   name: 'Estaciones de servicio',
+    //   extract: false
+    // });
+    // mapjs.addLayers([estacionesLayer]);
 
     // console.log(IDEE.impl.ol.js.projections.getSupportedProjs());
 
@@ -86,11 +107,17 @@ function createMap(elementId, center, zoom) {
     // const mp = new IDEE.plugin.Locator({
     //   position: 'BC',
     // });
+    // mapjs.addPlugin(mp);
+
     // const mp1 = new IDEE.plugin.ShareMap({
     //   baseUrl: 'https://componentes.idee.es/api-idee/',
     //   position: 'BL',
     // });
+    // // mapjs.addPlugin(mp1);
+
     // const mp2 = new IDEE.plugin.ViewManagement();
+    // mapjs.addPlugin(mp2);
+
     // const mp3 = new IDEE.plugin.MouseSRS({
     //   srs: 'EPSG:4326',
     //   label: 'WGS84',
@@ -98,17 +125,14 @@ function createMap(elementId, center, zoom) {
     //   geoDecimalDigits: 4,
     //   utmDecimalDigits: 2,
     // });
-    // const mp4 = new IDEE.plugin.Layerswitcher({
-    //   collapsed: true,
-    //   collapsible: true,
-    //   position: 'TR',
-    // });
-
-    // mapjs.addPlugin(mp);
-    // // mapjs.addPlugin(mp1);
-    // mapjs.addPlugin(mp2);
     // mapjs.addPlugin(mp3);
-    // mapjs.addPlugin(mp4);
+
+    const layerswitcherPlugin = new IDEE.plugin.Layerswitcher({
+      collapsed: true,
+      collapsible: true,
+      position: 'TR',
+    });
+    mapjs.addPlugin(layerswitcherPlugin);
 
     window.seedysoft.maps.instances[elementId] = (mapjs);
   }

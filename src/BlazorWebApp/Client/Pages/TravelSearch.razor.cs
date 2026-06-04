@@ -49,9 +49,9 @@ public partial class TravelSearch
     private async Task OnGasStationSelectedItemChanged(Libs.GasStationPrices.ViewModels.GasStationModel gasStationModel)
     {
         //if (gasStationModel == null)
-        //    await TravelGoogleMap.ResetViewportAsync();
+        //    await TravelMap.ResetViewportAsync();
         //else
-        //    await TravelGoogleMap.ClickOnMarkerAsync(gasStationModel.ToMarker(travelQueryModel.PetroleumProductsSelectedIds));
+        //    await TravelMap.ClickOnMarkerAsync(gasStationModel.ToMarker(travelQueryModel.PetroleumProductsSelectedIds));
     }
 
     private async Task OnClickGmapRouteAsync(string encodedPolyline)
@@ -89,7 +89,7 @@ public partial class TravelSearch
 
     private async Task ClearDataAsync()
     {
-        //await TravelGoogleMap.RemoveAllMarkersAsync();
+        //await TravelMap.RemoveAllMarkersAsync();
         //GasStationItems.Clear();
     }
 
@@ -109,8 +109,8 @@ public partial class TravelSearch
 
     private async Task LoadGoogleRoutesAsync()
     {
-        //await ClearDataAsync();
+        await ClearDataAsync();
 
-        //await TravelGoogleMap.SearchRoutesAsync(travelQueryModel.Origin, travelQueryModel.Destination);
+        //await TravelMap.SearchRoutesAsync(travelQueryModel.Origin, travelQueryModel.Destination);
     }
 }
