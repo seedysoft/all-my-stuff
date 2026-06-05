@@ -4,8 +4,6 @@
     <Project Path="src/Libs/Core/Seedysoft.Libs.Core.csproj" />
     <Project Path="src/Libs/Cryptography/Seedysoft.Libs.Cryptography.csproj" />
     <Project Path="src/Libs/GasStationPrices/Seedysoft.Libs.GasStationPrices.csproj" />
-    <Project Path="src/Libs/GoogleApis/Seedysoft.Libs.GoogleApis.csproj" />
-    <Project Path="src/Libs/GoogleMapsRazorClassLib/Seedysoft.Libs.GoogleMapsRazorClassLib.csproj" />
     <Project Path="src/Libs/Infrastructure/Seedysoft.Libs.Infrastructure.csproj" />
     <Project Path="src/Libs/SmtpService/Seedysoft.Libs.SmtpService.csproj" />
     <Project Path="src/Libs/TelegramBot/Seedysoft.Libs.TelegramBot.csproj" />
@@ -14,7 +12,6 @@
     <Project Path="test/Libs/Core.Tests/Seedysoft.Libs.Core.Tests.csproj" />
     <Project Path="test/Libs/Cryptography.Tests/Seedysoft.Libs.Cryptography.Tests.csproj" />
     <Project Path="test/Libs/GasStationPrices.Tests/Seedysoft.Libs.GasStationPrices.Tests.csproj" />
-    <Project Path="test/Libs/GoogleApis.Tests/Seedysoft.Libs.GoogleApis.Tests.csproj" />
     <Project Path="test/Libs/Infrastructure.Tests/Seedysoft.Libs.Infrastructure.Tests.csproj" />
     <Project Path="test/Libs/Update.Tests/Seedysoft.Libs.Update.Tests.csproj" />
   </Folder>

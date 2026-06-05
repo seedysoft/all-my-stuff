@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Components;
 using RestSharp;
 using Seedysoft.Libs.Core.Extensions;
-using Seedysoft.Libs.GoogleMapsRazorClassLib.Extensions;
 
 namespace Seedysoft.BlazorWebApp.Client.Pages;
 
@@ -15,11 +14,11 @@ public partial class TravelSearch
     [Inject] private MudBlazor.ISnackbar Snackbar { get; set; } = default!;
     [Inject] private IConfiguration Configuration { get; set; } = default!;
     [Inject] private Libs.GasStationPrices.Services.GasStationPricesService GasStationPricesService { get; set; } = default!;
-    [Inject] private Libs.GoogleApis.Services.PlacesService PlacesService { get; set; } = default!;
+    //[Inject] private Libs.GoogleApis.Services.PlacesService PlacesService { get; set; } = default!;
 
-    private Libs.GoogleApis.Settings.GoogleApisSettings googleApisSettings = default!;
+    //private Libs.GoogleApis.Settings.GoogleApisSettings googleApisSettings = default!;
 
-    private Libs.GoogleMapsRazorClassLib.GoogleMap.Map TravelGoogleMap { get; set; } = default!;
+    //private Libs.GoogleMapsRazorClassLib.GoogleMap.Map TravelGoogleMap { get; set; } = default!;
 
     private readonly Libs.GasStationPrices.ViewModels.TravelQueryModel travelQueryModel = new()
     {
@@ -45,17 +44,17 @@ public partial class TravelSearch
         if (Logger.IsEnabled(LogLevel.Information))
             Logger.LogInformation($"Called {nameof(OnInitializedAsync)}");
 
-        googleApisSettings = Configuration
-            .GetSection(nameof(Libs.GoogleApis.Settings.GoogleApisSettings))
-            .Get<Libs.GoogleApis.Settings.GoogleApisSettings>()!;
+        //googleApisSettings = Configuration
+        //    .GetSection(nameof(Libs.GoogleApis.Settings.GoogleApisSettings))
+        //    .Get<Libs.GoogleApis.Settings.GoogleApisSettings>()!;
     }
 
     private async Task OnGasStationSelectedItemChanged(Libs.GasStationPrices.ViewModels.GasStationModel gasStationModel)
     {
-        if (gasStationModel == null)
-            await TravelGoogleMap.ResetViewportAsync();
-        else
-            await TravelGoogleMap.ClickOnMarkerAsync(gasStationModel.ToMarker(travelQueryModel.PetroleumProductsSelectedIds));
+        //if (gasStationModel == null)
+        //    await TravelGoogleMap.ResetViewportAsync();
+        //else
+        //    await TravelGoogleMap.ClickOnMarkerAsync(gasStationModel.ToMarker(travelQueryModel.PetroleumProductsSelectedIds));
     }
 
     private async Task OnClickGmapRouteAsync(string encodedPolyline)
@@ -81,19 +80,19 @@ public partial class TravelSearch
 
     private async Task<IEnumerable<string>> FindPlacesAsync(string textToFind, CancellationToken cancellationToken)
     {
-        try
-        {
-            if (!string.IsNullOrWhiteSpace(textToFind))
-                return await PlacesService.FindPlacesAsync(textToFind, cancellationToken) ?? [];
-        }
-        catch (Exception e) when (Logger.LogAndHandle(e, "Unexpected error")) { }
+        //try
+        //{
+        //    if (!string.IsNullOrWhiteSpace(textToFind))
+        //        return await PlacesService.FindPlacesAsync(textToFind, cancellationToken) ?? [];
+        //}
+        //catch (Exception e) when (Logger.LogAndHandle(e, "Unexpected error")) { }
 
         return [];
     }
 
     private async Task ClearDataAsync()
     {
-        await TravelGoogleMap.RemoveAllMarkersAsync();
+        //await TravelGoogleMap.RemoveAllMarkersAsync();
         GasStationItems.Clear();
     }
 
@@ -115,6 +114,6 @@ public partial class TravelSearch
     {
         await ClearDataAsync();
 
-        await TravelGoogleMap.SearchRoutesAsync(travelQueryModel.Origin, travelQueryModel.Destination);
+        //await TravelGoogleMap.SearchRoutesAsync(travelQueryModel.Origin, travelQueryModel.Destination);
     }
 }

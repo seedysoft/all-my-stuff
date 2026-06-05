@@ -51,7 +51,7 @@ public record class EstacionTerrestre
     public required string Longitud { get; init; }
     public double Lng => double.Parse(Longitud, Core.Constants.Globalization.NumberFormatInfoES);
 
-    public GoogleApis.Models.Shared.LatLngLiteral LatLng => new(Lat, Lng);
+    //public GoogleApis.Models.Shared.LatLngLiteral LatLng => new(Lat, Lng);
 
     public required string Margen { get; init; }
 
@@ -128,12 +128,12 @@ public record class EstacionTerrestre
     //[J("% Éster metílico")]
     //public required string EsterMetilico { get; init; }
 
-    public bool IsInside(GoogleApis.Models.Shared.LatLngBoundsLiteral boundsLiteral)
-    {
-        return
-            Lat < boundsLiteral.North &&
-            Lat > boundsLiteral.South &&
-            Lng < boundsLiteral.East &&
-            Lng > boundsLiteral.West;
-    }
+    //public bool IsInside(GoogleApis.Models.Shared.LatLngBoundsLiteral boundsLiteral)
+    //{
+    //    return
+    //        Lat < boundsLiteral.North &&
+    //        Lat > boundsLiteral.South &&
+    //        Lng < boundsLiteral.East &&
+    //        Lng > boundsLiteral.West;
+    //}
 }

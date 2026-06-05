@@ -64,7 +64,6 @@
     <ItemGroup>
         <ProjectReference Include="..\..\Libs\Infrastructure\Seedysoft.Libs.Infrastructure.csproj" />
         <ProjectReference Include="..\Cryptography\Seedysoft.Libs.Cryptography.csproj" />
-        <ProjectReference Include="..\GoogleApis\Seedysoft.Libs.GoogleApis.csproj" />
     </ItemGroup>
 
     <ItemGroup>

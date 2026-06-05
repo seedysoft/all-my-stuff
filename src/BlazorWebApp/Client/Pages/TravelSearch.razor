@@ -3,7 +3,6 @@
 @attribute [StreamRendering(true)]
 
 @using Seedysoft.BlazorWebApp.Client.Components
-@using Seedysoft.Libs.GoogleMapsRazorClassLib.GoogleMap
 
 @{
     Variant variant = Variant.Outlined;
@@ -76,18 +75,6 @@
                        Variant="@variant">
                 Search
             </MudButton>
-        </MudItem>
-
-        <MudItem xs="12">
-            <Map @ref="@TravelGoogleMap"
-                 Id="@nameof(TravelGoogleMap)"
-                 ApiKey="@googleApisSettings.ApiKey"
-                 Center="@(new Libs.GoogleApis.Models.Shared.LatLngLiteral(Seedysoft.Libs.Core.Constants.Earth.Home.Lat, Seedysoft.Libs.Core.Constants.Earth.Home.Lng))"
-                 Height="450" HeightUnit="@Libs.Core.Enums.CssUnit.Px"
-                 Width="100" WidthUnit="@Libs.Core.Enums.CssUnit.Percentage"
-                 Zoom="14"
-                 IsClickable
-                 OnClickGmapRouteEventCallback="@OnClickGmapRouteAsync" />
         </MudItem>
 
         <MudItem xs="12">
