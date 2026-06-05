@@ -3,6 +3,7 @@
 @attribute [StreamRendering(true)]
 
 @using Seedysoft.BlazorWebApp.Client.Components
+@using Seedysoft.Libs.MapRazorClassLibrary
 
 @{
     Variant variant = Variant.Outlined;
@@ -75,6 +76,15 @@
                        Variant="@variant">
                 Search
             </MudButton>
+        </MudItem>
+
+        <MudItem xs="12">
+            <MapComponent @ref="TravelMap"
+                          Height="450px"
+                          Width="100%"
+                          Zoom="18">
+            </MapComponent>
+            @* id="@nameof(TravelMap)" *@
         </MudItem>
 
         <MudItem xs="12">
