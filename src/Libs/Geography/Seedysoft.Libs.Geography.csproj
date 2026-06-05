@@ -34,7 +34,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="FluentValidation" Version="12.1.1" />
         <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="10.0.8" />
         <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.8" />
         <PackageReference Include="RestSharp" Version="114.0.0" />
@@ -42,14 +41,9 @@
 
     <ItemGroup>
         <ProjectReference Include="..\Core\Seedysoft.Libs.Core.csproj" />
-        <ProjectReference Include="..\GasStationPrices\Seedysoft.Libs.GasStationPrices.csproj" />
     </ItemGroup>
 
     <ItemGroup>
         <Compile Include="..\..\Usings.cs" Link="Usings.cs" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <InternalsVisibleTo Include="Seedysoft.Libs.Geography.Tests" />
     </ItemGroup>
 </Project>

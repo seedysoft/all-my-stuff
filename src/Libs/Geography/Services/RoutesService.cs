@@ -3,39 +3,60 @@ using Microsoft.Extensions.Logging;
 
 namespace Seedysoft.Libs.Geography.Services;
 
-public class RoutesService(IConfiguration configuration, ILogger<RoutesService> logger) : GeographyServiceBase(configuration)
+public class RoutesService(IConfiguration configuration, ILogger<RoutesService> logger)
 {
-    /// <summary>
-    /// Obtiene rutas entre dos puntos utilizando la API de OpenRouteService.
-    /// </summary>
-    /// <param name="model"></param>
-    /// <param name="cancellationToken"></param>
-    /// <returns></returns>
-    /// <exception cref="InvalidOperationException"></exception>
-    public async Task<IList<(string NombreRuta, double[][] Coordenadas)>> GetRoutesAsync(ViewModels.TravelQueryModel model, CancellationToken cancellationToken)
+    public async Task<List<Models.RouteModel>> GetRoutesAsync(
+        string origin,
+        string destination,
+        CancellationToken cancellationToken)
     {
-        Settings.RouteApi? api = GeographySettings.RouteSettings.RouteApis.FirstOrDefault(x => x.RouteName == GeographySettings.RouteSettings.CurrentImplementation);
+        //RestRequest restRequest = BuildRoutesRequest(origin, destination);
+        //RestClient restClient = new( GoogleApisSettings.RoutesApi.UrlFormat);
+        //RestResponse restResponse = await restClient.ExecutePostAsync(restRequest, cancellationToken);
 
-        Routers.RouterBase router = GeographySettings.RouteSettings.CurrentImplementation switch
-        {
-            #pragma warning disable format
-            
-            //Settings.RouteImplementations.CartoCiudad       => new Routers.CartoCiudadRouter(api!, logger),
+        //Models.Routes.Response.Body? body = null;
+        //if (restResponse.IsSuccessStatusCode)
+        //    body = restResponse.Content!.FromJson<Models.Routes.Response.Body>();
+        //else
+        //    _ = logger.LogAndHandle(restResponse.ErrorException, restResponse.Content ?? "ERROR", []);
 
-            //Settings.RouteImplementations.Google            => new Routers.GoogleRoutes(api!, logger),
-            
-            //Settings.RouteImplementations.MapboxDirections  => new Routers.MapboxDirectionsRouter(api!, logger),
-            
-            Settings.RouteImplementations.OSRM              => new Routers.OsrmRouter(api!, logger),
+        //if (body == null)
+        //    return [];
 
-            _ => throw new InvalidOperationException($"Unsupported router: {GeographySettings.RouteSettings.CurrentImplementation}"),
-            
-            #pragma warning restore format
-        };
+        //IEnumerable<Models.Shared.LatLngLiteral> CoordinatesQuery =
+        //    from r in body.Routes
+        //    from l in r.Legs
+        //    from g in l.Polyline?.GeoJsonLinestring?.Coordinates ?? []
+        //    select new Models.Shared.LatLngLiteral(g[1], g[0]);
 
-        if (logger.IsEnabled(LogLevel.Information))
-            logger.LogInformation("Using router implementation: {RouterImplementation}", GeographySettings.RouteSettings.CurrentImplementation);
+        //return CoordinatesQuery.Distinct().ToList();
 
-        return await router.GetRoutesAsync(model, cancellationToken);
+        //RestRequest BuildRoutesRequest(string origin, string destination)
+        //{
+        //    RestRequest restRequest = new();
+        //    restRequest = restRequest.AddHeader("X-Goog-Api-Key", GoogleApisSettings.ApiKey);
+        //    restRequest = restRequest.AddHeader("X-Goog-FieldMask", "routes.legs.polyline");
+
+        //    Models.Routes.Request.Body RoutesRequestBody = new()
+        //    {
+        //        Origin = new Models.Routes.Request.Waypoint() { Address = origin, },
+        //        Destination = new Models.Routes.Request.Waypoint() { Address = destination },
+        //        ComputeAlternativeRoutes = true,
+        //        PolylineEncoding = Models.Routes.Request.PolylineEncoding.GeoJsonLinestring,
+        //        RouteModifiers = new Models.Routes.Request.RouteModifiers()
+        //        {
+        //            AvoidTolls = false,
+        //            AvoidFerries = false,
+        //            AvoidHighways = false,
+        //            VehicleInfo = new Models.Routes.Request.VehicleInfo() { EmissionType = Models.Routes.Request.VehicleEmissionType.Gasoline, },
+        //        },
+        //        RoutingPreference = Models.Routes.Request.RoutingPreference.TrafficAware,
+        //        TravelMode = Models.Routes.Shared.RouteTravelMode.Drive,
+        //    };
+
+        //    return restRequest.AddJsonBody(RoutesRequestBody.ToJson(), ContentType.Json);
+        //}
+
+        return [];
     }
 }

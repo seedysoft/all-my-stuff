@@ -6,6 +6,8 @@ public readonly record struct GeographySettings
     /// 
     /// </summary>
     public required PlacesApi PlacesApi { get; init; }
-
-    public required RouteSettings RouteSettings { get; init; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public required RoutesApi RoutesApi { get; init; }
 }
