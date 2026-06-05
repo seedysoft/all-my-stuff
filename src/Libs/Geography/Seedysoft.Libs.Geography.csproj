@@ -1,0 +1,49 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Content Include="appsettings.GeographySettings.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+    </ItemGroup>
+
+    <ItemGroup Condition="'$(Configuration)' == 'Debug'">
+        <Content Include="appsettings.GeographySettings.Development.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <DependentUpon>appsettings.GeographySettings.json</DependentUpon>
+        </Content>
+        <None Include="appsettings.GeographySettings.Production.json">
+            <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+            <DependentUpon>appsettings.GeographySettings.json</DependentUpon>
+        </None>
+    </ItemGroup>
+
+    <ItemGroup Condition="'$(Configuration)' == 'Release'">
+        <None Include="appsettings.GeographySettings.Development.json">
+            <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+            <DependentUpon>appsettings.GeographySettings.json</DependentUpon>
+        </None>
+        <Content Include="appsettings.GeographySettings.Production.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <DependentUpon>appsettings.GeographySettings.json</DependentUpon>
+        </Content>
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="10.0.8" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.8" />
+        <PackageReference Include="RestSharp" Version="114.0.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Core\Seedysoft.Libs.Core.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Compile Include="..\..\Usings.cs" Link="Usings.cs" />
+    </ItemGroup>
+</Project>

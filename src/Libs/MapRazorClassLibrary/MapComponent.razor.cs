@@ -133,7 +133,7 @@ public partial class MapComponent
 
     protected override Task OnInitializedAsync()
     {
-
+        int i = 0;
 
         return base.OnInitializedAsync();
     }
