@@ -5,6 +5,7 @@
     <Project Path="src/Libs/Cryptography/Seedysoft.Libs.Cryptography.csproj" />
     <Project Path="src/Libs/GasStationPrices/Seedysoft.Libs.GasStationPrices.csproj" />
     <Project Path="src/Libs/Infrastructure/Seedysoft.Libs.Infrastructure.csproj" />
+    <Project Path="src/Libs/MapRazorClassLibrary/Seedysoft.Libs.MapRazorClassLibrary.csproj" Id="afa01aea-b700-49ea-b48c-3432bee80bba" />
     <Project Path="src/Libs/SmtpService/Seedysoft.Libs.SmtpService.csproj" />
     <Project Path="src/Libs/TelegramBot/Seedysoft.Libs.TelegramBot.csproj" />
     <Project Path="src/Libs/TuyaDeviceControl/Seedysoft.Libs.TuyaDeviceControl.csproj" />
