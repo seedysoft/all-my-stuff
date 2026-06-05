@@ -32,12 +32,11 @@
         <PackageReference Include="RestSharp" Version="114.0.0" />
         <PackageReference Include="Serilog" Version="4.4.0" />
         <PackageReference Include="Serilog.Extensions.Logging" Version="10.0.0" />
-        <PackageReference Include="Serilog.Settings.Configuration" Version="10.0.1" />
+        <PackageReference Include="Serilog.Settings.Configuration" Version="10.0.0" />
         <PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" Version="3.0.3" />
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\Libs\Geography\Seedysoft.Libs.Geography.csproj" />
       <ProjectReference Include="..\..\Libs\MapRazorClassLibrary\Seedysoft.Libs.MapRazorClassLibrary.csproj" />
       <ProjectReference Include="..\..\Libs\GasStationPrices\Seedysoft.Libs.GasStationPrices.csproj" />
     </ItemGroup>
