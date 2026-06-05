@@ -27,29 +27,31 @@ public sealed class GasStationPricesService(IServiceProvider serviceProvider)
         if (!await LoadGasStationsAsync(cancellationToken))
             yield break;
 
-        var sw = System.Diagnostics.Stopwatch.StartNew();
+        throw new NotImplementedException("This method is not implemented yet. It will be implemented in a future version.");
 
-        var RoutePoints = GoogleApis.Helpers.GooglePolylineHelper.Decode(encodedPolyline).ToFrozenSet();
-        GoogleApis.Models.Shared.LatLngBoundsLiteral Bounds = GoogleApis.Helpers.GeometricHelper.GetBounds(RoutePoints, maxDistanceInKm);
-        var StationsInsideBounds = MineturResponse.EstacionesTerrestres.Where(e => e.IsInside(Bounds)).ToFrozenSet();
+        //var sw = System.Diagnostics.Stopwatch.StartNew();
 
-        sw.Stop();
-        if (Logger.IsEnabled(LogLevel.Information))
-            Logger.LogInformation("Decode polyline in {Elapsed} secs.", sw.Elapsed.ToString(@"s\.fff"));
+        //var RoutePoints = GoogleApis.Helpers.GooglePolylineHelper.Decode(encodedPolyline).ToFrozenSet();
+        //GoogleApis.Models.Shared.LatLngBoundsLiteral Bounds = GoogleApis.Helpers.GeometricHelper.GetBounds(RoutePoints, maxDistanceInKm);
+        //var StationsInsideBounds = MineturResponse.EstacionesTerrestres.Where(e => e.IsInside(Bounds)).ToFrozenSet();
 
-        sw = System.Diagnostics.Stopwatch.StartNew();
+        //sw.Stop();
+        //if (Logger.IsEnabled(LogLevel.Information))
+        //    Logger.LogInformation("Decode polyline in {Elapsed} secs.", sw.Elapsed.ToString(@"s\.fff"));
 
-        ParallelQuery<ViewModels.GasStationModel> gasStationsNear = StationsInsideBounds
-            .AsParallel()
-            .Where(es => RoutePoints.Any(rp => GoogleApis.Helpers.GeometricHelper.DistanceHaversineInKilometers(es.LatLng, rp) < maxDistanceInKm))
-            .Select(x => x.ToGasStationModel());
+        //sw = System.Diagnostics.Stopwatch.StartNew();
 
-        foreach (ViewModels.GasStationModel item in gasStationsNear)
-            yield return item;
+        //ParallelQuery<ViewModels.GasStationModel> gasStationsNear = StationsInsideBounds
+        //    .AsParallel()
+        //    .Where(es => RoutePoints.Any(rp => GoogleApis.Helpers.GeometricHelper.DistanceHaversineInKilometers(es.LatLng, rp) < maxDistanceInKm))
+        //    .Select(x => x.ToGasStationModel());
 
-        sw.Stop();
-        if (Logger.IsEnabled(LogLevel.Information))
-            Logger.LogInformation("Filtered near gas stations in {Elapsed} secs.", sw.Elapsed.ToString(@"s\.fff"));
+        //foreach (ViewModels.GasStationModel item in gasStationsNear)
+        //    yield return item;
+
+        //sw.Stop();
+        //if (Logger.IsEnabled(LogLevel.Information))
+        //    Logger.LogInformation("Filtered near gas stations in {Elapsed} secs.", sw.Elapsed.ToString(@"s\.fff"));
     }
 
     //public async Task<ViewModels.GasStationModel> GetGasStationModelAsync(long stationId, CancellationToken cancellationToken)
