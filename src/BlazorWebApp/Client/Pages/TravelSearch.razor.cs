@@ -67,12 +67,12 @@ public partial class TravelSearch
 
     private async Task<IEnumerable<Libs.Geography.ViewModels.Place>> FindPlacesAsync(string textToFind, CancellationToken cancellationToken)
     {
-        try
-        {
-            if (!string.IsNullOrWhiteSpace(textToFind))
-                return await PlacesService.FindPlacesAsync(textToFind, cancellationToken) ?? [];
-        }
-        catch (Exception e) when (Logger.LogAndHandle(e, "Unexpected error")) { }
+        //try
+        //{
+        //    if (!string.IsNullOrWhiteSpace(textToFind))
+        //        return await PlacesService.FindPlacesAsync(textToFind, cancellationToken) ?? [];
+        //}
+        //catch (Exception e) when (Logger.LogAndHandle(e, "Unexpected error")) { }
 
         return [];
     }
