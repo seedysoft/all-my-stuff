@@ -7,6 +7,8 @@ public partial class MapComponent
 {
     private RealTimeMap realTimeMap = new();
 
+    [Inject] private Geography.Services.RoutesService RoutesService { get; set; } = default!;
+
     private readonly RealTimeMap.LoadParameters parameters = new()  //general map settings
     {
         basemap = new RealTimeMap.Basemap()
@@ -142,7 +144,20 @@ public partial class MapComponent
     {
         if (args.sender != null && realTimeMap == args.sender)
         {
-            Console.WriteLine(@"");
+            Console.WriteLine($"{args.location}");
         }
+    }
+
+    public async Task SearchRoutesAsync(Geography.ViewModels.TravelQueryModel model)
+    {
+        List<Geography.Models.RouteModel> res = await RoutesService.GetRoutesAsync(model, CancellationToken.None);
+
+        realTimeMap.Map.Stream_points.Clear();
+    }
+
+    public void ClearMap()
+    {
+        realTimeMap.Map.Stream_points.Clear();
+        realTimeMap.Map.refresh();
     }
 }

@@ -3,15 +3,9 @@ using Seedysoft.Libs.Core.Extensions;
 
 namespace Seedysoft.Libs.Geography.Services.Routers;
 
-internal class OsrmRouter(Settings.Api api, Microsoft.Extensions.Logging.ILogger logger) : RouterBase(api)
+public class OsrmRouter(Settings.Api api, Microsoft.Extensions.Logging.ILogger logger) : RouterBase(api)
 {
-    /// <summary>
-    /// Obtiene las rutas entre el origen y el destino especificados en el modelo de consulta.
-    /// </summary>
-    /// <param name="model"></param>
-    /// <param name="cancellationToken"></param>
-    /// <returns></returns>
-    internal override async Task<IList<(string NombreRuta, double[][] Coordenadas)>> GetRoutesAsync(ViewModels.TravelQueryModel model, CancellationToken cancellationToken)
+    public override async Task<List<Models.RouteModel>> GetRoutesAsync(ViewModels.TravelQueryModel model, CancellationToken cancellationToken)
     {
         // {origLng,origLat};{destLng,destLat}
         RestRequest restRequest = new(string.Format(Api.UrlFormat,
@@ -34,13 +28,15 @@ internal class OsrmRouter(Settings.Api api, Microsoft.Extensions.Logging.ILogger
             return [];
         }
 
-        // Coordinates are in the format: [lng, lat]
-        // We need to invert them to [lat, lng] for our application
-        IEnumerable<(string NombreRuta, double[][] Coordenadas)> Result =
-            from r in body.trips
-            select (r.weight_name, InvertLongitudeLatitude(r.geometry.coordinates));
+        // TODO                             Return each trip as a RouteModel, and not only the coordinates. Also, consider returning all the trips, and not only the first one.
+        //IEnumerable<Models.Shared.LatLngLiteral> CoordinatesQuery =
+        //    from r in body.trips
+        //    from g in r.geometry.coordinates
+        //    select new Models.Shared.LatLngLiteral(g[1], g[0]);
 
-        return [.. Result];
+        //return CoordinatesQuery.Distinct().ToList();
+
+        return [];
     }
 }
 
@@ -63,8 +59,7 @@ public class Trip
 
 public class Geometry
 {
-    // Coordinates are in the format: [lng, lat]
-    public double[][] coordinates { get; set; }
+    public float[][] coordinates { get; set; }
     public string type { get; set; }
 }
 

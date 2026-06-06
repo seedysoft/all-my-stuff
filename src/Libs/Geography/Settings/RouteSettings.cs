@@ -3,12 +3,12 @@
 public readonly record struct RouteSettings
 {
     /// <summary>
-    /// CartoCiudad | MapboxDirections | OSRM
+    /// CartoCiudad | OSRM
     /// </summary>
-    public required string CurrentImplementation { get; init; }
+    public required string RouteImplementation { get; init; }
 
     /// <summary>
     /// 
     /// </summary>
-    public required RouteApi[] RouteApis { get; init; }
+    public required RouteApi[] RoutesApi { get; init; }
 }

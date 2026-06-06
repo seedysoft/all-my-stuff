@@ -1,14 +1,16 @@
 ﻿namespace Seedysoft.Libs.Geography.Settings;
 
-public readonly record struct RoutesApi
+public class RouteApi : Api
 {
-    /// <summary>
-    /// http://www.cartociudad.es/services/api/route?orig=x,y&dest=x,y&locale=es&vehicle=[CAR|WALK]
-    /// </summary>
-    /// <remarks>
-    /// Hay que introducir la latitud y la longitud geográficas en grado con decimales de la siguiente forma latitud, longitud.
-    /// </remarks>
-    public required string UrlFormat { get; init; }
+    public required string RouteName { get; init; }
+
+    ///// <summary>
+    ///// http://www.cartociudad.es/services/api/route?orig=x,y&dest=x,y&locale=es&vehicle=[CAR|WALK]
+    ///// </summary>
+    ///// <remarks>
+    ///// Hay que introducir la latitud y la longitud geográficas en grado con decimales de la siguiente forma latitud, longitud.
+    ///// </remarks>
+    //public required string UrlFormat { get; init; }
 
     //public static string GetUrl(string urlFormat, Json.Google.Response.Route route, IEnumerable<double[]> wayPoints)
     //{
