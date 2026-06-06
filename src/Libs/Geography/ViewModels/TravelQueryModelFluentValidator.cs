@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace Seedysoft.Libs.GasStationPrices.ViewModels;
+namespace Seedysoft.Libs.Geography.ViewModels;
 
 /// <summary>
 /// A standard AbstractValidator which contains multiple rules and can be shared with the back end API
@@ -11,11 +11,11 @@ public class TravelQueryModelFluentValidator : AbstractValidator<TravelQueryMode
     public TravelQueryModelFluentValidator()
     {
         _ = RuleFor(static x => x.Origin)
-            .Must(static x => !string.IsNullOrWhiteSpace(x))
+            .Must(static x => x != null && !string.IsNullOrWhiteSpace(x.Address))
             .WithMessage($"{nameof(TravelQueryModel.Origin)} must not be empty");
 
         _ = RuleFor(static x => x.Destination)
-            .Must(static x => !string.IsNullOrWhiteSpace(x))
+            .Must(static x => x != null && !string.IsNullOrWhiteSpace(x.Address))
             .WithMessage($"{nameof(TravelQueryModel.Destination)} must not be empty");
 
         _ = RuleFor(static x => x.MaxDistanceInKm)

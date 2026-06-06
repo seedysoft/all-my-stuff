@@ -20,5 +20,6 @@
 
     <ItemGroup>
         <ProjectReference Include="..\Core\Seedysoft.Libs.Core.csproj" />
+        <ProjectReference Include="..\Geography\Seedysoft.Libs.Geography.csproj" />
     </ItemGroup>
 </Project>
