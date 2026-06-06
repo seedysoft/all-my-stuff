@@ -3,6 +3,7 @@
 @attribute [StreamRendering(true)]
 
 @using Seedysoft.BlazorWebApp.Client.Components
+@using Seedysoft.Libs.Geography.ViewModels
 @using Seedysoft.Libs.MapRazorClassLibrary
 
 @{
@@ -22,15 +23,17 @@
                              For="@(() => travelQueryModel.Origin)"
                              FullWidth
                              Label="Origin"
-                             MaxItems="20"
+                             MaxItems="8"
                              MinCharacters="3"
                              Placeholder="Select an origin place"
+                             RelativeWidth="MudBlazor.DropdownWidth.Adaptive"
                              Required
                              ResetValueOnEmptyText
                              SearchFunc="@FindPlacesAsync"
                              SelectOnActivation
                              ShowProgressIndicator
-                             T="string"
+                             T="Place"
+                             ToStringFunc="@(x => x?.Address)"
                              Variant="@variant" />
         </MudItem>
 
@@ -42,15 +45,17 @@
                              For="@(() => travelQueryModel.Destination)"
                              FullWidth
                              Label="Destination"
-                             MaxItems="20"
+                             MaxItems="8"
                              MinCharacters="3"
                              Placeholder="Select a destination place"
+                             RelativeWidth="MudBlazor.DropdownWidth.Adaptive"
                              Required
                              ResetValueOnEmptyText
                              SearchFunc="@FindPlacesAsync"
                              SelectOnActivation
                              ShowProgressIndicator
-                             T="string"
+                             T="Place"
+                             ToStringFunc="@(x => x?.Address)"
                              Variant="@variant" />
         </MudItem>
 
