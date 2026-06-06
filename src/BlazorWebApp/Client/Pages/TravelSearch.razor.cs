@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Components;
 using Seedysoft.Libs.Core.Extensions;
+using Seedysoft.Libs.Geography.ViewModels;
 
 namespace Seedysoft.BlazorWebApp.Client.Pages;
 
@@ -19,19 +20,36 @@ public partial class TravelSearch
 
     private Libs.MapRazorClassLibrary.MapComponent TravelMap { get; set; } = default!;
 
-    private readonly Libs.GasStationPrices.ViewModels.TravelQueryModel travelQueryModel = new()
+    private readonly TravelQueryModel travelQueryModel = new()
     {
+        Origin = new Place()
+        {
 #if DEBUG
-        Origin = "Calle Juan Ramon Jimenez, 8, Burgos, Spain",
-        Destination = "Manciles, Spain", /*"Calle la Iglesia, 11, Brazuelo, Leon, Spain",*/
+            Address = "Calle Juan Ramon Jimenez, 8, Burgos, Spain",
+            Latitude = 42.3485f,
+            Longitude = -3.6962f,
 #else
-        Origin = string.Empty,
-        Destination = string.Empty,
+            Address = "",
+            Latitude = 0f,
+            Longitude = 0f,
+#endif
+        },
+        Destination = new Place()
+        {
+#if DEBUG
+            Address = "Manciles, Spain",
+            Latitude = 42.5996f,
+            Longitude = -5.6684f
+        },
+#else
+            Address = "",
+            Latitude = 0f,
+            Longitude = 0f,
 #endif
         MaxDistanceInKm = 10,
         PetroleumProductsSelectedIds = Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.Gasoline.Select(static x => x.IdProducto).ToHashSet(),
     };
-    private readonly Libs.GasStationPrices.ViewModels.TravelQueryModelFluentValidator travelQueryModelFluentValidator = new();
+    private readonly TravelQueryModelFluentValidator travelQueryModelFluentValidator = new();
 
     private bool GasStationsViewerIsLoading;
     private readonly List<Libs.GasStationPrices.ViewModels.GasStationModel> GasStationItems = [];
@@ -42,10 +60,6 @@ public partial class TravelSearch
 
         if (Logger.IsEnabled(LogLevel.Information))
             Logger.LogInformation($"Called {nameof(OnInitializedAsync)}");
-
-        //googleApisSettings = Configuration
-        //    .GetSection(nameof(Libs.GoogleApis.Settings.GoogleApisSettings))
-        //    .Get<Libs.GoogleApis.Settings.GoogleApisSettings>()!;
     }
 
     private async Task OnGasStationSelectedItemChanged(Libs.GasStationPrices.ViewModels.GasStationModel gasStationModel)
@@ -77,7 +91,7 @@ public partial class TravelSearch
     //    => _ = Snackbar.Add($"Clicked in {marker.Content}. DateTime: {DateTime.Now}", MudBlazor.Severity.Success);
     // OnClickGmapMarkerEventCallback="@OnClickGmapMarker"
 
-    private async Task<IEnumerable<string>> FindPlacesAsync(string textToFind, CancellationToken cancellationToken)
+    private async Task<IEnumerable<Place>> FindPlacesAsync(string textToFind, CancellationToken cancellationToken)
     {
         try
         {
@@ -91,9 +105,11 @@ public partial class TravelSearch
 
     private async Task ClearDataAsync()
     {
-        //await TravelMap.RemoveAllMarkersAsync();
+        TravelMap.ClearMap();
 
         GasStationItems.Clear();
+
+        await Task.CompletedTask;
     }
 
     private async Task ValidateSearch()
@@ -101,7 +117,7 @@ public partial class TravelSearch
         FluentValidation.Results.ValidationResult validationResult = await travelQueryModelFluentValidator.ValidateAsync(travelQueryModel);
         if (validationResult.IsValid)
         {
-            await LoadGoogleRoutesAsync();
+            await LoadRoutesAsync();
         }
         else
         {
@@ -110,10 +126,10 @@ public partial class TravelSearch
         }
     }
 
-    private async Task LoadGoogleRoutesAsync()
+    private async Task LoadRoutesAsync()
     {
         await ClearDataAsync();
 
-        //await TravelMap.SearchRoutesAsync(travelQueryModel.Origin, travelQueryModel.Destination);
+        await TravelMap.SearchRoutesAsync(travelQueryModel);
     }
 }
