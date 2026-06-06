@@ -3,8 +3,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using RestSharp;
 using Seedysoft.Libs.Core.Extensions;
-using Seedysoft.Libs.GasStationPrices.Extensions;
-using System.Collections.Frozen;
 using System.Runtime.CompilerServices;
 
 namespace Seedysoft.Libs.GasStationPrices.Services;
