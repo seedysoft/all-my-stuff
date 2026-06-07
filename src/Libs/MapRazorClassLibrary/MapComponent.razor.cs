@@ -140,6 +140,30 @@ public partial class MapComponent
         return base.OnInitializedAsync();
     }
 
+    public static async Task OnAfterMapLoaded(RealTimeMap.MapEventArgs args)
+    {
+        List<Geography.Models.GeoJSONItem> inputPointsList =
+        [
+            new Geography.Models.GeoJSONItem()
+            {
+                Type = "Feature",
+                Geometry = new Geography.Models.PointGeometry()
+                {
+                    Type = "Point",
+                    Coordinates = [
+                        Geography.Constants.Earth.Home.Center.Lng,
+                        Geography.Constants.Earth.Home.Center.Lat
+                    ],
+                    Properties = new Geography.Models.Properties()
+                    {
+                        Name = "name"
+                    },
+                },
+            },
+        ];
+        await args.sender.Geometric.DataFromGeoJSON.addObject(inputPointsList.ToArray());
+    }
+
     private void OnClickMap(RealTimeMap.ClicksMapArgs args)
     {
         if (args.sender != null && realTimeMap == args.sender)
@@ -150,14 +174,18 @@ public partial class MapComponent
 
     public async Task SearchRoutesAsync(Geography.ViewModels.TravelQueryModel model)
     {
-        List<Geography.Models.RouteModel> res = await RoutesService.GetRoutesAsync(model, CancellationToken.None);
+        await ClearMap();
 
-        realTimeMap.Map.Stream_points.Clear();
+        IList<Geography.Models.GeoJSONItem> res = await RoutesService.GetRoutesAsync(model, CancellationToken.None);
+
+        // TODO                         Obtain bounding box of all routes and set map view to it
+        await realTimeMap.Geometric.DataFromGeoJSON.addObject(res.ToArray());
     }
 
-    public void ClearMap()
+    public async Task ClearMap()
     {
-        realTimeMap.Map.Stream_points.Clear();
-        realTimeMap.Map.refresh();
+        await realTimeMap.Geometric.DataFromGeoJSON.clearMap();
+
+        //realTimeMap.Map.refresh();
     }
 }
