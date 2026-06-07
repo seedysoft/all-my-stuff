@@ -5,7 +5,7 @@ namespace Seedysoft.Libs.Geography.Services.Routers;
 
 public class OsrmRouter(Settings.Api api, Microsoft.Extensions.Logging.ILogger logger) : RouterBase(api)
 {
-    public override async Task<List<Models.RouteModel>> GetRoutesAsync(ViewModels.TravelQueryModel model, CancellationToken cancellationToken)
+    public override async Task<IList<Models.GeoJSONItem>> GetRoutesAsync(ViewModels.TravelQueryModel model, CancellationToken cancellationToken)
     {
         // {origLng,origLat};{destLng,destLat}
         RestRequest restRequest = new(string.Format(Api.UrlFormat,
@@ -28,15 +28,25 @@ public class OsrmRouter(Settings.Api api, Microsoft.Extensions.Logging.ILogger l
             return [];
         }
 
-        // TODO                             Return each trip as a RouteModel, and not only the coordinates. Also, consider returning all the trips, and not only the first one.
-        //IEnumerable<Models.Shared.LatLngLiteral> CoordinatesQuery =
-        //    from r in body.trips
-        //    from g in r.geometry.coordinates
-        //    select new Models.Shared.LatLngLiteral(g[1], g[0]);
+        int i = 0;
+        IEnumerable<Models.GeoJSONItem> Result =
+            from r in body.trips
+            from g in r.geometry.coordinates
+            select new Models.GeoJSONItem
+            {
+                Type = "Feature",
+                Geometry = new Models.PointGeometry
+                {
+                    Type = "Point",
+                    Coordinates = g,
+                    Properties = new()
+                    {
+                        Name = $"Route {i++}",
+                    }
+                }
+            };
 
-        //return CoordinatesQuery.Distinct().ToList();
-
-        return [];
+        return [.. Result];
     }
 }
 
@@ -59,7 +69,7 @@ public class Trip
 
 public class Geometry
 {
-    public float[][] coordinates { get; set; }
+    public double[][] coordinates { get; set; }
     public string type { get; set; }
 }
 
