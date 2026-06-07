@@ -5,17 +5,27 @@ namespace Seedysoft.Libs.Geography.Services;
 
 public class RoutesService(IConfiguration configuration, ILogger<RoutesService> logger) : GeographyServiceBase(configuration)
 {
-    public async Task<List<Models.RouteModel>> GetRoutesAsync(ViewModels.TravelQueryModel model, CancellationToken cancellationToken)
+    public async Task<IList<Models.GeoJSONItem>> GetRoutesAsync(ViewModels.TravelQueryModel model, CancellationToken cancellationToken)
     {
-        Routers.RouterBase router = GeographySettings.RouteSettings.RouteImplementation switch
+        Settings.RouteApi? api = GeographySettings.RouteSettings.RouteApis.FirstOrDefault(x => x.RouteName == GeographySettings.RouteSettings.CurrentImplementation);
+
+        Routers.RouterBase router = GeographySettings.RouteSettings.CurrentImplementation switch
         {
-            "CartoCiudad" => new Routers.CartoCiudadRouter(GeographySettings.RouteSettings.RoutesApi.First(x => x.RouteName == "CartoCiudad"), logger),
-            "OSRM" => new Routers.OsrmRouter(GeographySettings.RouteSettings.RoutesApi.First(x => x.RouteName == "OSRM"), logger),
-            _ => throw new InvalidOperationException($"Unsupported router: {GeographySettings.RouteSettings.RouteImplementation}"),
+            #pragma warning disable format
+            
+            //Settings.RouteImplementations.CartoCiudad       => new Routers.CartoCiudadRouter(api!, logger),
+            
+            //Settings.RouteImplementations.MapboxDirections  => new Routers.MapboxDirectionsRouter(api!, logger),
+            
+            Settings.RouteImplementations.OSRM              => new Routers.OsrmRouter(api!, logger),
+
+            _ => throw new InvalidOperationException($"Unsupported router: {GeographySettings.RouteSettings.CurrentImplementation}"),
+            
+            #pragma warning restore format
         };
 
         if (logger.IsEnabled(LogLevel.Information))
-            logger.LogInformation("Using router implementation: {RouterImplementation}", GeographySettings.RouteSettings.RouteImplementation);
+            logger.LogInformation("Using router implementation: {RouterImplementation}", GeographySettings.RouteSettings.CurrentImplementation);
 
         return await router.GetRoutesAsync(model, cancellationToken);
     }
