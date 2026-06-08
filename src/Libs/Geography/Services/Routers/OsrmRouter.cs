@@ -3,9 +3,9 @@ using Seedysoft.Libs.Core.Extensions;
 
 namespace Seedysoft.Libs.Geography.Services.Routers;
 
-public class OsrmRouter(Settings.Api api, Microsoft.Extensions.Logging.ILogger logger) : RouterBase(api)
+internal class OsrmRouter(Settings.Api api, Microsoft.Extensions.Logging.ILogger logger) : RouterBase(api)
 {
-    public override async Task<IList<Models.GeoJSONItem>> GetRoutesAsync(ViewModels.TravelQueryModel model, CancellationToken cancellationToken)
+    internal override async Task<IList<(string NombreRuta, double[][] Coordenadas)>> GetRoutesAsync(ViewModels.TravelQueryModel model, CancellationToken cancellationToken)
     {
         // {origLng,origLat};{destLng,destLat}
         RestRequest restRequest = new(string.Format(Api.UrlFormat,
@@ -28,23 +28,11 @@ public class OsrmRouter(Settings.Api api, Microsoft.Extensions.Logging.ILogger l
             return [];
         }
 
-        int i = 0;
-        IEnumerable<Models.GeoJSONItem> Result =
+        // Coordinates are in the format: [lng, lat]
+        // We need to invert them to [lat, lng] for our application
+        IEnumerable<(string NombreRuta, double[][] Coordenadas)> Result =
             from r in body.trips
-            from g in r.geometry.coordinates
-            select new Models.GeoJSONItem
-            {
-                Type = "Feature",
-                Geometry = new Models.PointGeometry
-                {
-                    Type = "Point",
-                    Coordinates = g,
-                    Properties = new()
-                    {
-                        Name = $"Route {i++}",
-                    }
-                }
-            };
+            select (r.weight_name, InvertCoordinates(r.geometry.coordinates));
 
         return [.. Result];
     }
@@ -69,6 +57,7 @@ public class Trip
 
 public class Geometry
 {
+    // Coordinates are in the format: [lng, lat]
     public double[][] coordinates { get; set; }
     public string type { get; set; }
 }
