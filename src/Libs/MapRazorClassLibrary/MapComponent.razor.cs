@@ -133,36 +133,12 @@ public partial class MapComponent
     /// </remarks>
     [Parameter] public int Zoom { get; set; } = 18;
 
-    protected override Task OnInitializedAsync()
-    {
-        int i = 0;
+    //protected override Task OnInitializedAsync()
+    //{
+    //    return base.OnInitializedAsync();
+    //}
 
-        return base.OnInitializedAsync();
-    }
-
-    public static async Task OnAfterMapLoaded(RealTimeMap.MapEventArgs args)
-    {
-        List<Geography.Models.GeoJSONItem> inputPointsList =
-        [
-            new Geography.Models.GeoJSONItem()
-            {
-                Type = "Feature",
-                Geometry = new Geography.Models.PointGeometry()
-                {
-                    Type = "Point",
-                    Coordinates = [
-                        Geography.Constants.Earth.Home.Center.Lng,
-                        Geography.Constants.Earth.Home.Center.Lat
-                    ],
-                    Properties = new Geography.Models.Properties()
-                    {
-                        Name = "name"
-                    },
-                },
-            },
-        ];
-        await args.sender.Geometric.DataFromGeoJSON.addObject(inputPointsList.ToArray());
-    }
+    public static async Task OnAfterMapLoaded(RealTimeMap.MapEventArgs args) { }
 
     private void OnClickMap(RealTimeMap.ClicksMapArgs args)
     {
@@ -174,12 +150,140 @@ public partial class MapComponent
 
     public async Task SearchRoutesAsync(Geography.ViewModels.TravelQueryModel model)
     {
+        string[] Colors = ["#007FFF", "#0074EA", "#0069D5", "#005EC0", "#0053AB", "#004896", "#003D81", "#00326C"];
+
         await ClearMap();
 
-        IList<Geography.Models.GeoJSONItem> res = await RoutesService.GetRoutesAsync(model, CancellationToken.None);
+        IList<(string NombreRuta, double[][] Coordenadas)> res = await RoutesService.GetRoutesAsync(model, CancellationToken.None);
+
+        for (int i = 0; i < res.Count; i++)
+        {
+            (string? NombreRuta, double[][]? Coordenadas) = res[i];
+
+            Geography.Models.GeoJSONLineStringClass inputPolygon = new()
+            {
+                Type = "Feature",
+                Geometry = new Geography.Models.LineStringGeometry()
+                {
+                    Type = "Polyline",
+                    Coordinates = Coordenadas,
+                },
+                Properties = new Geography.Models.Properties()
+                {
+                    Name = NombreRuta,
+                },
+            };
+
+            Geography.Models.GeoJSONPolygonAppearanceClass polygonAppearance = new()
+            {
+                Data = [inputPolygon],
+                Name = NombreRuta,
+                Symbology = new Geography.Models.PolygonSymbol()
+                {
+                    Color = Colors[i],
+                    Opacity = 0.6,
+                    Weight = 8,
+                },
+            };
+
+            await realTimeMap.Geometric.DataFromGeoJSON.addObject(polygonAppearance);
+        }
 
         // TODO                         Obtain bounding box of all routes and set map view to it
-        await realTimeMap.Geometric.DataFromGeoJSON.addObject(res.ToArray());
+
+        //List<Geography.Models.GeoJSONItem> inputPointsList =
+        //[
+        //    new Geography.Models.GeoJSONItem()
+        //    {
+        //        Type = "Feature",
+        //        Geometry = new Geography.Models.PointGeometry()
+        //        {
+        //            Type = "Point",
+        //            Coordinates = [43.96898521116147, 25.337392340780355],
+        //        },
+        //        Properties = new Geography.Models.Properties()
+        //        {
+        //            Name = "name",
+        //        },
+        //    },
+        //    new Geography.Models.GeoJSONItem()
+        //    {
+        //        Type = "Feature",
+        //        Geometry = new Geography.Models.PointGeometry()
+        //        {
+        //            Type = "Point",
+        //            Coordinates  = [43.97596818245641, 25.33369159513244],
+
+        //        },
+        //        Properties = new Geography.Models.Properties()
+        //        {
+        //            Name = "name",
+        //        },
+        //    },
+        //];
+
+        //List<Geography.Models.GeoJSONLineStringClass> inputPolygonList =
+        //[
+        //    new Geography.Models.GeoJSONLineStringClass()
+        //    {
+        //        Type = "Feature",
+        //        Geometry = new Geography.Models.LineStringGeometry()
+        //        {
+        //            Type = "Polyline",
+        //            Coordinates =
+        //            [
+        //                [43.97209871008421, 25.32876177213506],
+        //                [43.97200458957660, 25.32911901903800],
+        //                [43.97191506364906, 25.32894358371036],
+        //                [43.97174519194365, 25.32888935676797],
+        //                [43.97186226638604, 25.32880323607917],
+        //                [43.97183242466567, 25.32865650950876],
+        //             ],
+        //        },
+        //        Properties = new Geography.Models.Properties()
+        //        {
+        //            Name = "name",
+        //        },
+        //    },
+        //];
+
+        //Geography.Models.GeoJSONPolygonAppearanceClass polygonsAppearance = new()
+        //{
+        //    Data = [.. inputPolygonList],
+        //    Name = "Polygon",
+        //    Symbology = new Geography.Models.PolygonSymbol()
+        //    {
+        //        Color = "red",
+        //        Opacity = 0.6,
+        //        Weight = 8,
+        //    },
+        //};
+
+        //Geography.Models.GeoJSONPointAppearanceClass pointsAppearance = new()
+        //{
+        //    Data = [.. inputPointsList],
+        //    Name = "points",
+        //    Symbology = new Geography.Models.PointSymbol()
+        //    {
+        //        Color = "red",
+        //        Radius = 10,
+        //    },
+        //    Tooltip = new Geography.Models.Tooltip()
+        //    {
+        //        Content = "Points",
+        //        Offset = [2, 2],
+        //        Permanent = true,
+        //        Opacity = 0.6,
+        //        VisibilityZoomLevels = new Geography.Models.VisibilityZoomLevel()
+        //        {
+        //            MaxZoomLevel = 16,
+        //            MinZoomLevel = 14,
+        //        },
+        //    }
+        //};
+
+        //await realTimeMap.Geometric.DataFromGeoJSON.addObject(polygonsAppearance);
+        //await realTimeMap.Geometric.DataFromGeoJSON.addObject(pointsAppearance);
     }
 
     public async Task ClearMap()
