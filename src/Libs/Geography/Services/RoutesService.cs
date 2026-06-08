@@ -5,7 +5,7 @@ namespace Seedysoft.Libs.Geography.Services;
 
 public class RoutesService(IConfiguration configuration, ILogger<RoutesService> logger) : GeographyServiceBase(configuration)
 {
-    public async Task<IList<Models.GeoJSONItem>> GetRoutesAsync(ViewModels.TravelQueryModel model, CancellationToken cancellationToken)
+    public async Task<IList<(string NombreRuta, double[][] Coordenadas)>> GetRoutesAsync(ViewModels.TravelQueryModel model, CancellationToken cancellationToken)
     {
         Settings.RouteApi? api = GeographySettings.RouteSettings.RouteApis.FirstOrDefault(x => x.RouteName == GeographySettings.RouteSettings.CurrentImplementation);
 
