@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Components;
 using Seedysoft.Libs.Core.Extensions;
-using Seedysoft.Libs.Geography.ViewModels;
 
 namespace Seedysoft.BlazorWebApp.Client.Pages;
 
@@ -12,29 +11,26 @@ public partial class TravelSearch
     [Inject] private ILogger<TravelSearch> Logger { get; set; } = default!;
     //[Inject] private MudBlazor.IDialogService DialogService { get; set; } = default!;
     [Inject] private MudBlazor.ISnackbar Snackbar { get; set; } = default!;
-    [Inject] private IConfiguration Configuration { get; set; } = default!;
     [Inject] private Libs.GasStationPrices.Services.GasStationPricesService GasStationPricesService { get; set; } = default!;
     [Inject] private Libs.Geography.Services.PlacesService PlacesService { get; set; } = default!;
 
-    //private Libs.GoogleApis.Settings.GoogleApisSettings googleApisSettings = default!;
-
     private Libs.MapRazorClassLibrary.MapComponent TravelMap { get; set; } = default!;
 
-    private readonly TravelQueryModel travelQueryModel = new()
+    private readonly Libs.Geography.ViewModels.TravelQueryModel travelQueryModel = new()
     {
-        Origin = new Place()
+        Origin = new Libs.Geography.ViewModels.Place()
         {
 #if DEBUG
             Address = "Calle Juan Ramon Jimenez, 8, Burgos, Spain",
             Latitude = 42.3485f,
             Longitude = -3.6962f,
 #else
-            Address = "",
+            Address = string.Empty,
             Latitude = 0f,
             Longitude = 0f,
 #endif
         },
-        Destination = new Place()
+        Destination = new Libs.Geography.ViewModels.Place()
         {
 #if DEBUG
             Address = "Manciles, Spain",
@@ -42,14 +38,14 @@ public partial class TravelSearch
             Longitude = -5.6684f
         },
 #else
-            Address = "",
+            Address = string.Empty,
             Latitude = 0f,
             Longitude = 0f,
 #endif
         MaxDistanceInKm = 10,
         PetroleumProductsSelectedIds = Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.Gasoline.Select(static x => x.IdProducto).ToHashSet(),
     };
-    private readonly TravelQueryModelFluentValidator travelQueryModelFluentValidator = new();
+    private readonly Libs.Geography.ViewModels.TravelQueryModelFluentValidator travelQueryModelFluentValidator = new();
 
     private bool GasStationsViewerIsLoading;
     private readonly List<Libs.GasStationPrices.ViewModels.GasStationModel> GasStationItems = [];
@@ -91,7 +87,7 @@ public partial class TravelSearch
     //    => _ = Snackbar.Add($"Clicked in {marker.Content}. DateTime: {DateTime.Now}", MudBlazor.Severity.Success);
     // OnClickGmapMarkerEventCallback="@OnClickGmapMarker"
 
-    private async Task<IEnumerable<Place>> FindPlacesAsync(string textToFind, CancellationToken cancellationToken)
+    private async Task<IEnumerable<Libs.Geography.ViewModels.Place>> FindPlacesAsync(string textToFind, CancellationToken cancellationToken)
     {
         try
         {
@@ -105,11 +101,9 @@ public partial class TravelSearch
 
     private async Task ClearDataAsync()
     {
-        TravelMap.ClearMap();
+        await TravelMap.ClearMap();
 
         GasStationItems.Clear();
-
-        await Task.CompletedTask;
     }
 
     private async Task ValidateSearch()
