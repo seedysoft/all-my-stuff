@@ -20,26 +20,11 @@ public sealed class RouterTests : Infrastructure.Tests.TestClassBase
     [Test]
     public async Task GetLatestReleaseFromGithubAsyncTest()
     {
-        ViewModels.TravelQueryModel model = new()
-        {
-            Origin = new ViewModels.Place()
-            {
-                Address = "Calle Juan Ramon Jimenez, 8, Burgos, Spain",
-                Latitude = 42.354358f,
-                Longitude = -3.662786f,
-            },
-            Destination = new ViewModels.Place()
-            {
-                Address = "Calle Iglesia 11, 24715 Brazuelo, León",
-                Latitude = 42.541333f,
-                Longitude = -6.194499f
-            },
-            MaxDistanceInKm = 10,
-            PetroleumProductsSelectedIds = GasStationPrices.Models.Minetur.ProductoPetrolifero.Gasoline.Select(static x => x.IdProducto).ToHashSet(),
-        };
+        var model = ViewModels.TravelQueryModel.CreateDefault();
 
         IList<(string NombreRuta, double[][] Coordenadas)> Result = await routesService.GetRoutesAsync(model, CancellationToken.None);
 
         _ = await Assert.That(Result).IsNotNull();
+        _ = await Assert.That(Result.Any()).IsTrue();
     }
 }

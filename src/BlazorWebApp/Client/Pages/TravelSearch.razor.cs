@@ -16,35 +16,13 @@ public partial class TravelSearch
 
     private Libs.MapRazorClassLibrary.MapComponent TravelMap { get; set; } = default!;
 
-    private readonly Libs.Geography.ViewModels.TravelQueryModel travelQueryModel = new()
-    {
-        Origin = new Libs.Geography.ViewModels.Place()
-        {
+    private readonly Libs.Geography.ViewModels.TravelQueryModel travelQueryModel = Libs.Geography.ViewModels.TravelQueryModel.
 #if DEBUG
-            Address = "Calle Juan Ramon Jimenez, 8, Burgos, Spain",
-            Latitude = 42.3485f,
-            Longitude = -3.6962f,
+            CreateDefault()
 #else
-            Address = string.Empty,
-            Latitude = 0f,
-            Longitude = 0f,
+            CreateEmpty()
 #endif
-        },
-        Destination = new Libs.Geography.ViewModels.Place()
-        {
-#if DEBUG
-            Address = "Manciles, Spain",
-            Latitude = 42.5996f,
-            Longitude = -5.6684f
-        },
-#else
-            Address = string.Empty,
-            Latitude = 0f,
-            Longitude = 0f,
-#endif
-        MaxDistanceInKm = 10,
-        PetroleumProductsSelectedIds = Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.Gasoline.Select(static x => x.IdProducto).ToHashSet(),
-    };
+;
     private readonly Libs.Geography.ViewModels.TravelQueryModelFluentValidator travelQueryModelFluentValidator = new();
 
     private bool GasStationsViewerIsLoading;
@@ -101,7 +79,7 @@ public partial class TravelSearch
 
     private async Task ClearDataAsync()
     {
-        await TravelMap.ClearMap();
+        await TravelMap.ClearMapAsync();
 
         GasStationItems.Clear();
     }
