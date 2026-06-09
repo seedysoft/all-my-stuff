@@ -5,6 +5,8 @@ namespace Seedysoft.Libs.MapRazorClassLibrary;
 
 public partial class MapComponent
 {
+    private readonly string[] Colors = ["#007FFF", "#0074EA", "#0069D5", "#005EC0", "#0053AB", "#004896", "#003D81", "#00326C"];
+
     private RealTimeMap realTimeMap = new();
 
     [Inject] private Geography.Services.RoutesService RoutesService { get; set; } = default!;
@@ -150,9 +152,7 @@ public partial class MapComponent
 
     public async Task SearchRoutesAsync(Geography.ViewModels.TravelQueryModel model)
     {
-        string[] Colors = ["#007FFF", "#0074EA", "#0069D5", "#005EC0", "#0053AB", "#004896", "#003D81", "#00326C"];
-
-        await ClearMap();
+        await ClearMapAsync();
 
         IList<(string NombreRuta, double[][] Coordenadas)> res = await RoutesService.GetRoutesAsync(model, CancellationToken.None);
 
@@ -189,7 +189,23 @@ public partial class MapComponent
             await realTimeMap.Geometric.DataFromGeoJSON.addObject(polygonAppearance);
         }
 
-        // TODO                         Obtain bounding box of all routes and set map view to it
+        RealTimeMap.Bounds bounds = new()
+        {
+            northEast = new RealTimeMap.Location()
+            {
+                latitude = res.SelectMany(r => r.Coordenadas).Max(c => c[0]),
+                longitude = res.SelectMany(r => r.Coordenadas).Max(c => c[1]),
+            },
+            southWest = new RealTimeMap.Location()
+            {
+                latitude = res.SelectMany(r => r.Coordenadas).Min(c => c[0]),
+                longitude = res.SelectMany(r => r.Coordenadas).Min(c => c[1]),
+            },
+        };
+        realTimeMap.View.setBounds = bounds;
+
+        if (res.Count == 1)
+            SelectTrip();
 
         //List<Geography.Models.GeoJSONItem> inputPointsList =
         //[
@@ -286,7 +302,12 @@ public partial class MapComponent
         //await realTimeMap.Geometric.DataFromGeoJSON.addObject(pointsAppearance);
     }
 
-    public async Task ClearMap()
+    private void SelectTrip()
+    {
+        throw new NotImplementedException();
+    }
+
+    public async Task ClearMapAsync()
     {
         await realTimeMap.Geometric.DataFromGeoJSON.clearMap();
 

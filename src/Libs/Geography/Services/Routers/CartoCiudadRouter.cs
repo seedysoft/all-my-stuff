@@ -5,9 +5,9 @@
 
 //namespace Seedysoft.Libs.Geography.Services.Routers;
 
-//public class CartoCiudadRouter(Settings.Api api, Microsoft.Extensions.Logging.ILogger logger) : RouterBase(api)
+//internal class CartoCiudadRouter(Settings.Api api, Microsoft.Extensions.Logging.ILogger logger) : RouterBase(api)
 //{
-//    public override async Task<IList<Models.GeoJSONItem>> GetRoutesAsync(ViewModels.TravelQueryModel model, CancellationToken cancellationToken)
+//    internal override async Task<IList<Models.GeoJSONItem>> GetRoutesAsync(ViewModels.TravelQueryModel model, CancellationToken cancellationToken)
 //    {
 //        // orig={origLat,origLng}&dest={destLat,destLng}
 //        RestRequest restRequest = new(string.Format(Api.UrlFormat, $"{model.Origin.Latitude},{model.Origin.Longitude}", $"{model.Destination.Latitude},{model.Destination.Longitude}"));

@@ -5,6 +5,12 @@ namespace Seedysoft.Libs.Geography.Services.Routers;
 
 internal class OsrmRouter(Settings.Api api, Microsoft.Extensions.Logging.ILogger logger) : RouterBase(api)
 {
+    /// <summary>
+    /// Obtiene las rutas entre el origen y el destino especificados en el modelo de consulta.
+    /// </summary>
+    /// <param name="model"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
     internal override async Task<IList<(string NombreRuta, double[][] Coordenadas)>> GetRoutesAsync(ViewModels.TravelQueryModel model, CancellationToken cancellationToken)
     {
         // {origLng,origLat};{destLng,destLat}
@@ -32,7 +38,7 @@ internal class OsrmRouter(Settings.Api api, Microsoft.Extensions.Logging.ILogger
         // We need to invert them to [lat, lng] for our application
         IEnumerable<(string NombreRuta, double[][] Coordenadas)> Result =
             from r in body.trips
-            select (r.weight_name, InvertCoordinates(r.geometry.coordinates));
+            select (r.weight_name, InvertLongitudeLatitude(r.geometry.coordinates));
 
         return [.. Result];
     }
