@@ -30,7 +30,7 @@
         <PackageReference Include="CommandLineParser" Version="2.9.1" />
         <PackageReference Include="Cronos" Version="0.13.0" />
         <PackageReference Include="EfCore.SchemaCompare" Version="10.0.0" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.8" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.9" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="10.0.8" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite.Core" Version="10.0.8" />
         <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="10.0.8" />
