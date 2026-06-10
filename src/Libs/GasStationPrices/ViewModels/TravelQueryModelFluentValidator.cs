@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace Seedysoft.Libs.Geography.ViewModels;
+namespace Seedysoft.Libs.GasStationPrices.ViewModels;
 
 /// <summary>
 /// A standard AbstractValidator which contains multiple rules and can be shared with the back end API

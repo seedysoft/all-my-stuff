@@ -1,4 +1,4 @@
-﻿namespace Seedysoft.Libs.Geography.Models;
+﻿namespace Seedysoft.Libs.GasStationPrices.Models;
 
 /// <summary>
 /// Represents a geocoding result with identifiers, administrative divisions, address details and geographic coordinates.

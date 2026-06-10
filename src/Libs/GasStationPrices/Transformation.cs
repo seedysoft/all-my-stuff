@@ -1,8 +1,8 @@
-﻿namespace Seedysoft.Libs.Geography;
+﻿namespace Seedysoft.Libs.GasStationPrices;
 
 public static class Transformation
 {
-    private const double EarthRadius = 6378137.0;
+    private const double EarthRadius = 6_378_137.0;
     private const double OriginShift = Math.PI * EarthRadius;
 
     public static (double X, double Y) LatLonToMercator(double lng, double lat)

@@ -1,9 +1,11 @@
 ﻿using RestSharp;
 using Seedysoft.Libs.Core.Extensions;
+using Seedysoft.Libs.GasStationPrices.Settings;
+using Seedysoft.Libs.GasStationPrices.ViewModels;
 
-namespace Seedysoft.Libs.Geography.Services.Routers;
+namespace Seedysoft.Libs.GasStationPrices.Services.Routers;
 
-internal class OsrmRouter(Settings.Api api, Microsoft.Extensions.Logging.ILogger logger) : RouterBase(api)
+internal class OsrmRouter(Api api, Microsoft.Extensions.Logging.ILogger logger) : RouterBase(api)
 {
     /// <summary>
     /// Obtiene las rutas entre el origen y el destino especificados en el modelo de consulta.
@@ -11,7 +13,7 @@ internal class OsrmRouter(Settings.Api api, Microsoft.Extensions.Logging.ILogger
     /// <param name="model"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    internal override async Task<IList<(string NombreRuta, double[][] Coordenadas)>> GetRoutesAsync(ViewModels.TravelQueryModel model, CancellationToken cancellationToken)
+    internal override async Task<IList<(string NombreRuta, double[][] Coordenadas)>> GetRoutesAsync(TravelQueryModel model, CancellationToken cancellationToken)
     {
         // {origLng,origLat};{destLng,destLat}
         RestRequest restRequest = new(string.Format(Api.UrlFormat,

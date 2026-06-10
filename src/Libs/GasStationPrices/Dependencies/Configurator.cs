@@ -11,11 +11,18 @@ public sealed class Configurator : Core.Dependencies.ConfiguratorBase
 
         _ = hostApplicationBuilder.Configuration
             .AddJsonFile($"appsettings.{nameof(Settings.GasStationPricesSettings)}.json", optional: false, reloadOnChange: true)
-            .AddJsonFile($"appsettings.{nameof(Settings.GasStationPricesSettings)}.{CurrentEnvironmentName}.json", optional: false, reloadOnChange: true);
+            .AddJsonFile($"appsettings.{nameof(Settings.GasStationPricesSettings)}.{CurrentEnvironmentName}.json", optional: false, reloadOnChange: true)
+            .AddJsonFile($"appsettings.{nameof(Settings.GeographySettings)}.json", optional: false, reloadOnChange: true)
+            .AddJsonFile($"appsettings.{nameof(Settings.GeographySettings)}.{CurrentEnvironmentName}.json", optional: false, reloadOnChange: true);
+        ;
     }
 
     protected override void AddDbContexts(Microsoft.Extensions.Hosting.IHostApplicationBuilder hostApplicationBuilder) { /* No DbContexts */ }
 
     protected override void AddMyServices(Microsoft.Extensions.Hosting.IHostApplicationBuilder hostApplicationBuilder)
-        => hostApplicationBuilder.Services.TryAddScoped<Services.GasStationPricesService>();
+    {
+        hostApplicationBuilder.Services.TryAddScoped<Services.GasStationPricesService>();
+        hostApplicationBuilder.Services.TryAddScoped<Services.PlacesService>();
+        hostApplicationBuilder.Services.TryAddScoped<Services.RoutesService>();
+    }
 }

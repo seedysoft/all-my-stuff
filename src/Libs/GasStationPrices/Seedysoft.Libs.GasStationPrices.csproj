@@ -36,6 +36,28 @@
         </Content>
     </ItemGroup>
 
+    <ItemGroup Condition="'$(Configuration)' == 'Debug'">
+        <Content Include="appsettings.GeographySettings.Development.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <DependentUpon>appsettings.GeographySettings.json</DependentUpon>
+        </Content>
+        <None Include="appsettings.GeographySettings.Production.json">
+            <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+            <DependentUpon>appsettings.GeographySettings.json</DependentUpon>
+        </None>
+    </ItemGroup>
+
+    <ItemGroup Condition="'$(Configuration)' == 'Release'">
+        <None Include="appsettings.GeographySettings.Development.json">
+            <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+            <DependentUpon>appsettings.GeographySettings.json</DependentUpon>
+        </None>
+        <Content Include="appsettings.GeographySettings.Production.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <DependentUpon>appsettings.GeographySettings.json</DependentUpon>
+        </Content>
+    </ItemGroup>
+
     <ItemGroup>
         <PackageReference Include="CommandLineParser" Version="2.9.1" />
         <PackageReference Include="EfCore.SchemaCompare" Version="10.0.0" />
@@ -63,22 +85,12 @@
 
     <ItemGroup>
         <ProjectReference Include="..\..\Libs\Infrastructure\Seedysoft.Libs.Infrastructure.csproj" />
+        <ProjectReference Include="..\Core\Seedysoft.Libs.Core.csproj" />
         <ProjectReference Include="..\Cryptography\Seedysoft.Libs.Cryptography.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-        <Using Include="System.Text.Json.Serialization.JsonConverterAttribute">
-            <Alias>K</Alias>
-        </Using>
-        <Using Include="System.Text.Json.Serialization.JsonIgnoreAttribute">
-            <Alias>I</Alias>
-        </Using>
-        <Using Include="System.Text.Json.Serialization.JsonIgnoreCondition">
-            <Alias>C</Alias>
-        </Using>
-        <Using Include="System.Text.Json.Serialization.JsonPropertyNameAttribute">
-            <Alias>J</Alias>
-        </Using>
+        <Compile Include="..\..\Usings.cs" Link="Usings.cs" />
     </ItemGroup>
 
     <ItemGroup>

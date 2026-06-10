@@ -1,4 +1,4 @@
-﻿namespace Seedysoft.Libs.Geography.ViewModels;
+﻿namespace Seedysoft.Libs.GasStationPrices.ViewModels;
 
 public record class Place
 {
