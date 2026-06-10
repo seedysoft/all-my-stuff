@@ -1,4 +1,4 @@
-﻿namespace Seedysoft.Libs.Geography.Settings;
+﻿namespace Seedysoft.Libs.GasStationPrices.Settings;
 
 public abstract class Api
 {

@@ -1,7 +1,10 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Seedysoft.Libs.GasStationPrices.Services.Routers;
+using Seedysoft.Libs.GasStationPrices.Settings;
+using Seedysoft.Libs.GasStationPrices.ViewModels;
 
-namespace Seedysoft.Libs.Geography.Services;
+namespace Seedysoft.Libs.GasStationPrices.Services;
 
 public class RoutesService(IConfiguration configuration, ILogger<RoutesService> logger) : GeographyServiceBase(configuration)
 {
@@ -12,11 +15,11 @@ public class RoutesService(IConfiguration configuration, ILogger<RoutesService> 
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     /// <exception cref="InvalidOperationException"></exception>
-    public async Task<IList<(string NombreRuta, double[][] Coordenadas)>> GetRoutesAsync(ViewModels.TravelQueryModel model, CancellationToken cancellationToken)
+    public async Task<IList<(string NombreRuta, double[][] Coordenadas)>> GetRoutesAsync(TravelQueryModel model, CancellationToken cancellationToken)
     {
-        Settings.RouteApi? api = GeographySettings.RouteSettings.RouteApis.FirstOrDefault(x => x.RouteName == GeographySettings.RouteSettings.CurrentImplementation);
+        RouteApi? api = GeographySettings.RouteSettings.RouteApis.FirstOrDefault(x => x.RouteName == GeographySettings.RouteSettings.CurrentImplementation);
 
-        Routers.RouterBase router = GeographySettings.RouteSettings.CurrentImplementation switch
+        RouterBase router = GeographySettings.RouteSettings.CurrentImplementation switch
         {
             #pragma warning disable format
             
@@ -26,7 +29,7 @@ public class RoutesService(IConfiguration configuration, ILogger<RoutesService> 
             
             //Settings.RouteImplementations.MapboxDirections  => new Routers.MapboxDirectionsRouter(api!, logger),
             
-            Settings.RouteImplementations.OSRM              => new Routers.OsrmRouter(api!, logger),
+            RouteImplementations.OSRM              => new OsrmRouter(api!, logger),
 
             _ => throw new InvalidOperationException($"Unsupported router: {GeographySettings.RouteSettings.CurrentImplementation}"),
             

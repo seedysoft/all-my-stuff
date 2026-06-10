@@ -1,4 +1,4 @@
-﻿namespace Seedysoft.Libs.Geography.ViewModels;
+﻿namespace Seedysoft.Libs.GasStationPrices.ViewModels;
 
 public record class TravelQueryModel
 {
@@ -9,7 +9,7 @@ public record class TravelQueryModel
     public required int MaxDistanceInKm { get; set; }
 
     [System.ComponentModel.DataAnnotations.Length(1, int.MaxValue)]
-    public IReadOnlyCollection<GasStationPrices.Constants.ProductoPetroliferoId> PetroleumProductsSelectedIds { get; set; } = [];
+    public IReadOnlyCollection<Constants.ProductoPetroliferoId> PetroleumProductsSelectedIds { get; set; } = [];
 
     public static TravelQueryModel CreateDefault()
     {
@@ -17,15 +17,15 @@ public record class TravelQueryModel
         {
             Origin = new Place()
             {
-                Address = "Calle Juan Ramon Jimenez, 8, Burgos, Spain",
-                Latitude = 42.354358f,
-                Longitude = -3.662786f,
+                Address = "CALLE JUAN RAMON JIMENEZ 8, Burgos",
+                Latitude = 42.35436f,
+                Longitude = -3.66278553f,
             },
             Destination = new Place()
             {
-                Address = "Calle Iglesia 11, 24715 Brazuelo, León",
-                Latitude = 42.541333f,
-                Longitude = -6.194499f
+                Address = "CALLE IGLESIA 12, Brazuelo",
+                Latitude = 42.497448f,
+                Longitude = -6.1561656f
             },
             MaxDistanceInKm = 10,
             PetroleumProductsSelectedIds = GasStationPrices.Models.Minetur.ProductoPetrolifero.Gasoline.Select(static x => x.IdProducto).ToHashSet(),

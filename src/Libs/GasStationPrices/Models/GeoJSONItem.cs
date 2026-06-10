@@ -1,4 +1,4 @@
-﻿namespace Seedysoft.Libs.Geography.Models;
+﻿namespace Seedysoft.Libs.GasStationPrices.Models;
 
 public class GeoJSONPointAppearanceClass
 {

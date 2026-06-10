@@ -9,7 +9,7 @@ public partial class MapComponent
 
     private RealTimeMap realTimeMap = new();
 
-    [Inject] private Geography.Services.RoutesService RoutesService { get; set; } = default!;
+    [Inject] private GasStationPrices.Services.RoutesService RoutesService { get; set; } = default!;
 
     private readonly RealTimeMap.LoadParameters parameters = new()  //general map settings
     {
@@ -89,8 +89,8 @@ public partial class MapComponent
         },
         location = new RealTimeMap.Location()
         {
-            latitude = Core.Constants.Earth.Home.Lat,
-            longitude = Core.Constants.Earth.Home.Lng,
+            latitude = GasStationPrices.Constants.Earth.Home.Center.Lat,
+            longitude = GasStationPrices.Constants.Earth.Home.Center.Lng,
         },
         zoomLevel = 14,
     };
@@ -142,15 +142,11 @@ public partial class MapComponent
 
     public static async Task OnAfterMapLoaded(RealTimeMap.MapEventArgs args) { }
 
-    private void OnClickMap(RealTimeMap.ClicksMapArgs args)
-    {
-        if (args.sender != null && realTimeMap == args.sender)
-        {
-            Console.WriteLine($"{args.location}");
-        }
-    }
+    private static void OnClickMap(RealTimeMap.ClicksMapArgs args) { }
 
-    public async Task SearchRoutesAsync(Geography.ViewModels.TravelQueryModel model)
+    private static void OnDoubleClickMap(RealTimeMap.ClicksMapArgs args) { }
+
+    public async Task<GasStationPrices.Models.Bounds> SearchRoutesAsync(GasStationPrices.ViewModels.TravelQueryModel model)
     {
         await ClearMapAsync();
 
@@ -160,30 +156,43 @@ public partial class MapComponent
         {
             (string? NombreRuta, double[][]? Coordenadas) = res[i];
 
-            Geography.Models.GeoJSONLineStringClass inputPolygon = new()
+            GasStationPrices.Models.GeoJSONLineStringClass inputPolygon = new()
             {
                 Type = "Feature",
-                Geometry = new Geography.Models.LineStringGeometry()
+                Geometry = new GasStationPrices.Models.LineStringGeometry()
                 {
                     Type = "Polyline",
                     Coordinates = Coordenadas,
                 },
-                Properties = new Geography.Models.Properties()
+                Properties = new GasStationPrices.Models.Properties()
                 {
                     Name = NombreRuta,
                 },
             };
 
-            Geography.Models.GeoJSONPolygonAppearanceClass polygonAppearance = new()
+            GasStationPrices.Models.GeoJSONPolygonAppearanceClass polygonAppearance = new()
             {
                 Data = [inputPolygon],
                 Name = NombreRuta,
-                Symbology = new Geography.Models.PolygonSymbol()
+                Symbology = new GasStationPrices.Models.PolygonSymbol()
                 {
                     Color = Colors[i],
                     Opacity = 0.6,
                     Weight = 8,
                 },
+                Tooltip = new GasStationPrices.Models.Tooltip()
+                {
+                    Content = NombreRuta,
+                    CoordinateInversion = false,
+                    Offset = [0, -10],
+                    Opacity = 0.9f,
+                    Permanent = false,
+                    VisibilityZoomLevels = new GasStationPrices.Models.VisibilityZoomLevel()
+                    {
+                        MaxZoomLevel = 18,
+                        MinZoomLevel = 0,
+                    },
+                }
             };
 
             await realTimeMap.Geometric.DataFromGeoJSON.addObject(polygonAppearance);
@@ -204,8 +213,19 @@ public partial class MapComponent
         };
         realTimeMap.View.setBounds = bounds;
 
-        if (res.Count == 1)
-            SelectTrip();
+        return new GasStationPrices.Models.Bounds()
+        {
+            NorthEast = new GasStationPrices.Models.Location()
+            {
+                Latitude = bounds.northEast.latitude,
+                Longitude = bounds.northEast.longitude
+            },
+            SouthWest = new GasStationPrices.Models.Location()
+            {
+                Latitude = bounds.southWest.latitude,
+                Longitude = bounds.southWest.longitude
+            }
+        };
 
         //List<Geography.Models.GeoJSONItem> inputPointsList =
         //[
@@ -300,11 +320,6 @@ public partial class MapComponent
 
         //await realTimeMap.Geometric.DataFromGeoJSON.addObject(polygonsAppearance);
         //await realTimeMap.Geometric.DataFromGeoJSON.addObject(pointsAppearance);
-    }
-
-    private void SelectTrip()
-    {
-        throw new NotImplementedException();
     }
 
     public async Task ClearMapAsync()

@@ -1,4 +1,4 @@
-﻿namespace Seedysoft.Libs.Geography.Constants;
+﻿namespace Seedysoft.Libs.GasStationPrices.Constants;
 
 public static class Earth
 {

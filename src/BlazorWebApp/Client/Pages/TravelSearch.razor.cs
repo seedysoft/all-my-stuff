@@ -12,18 +12,18 @@ public partial class TravelSearch
     //[Inject] private MudBlazor.IDialogService DialogService { get; set; } = default!;
     [Inject] private MudBlazor.ISnackbar Snackbar { get; set; } = default!;
     [Inject] private Libs.GasStationPrices.Services.GasStationPricesService GasStationPricesService { get; set; } = default!;
-    [Inject] private Libs.Geography.Services.PlacesService PlacesService { get; set; } = default!;
+    [Inject] private Libs.GasStationPrices.Services.PlacesService PlacesService { get; set; } = default!;
 
     private Libs.MapRazorClassLibrary.MapComponent TravelMap { get; set; } = default!;
 
-    private readonly Libs.Geography.ViewModels.TravelQueryModel travelQueryModel = Libs.Geography.ViewModels.TravelQueryModel.
+    private readonly Libs.GasStationPrices.ViewModels.TravelQueryModel travelQueryModel = Libs.GasStationPrices.ViewModels.TravelQueryModel.
 #if DEBUG
             CreateDefault()
 #else
             CreateEmpty()
 #endif
 ;
-    private readonly Libs.Geography.ViewModels.TravelQueryModelFluentValidator travelQueryModelFluentValidator = new();
+    private readonly Libs.GasStationPrices.ViewModels.TravelQueryModelFluentValidator travelQueryModelFluentValidator = new();
 
     private bool GasStationsViewerIsLoading;
     private readonly List<Libs.GasStationPrices.ViewModels.GasStationModel> GasStationItems = [];
@@ -36,36 +36,36 @@ public partial class TravelSearch
             Logger.LogInformation($"Called {nameof(OnInitializedAsync)}");
     }
 
-    private async Task OnGasStationSelectedItemChanged(Libs.GasStationPrices.ViewModels.GasStationModel gasStationModel)
-    {
-        //if (gasStationModel == null)
-        //    await TravelMap.ResetViewportAsync();
-        //else
-        //    await TravelMap.ClickOnMarkerAsync(gasStationModel.ToMarker(travelQueryModel.PetroleumProductsSelectedIds));
-    }
+    //private async Task OnGasStationSelectedItemChanged(Libs.GasStationPrices.ViewModels.GasStationModel gasStationModel)
+    //{
+    //    //if (gasStationModel == null)
+    //    //    await TravelMap.ResetViewportAsync();
+    //    //else
+    //    //    await TravelMap.ClickOnMarkerAsync(gasStationModel.ToMarker(travelQueryModel.PetroleumProductsSelectedIds));
+    //}
 
-    private async Task OnClickGmapRouteAsync(string encodedPolyline)
-    {
-        GasStationsViewerIsLoading = true;
-        GasStationItems.Clear();
-        StateHasChanged();
+    //private async Task OnClickGmapRouteAsync(string encodedPolyline)
+    //{
+    //    GasStationsViewerIsLoading = true;
+    //    GasStationItems.Clear();
+    //    StateHasChanged();
 
-        await foreach (Libs.GasStationPrices.ViewModels.GasStationModel gasStationModel in
-            GasStationPricesService.GetNearGasStationsAsync(encodedPolyline, travelQueryModel.MaxDistanceInKm, CancellationToken.None))
-        {
-            GasStationItems.Add(gasStationModel);
-        }
+    //    await foreach (Libs.GasStationPrices.ViewModels.GasStationModel gasStationModel in
+    //        GasStationPricesService.GetNearGasStationsAsync(encodedPolyline, travelQueryModel.MaxDistanceInKm, CancellationToken.None))
+    //    {
+    //        GasStationItems.Add(gasStationModel);
+    //    }
 
-        GasStationsViewerIsLoading = false;
-        StateHasChanged();
-    }
+    //    GasStationsViewerIsLoading = false;
+    //    StateHasChanged();
+    //}
 
     // TODO                                     Show Gas Station data
     //private void OnClickGmapMarker(Libs.GoogleMapsRazorClassLib.GoogleMap.Marker marker)
     //    => _ = Snackbar.Add($"Clicked in {marker.Content}. DateTime: {DateTime.Now}", MudBlazor.Severity.Success);
     // OnClickGmapMarkerEventCallback="@OnClickGmapMarker"
 
-    private async Task<IEnumerable<Libs.Geography.ViewModels.Place>> FindPlacesAsync(string textToFind, CancellationToken cancellationToken)
+    private async Task<IEnumerable<Libs.GasStationPrices.ViewModels.Place>> FindPlacesAsync(string textToFind, CancellationToken cancellationToken)
     {
         try
         {
@@ -102,6 +102,19 @@ public partial class TravelSearch
     {
         await ClearDataAsync();
 
-        await TravelMap.SearchRoutesAsync(travelQueryModel);
+        Libs.GasStationPrices.Models.Bounds bounds = await TravelMap.SearchRoutesAsync(travelQueryModel);
+
+        GasStationsViewerIsLoading = true;
+        GasStationItems.Clear();
+        StateHasChanged();
+
+        await foreach (Libs.GasStationPrices.ViewModels.GasStationModel gasStationModel in
+            GasStationPricesService.GetNearGasStationsAsync(bounds, travelQueryModel.MaxDistanceInKm, CancellationToken.None))
+        {
+            GasStationItems.Add(gasStationModel);
+        }
+
+        GasStationsViewerIsLoading = false;
+        StateHasChanged();
     }
 }
