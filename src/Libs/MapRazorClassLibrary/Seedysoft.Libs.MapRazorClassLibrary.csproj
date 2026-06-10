@@ -15,7 +15,7 @@
 
     <ItemGroup>
         <PackageReference Include="LeafletForBlazor" Version="2.4.6.28" />
-        <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="10.0.8" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="10.0.9" />
     </ItemGroup>
 
     <ItemGroup>
