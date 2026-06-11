@@ -23,11 +23,11 @@ public class RoutesService(IConfiguration configuration, ILogger<RoutesService> 
         {
             #pragma warning disable format
             
-            //Settings.RouteImplementations.CartoCiudad       => new Routers.CartoCiudadRouter(api!, logger),
+            //RouteImplementations.CartoCiudad       => new Routers.CartoCiudadRouter(api!, logger),
 
-            //Settings.RouteImplementations.Google            => new Routers.GoogleRoutes(api!, logger),
+            //RouteImplementations.Google            => new Routers.GoogleRoutes(api!, logger),
             
-            //Settings.RouteImplementations.MapboxDirections  => new Routers.MapboxDirectionsRouter(api!, logger),
+            //RouteImplementations.MapboxDirections  => new Routers.MapboxDirectionsRouter(api!, logger),
             
             RouteImplementations.OSRM              => new OsrmRouter(api!, logger),
 

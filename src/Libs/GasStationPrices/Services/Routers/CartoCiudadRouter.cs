@@ -3,7 +3,7 @@
 
 //// https://www.idee.es/resources/documentos/Cartociudad/CartoCiudad_ServiciosWeb.pdf
 
-//namespace Seedysoft.Libs.Geography.Services.Routers;
+//namespace Seedysoft.Libs.GasStationPrices.Services.Routers;
 
 //internal class CartoCiudadRouter(Settings.Api api, Microsoft.Extensions.Logging.ILogger logger) : RouterBase(api)
 //{

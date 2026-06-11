@@ -1,8 +1,4 @@
-<<<<<<<< HEAD:src/Libs/Geography/Settings/RouteApi.cs
-﻿namespace Seedysoft.Libs.Geography.Settings;
-========
 ﻿namespace Seedysoft.Libs.GasStationPrices.Settings;
->>>>>>>> 41440184bc34aec95d2f05d95ef80055895889ca:src/Libs/GasStationPrices/Settings/RouteApi.cs
 
 public class RouteApi : Api
 {

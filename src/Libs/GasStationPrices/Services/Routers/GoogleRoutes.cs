@@ -1,4 +1,4 @@
-﻿//namespace Seedysoft.Libs.Geography.Services.Routers;
+﻿//namespace Seedysoft.Libs.GasStationPrices.Services.Routers;
 
 //internal class GoogleRoutes(Settings.Api api, Microsoft.Extensions.Logging.ILogger logger) : RouterBase(api)
 //{
