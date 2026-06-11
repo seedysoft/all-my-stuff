@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using RestSharp;
 using Seedysoft.Libs.Core.Extensions;
-using System.Runtime.CompilerServices;
+using Seedysoft.Libs.GasStationPrices.Extensions;
 
 namespace Seedysoft.Libs.GasStationPrices.Services;
 
@@ -18,20 +18,18 @@ public sealed class GasStationPricesService(IServiceProvider serviceProvider)
     private static Models.Minetur.Body MineturResponse = default!;// new() { Fecha = "", EstacionesTerrestres = [], Nota = string.Empty, ResultadoConsulta = string.Empty };
 
     public async IAsyncEnumerable<ViewModels.GasStationModel> GetNearGasStationsAsync(
-        string encodedPolyline,
+        Models.Bounds bounds,
         int maxDistanceInKm,
-        [EnumeratorCancellation] CancellationToken cancellationToken)
+        [System.Runtime.CompilerServices.EnumeratorCancellation] CancellationToken cancellationToken)
     {
         if (!await LoadGasStationsAsync(cancellationToken))
             yield break;
-
-        throw new NotImplementedException("This method is not implemented yet. It will be implemented in a future version.");
 
         //var sw = System.Diagnostics.Stopwatch.StartNew();
 
         //var RoutePoints = GoogleApis.Helpers.GooglePolylineHelper.Decode(encodedPolyline).ToFrozenSet();
         //GoogleApis.Models.Shared.LatLngBoundsLiteral Bounds = GoogleApis.Helpers.GeometricHelper.GetBounds(RoutePoints, maxDistanceInKm);
-        //var StationsInsideBounds = MineturResponse.EstacionesTerrestres.Where(e => e.IsInside(Bounds)).ToFrozenSet();
+        Models.Minetur.EstacionTerrestre[] StationsInsideBounds = [.. MineturResponse.EstacionesTerrestres.Where(bounds.IsInside)];
 
         //sw.Stop();
         //if (Logger.IsEnabled(LogLevel.Information))
@@ -39,13 +37,13 @@ public sealed class GasStationPricesService(IServiceProvider serviceProvider)
 
         //sw = System.Diagnostics.Stopwatch.StartNew();
 
-        //ParallelQuery<ViewModels.GasStationModel> gasStationsNear = StationsInsideBounds
-        //    .AsParallel()
-        //    .Where(es => RoutePoints.Any(rp => GoogleApis.Helpers.GeometricHelper.DistanceHaversineInKilometers(es.LatLng, rp) < maxDistanceInKm))
-        //    .Select(x => x.ToGasStationModel());
+        ParallelQuery<ViewModels.GasStationModel> gasStationsNear = StationsInsideBounds
+            .AsParallel()
+            //.Where(es => RoutePoints.Any(rp => GoogleApis.Helpers.GeometricHelper.DistanceHaversineInKilometers(es.LatLng, rp) < maxDistanceInKm))
+            .Select(x => x.ToGasStationModel());
 
-        //foreach (ViewModels.GasStationModel item in gasStationsNear)
-        //    yield return item;
+        foreach (ViewModels.GasStationModel item in gasStationsNear)
+            yield return item;
 
         //sw.Stop();
         //if (Logger.IsEnabled(LogLevel.Information))

@@ -15,11 +15,11 @@
 
     <ItemGroup>
         <PackageReference Include="LeafletForBlazor" Version="2.4.6.28" />
-        <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="10.0.8" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="10.0.9" />
     </ItemGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\Core\Seedysoft.Libs.Core.csproj" />
-        <ProjectReference Include="..\Geography\Seedysoft.Libs.Geography.csproj" />
+        <ProjectReference Include="..\GasStationPrices\Seedysoft.Libs.GasStationPrices.csproj" />
     </ItemGroup>
 </Project>

@@ -3,7 +3,7 @@
 @attribute [StreamRendering(true)]
 
 @using Seedysoft.BlazorWebApp.Client.Components
-@using Seedysoft.Libs.Geography.ViewModels
+@using Seedysoft.Libs.GasStationPrices.ViewModels
 @using Seedysoft.Libs.MapRazorClassLibrary
 
 @{
@@ -148,8 +148,8 @@
         <MudItem xs="12">
             <GasStationsViewer Elements="@GasStationItems"
                                IsLoading="@GasStationsViewerIsLoading"
-                               OnSelectedItemChanged="@OnGasStationSelectedItemChanged"
                                PetroleumProductsSelectedIds="@travelQueryModel.PetroleumProductsSelectedIds" />
+            @* OnSelectedItemChanged="@OnGasStationSelectedItemChanged" *@
         </MudItem>
 
     </MudGrid>
