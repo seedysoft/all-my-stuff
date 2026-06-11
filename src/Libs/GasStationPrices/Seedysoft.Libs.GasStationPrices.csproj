@@ -12,6 +12,9 @@
         <Content Include="appsettings.GasStationPricesSettings.json">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
+        <Content Include="appsettings.GeographySettings.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
     </ItemGroup>
 
     <ItemGroup Condition="'$(Configuration)' == 'Debug'">

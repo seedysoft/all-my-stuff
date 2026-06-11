@@ -2,9 +2,9 @@
 
 public record class TravelQueryModel
 {
-    public required Place Origin { get; set; }
+    public required Place Orig { get; set; }
 
-    public required Place Destination { get; set; }
+    public required Place Dest { get; set; }
 
     public required int MaxDistanceInKm { get; set; }
 
@@ -15,40 +15,40 @@ public record class TravelQueryModel
     {
         return new()
         {
-            Origin = new Place()
+            Orig = new Place()
             {
                 Address = "CALLE JUAN RAMON JIMENEZ 8, Burgos",
-                Latitude = 42.35436f,
-                Longitude = -3.66278553f,
+                Latitude = 42.35436,
+                Longitude = -3.66279,
             },
-            Destination = new Place()
+            Dest = new Place()
             {
                 Address = "CALLE IGLESIA 12, Brazuelo",
-                Latitude = 42.497448f,
-                Longitude = -6.1561656f
+                Latitude = 42.49745,
+                Longitude = -6.15617,
             },
             MaxDistanceInKm = 10,
-            PetroleumProductsSelectedIds = GasStationPrices.Models.Minetur.ProductoPetrolifero.Gasoline.Select(static x => x.IdProducto).ToHashSet(),
+            PetroleumProductsSelectedIds = Models.Minetur.ProductoPetrolifero.Gasoline.Select(static x => x.IdProducto).ToHashSet(),
         };
     }
     public static TravelQueryModel CreateEmpty()
     {
         return new()
         {
-            Origin = new Place()
+            Orig = new Place()
             {
                 Address = string.Empty,
-                Latitude = 0f,
-                Longitude = 0f
+                Latitude = 0.0,
+                Longitude = 0.0,
             },
-            Destination = new Place()
+            Dest = new Place()
             {
                 Address = string.Empty,
-                Latitude = 0f,
-                Longitude = 0f
+                Latitude = 0.0,
+                Longitude = 0.0,
             },
             MaxDistanceInKm = 10,
-            PetroleumProductsSelectedIds = GasStationPrices.Models.Minetur.ProductoPetrolifero.Gasoline.Select(static x => x.IdProducto).ToHashSet(),
+            PetroleumProductsSelectedIds = Models.Minetur.ProductoPetrolifero.Gasoline.Select(static x => x.IdProducto).ToHashSet(),
         };
     }
 }

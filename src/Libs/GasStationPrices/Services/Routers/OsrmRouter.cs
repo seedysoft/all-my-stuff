@@ -17,8 +17,8 @@ internal class OsrmRouter(Api api, Microsoft.Extensions.Logging.ILogger logger) 
     {
         // {origLng,origLat};{destLng,destLat}
         RestRequest restRequest = new(string.Format(Api.UrlFormat,
-            $"{model.Origin.Longitude.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat)},{model.Origin.Latitude.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat)}",
-            $"{model.Destination.Longitude.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat)},{model.Destination.Latitude.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat)}"));
+            $"{model.Orig.Longitude.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat)},{model.Orig.Latitude.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat)}",
+            $"{model.Dest.Longitude.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat)},{model.Dest.Latitude.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat)}"));
         RestResponse restResponse = await RestClient.ExecuteGetAsync(restRequest, cancellationToken);
 
         OsrmResponse? body = null;
