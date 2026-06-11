@@ -11,7 +11,6 @@ public partial class TravelSearch
     [Inject] private ILogger<TravelSearch> Logger { get; set; } = default!;
     //[Inject] private MudBlazor.IDialogService DialogService { get; set; } = default!;
     [Inject] private MudBlazor.ISnackbar Snackbar { get; set; } = default!;
-    [Inject] private Libs.GasStationPrices.Services.GasStationPricesService GasStationPricesService { get; set; } = default!;
     [Inject] private Libs.GasStationPrices.Services.PlacesService PlacesService { get; set; } = default!;
 
     private Libs.MapRazorClassLibrary.MapComponent TravelMap { get; set; } = default!;
@@ -89,7 +88,7 @@ public partial class TravelSearch
         FluentValidation.Results.ValidationResult validationResult = await travelQueryModelFluentValidator.ValidateAsync(travelQueryModel);
         if (validationResult.IsValid)
         {
-            await LoadRoutesAsync();
+            await LoadRoutesAsync(CancellationToken.None);
         }
         else
         {
@@ -98,23 +97,28 @@ public partial class TravelSearch
         }
     }
 
-    private async Task LoadRoutesAsync()
+    private async Task LoadRoutesAsync(CancellationToken cancellationToken)
     {
         await ClearDataAsync();
 
-        Libs.GasStationPrices.Models.Bounds bounds = await TravelMap.SearchRoutesAsync(travelQueryModel);
-
-        GasStationsViewerIsLoading = true;
-        GasStationItems.Clear();
-        StateHasChanged();
-
-        await foreach (Libs.GasStationPrices.ViewModels.GasStationModel gasStationModel in
-            GasStationPricesService.GetNearGasStationsAsync(bounds, travelQueryModel.MaxDistanceInKm, CancellationToken.None))
+        string? textToShow = await TravelMap.LoadRoutesAndGasStationsAsync(travelQueryModel, cancellationToken);
+        if (!string.IsNullOrWhiteSpace(textToShow))
         {
-            GasStationItems.Add(gasStationModel);
+            _ = Snackbar.Add(new MarkupString($"<ul>{string.Join("", textToShow)}</ul>"), MudBlazor.Severity.Error);
+            return;
         }
 
-        GasStationsViewerIsLoading = false;
-        StateHasChanged();
+        //GasStationsViewerIsLoading = true;
+        //GasStationItems.Clear();
+        //StateHasChanged();
+
+        //await foreach (Libs.GasStationPrices.ViewModels.GasStationModel gasStationModel in
+        //    GasStationPricesService.GetNearGasStationsAsync(bounds, travelQueryModel.MaxDistanceInKm, CancellationToken.None))
+        //{
+        //    GasStationItems.Add(gasStationModel);
+        //}
+
+        //GasStationsViewerIsLoading = false;
+        //StateHasChanged();
     }
 }

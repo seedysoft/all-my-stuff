@@ -2,7 +2,6 @@
 
 @attribute [StreamRendering(true)]
 
-@using Seedysoft.BlazorWebApp.Client.Components
 @using Seedysoft.Libs.GasStationPrices.ViewModels
 @using Seedysoft.Libs.MapRazorClassLibrary
 
@@ -15,12 +14,12 @@
     <MudGrid Justify="@Justify.SpaceBetween">
 
         <MudItem xs="12" md="6">
-            <MudAutocomplete @bind-Value="@travelQueryModel.Origin"
+            <MudAutocomplete @bind-Value="@travelQueryModel.Orig"
                              AutoFocus="@(!System.Diagnostics.Debugger.IsAttached)"
                              Clearable
                              DebounceInterval="450"
                              Dense
-                             For="@(() => travelQueryModel.Origin)"
+                             For="@(() => travelQueryModel.Orig)"
                              FullWidth
                              Label="Origin"
                              MaxItems="8"
@@ -38,11 +37,11 @@
         </MudItem>
 
         <MudItem xs="12" md="6">
-            <MudAutocomplete @bind-Value="@travelQueryModel.Destination"
+            <MudAutocomplete @bind-Value="@travelQueryModel.Dest"
                              Clearable
                              DebounceInterval="450"
                              Dense
-                             For="@(() => travelQueryModel.Destination)"
+                             For="@(() => travelQueryModel.Dest)"
                              FullWidth
                              Label="Destination"
                              MaxItems="8"
@@ -143,13 +142,6 @@
                     </MudTooltip>
                 }
             </MudChipSet>
-        </MudItem>
-
-        <MudItem xs="12">
-            <GasStationsViewer Elements="@GasStationItems"
-                               IsLoading="@GasStationsViewerIsLoading"
-                               PetroleumProductsSelectedIds="@travelQueryModel.PetroleumProductsSelectedIds" />
-            @* OnSelectedItemChanged="@OnGasStationSelectedItemChanged" *@
         </MudItem>
 
     </MudGrid>
