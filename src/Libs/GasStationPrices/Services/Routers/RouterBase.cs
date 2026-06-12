@@ -1,5 +1,4 @@
 ﻿using Seedysoft.Libs.GasStationPrices.Settings;
-using Seedysoft.Libs.GasStationPrices.ViewModels;
 
 namespace Seedysoft.Libs.GasStationPrices.Services.Routers;
 
@@ -14,7 +13,22 @@ internal abstract class RouterBase(Api api)
     /// <param name="model"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    internal abstract Task<IList<(string NombreRuta, double[][] Coordenadas)>> GetRoutesAsync(TravelQueryModel model, CancellationToken cancellationToken);
+    //internal abstract Task<IList<(string NombreRuta, double[][] Coordenadas)>> GetRoutesAsync(ViewModels.TravelQueryModel model, CancellationToken cancellationToken);
+    internal abstract Task<IList<(string NombreRuta, double[,] Coordenadas)>> GetRoutesAsync(ViewModels.TravelQueryModel model, CancellationToken cancellationToken);
 
-    internal static double[][] InvertLongitudeLatitude(double[][] matrix) => [.. matrix.Select(static (row, i) => new[] { row[1], row[0] })];
+    //internal static double[][] InvertLongitudeLatitude(double[][] matrix) => [.. matrix.Select(static (row, i) => new[] { row[1], row[0] })];
+    internal static double[,] InvertLongitudeLatitude(double[,] matrix)
+    {
+        var newArray = Array.CreateInstance(typeof(double), [matrix.GetLength(0), matrix.GetLength(1)]);
+
+        for (int row = 0; row < ((double[,])newArray).GetLength(0); row++)
+        {
+            for (int col = 0; col < ((double[,])newArray).GetLength(1); col++)
+            {
+                newArray.SetValue(matrix[row, col == 0 ? 1 : 0], [row, col]);
+            }
+        }
+
+        return (double[,])newArray;
+    }
 }
