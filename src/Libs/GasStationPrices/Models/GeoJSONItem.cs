@@ -48,21 +48,21 @@ public class PolygonSymbol
 
 public class GeoJSONItem
 {
-    [J("type")] public string? Type { get; init; } = "Feature";
+    [J("type")] public string? Type { get; } = "Feature";
     [J("geometry")] public PointGeometry? Geometry { get; set; }
     [J("properties")] public Properties? Properties { get; set; }
 }
 
 public class GeoJSONLineStringClass
 {
-    [J("type")] public string? Type { get; init; } = "Feature";
+    [J("type")] public string? Type { get; } = "Feature";
     [J("geometry")] public LineStringGeometry? Geometry { get; set; }
     [J("properties")] public Properties? Properties { get; set; }
 }
 
 public class PointGeometry
 {
-    [J("type")] public string? Type { get; init; } = "Point";
+    [J("type")] public string? Type { get; } = "Point";
     /// <summary>
     /// Coordinates are in the format: [lat, lng]
     /// </summary>
@@ -71,7 +71,7 @@ public class PointGeometry
 
 public class LineStringGeometry
 {
-    [J("type")] public string? Type { get; init; } = "LineString";
+    [J("type")] public string? Type { get; } = "LineString";
     /// <summary>
     /// Coordinates are in the format: [lat, lng]
     /// </summary>

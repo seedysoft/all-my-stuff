@@ -15,7 +15,8 @@ public class RoutesService(IConfiguration configuration, ILogger<RoutesService> 
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     /// <exception cref="InvalidOperationException"></exception>
-    public async Task<IList<(string NombreRuta, double[][] Coordenadas)>> GetRoutesAsync(TravelQueryModel model, CancellationToken cancellationToken)
+    public async Task<IList<(string NombreRuta, double[,] Coordenadas)>> GetRoutesAsync(TravelQueryModel model, CancellationToken cancellationToken)
+    //public async Task<IList<(string NombreRuta, double[][] Coordenadas)>> GetRoutesAsync(TravelQueryModel model, CancellationToken cancellationToken)
     {
         RouteApi? api = GeographySettings.RouteSettings.RouteApis.FirstOrDefault(x => x.RouteName == GeographySettings.RouteSettings.CurrentImplementation);
 

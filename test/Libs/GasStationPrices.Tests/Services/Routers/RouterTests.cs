@@ -22,7 +22,8 @@ public sealed class RouterTests : Infrastructure.Tests.TestClassBase
     {
         var model = ViewModels.TravelQueryModel.CreateDefault();
 
-        IList<(string NombreRuta, double[][] Coordenadas)> Result = await routesService.GetRoutesAsync(model, CancellationToken.None);
+        //IList<(string NombreRuta, double[][] Coordenadas)> Result = await routesService.GetRoutesAsync(model, CancellationToken.None);
+        IList<(string NombreRuta, double[,] Coordenadas)> Result = await routesService.GetRoutesAsync(model, CancellationToken.None);
 
         _ = await Assert.That(Result).IsNotNull();
         _ = await Assert.That(Result.Any()).IsTrue();

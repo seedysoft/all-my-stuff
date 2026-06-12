@@ -13,7 +13,8 @@ internal class OsrmRouter(Api api, Microsoft.Extensions.Logging.ILogger logger) 
     /// <param name="model"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    internal override async Task<IList<(string NombreRuta, double[][] Coordenadas)>> GetRoutesAsync(TravelQueryModel model, CancellationToken cancellationToken)
+    internal override async Task<IList<(string NombreRuta, double[,] Coordenadas)>> GetRoutesAsync(TravelQueryModel model, CancellationToken cancellationToken)
+    //internal override async Task<IList<(string NombreRuta, double[][] Coordenadas)>> GetRoutesAsync(TravelQueryModel model, CancellationToken cancellationToken)
     {
         // {origLng,origLat};{destLng,destLat}
         RestRequest restRequest = new(string.Format(Api.UrlFormat,
@@ -30,17 +31,18 @@ internal class OsrmRouter(Api api, Microsoft.Extensions.Logging.ILogger logger) 
         if (body == null)
             return [];
 
-        if (body.code != "Ok")
+        if ((body.Code ?? string.Empty) != "Ok")
         {
-            _ = logger.LogAndHandle(null, $"OSRM API returned code: {body.code}", []);
+            _ = logger.LogAndHandle(null, $"OSRM API returned code: {body.Code}", []);
             return [];
         }
 
         // Coordinates are in the format: [lng, lat]
         // We need to invert them to [lat, lng] for our application
-        IEnumerable<(string NombreRuta, double[][] Coordenadas)> Result =
-            from r in body.trips
-            select (r.weight_name, InvertLongitudeLatitude(r.geometry.coordinates));
+        IEnumerable<(string NombreRuta, double[,] Coordenadas)> Result =
+        //IEnumerable<(string NombreRuta, double[][] Coordenadas)> Result =
+            from r in body.Trips
+            select (r.WeightName, InvertLongitudeLatitude(Extensions.ArrayExtensions.To2D(r.Geometry?.Coordinates ?? [])));
 
         return [.. Result];
     }
@@ -48,43 +50,43 @@ internal class OsrmRouter(Api api, Microsoft.Extensions.Logging.ILogger logger) 
 
 public class OsrmResponse
 {
-    public string code { get; set; }
-    public Trip[] trips { get; set; }
-    public Waypoint[] waypoints { get; set; }
+    [J("code")] public string? Code { get; set; }
+    [J("trips")] public Trip[]? Trips { get; set; }
+    [J("waypoints")] public Waypoint[]? Waypoints { get; set; }
 }
 
 public class Trip
 {
-    public Leg[] legs { get; set; }
-    public string weight_name { get; set; }
-    public Geometry geometry { get; set; }
-    public float weight { get; set; }
-    public float duration { get; set; }
-    public float distance { get; set; }
+    [J("legs")] public Leg[]? Legs { get; set; }
+    [J("weight_name")] public string? WeightName { get; set; }
+    [J("geometry")] public Geometry? Geometry { get; set; }
+    [J("weight")] public float Weight { get; set; }
+    [J("duration")] public float Duration { get; set; }
+    [J("distance")] public float Distance { get; set; }
 }
 
 public class Geometry
 {
     // Coordinates are in the format: [lng, lat]
-    public double[][] coordinates { get; set; }
-    public string type { get; set; }
+    [J("coordinates")] public double[][]? Coordinates { get; set; }
+    [J("type")] public string? Type { get; set; }
 }
 
 public class Leg
 {
-    public object[] steps { get; set; }
-    public float weight { get; set; }
-    public string summary { get; set; }
-    public float duration { get; set; }
-    public float distance { get; set; }
+    [J("steps")] public object[]? Steps { get; set; }
+    [J("weight")] public float Weight { get; set; }
+    [J("summary")] public string? Summary { get; set; }
+    [J("duration")] public float Duration { get; set; }
+    [J("distance")] public float Distance { get; set; }
 }
 
 public class Waypoint
 {
-    public int waypoint_index { get; set; }
-    public float distance { get; set; }
-    public string name { get; set; }
-    public float[] location { get; set; }
-    public string hint { get; set; }
-    public int trips_index { get; set; }
+    [J("waypoint_index")] public int WaypointIndex { get; set; }
+    [J("distance")] public float Distance { get; set; }
+    [J("name")] public string? Name { get; set; }
+    [J("location")] public float[]? Location { get; set; }
+    [J("hint")] public string? Hint { get; set; }
+    [J("trips_index")] public int TripsIndex { get; set; }
 }

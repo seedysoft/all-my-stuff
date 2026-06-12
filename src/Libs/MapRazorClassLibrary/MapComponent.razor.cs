@@ -109,7 +109,7 @@ public partial class MapComponent
 
     #endregion
 
-    private readonly string[] Colors = ["#007FFF", "#0074EA", "#0069D5", "#005EC0", "#0053AB", "#004896", "#003D81", "#00326C"];
+    private readonly string[] ColorsForRoutes = ["#007FFF", "#0074EA", "#0069D5", "#005EC0", "#0053AB", "#004896", "#003D81", "#00326C"];
 
     private RealTimeMap realTimeMap = new();
 
@@ -140,17 +140,36 @@ public partial class MapComponent
     /// </remarks>
     [Parameter] public int Zoom { get; set; } = 18;
 
-    public static async Task OnAfterMapLoaded(RealTimeMap.MapEventArgs args) { }
+    public static async Task OnAfterMapLoaded(RealTimeMap.MapEventArgs args)
+    {
+        if (args.sender != null)
+            LoadGasStationAppearances(args.sender);
+    }
+
+    private static void LoadGasStationAppearances(RealTimeMap sender)
+    {
+        //sender.Geometric.Points.Appearance(item => item.type == "gas-station").pattern = new RealTimeMap.PointIcon()
+        //{
+        //    iconUrl = "https://www.google.com/s2/favicons?domain=$repsol&sz=16",
+        //};
+    }
 
     private static void OnClickMap(RealTimeMap.ClicksMapArgs args) { }
 
     private static void OnDoubleClickMap(RealTimeMap.ClicksMapArgs args) { }
 
+    public async Task ClearMapAsync()
+    {
+        await realTimeMap.Geometric.DisplayPolylinesFromArray.deleteConnectors();
+        await realTimeMap.Geometric.Points.delete();
+    }
+
     public async Task<string?> LoadRoutesAndGasStationsAsync(GasStationPrices.ViewModels.TravelQueryModel model, CancellationToken cancellationToken)
     {
         await ClearMapAsync();
 
-        IList<(string NombreRuta, double[][] Coordenadas)> res = await RoutesService.GetRoutesAsync(model, cancellationToken);
+        //IList<(string NombreRuta, double[][] Coordenadas)> res = await RoutesService.GetRoutesAsync(model, cancellationToken);
+        IList<(string NombreRuta, double[,] Coordenadas)> res = await RoutesService.GetRoutesAsync(model, cancellationToken);
 
         if (res.Count == 0)
             return "No routes found";
@@ -163,275 +182,137 @@ public partial class MapComponent
 
         return null;
 
-        //List<GasStationPrices.Models.GeoJSONItem> inputPointsList =
-        //[
-        //    new GasStationPrices.Models.GeoJSONItem()
-        //    {
-        //        Type = "Feature",
-        //        Geometry = new GasStationPrices.Models.PointGeometry()
-        //        {
-        //            Type = "Point",
-        //            Coordinates = [43.96898521116147, 25.337392340780355],
-        //        },
-        //        Properties = new GasStationPrices.Models.Properties()
-        //        {
-        //            Name = "name",
-        //        },
-        //    },
-        //    new GasStationPrices.Models.GeoJSONItem()
-        //    {
-        //        Type = "Feature",
-        //        Geometry = new GasStationPrices.Models.PointGeometry()
-        //        {
-        //            Type = "Point",
-        //            Coordinates  = [43.97596818245641, 25.33369159513244],
-        //        },
-        //        Properties = new GasStationPrices.Models.Properties()
-        //        {
-        //            Name = "name",
-        //        },
-        //    },
-        //];
-        //GasStationPrices.Models.GeoJSONPointAppearanceClass pointsAppearance = new()
-        //{
-        //    Data = [.. inputPointsList],
-        //    Name = "points",
-        //    Symbology = new GasStationPrices.Models.PointSymbol()
-        //    {
-        //        Color = "red",
-        //        Radius = 10,
-        //    },
-        //    Tooltip = new GasStationPrices.Models.Tooltip()
-        //    {
-        //        Content = "Points",
-        //        Offset = [2, 2],
-        //        Permanent = true,
-        //        Opacity = 0.6,
-        //        VisibilityZoomLevels = new GasStationPrices.Models.VisibilityZoomLevel()
-        //        {
-        //            MaxZoomLevel = 16,
-        //            MinZoomLevel = 14,
-        //        },
-        //    }
-        //};
-        //await realTimeMap.Geometric.DataFromGeoJSON.addObject(pointsAppearance);
+        // Samples obtained from https://github.com/ichim/LeafletForBlazor-NuGet/issues/75
 
-        async Task LoadRouteDataIntoMapAsync(IList<(string NombreRuta, double[][] Coordenadas)> res)
+        //async Task LoadRouteDataIntoMapAsync(IList<(string NombreRuta, double[][] Coordenadas)> res)
+        async Task LoadRouteDataIntoMapAsync(IList<(string NombreRuta, double[,] Coordenadas)> res)
         {
             for (int i = 0; i < res.Count; i++)
             {
-                (string? NombreRuta, double[][]? Coordenadas) = res[i];
+                //(string? NombreRuta, double[][]? Coordenadas) = res[i];
+                (string? NombreRuta, double[,]? Coordenadas) = res[i];
 
-                GasStationPrices.Models.GeoJSONLineStringClass inputPolygon = new()
-                {
-                    Geometry = new GasStationPrices.Models.LineStringGeometry()
-                    {
-                        Type = "Polyline",
-                        Coordinates = Coordenadas,
-                    },
-                    Properties = new GasStationPrices.Models.Properties(NombreRuta),
-                };
+                await realTimeMap.Geometric.DisplayPolylinesFromArray.addConnector(arrayPolyline: Coordenadas, start: 1);
 
-                GasStationPrices.Models.GeoJSONPolygonAppearanceClass polygonAppearance = new()
-                {
-                    Data = [inputPolygon],
-                    Name = NombreRuta,
-                    Symbology = new GasStationPrices.Models.PolygonSymbol()
-                    {
-                        Color = Colors[i],
-                        Opacity = 0.6,
-                        Weight = 8,
-                    },
-                    Tooltip = new GasStationPrices.Models.Tooltip()
-                    {
-                        Content = NombreRuta,
-                        CoordinateInversion = false,
-                        Offset = [0, -10],
-                        Opacity = 0.9f,
-                        Permanent = false,
-                        VisibilityZoomLevels = new GasStationPrices.Models.VisibilityZoomLevel()
-                        {
-                            MaxZoomLevel = 18,
-                            MinZoomLevel = 0,
-                        },
-                    }
-                };
+                //GasStationPrices.Models.GeoJSONLineStringClass inputPolygon = new()
+                //{
+                //    Geometry = new GasStationPrices.Models.LineStringGeometry() { Coordinates = Coordenadas, },
+                //    Properties = new GasStationPrices.Models.Properties(NombreRuta),
+                //};
 
-                await realTimeMap.Geometric.DataFromGeoJSON.addObject(polygonAppearance);
+                //GasStationPrices.Models.GeoJSONPolygonAppearanceClass polygonAppearance = new()
+                //{
+                //    Data = [inputPolygon],
+                //    Name = NombreRuta,
+                //    Symbology = new GasStationPrices.Models.PolygonSymbol()
+                //    {
+                //        Color = ColorsForRoutes[i],
+                //        Opacity = 0.6,
+                //        Weight = 8,
+                //    },
+                //    Tooltip = new GasStationPrices.Models.Tooltip()
+                //    {
+                //        Content = NombreRuta,
+                //        CoordinateInversion = false,
+                //        Offset = [0, -10],
+                //        Opacity = 0.9f,
+                //        Permanent = false,
+                //        VisibilityZoomLevels = new GasStationPrices.Models.VisibilityZoomLevel()
+                //        {
+                //            MaxZoomLevel = 18,
+                //            MinZoomLevel = 0,
+                //        },
+                //    }
+                //};
+
+                //await realTimeMap.Geometric.DataFromGeoJSON.addObject(polygonAppearance);
             }
         }
 
-        GasStationPrices.Models.Bounds ComputeBoundsFromRoutes(IList<(string NombreRuta, double[][] Coordenadas)> res)
+        //GasStationPrices.Models.Bounds ComputeBoundsFromRoutes(IList<(string NombreRuta, double[][] Coordenadas)> res)
+        GasStationPrices.Models.Bounds ComputeBoundsFromRoutes(IList<(string NombreRuta, double[,] Coordenadas)> res)
         {
-            RealTimeMap.Bounds bounds = new()
+            RealTimeMap.Bounds routeBounds = new()
             {
                 northEast = new RealTimeMap.Location()
                 {
-                    latitude = res.SelectMany(r => r.Coordenadas).Max(c => c[0]),
-                    longitude = res.SelectMany(r => r.Coordenadas).Max(c => c[1]),
+                    latitude = -90.0,
+                    longitude = -60.0,
                 },
                 southWest = new RealTimeMap.Location()
                 {
-                    latitude = res.SelectMany(r => r.Coordenadas).Min(c => c[0]),
-                    longitude = res.SelectMany(r => r.Coordenadas).Min(c => c[1]),
+                    latitude = 90.0,
+                    longitude = 60.0,
                 },
             };
-            realTimeMap.View.setBounds = bounds;
+            foreach ((string NombreRuta, double[,] Coordenadas) in res)
+            {
+                for (int i = 0; i < Coordenadas.GetLength(0); i++)
+                {
+                    for (int j = 0; j < Coordenadas.GetLength(1); j++)
+                    {
+                        double v = Coordenadas[i, j];
 
-            GasStationPrices.Models.Bounds ourBounds = new()
+                        if (j == 0)
+                        {
+                            // latitude
+                            if (v > routeBounds.northEast.latitude)
+                                routeBounds.northEast.latitude = v;
+                            if (v < routeBounds.southWest.latitude)
+                                routeBounds.southWest.latitude = v;
+                        }
+                        else
+                        {
+                            // longitude
+                            if (v > routeBounds.northEast.longitude)
+                                routeBounds.northEast.longitude = v;
+                            if (v < routeBounds.southWest.longitude)
+                                routeBounds.southWest.longitude = v;
+                        }
+                    }
+                }
+            }
+
+            realTimeMap.View.setBounds = routeBounds;
+
+            GasStationPrices.Models.Bounds boundsForGasStations = new()
             {
                 NorthEast = new GasStationPrices.Models.Location()
                 {
-                    Latitude = bounds.northEast.latitude,
-                    Longitude = bounds.northEast.longitude,
+                    Latitude = routeBounds.northEast.latitude,
+                    Longitude = routeBounds.northEast.longitude,
                 },
                 SouthWest = new GasStationPrices.Models.Location()
                 {
-                    Latitude = bounds.southWest.latitude,
-                    Longitude = bounds.southWest.longitude,
+                    Latitude = routeBounds.southWest.latitude,
+                    Longitude = routeBounds.southWest.longitude,
                 },
             };
-            return ourBounds;
+
+            return boundsForGasStations;
         }
 
-        async Task LoadGasStationsIntoMapAsync(GasStationPrices.ViewModels.TravelQueryModel model, GasStationPrices.Models.Bounds ourBounds, CancellationToken cancellationToken)
+        async Task LoadGasStationsIntoMapAsync(GasStationPrices.ViewModels.TravelQueryModel model, GasStationPrices.Models.Bounds bounds, CancellationToken cancellationToken)
         {
-            List<GasStationPrices.Models.GeoJSONItem> geoJSONItems =
-                await GasStationPricesService.GetNearGasStationsAsync(ourBounds, model.MaxDistanceInKm, cancellationToken)
-                .Select(x => new GasStationPrices.Models.GeoJSONItem()
+            var gasStationPoints = (await GasStationPricesService.GetNearGasStationsAsync(bounds, model.MaxDistanceInKm, cancellationToken))
+                .Select(x => new RealTimeMap.StreamPoint()
                 {
-                    Geometry = new GasStationPrices.Models.PointGeometry()
-                    {
-                        Coordinates = [x.Lat, x.Lng],
-                    },
-                    Properties = new GasStationPrices.Models.Properties(x.Rotulo),
+                    guid = Guid.NewGuid(),
+                    latitude = x.Lat,
+                    longitude = x.Lng,
+                    //timestamp =,
+                    type = "gas-station",
+                    value = x,
                 })
-                .ToListAsync(cancellationToken);
-            GasStationPrices.Models.GeoJSONPointAppearanceClass pointsAppearance = new()
+                .ToList();
+
+            await realTimeMap.Geometric.Points.upload(gasStationPoints, newCollection: false, pattern: new RealTimeMap.PointTooltip()
             {
-                Data = [.. geoJSONItems],
-                Name = "points",
-                Symbology = new GasStationPrices.Models.PointSymbol()
-                {
-                    Color = "red",
-                    FillColor = "blue",
-                    FillOpacity = 1,
-                    Opacity = 1,
-                    Radius = 10,
-                    Weight = 10,
-                },
-                Tooltip = new GasStationPrices.Models.Tooltip()
-                {
-                    Content = "Points",
-                    Offset = [2, 2],
-                    Permanent = true,
-                    Opacity = 0.6,
-                    VisibilityZoomLevels = new GasStationPrices.Models.VisibilityZoomLevel()
-                    {
-                        MaxZoomLevel = 30,
-                        MinZoomLevel = 0,
-                    },
-                }
-            };
-            await realTimeMap.Geometric.DataFromGeoJSON.addObject(pointsAppearance);
+                content = "<strong>${value.Rotulo}</strong>",
+                //offset =,
+                opacity = 0.8,
+                //permanent = true, // default value
+            });
         }
-
-        //List<Geography.Models.GeoJSONItem> inputPointsList =
-        //[
-        //    new Geography.Models.GeoJSONItem()
-        //    {
-        //        Type = "Feature",
-        //        Geometry = new Geography.Models.PointGeometry()
-        //        {
-        //            Type = "Point",
-        //            Coordinates = [43.96898521116147, 25.337392340780355],
-        //        },
-        //        Properties = new Geography.Models.Properties()
-        //        {
-        //            Name = "name",
-        //        },
-        //    },
-        //    new Geography.Models.GeoJSONItem()
-        //    {
-        //        Type = "Feature",
-        //        Geometry = new Geography.Models.PointGeometry()
-        //        {
-        //            Type = "Point",
-        //            Coordinates  = [43.97596818245641, 25.33369159513244],
-        //        },
-        //        Properties = new Geography.Models.Properties()
-        //        {
-        //            Name = "name",
-        //        },
-        //    },
-        //];
-        //Geography.Models.GeoJSONPointAppearanceClass pointsAppearance = new()
-        //{
-        //    Data = [.. inputPointsList],
-        //    Name = "points",
-        //    Symbology = new Geography.Models.PointSymbol()
-        //    {
-        //        Color = "red",
-        //        Radius = 10,
-        //    },
-        //    Tooltip = new Geography.Models.Tooltip()
-        //    {
-        //        Content = "Points",
-        //        Offset = [2, 2],
-        //        Permanent = true,
-        //        Opacity = 0.6,
-        //        VisibilityZoomLevels = new Geography.Models.VisibilityZoomLevel()
-        //        {
-        //            MaxZoomLevel = 16,
-        //            MinZoomLevel = 14,
-        //        },
-        //    }
-        //};
-        //await realTimeMap.Geometric.DataFromGeoJSON.addObject(pointsAppearance);
-
-        //List<Geography.Models.GeoJSONLineStringClass> inputPolygonList =
-        //[
-        //    new Geography.Models.GeoJSONLineStringClass()
-        //    {
-        //        Type = "Feature",
-        //        Geometry = new Geography.Models.LineStringGeometry()
-        //        {
-        //            Type = "Polyline",
-        //            Coordinates =
-        //            [
-        //                [43.97209871008421, 25.32876177213506],
-        //                [43.97200458957660, 25.32911901903800],
-        //                [43.97191506364906, 25.32894358371036],
-        //                [43.97174519194365, 25.32888935676797],
-        //                [43.97186226638604, 25.32880323607917],
-        //                [43.97183242466567, 25.32865650950876],
-        //             ],
-        //        },
-        //        Properties = new Geography.Models.Properties()
-        //        {
-        //            Name = "name",
-        //        },
-        //    },
-        //];
-        //Geography.Models.GeoJSONPolygonAppearanceClass polygonsAppearance = new()
-        //{
-        //    Data = [.. inputPolygonList],
-        //    Name = "Polygon",
-        //    Symbology = new Geography.Models.PolygonSymbol()
-        //    {
-        //        Color = "red",
-        //        Opacity = 0.6,
-        //        Weight = 8,
-        //    },
-        //};
-        //await realTimeMap.Geometric.DataFromGeoJSON.addObject(polygonsAppearance);
-
-    }
-
-    public async Task ClearMapAsync()
-    {
-        await realTimeMap.Geometric.DataFromGeoJSON.clearMap();
-
-        //realTimeMap.Map.refresh();
     }
 }
