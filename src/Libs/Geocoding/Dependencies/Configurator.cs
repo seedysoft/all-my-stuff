@@ -10,8 +10,8 @@ public sealed class Configurator : Core.Dependencies.ConfiguratorBase
         string CurrentEnvironmentName = hostApplicationBuilder.Environment.EnvironmentName;
 
         _ = hostApplicationBuilder.Configuration
-            .AddJsonFile($"appsettings.{nameof(Settings.GeographySettings)}.json", optional: false, reloadOnChange: true)
-            .AddJsonFile($"appsettings.{nameof(Settings.GeographySettings)}.{CurrentEnvironmentName}.json", optional: false, reloadOnChange: true);
+            .AddJsonFile($"appsettings.{nameof(Settings.GeocodingSettings)}.json", optional: false, reloadOnChange: true)
+            .AddJsonFile($"appsettings.{nameof(Settings.GeocodingSettings)}.{CurrentEnvironmentName}.json", optional: false, reloadOnChange: true);
         ;
     }
 
