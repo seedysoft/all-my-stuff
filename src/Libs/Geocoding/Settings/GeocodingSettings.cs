@@ -1,6 +1,6 @@
 ﻿namespace Seedysoft.Libs.Geocoding.Settings;
 
-public readonly record struct GeographySettings
+public readonly record struct GeocodingSettings
 {
     /// <summary>
     /// 

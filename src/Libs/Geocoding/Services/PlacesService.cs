@@ -5,7 +5,7 @@ using Seedysoft.Libs.Core.Extensions;
 
 namespace Seedysoft.Libs.Geocoding.Services;
 
-public class PlacesService(IConfiguration configuration, ILogger<PlacesService> logger) : GeographyServiceBase(configuration)
+public class PlacesService(IConfiguration configuration, ILogger<PlacesService> logger) : GeocodingServiceBase(configuration)
 {
     public async Task<IEnumerable<ViewModels.Place>> FindPlacesAsync(string textToFind, CancellationToken cancellationToken)
     {
@@ -14,8 +14,8 @@ public class PlacesService(IConfiguration configuration, ILogger<PlacesService> 
             if (string.IsNullOrWhiteSpace(textToFind))
                 return [];
 
-            RestClient restClient = new(new Uri(GeographySettings.PlacesApi.UrlFormat).GetLeftPart(UriPartial.Authority));
-            Models.PlaceModel[]? restResponse = await restClient.GetAsync<Models.PlaceModel[]>(GeographySettings.PlacesApi.GetUrl(textToFind), cancellationToken);
+            RestClient restClient = new(new Uri(GeocodingSettings.PlacesApi.UrlFormat).GetLeftPart(UriPartial.Authority));
+            Models.PlaceModel[]? restResponse = await restClient.GetAsync<Models.PlaceModel[]>(GeocodingSettings.PlacesApi.GetUrl(textToFind), cancellationToken);
 
             if (restResponse == null)
                 return [];
