@@ -2,14 +2,11 @@
 
 public record class ProductoPetrolifero : IComparable<ProductoPetrolifero>
 {
-    [J("IDProducto"), K(typeof(Core.Extensions.ParseStringConverter))]
-    public required Constants.ProductoPetroliferoId IdProducto { get; init; }
+    [J("IDProducto"), K(typeof(Core.Extensions.ParseStringConverter))] public required Constants.ProductoPetroliferoId IdProducto { get; init; }
 
-    [J("NombreProducto")]
-    public required string Nombre { get; init; }
+    [J("NombreProducto")] public required string Nombre { get; init; }
 
-    [J("NombreProductoAbreviatura")]
-    public required string Abreviatura { get; init; }
+    [J("NombreProductoAbreviatura")] public required string Abreviatura { get; init; }
 
     public int CompareTo(ProductoPetrolifero? other) => Abreviatura.CompareTo(other?.Abreviatura);
 

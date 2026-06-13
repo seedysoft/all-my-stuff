@@ -8,5 +8,7 @@ public readonly record struct RouteImplementations
 
     //public const string MapboxDirections = "MapboxDirections";
 
-    public const string OSRM = "OSRM";
+    public const string OpenSourceRoutingMachine = "OSRM";
+
+    public const string Here = "https://docs.here.com/routing/docs/routing-v8-get-started";
 }
