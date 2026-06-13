@@ -1,10 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Seedysoft.Libs.GasStationPrices.Services.Routers;
-using Seedysoft.Libs.GasStationPrices.Settings;
-using Seedysoft.Libs.GasStationPrices.ViewModels;
 
-namespace Seedysoft.Libs.GasStationPrices.Services;
+namespace Seedysoft.Libs.GasStationPrices.Services.Routers;
 
 public class RoutesService(IConfiguration configuration, ILogger<RoutesService> logger) : GeographyServiceBase(configuration)
 {
@@ -15,26 +12,24 @@ public class RoutesService(IConfiguration configuration, ILogger<RoutesService> 
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     /// <exception cref="InvalidOperationException"></exception>
-    public async Task<IList<(string NombreRuta, double[,] Coordenadas)>> GetRoutesAsync(TravelQueryModel model, CancellationToken cancellationToken)
+    public async Task<IList<(string NombreRuta, double[,] Coordenadas)>> GetRoutesAsync(ViewModels.TravelQueryModel model, CancellationToken cancellationToken)
     //public async Task<IList<(string NombreRuta, double[][] Coordenadas)>> GetRoutesAsync(TravelQueryModel model, CancellationToken cancellationToken)
     {
-        RouteApi? api = GeographySettings.RouteSettings.RouteApis.FirstOrDefault(x => x.RouteName == GeographySettings.RouteSettings.CurrentImplementation);
+        Settings.RouteApi api = GeographySettings.RouteSettings.RouteApis.First(x => x.RouteName == GeographySettings.RouteSettings.CurrentImplementation);
 
         RouterBase router = GeographySettings.RouteSettings.CurrentImplementation switch
         {
-            #pragma warning disable format
-            
-            //RouteImplementations.CartoCiudad       => new Routers.CartoCiudadRouter(api!, logger),
+#pragma warning disable format
+            //Settings.RouteImplementations.CartoCiudad                => new Routers.CartoCiudadRouter(api, logger),
 
-            //RouteImplementations.Google            => new Routers.GoogleRoutes(api!, logger),
+            //Settings.RouteImplementations.Google                     => new Routers.GoogleRoutes(api, logger),
             
-            //RouteImplementations.MapboxDirections  => new Routers.MapboxDirectionsRouter(api!, logger),
+            //Settings.RouteImplementations.MapboxDirections           => new Routers.MapboxDirectionsRouter(api, logger),
             
-            RouteImplementations.OSRM              => new OsrmRouter(api!, logger),
+            Settings.RouteImplementations.OpenSourceRoutingMachine   => new OsrmRouter(api, logger),
+#pragma warning restore format
 
             _ => throw new InvalidOperationException($"Unsupported router: {GeographySettings.RouteSettings.CurrentImplementation}"),
-            
-            #pragma warning restore format
         };
 
         if (logger.IsEnabled(LogLevel.Information))

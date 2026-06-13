@@ -23,6 +23,6 @@ public sealed class Configurator : Core.Dependencies.ConfiguratorBase
     {
         hostApplicationBuilder.Services.TryAddScoped<Services.GasStationPricesService>();
         hostApplicationBuilder.Services.TryAddScoped<Services.PlacesService>();
-        hostApplicationBuilder.Services.TryAddScoped<Services.RoutesService>();
+        hostApplicationBuilder.Services.TryAddScoped<Services.Routers.RoutesService>();
     }
 }

@@ -114,7 +114,7 @@ public partial class MapComponent
     private RealTimeMap realTimeMap = new();
 
     [Inject] private GasStationPrices.Services.GasStationPricesService GasStationPricesService { get; set; } = default!;
-    [Inject] private GasStationPrices.Services.RoutesService RoutesService { get; set; } = default!;
+    [Inject] private GasStationPrices.Services.Routers.RoutesService RoutesService { get; set; } = default!;
 
     /// <summary>
     /// Gets or sets the height of the <see cref="RealTimeMap" />.

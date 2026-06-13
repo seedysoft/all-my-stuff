@@ -1,6 +1,6 @@
 ﻿namespace Seedysoft.Libs.GasStationPrices.Settings;
 
-public record class GasStationPricesSettings
+public record GasStationPricesSettings
 {
     public required Minetur Minetur { get; init; }
 }
@@ -8,18 +8,22 @@ public record class GasStationPricesSettings
 /// <summary>
 /// For help visit https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/help
 /// </summary>
-public record class Minetur
+public record Minetur
 {
     public required Urls Urls { get; init; }
 }
 
-public record class Urls
+public record Urls
 {
+    [J("Base")]
     public required string Base { get; init; }
 
+    [J("EstacionesTerrestres")]
     public required string EstacionesTerrestres { get; init; }
 
+    [J("EstacionesTerrestresFiltroProducto")]
     public required string EstacionesTerrestresFiltroProducto { get; init; }
 
+    [J("ListadosBase")]
     public required string ListadosBase { get; init; }
 }

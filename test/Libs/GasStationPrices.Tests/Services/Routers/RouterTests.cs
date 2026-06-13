@@ -6,7 +6,7 @@ namespace Seedysoft.Libs.GasStationPrices.Tests.Services.Routers;
 
 public sealed class RouterTests : Infrastructure.Tests.TestClassBase
 {
-    private readonly GasStationPrices.Services.RoutesService routesService = default!;
+    private readonly GasStationPrices.Services.Routers.RoutesService routesService = default!;
 
     public RouterTests() : base()
     {
@@ -14,7 +14,7 @@ public sealed class RouterTests : Infrastructure.Tests.TestClassBase
         _ = appBuilder.AddAllMyDependencies();
         ServiceProvider serviceProvider = appBuilder.Services.BuildServiceProvider();
 
-        routesService = serviceProvider.GetRequiredService<GasStationPrices.Services.RoutesService>();
+        routesService = serviceProvider.GetRequiredService<GasStationPrices.Services.Routers.RoutesService>();
     }
 
     [Test]
