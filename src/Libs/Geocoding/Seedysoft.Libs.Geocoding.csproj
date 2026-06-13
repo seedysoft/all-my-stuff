@@ -9,30 +9,30 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Content Include="appsettings.GasStationPricesSettings.json">
+        <Content Include="appsettings.GeocodingSettings.json">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
     </ItemGroup>
 
     <ItemGroup Condition="'$(Configuration)' == 'Debug'">
-        <Content Include="appsettings.GasStationPricesSettings.Development.json">
+        <Content Include="appsettings.GeocodingSettings.Development.json">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-            <DependentUpon>appsettings.GasStationPricesSettings.json</DependentUpon>
+            <DependentUpon>appsettings.GeocodingSettings.json</DependentUpon>
         </Content>
-        <None Include="appsettings.GasStationPricesSettings.Production.json">
+        <None Include="appsettings.GeocodingSettings.Production.json">
             <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-            <DependentUpon>appsettings.GasStationPricesSettings.json</DependentUpon>
+            <DependentUpon>appsettings.GeocodingSettings.json</DependentUpon>
         </None>
     </ItemGroup>
 
     <ItemGroup Condition="'$(Configuration)' == 'Release'">
-        <None Include="appsettings.GasStationPricesSettings.Development.json">
+        <None Include="appsettings.GeocodingSettings.Development.json">
             <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-            <DependentUpon>appsettings.GasStationPricesSettings.json</DependentUpon>
+            <DependentUpon>appsettings.GeocodingSettings.json</DependentUpon>
         </None>
-        <Content Include="appsettings.GasStationPricesSettings.Production.json">
+        <Content Include="appsettings.GeocodingSettings.Production.json">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-            <DependentUpon>appsettings.GasStationPricesSettings.json</DependentUpon>
+            <DependentUpon>appsettings.GeocodingSettings.json</DependentUpon>
         </Content>
     </ItemGroup>
 
@@ -65,7 +65,6 @@
         <ProjectReference Include="..\..\Libs\Infrastructure\Seedysoft.Libs.Infrastructure.csproj" />
         <ProjectReference Include="..\Core\Seedysoft.Libs.Core.csproj" />
         <ProjectReference Include="..\Cryptography\Seedysoft.Libs.Cryptography.csproj" />
-        <ProjectReference Include="..\Geocoding\Seedysoft.Libs.Geocoding.csproj" />
     </ItemGroup>
 
     <ItemGroup>
@@ -73,6 +72,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <InternalsVisibleTo Include="Seedysoft.Libs.GasStationPrices.Tests" />
+        <InternalsVisibleTo Include="Seedysoft.Libs.Geocoding.Tests" />
     </ItemGroup>
 </Project>

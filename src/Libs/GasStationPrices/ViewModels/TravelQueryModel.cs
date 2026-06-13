@@ -2,9 +2,9 @@
 
 public record class TravelQueryModel
 {
-    public required Place Orig { get; set; }
+    public required Geocoding.ViewModels.Place Orig { get; set; }
 
-    public required Place Dest { get; set; }
+    public required Geocoding.ViewModels.Place Dest { get; set; }
 
     public required int MaxDistanceInKm { get; set; }
 
@@ -15,17 +15,17 @@ public record class TravelQueryModel
     {
         return new()
         {
-            Orig = new Place()
+            Orig = new Geocoding.ViewModels.Place()
             {
                 Address = "CALLE JUAN RAMON JIMENEZ 8, Burgos",
-                Latitude = 42.35436,
-                Longitude = -3.66279,
+                Latitude = Geocoding.Constants.Earth.Burgos.Lat,
+                Longitude = Geocoding.Constants.Earth.Burgos.Lng,
             },
-            Dest = new Place()
+            Dest = new Geocoding.ViewModels.Place()
             {
                 Address = "CALLE IGLESIA 12, Brazuelo",
-                Latitude = 42.49745,
-                Longitude = -6.15617,
+                Latitude = Geocoding.Constants.Earth.Brazuelo.Lat,
+                Longitude = Geocoding.Constants.Earth.Brazuelo.Lng,
             },
             MaxDistanceInKm = 10,
             PetroleumProductsSelectedIds = Models.Minetur.ProductoPetrolifero.Gasoline.Select(static x => x.IdProducto).ToHashSet(),
@@ -35,13 +35,13 @@ public record class TravelQueryModel
     {
         return new()
         {
-            Orig = new Place()
+            Orig = new Geocoding.ViewModels.Place()
             {
                 Address = string.Empty,
                 Latitude = 0.0,
                 Longitude = 0.0,
             },
-            Dest = new Place()
+            Dest = new Geocoding.ViewModels.Place()
             {
                 Address = string.Empty,
                 Latitude = 0.0,
