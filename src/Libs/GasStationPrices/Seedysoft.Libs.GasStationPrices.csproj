@@ -12,9 +12,6 @@
         <Content Include="appsettings.GasStationPricesSettings.json">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
-        <Content Include="appsettings.GeographySettings.json">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </Content>
     </ItemGroup>
 
     <ItemGroup Condition="'$(Configuration)' == 'Debug'">
@@ -36,28 +33,6 @@
         <Content Include="appsettings.GasStationPricesSettings.Production.json">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
             <DependentUpon>appsettings.GasStationPricesSettings.json</DependentUpon>
-        </Content>
-    </ItemGroup>
-
-    <ItemGroup Condition="'$(Configuration)' == 'Debug'">
-        <Content Include="appsettings.GeographySettings.Development.json">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-            <DependentUpon>appsettings.GeographySettings.json</DependentUpon>
-        </Content>
-        <None Include="appsettings.GeographySettings.Production.json">
-            <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-            <DependentUpon>appsettings.GeographySettings.json</DependentUpon>
-        </None>
-    </ItemGroup>
-
-    <ItemGroup Condition="'$(Configuration)' == 'Release'">
-        <None Include="appsettings.GeographySettings.Development.json">
-            <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-            <DependentUpon>appsettings.GeographySettings.json</DependentUpon>
-        </None>
-        <Content Include="appsettings.GeographySettings.Production.json">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-            <DependentUpon>appsettings.GeographySettings.json</DependentUpon>
         </Content>
     </ItemGroup>
 
@@ -90,6 +65,7 @@
         <ProjectReference Include="..\..\Libs\Infrastructure\Seedysoft.Libs.Infrastructure.csproj" />
         <ProjectReference Include="..\Core\Seedysoft.Libs.Core.csproj" />
         <ProjectReference Include="..\Cryptography\Seedysoft.Libs.Cryptography.csproj" />
+        <ProjectReference Include="..\Geocoding\Seedysoft.Libs.Geocoding.csproj" />
     </ItemGroup>
 
     <ItemGroup>

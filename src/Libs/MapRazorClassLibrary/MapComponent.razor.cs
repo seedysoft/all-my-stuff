@@ -85,8 +85,8 @@ public partial class MapComponent
         },
         location = new RealTimeMap.Location()
         {
-            latitude = GasStationPrices.Constants.Earth.Home.Center.Lat,
-            longitude = GasStationPrices.Constants.Earth.Home.Center.Lng,
+            latitude = Geocoding.Constants.Earth.Burgos.Lat,
+            longitude = Geocoding.Constants.Earth.Burgos.Lng,
         },
         zoomLevel = 14,
     };
@@ -114,7 +114,7 @@ public partial class MapComponent
     private RealTimeMap realTimeMap = new();
 
     [Inject] private GasStationPrices.Services.GasStationPricesService GasStationPricesService { get; set; } = default!;
-    [Inject] private GasStationPrices.Services.Routers.RoutesService RoutesService { get; set; } = default!;
+    [Inject] private Geocoding.Services.Routers.RoutesService RoutesService { get; set; } = default!;
 
     /// <summary>
     /// Gets or sets the height of the <see cref="RealTimeMap" />.
@@ -168,15 +168,14 @@ public partial class MapComponent
     {
         await ClearMapAsync();
 
-        //IList<(string NombreRuta, double[][] Coordenadas)> res = await RoutesService.GetRoutesAsync(model, cancellationToken);
-        IList<(string NombreRuta, double[,] Coordenadas)> res = await RoutesService.GetRoutesAsync(model, cancellationToken);
+        IList<(string NombreRuta, double[,] Coordenadas)> res = await RoutesService.GetRoutesAsync(model.Orig.Location, model.Dest.Location, cancellationToken);
 
         if (res.Count == 0)
             return "No routes found";
 
         await LoadRouteDataIntoMapAsync(res);
 
-        GasStationPrices.Models.Bounds ourBounds = ComputeBoundsFromRoutes(res);
+        Geocoding.Models.Bounds ourBounds = ComputeBoundsFromRoutes(res);
 
         await LoadGasStationsIntoMapAsync(model, ourBounds, cancellationToken);
 
@@ -184,53 +183,17 @@ public partial class MapComponent
 
         // Samples obtained from https://github.com/ichim/LeafletForBlazor-NuGet/issues/75
 
-        //async Task LoadRouteDataIntoMapAsync(IList<(string NombreRuta, double[][] Coordenadas)> res)
         async Task LoadRouteDataIntoMapAsync(IList<(string NombreRuta, double[,] Coordenadas)> res)
         {
             for (int i = 0; i < res.Count; i++)
             {
-                //(string? NombreRuta, double[][]? Coordenadas) = res[i];
                 (string? NombreRuta, double[,]? Coordenadas) = res[i];
 
                 await realTimeMap.Geometric.DisplayPolylinesFromArray.addConnector(arrayPolyline: Coordenadas, start: 1);
-
-                //GasStationPrices.Models.GeoJSONLineStringClass inputPolygon = new()
-                //{
-                //    Geometry = new GasStationPrices.Models.LineStringGeometry() { Coordinates = Coordenadas, },
-                //    Properties = new GasStationPrices.Models.Properties(NombreRuta),
-                //};
-
-                //GasStationPrices.Models.GeoJSONPolygonAppearanceClass polygonAppearance = new()
-                //{
-                //    Data = [inputPolygon],
-                //    Name = NombreRuta,
-                //    Symbology = new GasStationPrices.Models.PolygonSymbol()
-                //    {
-                //        Color = ColorsForRoutes[i],
-                //        Opacity = 0.6,
-                //        Weight = 8,
-                //    },
-                //    Tooltip = new GasStationPrices.Models.Tooltip()
-                //    {
-                //        Content = NombreRuta,
-                //        CoordinateInversion = false,
-                //        Offset = [0, -10],
-                //        Opacity = 0.9f,
-                //        Permanent = false,
-                //        VisibilityZoomLevels = new GasStationPrices.Models.VisibilityZoomLevel()
-                //        {
-                //            MaxZoomLevel = 18,
-                //            MinZoomLevel = 0,
-                //        },
-                //    }
-                //};
-
-                //await realTimeMap.Geometric.DataFromGeoJSON.addObject(polygonAppearance);
             }
         }
 
-        //GasStationPrices.Models.Bounds ComputeBoundsFromRoutes(IList<(string NombreRuta, double[][] Coordenadas)> res)
-        GasStationPrices.Models.Bounds ComputeBoundsFromRoutes(IList<(string NombreRuta, double[,] Coordenadas)> res)
+        Geocoding.Models.Bounds ComputeBoundsFromRoutes(IList<(string NombreRuta, double[,] Coordenadas)> res)
         {
             RealTimeMap.Bounds routeBounds = new()
             {
@@ -275,24 +238,16 @@ public partial class MapComponent
 
             realTimeMap.View.setBounds = routeBounds;
 
-            GasStationPrices.Models.Bounds boundsForGasStations = new()
+            Geocoding.Models.Bounds boundsForGasStations = new()
             {
-                NorthEast = new GasStationPrices.Models.Location()
-                {
-                    Latitude = routeBounds.northEast.latitude,
-                    Longitude = routeBounds.northEast.longitude,
-                },
-                SouthWest = new GasStationPrices.Models.Location()
-                {
-                    Latitude = routeBounds.southWest.latitude,
-                    Longitude = routeBounds.southWest.longitude,
-                },
+                NorthEast = new Geocoding.Models.Location() { Latitude = routeBounds.northEast.latitude, Longitude = routeBounds.northEast.longitude },
+                SouthWest = new Geocoding.Models.Location() { Latitude = routeBounds.southWest.latitude, Longitude = routeBounds.southWest.longitude },
             };
 
             return boundsForGasStations;
         }
 
-        async Task LoadGasStationsIntoMapAsync(GasStationPrices.ViewModels.TravelQueryModel model, GasStationPrices.Models.Bounds bounds, CancellationToken cancellationToken)
+        async Task LoadGasStationsIntoMapAsync(GasStationPrices.ViewModels.TravelQueryModel model, Geocoding.Models.Bounds bounds, CancellationToken cancellationToken)
         {
             var gasStationPoints = (await GasStationPricesService.GetNearGasStationsAsync(bounds, model.MaxDistanceInKm, cancellationToken))
                 .Select(x => new RealTimeMap.StreamPoint()
