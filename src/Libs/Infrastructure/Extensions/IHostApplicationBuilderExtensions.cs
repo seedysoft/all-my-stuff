@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Seedysoft.Libs.Core.Dependencies;
 
 namespace Seedysoft.Libs.Infrastructure.Extensions;
 
@@ -22,10 +21,10 @@ public static class IHostApplicationBuilderExtensions
 
         IEnumerable<System.Reflection.Assembly> referencedAssemblies = GetAllReferencedAssembliesSorted(entryAssembly);
 
-        Type[] typesToRegister = [.. referencedAssemblies.SelectMany(static (n) => n.GetTypes()).Where(static (t) => t is not null && t.IsSubclassOf(typeof(ConfiguratorBase)))];
+        Type[] typesToRegister = [.. referencedAssemblies.SelectMany(static (n) => n.GetTypes()).Where(static (t) => t is not null && t.IsSubclassOf(typeof(Core.Dependencies.ConfiguratorBase)))];
 
         foreach (Type? type in typesToRegister)
-            (Activator.CreateInstance(type) as ConfiguratorBase)?.AddDependencies(hostApplicationBuilder);
+            (Activator.CreateInstance(type) as Core.Dependencies.ConfiguratorBase)?.AddDependencies(hostApplicationBuilder);
 
         return hostApplicationBuilder;
     }
@@ -38,7 +37,7 @@ public static class IHostApplicationBuilderExtensions
         {
             var loaded = System.Reflection.Assembly.Load(name);
 
-            return loaded.DefinedTypes.Any(static (Type t) => t is not null && t.IsSubclassOf(typeof(ConfiguratorBase)))
+            return loaded.DefinedTypes.Any(static (Type t) => t is not null && t.IsSubclassOf(typeof(Core.Dependencies.ConfiguratorBase)))
                 ? GetAllReferencedAssembliesSorted(loaded)
                 : [];
         }).Distinct());
