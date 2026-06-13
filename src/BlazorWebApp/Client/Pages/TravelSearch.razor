@@ -58,39 +58,6 @@
                              Variant="@variant" />
         </MudItem>
 
-        <MudItem xs="10">
-            <MudSlider @bind-Value="@travelQueryModel.MaxDistanceInKm"
-                       Immediate="false"
-                       Max="50"
-                       Min="1"
-                       Size="@Size.Large"
-                       Step="1"
-                       T="int"
-                       TickMarkLabels="@(Enumerable.Range(1, 50).Select(x => x == 1 || x % 5 == 0 ? $"{x}" : " ").ToArray())"
-                       TickMarks />
-        </MudItem>
-
-        <MudItem xs="2">
-            <MudButton ButtonType="@ButtonType.Button"
-                       Class="flex-grow-all"
-                       IconSize="@Size.Large"
-                       OnClick="@ValidateSearch"
-                       Size="@Size.Large"
-                       StartIcon="@Icons.Material.Filled.Search"
-                       Variant="@variant">
-                Search
-            </MudButton>
-        </MudItem>
-
-        <MudItem xs="12">
-            <MapComponent @ref="TravelMap"
-                          Height="450px"
-                          Width="100%"
-                          Zoom="18">
-            </MapComponent>
-            @* id="@nameof(TravelMap)" *@
-        </MudItem>
-
         <MudItem xs="12">
             <MudButtonGroup Class="gap-4 pa-4" FullWidth Size="@Size.Medium" Variant="@variant">
 
@@ -136,12 +103,44 @@
                 @foreach (var item in Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.All)
                 {
                     <MudTooltip Text="@item.Nombre">
-                        <MudChip Default="@(item.Abreviatura.StartsWith("G9") && !item.Abreviatura.EndsWith("E10"))"
+                        <MudChip Default="@(item.Abreviatura.StartsWith("G9", StringComparison.InvariantCultureIgnoreCase) && !item.Abreviatura.EndsWith("E10", StringComparison.InvariantCultureIgnoreCase))"
                                  Text="@item.Abreviatura"
                                  Value="@item.IdProducto" />
                     </MudTooltip>
                 }
             </MudChipSet>
+        </MudItem>
+
+        <MudItem xs="10">
+            <MudSlider @bind-Value="@travelQueryModel.MaxDistanceInKm"
+                       Immediate="false"
+                       Max="50"
+                       Min="1"
+                       Size="@Size.Large"
+                       Step="1"
+                       T="int"
+                       TickMarkLabels="@(Enumerable.Range(1, 50).Select(x => x == 1 || x % 5 == 0 ? $"{x}" : " ").ToArray())"
+                       TickMarks />
+        </MudItem>
+
+        <MudItem xs="2">
+            <MudButton ButtonType="@ButtonType.Button"
+                       Class="flex-grow-all"
+                       IconSize="@Size.Large"
+                       OnClick="@ValidateSearch"
+                       Size="@Size.Large"
+                       StartIcon="@Icons.Material.Filled.Search"
+                       Variant="@variant">
+                Search
+            </MudButton>
+        </MudItem>
+
+        <MudItem xs="12">
+            <MapComponent @ref="TravelMap"
+                          Height="calc(80vh - 12rem)"
+                          Width="100%"
+                          Zoom="18">
+            </MapComponent>
         </MudItem>
 
     </MudGrid>

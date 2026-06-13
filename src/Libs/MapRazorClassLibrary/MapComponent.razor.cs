@@ -189,6 +189,16 @@ public partial class MapComponent
             {
                 (string? NombreRuta, double[,]? Coordenadas) = res[i];
 
+                realTimeMap.Geometric.Points.Appearance(item => item.type != "gas-station").pattern = new RealTimeMap.PointSymbol()
+                {
+                    radius = 6, // default 4
+                    fillColor = ColorsForRoutes[i],
+                    //color = ColorsForRoutes[i], // default null
+                    //fillOpacity = 1.0, // default 1.0
+                    //opacity = 1.0, // default 0.0
+                    //weight = 1, // default 0
+                };
+
                 await realTimeMap.Geometric.DisplayPolylinesFromArray.addConnector(arrayPolyline: Coordenadas, start: 1);
             }
         }
@@ -247,7 +257,10 @@ public partial class MapComponent
             return boundsForGasStations;
         }
 
-        async Task LoadGasStationsIntoMapAsync(GasStationPrices.ViewModels.TravelQueryModel model, Geocoding.Models.Bounds bounds, CancellationToken cancellationToken)
+        async Task LoadGasStationsIntoMapAsync(
+            GasStationPrices.ViewModels.TravelQueryModel model, 
+            Geocoding.Models.Bounds bounds, 
+            CancellationToken cancellationToken)
         {
             var gasStationPoints = (await GasStationPricesService.GetNearGasStationsAsync(bounds, model.MaxDistanceInKm, cancellationToken))
                 .Select(x => new RealTimeMap.StreamPoint()
@@ -261,13 +274,20 @@ public partial class MapComponent
                 })
                 .ToList();
 
-            await realTimeMap.Geometric.Points.upload(gasStationPoints, newCollection: false, pattern: new RealTimeMap.PointTooltip()
+            IEnumerable<string> plantillaPrecios =
+                from a in GasStationPrices.Models.Minetur.ProductoPetrolifero.All
+                where model.PetroleumProductsSelectedIds.Contains(a.IdProducto)
+                select "<li><b>" + a.Abreviatura.ToUpperInvariant() + ": </b> " + "${value." + a.Abreviatura.ToLowerInvariant() + "} €" + "</li>";
+
+            realTimeMap.Geometric.Points.Appearance(item => item.type == "gas-station").pattern = new RealTimeMap.PointTooltip()
             {
-                content = "<strong>${value.Rotulo}</strong>",
-                //offset =,
-                opacity = 0.8,
-                //permanent = true, // default value
-            });
+                content = "<b>${value.rotulo}</b></br>${value.localizacion}<ul>" + string.Concat(plantillaPrecios) + "</ul>",
+                permanent = false, // default true
+                offset = [0, 0], // default new double[2]
+                opacity = 1.0, // default 0.9
+            };
+
+            await realTimeMap.Geometric.Points.upload(gasStationPoints);
         }
     }
 }

@@ -8,28 +8,26 @@ public static class ModelExtensions
     {
         return new()
         {
-            #pragma warning disable format
-
+#pragma warning disable format
             Lat             =   estacionTerrestre.Lat,
             Lng             =   estacionTerrestre.Lng,
             Localizacion    =   estacionTerrestre.DireccionParsed,
             Rotulo          =   estacionTerrestre.Rotulo,
-            BIE             =   estacionTerrestre.PrecioBioetanol.ParseWithNumberFormatInfoES(),
-            BIO             =   estacionTerrestre.PrecioBiodiesel.ParseWithNumberFormatInfoES(),
-            GOB             =   estacionTerrestre.PrecioGasoleoB.ParseWithNumberFormatInfoES(),
-            G95E10          =   estacionTerrestre.PrecioGasolina95E10.ParseWithNumberFormatInfoES(),
-            G95E5           =   estacionTerrestre.PrecioGasolina95E5.ParseWithNumberFormatInfoES(),
-            G95E5Plus       =   estacionTerrestre.PrecioGasolina95E5Premium.ParseWithNumberFormatInfoES(),
-            G98E10          =   estacionTerrestre.PrecioGasolina98E10.ParseWithNumberFormatInfoES(),
-            G98E5           =   estacionTerrestre.PrecioGasolina98E5.ParseWithNumberFormatInfoES(),
-            GLP             =   estacionTerrestre.PrecioGasesLicuadosDelPetróleo.ParseWithNumberFormatInfoES(),
-            GNC             =   estacionTerrestre.PrecioGasNaturalComprimido.ParseWithNumberFormatInfoES(),
-            GNL             =   estacionTerrestre.PrecioGasNaturalLicuado.ParseWithNumberFormatInfoES(),
-            GOA             =   estacionTerrestre.PrecioGasoleoA.ParseWithNumberFormatInfoES(),
-            GOAPlus         =   estacionTerrestre.PrecioGasoleoPremium.ParseWithNumberFormatInfoES(),
-            //H2              =   estacionTerrestre.PrecioHidrogeno.ParseWithNumberFormatInfoES(),
-
-            #pragma warning restore format
+            bie             =   estacionTerrestre.PrecioBioetanol.ParseWithNumberFormatInfoES(),
+            bio             =   estacionTerrestre.PrecioBiodiesel.ParseWithNumberFormatInfoES(),
+            gob             =   estacionTerrestre.PrecioGasoleoB.ParseWithNumberFormatInfoES(),
+            g95e10          =   estacionTerrestre.PrecioGasolina95E10.ParseWithNumberFormatInfoES(),
+            g95e5           =   estacionTerrestre.PrecioGasolina95E5.ParseWithNumberFormatInfoES(),
+            g95e5plus       =   estacionTerrestre.PrecioGasolina95E5Premium.ParseWithNumberFormatInfoES(),
+            g98e10          =   estacionTerrestre.PrecioGasolina98E10.ParseWithNumberFormatInfoES(),
+            g98e5           =   estacionTerrestre.PrecioGasolina98E5.ParseWithNumberFormatInfoES(),
+            glp             =   estacionTerrestre.PrecioGasesLicuadosDelPetróleo.ParseWithNumberFormatInfoES(),
+            gnc             =   estacionTerrestre.PrecioGasNaturalComprimido.ParseWithNumberFormatInfoES(),
+            gnl             =   estacionTerrestre.PrecioGasNaturalLicuado.ParseWithNumberFormatInfoES(),
+            goa             =   estacionTerrestre.PrecioGasoleoA.ParseWithNumberFormatInfoES(),
+            goaplus         =   estacionTerrestre.PrecioGasoleoPremium.ParseWithNumberFormatInfoES(),
+            //h2              =   estacionTerrestre.PrecioHidrogeno.ParseWithNumberFormatInfoES(),
+#pragma warning restore format
         };
     }
 }

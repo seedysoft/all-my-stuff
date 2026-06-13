@@ -2,7 +2,7 @@
 
 public enum ProductoPetroliferoId : long
 {
-    #pragma warning disable format
+#pragma warning disable format
     BIE         = 16,
     BIO         =  8,
     G95E10      = 23,
@@ -17,5 +17,5 @@ public enum ProductoPetroliferoId : long
     GOAPlus     =  5,
     GOB         =  6,
     //H2          = 22,
-    #pragma warning restore format
+#pragma warning restore format
 }
