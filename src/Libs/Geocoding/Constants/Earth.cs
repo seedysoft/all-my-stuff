@@ -25,7 +25,7 @@ public static class Earth
         /// <summary>
         /// Gets the longitude of the home location.
         /// </summary>
-        public const double Lng = -3.662837;
+        public const double Lng = -6.156444;
         /// <summary>
         /// Gets the latitude of the home location.
         /// </summary>
