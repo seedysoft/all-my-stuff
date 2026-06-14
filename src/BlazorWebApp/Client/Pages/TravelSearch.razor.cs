@@ -10,7 +10,7 @@ public partial class TravelSearch
 {
     [Inject] private ILogger<TravelSearch> Logger { get; set; } = default!;
     [Inject] private MudBlazor.ISnackbar Snackbar { get; set; } = default!;
-    [Inject] private Libs.Geocoding.Services.PlacesService PlacesService { get; set; } = default!;
+    [Inject] private Libs.Travel.Services.Geocoding.GeocodingService GeocodingService { get; set; } = default!;
 
     private Libs.MapRazorClassLibrary.MapComponent TravelMap { get; set; } = default!;
 
@@ -31,12 +31,12 @@ public partial class TravelSearch
             Logger.LogInformation($"Called {nameof(OnInitializedAsync)}");
     }
 
-    private async Task<IEnumerable<Libs.Geocoding.ViewModels.Place>> FindPlacesAsync(string textToFind, CancellationToken cancellationToken)
+    private async Task<IEnumerable<Libs.Travel.ViewModels.Place>> FindPlacesAsync(string textToFind, CancellationToken cancellationToken)
     {
         try
         {
             if (!string.IsNullOrWhiteSpace(textToFind))
-                return await PlacesService.FindPlacesAsync(textToFind, cancellationToken) ?? [];
+                return await GeocodingService.FindPlacesAsync(textToFind, cancellationToken) ?? [];
         }
         catch (Exception e) when (Logger.LogAndHandle(e, "Unexpected error")) { }
 

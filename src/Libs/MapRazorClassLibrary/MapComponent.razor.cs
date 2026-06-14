@@ -23,8 +23,8 @@ public partial class MapComponent
         },
         location = new RealTimeMap.Location()
         {
-            latitude = Geocoding.Constants.Earth.Burgos.Lat,
-            longitude = Geocoding.Constants.Earth.Burgos.Lng,
+            latitude = Travel.Constants.Earth.Burgos.Lat,
+            longitude = Travel.Constants.Earth.Burgos.Lng,
         },
         zoomLevel = 14,
     };
@@ -49,10 +49,10 @@ public partial class MapComponent
 
     private readonly string[] ColorsForRoutes = ["#007FFF", "#0074EA", "#0069D5", "#005EC0", "#0053AB", "#004896", "#003D81", "#00326C"];
 
-    private RealTimeMap realTimeMap = new();
+    private RealTimeMap realTimeMap = default!;
 
     [Inject] private GasStationPrices.Services.GasStationPricesService GasStationPricesService { get; set; } = default!;
-    [Inject] private Geocoding.Services.Routers.RoutesService RoutesService { get; set; } = default!;
+    [Inject] private Travel.Services.Routing.RoutingService RoutingService { get; set; } = default!;
 
     /// <summary>
     /// Gets or sets the height of the <see cref="RealTimeMap" />.
@@ -106,14 +106,14 @@ public partial class MapComponent
     {
         await ClearMapAsync();
 
-        IList<(string NombreRuta, double[,] Coordenadas)> res = await RoutesService.GetRoutesAsync(model.Orig.Location, model.Dest.Location, cancellationToken);
+        IList<(string NombreRuta, double[,] Coordenadas)> res = await RoutingService.GetRoutesAsync(model.Orig.Location, model.Dest.Location, cancellationToken);
 
         if (res.Count == 0)
             return "No routes found";
 
-        await LoadRouteDataIntoMapAsync(res);
+        await LoadRoutesDataIntoMapAsync(res);
 
-        Geocoding.Models.Bounds ourBounds = ComputeBoundsFromRoutes(res);
+        Travel.Models.Bounds ourBounds = ComputeBoundsFromRoutes(res);
 
         await LoadGasStationsIntoMapAsync(model, ourBounds, cancellationToken);
 
@@ -121,7 +121,9 @@ public partial class MapComponent
 
         // Samples obtained from https://github.com/ichim/LeafletForBlazor-NuGet/issues/75
 
-        async Task LoadRouteDataIntoMapAsync(IList<(string NombreRuta, double[,] Coordenadas)> res)
+        async Task LoadRoutesDataIntoMapAsync(
+            IList<(string NombreRuta,
+            double[,] Coordenadas)> res)
         {
             for (int i = 0; i < res.Count; i++)
             {
@@ -133,29 +135,24 @@ public partial class MapComponent
                     fillColor = ColorsForRoutes[i],
                     //color = ColorsForRoutes[i], // default null
                     //fillOpacity = 1.0, // default 1.0
-                    //opacity = 1.0, // default 0.0
-                    //weight = 1, // default 0
+                    opacity = 1.0, // default 0.0
+                    weight = 1, // default 0
                 };
 
                 await realTimeMap.Geometric.DisplayPolylinesFromArray.addConnector(arrayPolyline: Coordenadas, start: 1);
             }
         }
 
-        Geocoding.Models.Bounds ComputeBoundsFromRoutes(IList<(string NombreRuta, double[,] Coordenadas)> res)
+        Travel.Models.Bounds ComputeBoundsFromRoutes(
+            IList<(string NombreRuta,
+            double[,] Coordenadas)> res)
         {
             RealTimeMap.Bounds routeBounds = new()
             {
-                northEast = new RealTimeMap.Location()
-                {
-                    latitude = -90.0,
-                    longitude = -60.0,
-                },
-                southWest = new RealTimeMap.Location()
-                {
-                    latitude = 90.0,
-                    longitude = 60.0,
-                },
+                northEast = new RealTimeMap.Location() { latitude = -90.0, longitude = -180.0, }, // South West limits
+                southWest = new RealTimeMap.Location() { latitude = 90.0, longitude = 180.0, },   // North East limits
             };
+
             foreach ((string NombreRuta, double[,] Coordenadas) in res)
             {
                 for (int i = 0; i < Coordenadas.GetLength(0); i++)
@@ -186,10 +183,10 @@ public partial class MapComponent
 
             realTimeMap.View.setBounds = routeBounds;
 
-            Geocoding.Models.Bounds boundsForGasStations = new()
+            Travel.Models.Bounds boundsForGasStations = new()
             {
-                NorthEast = new Geocoding.Models.Location() { Latitude = routeBounds.northEast.latitude, Longitude = routeBounds.northEast.longitude },
-                SouthWest = new Geocoding.Models.Location() { Latitude = routeBounds.southWest.latitude, Longitude = routeBounds.southWest.longitude },
+                NorthEast = new Travel.Models.Location() { Latitude = routeBounds.northEast.latitude, Longitude = routeBounds.northEast.longitude },
+                SouthWest = new Travel.Models.Location() { Latitude = routeBounds.southWest.latitude, Longitude = routeBounds.southWest.longitude },
             };
 
             return boundsForGasStations;
@@ -197,7 +194,7 @@ public partial class MapComponent
 
         async Task LoadGasStationsIntoMapAsync(
             GasStationPrices.ViewModels.TravelQueryModel model,
-            Geocoding.Models.Bounds bounds,
+            Travel.Models.Bounds bounds,
             CancellationToken cancellationToken)
         {
             var gasStationPoints = (await GasStationPricesService.GetNearGasStationsAsync(bounds, model.MaxDistanceInKm, cancellationToken))
@@ -219,9 +216,9 @@ public partial class MapComponent
 
             realTimeMap.Geometric.Points.Appearance(item => item.type == "gas-station").pattern = new RealTimeMap.PointTooltip()
             {
-                content = "<b>${value.rotulo}</b></br>${value.localizacion}<ul>" + string.Concat(plantillaPrecios) + "</ul>",
+                content = "<h3>${value.rotulo}</h3><h5>${value.localizacion}<h5><ul>" + string.Concat(plantillaPrecios) + "</ul>",
                 permanent = false, // default true
-                offset = [0, 0], // default new double[2]
+                offset = [0, -50], // default new double[2]
                 opacity = 1.0, // default 0.9
             };
 
