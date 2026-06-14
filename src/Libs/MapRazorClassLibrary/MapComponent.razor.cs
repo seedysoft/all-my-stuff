@@ -12,75 +12,13 @@ public partial class MapComponent
         basemap = new RealTimeMap.Basemap()
         {
             basemapLayers = [
-                //new RealTimeMap.BasemapLayer()
-                //{
-                //    url = "http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-                //    attribution = "©Open Street Map",
-                //    title = "Open Street Map",
-                //    detectRetina = true,
-                //},
-                //new RealTimeMap.BasemapLayer()
-                //{
-                //    url = "https://tile.opentopomap.org/{z}/{x}/{y}.png",
-                //    attribution = "Open Topo",
-                //    title = "Open Topo",
-                //    detectRetina = true,
-                //},
-                // new RealTimeMap.BasemapLayer()
-                //{
-                //    url = "https://tile.thunderforest.com/cycle/{z}/{x}/{y}.png?apikey=" + openCycleMapAPIKey,
-                //    attribution = "©Open Cycle Map",
-                //    title = "Open Cycle Map"
-                //},
-
-                //new RealTimeMap.BasemapLayer(){
-                //    url="https://tms-ign-base.idee.es/1.0.0/IGNBaseGris/{z}/{x}/{-y}.jpeg",
-                //    attribution="Mapa Base de España – IGNBaseGris",
-                //    title="Mapa Base de España – IGNBaseGris",
-                //    detectRetina=true,
-                //},
-                //new RealTimeMap.BasemapLayer(){
-                //    url="https://tms-ign-base.idee.es/1.0.0/IGNBaseOrto/{z}/{x}/{-y}.png",
-                //    attribution="Mapa Base de España - IGNBaseOrto",
-                //    title="Mapa Base de España - IGNBaseOrto",
-                //    detectRetina=true,
-                //},
-                //new RealTimeMap.BasemapLayer(){
-                //    url="https://tms-ign-base.idee.es/1.0.0/IGNBaseSimplificado/{z}/{x}/{-y}.png",
-                //    attribution="Mapa Base de España - IGNBaseSimplificado",
-                //    title="Mapa Base de España - IGNBaseSimplificado",
-                //    detectRetina=true,
-                //},
-                new RealTimeMap.BasemapLayer(){
-                    url="https://tms-ign-base.idee.es/1.0.0/IGNBaseTodo/{z}/{x}/{-y}.jpeg",
-                    attribution="Mapa Base de España - IGNBaseTodo",
-                    title="Mapa Base de España - IGNBaseTodo",
-                    detectRetina=true,
+                new RealTimeMap.BasemapLayer()
+                {
+                    url = "http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+                    attribution = "©Open Street Map",
+                    title = "Open Street Map",
+                    detectRetina = true,
                 },
-                //new RealTimeMap.BasemapLayer(){
-                //    url="https://xyz-mdt.idee.es/1.0.0/raster-dem/{z}/{x}/{y}.png",
-                //    attribution="Modelo Digital de Elevaciones de España",
-                //    title="Modelo Digital de Elevaciones de España",
-                //    detectRetina=true,
-                //},
-                //new RealTimeMap.BasemapLayer(){
-                //    url="https://tms-pnoa-ma.idee.es/1.0.0/pnoa-ma/{z}/{x}/{-y}.jpeg",
-                //    attribution="Ortoimágenes MA de España (Sentinel2 y PNOA MA)",
-                //    title="Ortoimágenes MA de España (Sentinel2 y PNOA MA)",
-                //    detectRetina=true,
-                //},
-                //new RealTimeMap.BasemapLayer(){
-                //    url="https://tms-relieve.idee.es/1.0.0/relieve/{z}/{x}/{-y}.jpeg",
-                //    attribution="Relieve del terreno de España (procedente del MDT con paso de malla 25 m)",
-                //    title="Relieve del terreno de España (procedente del MDT con paso de malla 25 m)",
-                //    detectRetina=true,
-                //},
-                //new RealTimeMap.BasemapLayer(){
-                //    url="https://tms-mapa-raster.ign.es/1.0.0/mapa-raster/{z}/{x}/{-y}.jpeg",
-                //    attribution="Cartografía Ráster de España del IGN",
-                //    title="Cartografía Ráster de España del IGN",
-                //    detectRetina=true,
-                //},
             ]
         },
         location = new RealTimeMap.Location()
@@ -258,8 +196,8 @@ public partial class MapComponent
         }
 
         async Task LoadGasStationsIntoMapAsync(
-            GasStationPrices.ViewModels.TravelQueryModel model, 
-            Geocoding.Models.Bounds bounds, 
+            GasStationPrices.ViewModels.TravelQueryModel model,
+            Geocoding.Models.Bounds bounds,
             CancellationToken cancellationToken)
         {
             var gasStationPoints = (await GasStationPricesService.GetNearGasStationsAsync(bounds, model.MaxDistanceInKm, cancellationToken))
