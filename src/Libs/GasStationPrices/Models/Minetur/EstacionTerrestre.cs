@@ -42,7 +42,7 @@ public record class EstacionTerrestre
     [J("Longitud (WGS84)")] public required string Longitud { get; init; }
     public double Lng => double.Parse(Longitud, Core.Constants.Globalization.NumberFormatInfoES);
 
-    public Geocoding.Models.Location LatLng => new() { Latitude = Lat, Longitude = Lng };
+    public Travel.Models.Location LatLng => new() { Latitude = Lat, Longitude = Lng };
 
     public required string Margen { get; init; }
 

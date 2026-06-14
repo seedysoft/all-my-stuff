@@ -26,7 +26,7 @@ public sealed class GasStationPricesService
         _ = Task.Run(async () => await LoadGasStationsAsync(CancellationToken.None));
     }
 
-    public async Task<IEnumerable<ViewModels.GasStationModel>> GetNearGasStationsAsync(Geocoding.Models.Bounds bounds, int maxDistanceInKm, CancellationToken cancellationToken)
+    public async Task<IEnumerable<ViewModels.GasStationModel>> GetNearGasStationsAsync(Travel.Models.Bounds bounds, int maxDistanceInKm, CancellationToken cancellationToken)
     {
         return await LoadGasStationsAsync(cancellationToken)
             ? ((Models.Minetur.EstacionTerrestre[])[.. MineturResponse.EstacionesTerrestres.Where(x => bounds.IsInside(x.LatLng))]).Select(x => x.ToGasStationModel())

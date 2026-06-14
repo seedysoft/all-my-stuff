@@ -2,44 +2,18 @@
     <PropertyGroup>
         <ImplicitUsings>enable</ImplicitUsings>
         <IsPackable>false</IsPackable>
-        <IsPublishable>False</IsPublishable>
+        <IsTestProject>true</IsTestProject>
         <Nullable>enable</Nullable>
+        <OutputType>Exe</OutputType>
         <RuntimeIdentifiers>linux-arm64</RuntimeIdentifiers>
         <TargetFramework>net10.0</TargetFramework>
+        <UseTestingPlatform>true</UseTestingPlatform>
     </PropertyGroup>
-
-    <ItemGroup>
-        <Content Include="appsettings.GasStationPricesSettings.json">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </Content>
-    </ItemGroup>
-
-    <ItemGroup Condition="'$(Configuration)' == 'Debug'">
-        <Content Include="appsettings.GasStationPricesSettings.Development.json">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-            <DependentUpon>appsettings.GasStationPricesSettings.json</DependentUpon>
-        </Content>
-        <None Include="appsettings.GasStationPricesSettings.Production.json">
-            <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-            <DependentUpon>appsettings.GasStationPricesSettings.json</DependentUpon>
-        </None>
-    </ItemGroup>
-
-    <ItemGroup Condition="'$(Configuration)' == 'Release'">
-        <None Include="appsettings.GasStationPricesSettings.Development.json">
-            <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-            <DependentUpon>appsettings.GasStationPricesSettings.json</DependentUpon>
-        </None>
-        <Content Include="appsettings.GasStationPricesSettings.Production.json">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-            <DependentUpon>appsettings.GasStationPricesSettings.json</DependentUpon>
-        </Content>
-    </ItemGroup>
 
     <ItemGroup>
         <PackageReference Include="CommandLineParser" Version="2.9.1" />
         <PackageReference Include="EfCore.SchemaCompare" Version="10.0.0" />
-        <PackageReference Include="FluentValidation" Version="12.1.1" />
+        <PackageReference Include="HtmlAgilityPack" Version="1.12.4" />
         <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.9" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="10.0.9" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite.Core" Version="10.0.9" />
@@ -59,20 +33,11 @@
         <PackageReference Include="Serilog.Extensions.Logging" Version="10.0.0" />
         <PackageReference Include="Serilog.Settings.Configuration" Version="10.0.0" />
         <PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" Version="3.0.3" />
+        <PackageReference Include="TUnit" Version="1.54.0" />
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\Libs\Infrastructure\Seedysoft.Libs.Infrastructure.csproj" />
-        <ProjectReference Include="..\Core\Seedysoft.Libs.Core.csproj" />
-        <ProjectReference Include="..\Cryptography\Seedysoft.Libs.Cryptography.csproj" />
-        <ProjectReference Include="..\Travel\Seedysoft.Libs.Travel.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <Compile Include="..\..\Usings.cs" Link="Usings.cs" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <InternalsVisibleTo Include="Seedysoft.Libs.GasStationPrices.Tests" />
+        <ProjectReference Include="..\..\..\src\Libs\Travel\Seedysoft.Libs.Travel.csproj" />
+        <ProjectReference Include="..\Infrastructure.Tests\Seedysoft.Libs.Infrastructure.Tests.csproj" />
     </ItemGroup>
 </Project>
