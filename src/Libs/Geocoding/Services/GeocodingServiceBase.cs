@@ -9,5 +9,3 @@ public abstract class GeocodingServiceBase(IConfiguration configuration)
 }
 
 // TODO                         Try to use better geocoding and route services
-
-// TODO                         Change BaseMapLayer to OpenStreetMap
