@@ -30,7 +30,7 @@ public static class ArrayExtensions
     public static T[,] To2D<T>(this T[][] source)
     {
         // throws InvalidOperationException if source is not rectangular
-        int SecondDim = source.GroupBy(row => row.Length).Single().Key;
+        int SecondDim = source.GroupBy(static row => row.Length).Single().Key;
         int FirstDim = source.Length;
 
         var result = new T[FirstDim, SecondDim];

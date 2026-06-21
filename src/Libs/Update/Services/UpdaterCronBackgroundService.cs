@@ -63,7 +63,7 @@ public sealed class UpdaterCronBackgroundService : BackgroundServices.Cron
         }
 
         Octokit.ReleaseAsset? releaseAsset =
-            release.Assets.FirstOrDefault(x => x.Name.Contains(System.Runtime.InteropServices.RuntimeInformation.RuntimeIdentifier, StringComparison.InvariantCultureIgnoreCase));
+            release.Assets.FirstOrDefault(static x => x.Name.Contains(System.Runtime.InteropServices.RuntimeInformation.RuntimeIdentifier, StringComparison.InvariantCultureIgnoreCase));
         if (releaseAsset == null)
         {
             if (Logger.IsEnabled(LogLevel.Error))
