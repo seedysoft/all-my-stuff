@@ -49,7 +49,68 @@ public partial class MapComponent
 
     private readonly string[] ColorsForRoutes = ["#007FFF", "#0074EA", "#0069D5", "#005EC0", "#0053AB", "#004896", "#003D81", "#00326C"];
 
+    private const string iconPath = "http://localhost:5146/icons/";
+
     private RealTimeMap realTimeMap = default!;
+
+    private readonly LeafletForBlazor.Components.StreamLegend.ContentStyle contentStyle = new()
+    {
+        contentPadding = new LeafletForBlazor.Components.StreamLegend.ContentPadding()
+        {
+            paddingLeft = 20,  //values ​​in pixels, default value is 10px
+            paddingRight = 20, //values ​​in pixels, default value is 10px
+            paddingTop = 15    //values ​​in pixels, default value is 10px
+        },
+        labelStyle = new LeafletForBlazor.Components.StreamLegend.LabelStyle()
+        {
+            fontColor = "#626262",
+            fontFamily = "Verdana",
+            fontSize = 14,
+            fontWeight = "bold",
+            fontStyle = "italic",
+            paddingLeft = 20,
+        },
+    };
+
+    // rtm.Geometric.Points.AppearanceOnType((item) =>
+    //     item.type == "police crew" ||
+    //     item.type == "intervention crew" ||
+    //     item.type == "ambulance"
+    //     ).pattern = new RealTimeMap.PointSymbol()
+    //     {
+    //         radius = 6,
+    //         color = "gray",
+    //         opacity = 1,
+    //         fillColor = "blue",
+    //         fillOpacity = 0.5,
+    //         weight = 2
+    //     };
+    //   
+    // rtm.Geometric.Points.AppearanceOnType((item) =>
+    //     item.type == "suspicious vehicle"
+    //     ).pattern = new RealTimeMap.PointSymbol()
+    //     {
+    //         radius = 6,
+    //         color = "gray",
+    //         opacity = 1,
+    //         fillColor = "red",
+    //         fillOpacity = 0.5,
+    //         weight = 2
+    //     };
+
+    // realTimeMap.Geometric.Points.Appearance(item => item.type == "asked for help").pattern = new RealTimeMap.PointTooltip()
+    // {
+    //     content = "<b>Registration number: </b>${value.registrationNumber}</br><b>Vehicle type: </b>${value.vehicleType}</br>${value.description}"
+    // };
+    // realTimeMap.Geometric.Points.Appearance(item => item.type != "asked for help").pattern = new RealTimeMap.PointTooltip()
+    // {
+    //     content = "<b>${type}</b><br><b>Vehicle type: </b>${value.vehicleType}"
+    // };
+
+    // realTimeMap.Geometric.Points.Appearance(item => !(item.type == "red" || item.type == "green" || item.type == "blue")).pattern = new RealTimeMap.PointSymbol() { radius = 8, color = "#28ffff", opacity = 0.68, fillColor = "orange", weight = 2, fillOpacity = 0.68 };
+    // realTimeMap.Geometric.Points.Appearance(item => item.type == "red").pattern = new RealTimeMap.PointSymbol() { radius = 8, color = "rgb(200,100,0)", opacity = 0.68, fillColor = "red", weight = 4, fillOpacity = 0.68 };
+    // realTimeMap.Geometric.Points.Appearance(item => item.type == "green").pattern = new RealTimeMap.PointSymbol() { radius = 10, color = "white", opacity = 0.68, fillColor = "green", weight = 2, fillOpacity = 0.68 };
+    // realTimeMap.Geometric.Points.Appearance(item => item.type == "blue").pattern = new RealTimeMap.PointSymbol() { radius = 12, color = "#28ffff", opacity = 0.68, fillColor = "blue", weight = 2, fillOpacity = 0.68 };
 
     [Inject] private GasStationPrices.Services.GasStationPricesService GasStationPricesService { get; set; } = default!;
     [Inject] private Travel.Services.Routing.RoutingService RoutingService { get; set; } = default!;
@@ -84,6 +145,44 @@ public partial class MapComponent
             LoadGasStationAppearances(args.sender);
     }
 
+    private static void OnClickMap(RealTimeMap.ClicksMapArgs args) { }
+
+    private static void OnDoubleClickMap(RealTimeMap.ClicksMapArgs args) { }
+
+    private void OnZoomLevelEndChange(RealTimeMap.MapZoomEventArgs args)
+    {
+        Zoom = args.zoomLevel;
+
+        if (args.zoomLevel < 16)
+        {
+            realTimeMap.Geometric.Points.Appearance(static item => item.type == "residency").pattern = new RealTimeMap.PointSymbol() { radius = 6, color = "black", opacity = 1, fillColor = "gray", fillOpacity = 1, weight = 2 };
+            realTimeMap.Geometric.Points.Appearance(static item => item.type == "unknown").pattern = new RealTimeMap.PointSymbol() { radius = 6, color = "blue", opacity = 1, fillColor = "azure", fillOpacity = 1, weight = 2 };
+            realTimeMap.Geometric.Points.Appearance(static item => item.type == "museum").pattern = new RealTimeMap.PointSymbol() { radius = 6, color = "orange", opacity = 1, fillColor = "#cd6420", fillOpacity = 1, weight = 2 };
+            realTimeMap.Geometric.Points.Appearance(static item => item.type == "post office").pattern = new RealTimeMap.PointSymbol() { radius = 6, color = "yellow", opacity = 1, fillColor = "red", fillOpacity = 1, weight = 4 };
+            realTimeMap.Geometric.Points.Appearance(static item => item.type == "food shop").pattern = new RealTimeMap.PointSymbol() { radius = 6, color = "#6fbb00", opacity = 1, fillColor = "#8bec00", fillOpacity = 1, weight = 2 };
+            realTimeMap.Geometric.Points.Appearance(static item => item.type == "souvenir shop").pattern = new RealTimeMap.PointSymbol() { radius = 6, color = "#02486a", opacity = 1, fillColor = "#009afe", fillOpacity = 1, weight = 2 };
+            realTimeMap.Geometric.Points.Appearance(static item => item.type == "cofee shop").pattern = new RealTimeMap.PointSymbol() { radius = 4, color = "#4c0090", opacity = 1, fillColor = "#8002f0", fillOpacity = 1, weight = 2 };
+            realTimeMap.Geometric.Points.Appearance(static item => item.type == "car rentals").pattern = new RealTimeMap.PointSymbol() { radius = 4, color = "#8c064b", opacity = 1, fillColor = "#fb188d", fillOpacity = 1, weight = 2 };
+        }
+        else
+        {
+            realTimeMap.Geometric.Points.Appearance(static item => item.type == "residency").pattern = new RealTimeMap.PointSymbol() { radius = 8, color = "black", opacity = 1, fillColor = "gray", fillOpacity = 1, weight = 2 };
+            realTimeMap.Geometric.Points.Appearance(static item => item.type == "unknown").pattern = new RealTimeMap.PointSymbol() { radius = 8, color = "blue", opacity = 1, fillColor = "azure", fillOpacity = 1, weight = 2 };
+            realTimeMap.Geometric.Points.Appearance(static item => item.type == "museum").pattern = new RealTimeMap.PointSymbol() { radius = 12, color = "orange", opacity = 1, fillColor = "#cd6420", fillOpacity = 1, weight = 2 };
+            realTimeMap.Geometric.Points.Appearance(static item => item.type == "post office").pattern = new RealTimeMap.PointSymbol() { radius = 12, color = "yellow", opacity = 1, fillColor = "red", fillOpacity = 1, weight = 4 };
+            realTimeMap.Geometric.Points.Appearance(static item => item.type == "food shop").pattern = new RealTimeMap.PointIcon() { iconUrl = $"{iconPath}food.png", iconSize = [32, 32] };
+            realTimeMap.Geometric.Points.Appearance(static item => item.type == "souvenir shop").pattern = new RealTimeMap.PointIcon() { iconUrl = $"{iconPath}souvenir.png", iconSize = [32, 32] };
+            realTimeMap.Geometric.Points.Appearance(static item => item.type == "cofee shop").pattern = new RealTimeMap.PointIcon() { iconUrl = $"{iconPath}cofee.png", iconSize = [32, 32] };
+            realTimeMap.Geometric.Points.Appearance(static item => item.type == "car rentals").pattern = new RealTimeMap.PointIcon() { iconUrl = $"{iconPath}carrentals.png", iconSize = [32, 32] };
+        }
+    }
+
+    private async Task ClearMapAsync()
+    {
+        await realTimeMap.Geometric.DisplayPolylinesFromArray.deleteConnectors();
+        await realTimeMap.Geometric.Points.delete();
+    }
+
     /// <summary>
     /// This method can be used to perform actions after the map has loaded
     /// </summary>
@@ -103,16 +202,6 @@ public partial class MapComponent
             zoomToBoundsOnClick = false,    // Zoom to bounds when clicking on a cluster
             maxClusterRadius = 120,         // Maximum radius of a cluster when it is not zoomed in px
         };
-    }
-
-    private static void OnClickMap(RealTimeMap.ClicksMapArgs args) { }
-
-    private static void OnDoubleClickMap(RealTimeMap.ClicksMapArgs args) { }
-
-    public async Task ClearMapAsync()
-    {
-        await realTimeMap.Geometric.DisplayPolylinesFromArray.deleteConnectors();
-        await realTimeMap.Geometric.Points.delete();
     }
 
     public async Task<string?> LoadRoutesAndGasStationsAsync(GasStationPrices.ViewModels.TravelQueryModel model, CancellationToken cancellationToken)
