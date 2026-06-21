@@ -84,12 +84,25 @@ public partial class MapComponent
             LoadGasStationAppearances(args.sender);
     }
 
+    /// <summary>
+    /// This method can be used to perform actions after the map has loaded
+    /// </summary>
+    /// <param name="sender"></param>
     private static void LoadGasStationAppearances(RealTimeMap sender)
     {
         //sender.Geometric.Points.Appearance(item => item.type == "gas-station").pattern = new RealTimeMap.PointIcon()
         //{
         //    iconUrl = "https://www.google.com/s2/favicons?domain=$repsol&sz=16",
         //};
+
+        sender.Geometric.Points.clusteringAfterCollectionUpdate = true;
+        sender.Geometric.Points.clusteringConfiguration = new LeafletForBlazor.RealTime.points.ClusteringConfiguration()
+        {
+            showCoverageOnHover = true,     // Show coverage on hover
+            spiderfyOnMaxZoom = true,       // Spiderfy markers when zoomed in
+            zoomToBoundsOnClick = false,    // Zoom to bounds when clicking on a cluster
+            maxClusterRadius = 120,         // Maximum radius of a cluster when it is not zoomed in px
+        };
     }
 
     private static void OnClickMap(RealTimeMap.ClicksMapArgs args) { }
