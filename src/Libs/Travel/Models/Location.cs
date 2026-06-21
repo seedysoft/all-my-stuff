@@ -1,7 +1,7 @@
 ﻿namespace Seedysoft.Libs.Travel.Models;
 
-public class Location()
+public class Location(decimal lat, decimal lon)
 {
-    public double Longitude { get; set; }
-    public double Latitude { get; set; }
+    public decimal Lat { get; set; } = lat;
+    public decimal Lon { get; set; } = lon;
 }

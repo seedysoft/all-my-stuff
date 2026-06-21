@@ -37,12 +37,12 @@ public record class EstacionTerrestre
     [J("Localidad")] public required string Localidad { get; init; }
 
     [J("Latitud")] public required string Latitud { get; init; }
-    public double Lat => double.Parse(Latitud, Core.Constants.Globalization.NumberFormatInfoES);
+    public decimal Lat => decimal.Parse(Latitud, Core.Constants.Globalization.NumberFormatInfoES);
 
     [J("Longitud (WGS84)")] public required string Longitud { get; init; }
-    public double Lng => double.Parse(Longitud, Core.Constants.Globalization.NumberFormatInfoES);
+    public decimal Lon => decimal.Parse(Longitud, Core.Constants.Globalization.NumberFormatInfoES);
 
-    public Travel.Models.Location LatLng => new() { Latitude = Lat, Longitude = Lng };
+    public Travel.Models.Location LatLng => new(Lat, Lon);
 
     public required string Margen { get; init; }
 

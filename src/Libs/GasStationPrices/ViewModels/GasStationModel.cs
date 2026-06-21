@@ -3,10 +3,10 @@
 public record class GasStationModel
 {
     [J("lat")] public double Lat { get; init; }
-    [J("lng")] public double Lng { get; init; }
+    [J("lng")] public double Lon { get; init; }
 
-    // TODO                         Use Geocoding.Models.Location instead individual properties
-    public Travel.Models.Location Location => new() { Latitude = Lat, Longitude = Lng, };
+    // TODO                         Use Travel.Models.Location instead individual properties
+    public Travel.Models.Location Location => new((decimal)Lat, (decimal)Lon);
 
     [J("localizacion")] public string? Localizacion { get; init; }
 

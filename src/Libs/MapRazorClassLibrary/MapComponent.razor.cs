@@ -23,8 +23,8 @@ public partial class MapComponent
         },
         location = new RealTimeMap.Location()
         {
-            latitude = Travel.Constants.Earth.Burgos.Lat,
-            longitude = Travel.Constants.Earth.Burgos.Lng,
+            latitude = (double)Travel.Constants.Earth.Burgos.Lat,
+            longitude = (double)Travel.Constants.Earth.Burgos.Lon,
         },
         zoomLevel = 14,
     };
@@ -106,7 +106,16 @@ public partial class MapComponent
     {
         await ClearMapAsync();
 
-        IList<(string NombreRuta, double[,] Coordenadas)> res = await RoutingService.GetRoutesAsync(model.Orig.Location, model.Dest.Location, cancellationToken);
+        IList<(string NombreRuta, double[,] Coordenadas)> res;
+
+        try
+        {
+            res = await RoutingService.GetRoutesAsync(model.Orig.Location, model.Dest.Location, cancellationToken);
+        }
+        catch (Exception e)
+        {
+            return e.ToString();
+        }
 
         if (res.Count == 0)
             return "No routes found";
@@ -159,7 +168,7 @@ public partial class MapComponent
                 {
                     for (int j = 0; j < Coordenadas.GetLength(1); j++)
                     {
-                        double v = Coordenadas[i, j];
+                        double v = (double)Coordenadas[i, j];
 
                         if (j == 0)
                         {
@@ -185,8 +194,8 @@ public partial class MapComponent
 
             Travel.Models.Bounds boundsForGasStations = new()
             {
-                NorthEast = new Travel.Models.Location() { Latitude = routeBounds.northEast.latitude, Longitude = routeBounds.northEast.longitude },
-                SouthWest = new Travel.Models.Location() { Latitude = routeBounds.southWest.latitude, Longitude = routeBounds.southWest.longitude },
+                NorthEast = new Travel.Models.Location(lat: (decimal)routeBounds.northEast.latitude, lon: (decimal)routeBounds.northEast.longitude),
+                SouthWest = new Travel.Models.Location(lat: (decimal)routeBounds.southWest.latitude, lon: (decimal)routeBounds.southWest.longitude),
             };
 
             return boundsForGasStations;
@@ -201,8 +210,8 @@ public partial class MapComponent
                 .Select(x => new RealTimeMap.StreamPoint()
                 {
                     guid = Guid.NewGuid(),
-                    latitude = x.Lat,
-                    longitude = x.Lng,
+                    latitude = (double)x.Lat,
+                    longitude = (double)x.Lon,
                     //timestamp =,
                     type = "gas-station",
                     value = x,

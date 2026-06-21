@@ -1,9 +1,9 @@
 ﻿namespace Seedysoft.Libs.Travel.Services.Routing;
 
-internal abstract class RoutingBase(Settings.RoutingApi api)
+internal abstract class RoutingBase(Settings.RoutingApi routingApi)
 {
-    protected RestSharp.RestClient RestClient { get; } = new(new Uri(api.UrlFormat).GetLeftPart(UriPartial.Authority));
-    protected Settings.RoutingApi Api { get; } = api;
+    protected RestSharp.RestClient RestClient { get; } = new(new Uri(routingApi.UrlFormat).GetLeftPart(UriPartial.Authority));
+    protected Settings.RoutingApi RoutingApi { get; } = routingApi;
 
     /// <summary>
     /// Obtiene las rutas entre el origen y el destino especificados en el modelo de consulta.
@@ -12,7 +12,11 @@ internal abstract class RoutingBase(Settings.RoutingApi api)
     /// <param name="dest"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    internal abstract Task<IList<(string NombreRuta, double[,] Coordenadas)>> GetRoutesAsync(Models.Location orig, Models.Location dest, CancellationToken cancellationToken);
+    internal abstract Task<IList<(string NombreRuta, double[,] Coordenadas)>> GetRoutesAsync(
+        Models.Location orig
+        , Models.Location dest
+        , CancellationToken cancellationToken);
+
     // TODO                             Return an object with more data
     internal static double[,] InvertLongitudeLatitude(double[,] matrix)
     {

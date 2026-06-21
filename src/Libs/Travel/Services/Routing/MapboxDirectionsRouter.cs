@@ -2,7 +2,10 @@
 
 //internal class MapboxDirectionsRouter(Settings.Api api, Microsoft.Extensions.Logging.ILogger logger) : RouterBase(api)
 //{
-//    internal override Task<IList<Models.GeoJSONItem>> GetRoutesAsync(ViewModels.TravelQueryModel model, CancellationToken cancellationToken)
+//    internal override Task<IList<Models.GeoJSONItem>> GetRoutesAsync(
+//      Model.Location orig
+//      , Model.Location dest
+//      , CancellationToken cancellationToken)
 //    {
 //        throw new NotImplementedException();
 //    }

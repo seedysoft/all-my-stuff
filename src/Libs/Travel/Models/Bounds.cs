@@ -2,15 +2,15 @@
 
 public class Bounds
 {
-    public Location NorthEast { get; set; } = new() { Latitude = 0.0, Longitude = 0.0 };
-    public Location SouthWest { get; set; } = new() { Latitude = 0.0, Longitude = 0.0 };
+    public Location NorthEast { get; set; } = new(lat: decimal.Zero, lon: decimal.Zero);
+    public Location SouthWest { get; set; } = new(lat: decimal.Zero, lon: decimal.Zero);
 
     public bool IsInside(Location location)
     {
         return
-            location.Latitude < NorthEast.Latitude &&
-            location.Latitude > SouthWest.Latitude &&
-            location.Longitude < NorthEast.Longitude &&
-            location.Longitude > SouthWest.Longitude;
+            location.Lat < NorthEast.Lat &&
+            location.Lat > SouthWest.Lat &&
+            location.Lon < NorthEast.Lon &&
+            location.Lon > SouthWest.Lon;
     }
 }

@@ -1,6 +1,6 @@
 ﻿namespace Seedysoft.Libs.Travel.Services.Geocoding;
 
-internal class Geocode
+internal class GeocodeXyz
 {
     //    var url = "https://geocode.xyz/?locate=" + Uri.EscapeDataString("Hauptstr., 57632 Berzhausen") + "&json=1&auth=YOUR_API_KEY";
 
