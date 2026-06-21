@@ -2,33 +2,6 @@
 
 public static class Earth
 {
-    /// <summary>
-    /// 
-    /// </summary>
-    public readonly record struct Burgos
-    {
-        /// <summary>
-        /// Gets the longitude of the home location.
-        /// </summary>
-        public const double Lng = -3.662837;
-        /// <summary>
-        /// Gets the latitude of the home location.
-        /// </summary>
-        public const double Lat = 42.354397;
-    }
-
-    /// <summary>
-    /// 
-    /// </summary>
-    public readonly record struct Brazuelo
-    {
-        /// <summary>
-        /// Gets the longitude of the home location.
-        /// </summary>
-        public const double Lng = -6.156444;
-        /// <summary>
-        /// Gets the latitude of the home location.
-        /// </summary>
-        public const double Lat = 42.49745;
-    }
+    public static readonly Models.Location Burgos = new(42.3543462M, -3.6628555M);
+    public static readonly Models.Location Brazuelo = new(42.4979035M, -6.1571902M);
 }

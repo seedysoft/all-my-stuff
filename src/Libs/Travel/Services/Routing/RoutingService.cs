@@ -13,7 +13,10 @@ public class RoutingService(IConfiguration configuration, ILogger<RoutingService
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     /// <exception cref="InvalidOperationException"></exception>
-    public async Task<IList<(string NombreRuta, double[,] Coordenadas)>> GetRoutesAsync(Models.Location orig, Models.Location dest, CancellationToken cancellationToken)
+    public async Task<IList<(string NombreRuta, double[,] Coordenadas)>> GetRoutesAsync(
+        Models.Location orig
+        , Models.Location dest
+        , CancellationToken cancellationToken)
     {
         Settings.RoutingApi api = TravelSettings.RoutingSettings.RoutingApis.First(x => x.Name == TravelSettings.RoutingSettings.CurrentImplementation);
 
@@ -21,10 +24,12 @@ public class RoutingService(IConfiguration configuration, ILogger<RoutingService
         {
 #pragma warning disable format
             //Settings.RoutingImplementations.Google                     => new GoogleRoutes(api, logger),
-            
+        
             //Settings.RoutingImplementations.MapboxDirections           => new MapboxDirectionsRouter(api, logger),
-            
-            Settings.RoutingImplementations.OpenSourceRoutingMachine   => new OpenSourceRoutingMachine(api, logger),
+        
+            Settings.RoutingImplementations.OpenSourceRoutingMachine    => new OpenSourceRoutingMachine(api, logger),
+
+            Settings.RoutingImplementations.Valhalla                    => new ValhallaRoutingService(new ValhallaRoutingApi(api) , logger),
 #pragma warning restore format
 
             _ => throw new InvalidOperationException($"Unsupported router: {TravelSettings.RoutingSettings.CurrentImplementation}"),

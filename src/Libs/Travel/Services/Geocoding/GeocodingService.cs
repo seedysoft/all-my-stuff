@@ -5,7 +5,7 @@ namespace Seedysoft.Libs.Travel.Services.Geocoding;
 
 public class GeocodingService(IConfiguration configuration, ILogger<GeocodingService> logger) : ServiceBase(configuration)
 {
-    public async Task<IEnumerable<ViewModels.Place>> FindPlacesAsync(string textToFind, CancellationToken cancellationToken)
+    public async Task<IList<ViewModels.Place>> FindPlacesAsync(string textToFind, CancellationToken cancellationToken)
     {
         Settings.GeocodingApi api = TravelSettings.GeocodingSettings.GeocodingApis.First(x => x.Name == TravelSettings.GeocodingSettings.CurrentImplementation);
 
@@ -13,10 +13,10 @@ public class GeocodingService(IConfiguration configuration, ILogger<GeocodingSer
         {
 #pragma warning disable format
             //Settings.GeocodingImplementations.Google                     => new GoogleRoutes(api, logger),
-            
+        
             //Settings.GeocodingImplementations.MapboxDirections           => new MapboxDirectionsRouter(api, logger),
-            
-            Settings.GeocodingImplementations.Nominatim                  => new Nominatim(api, logger),
+        
+            Settings.GeocodingImplementations.Nominatim                  => new NominatimGeocodingService(api, logger),
 #pragma warning restore format
 
             _ => throw new InvalidOperationException($"Unsupported geocoder: {TravelSettings.GeocodingSettings.CurrentImplementation}"),

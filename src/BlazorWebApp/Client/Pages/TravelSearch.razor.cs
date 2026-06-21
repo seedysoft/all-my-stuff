@@ -48,19 +48,14 @@ public partial class TravelSearch
         FluentValidation.Results.ValidationResult validationResult = await travelQueryModelFluentValidator.ValidateAsync(travelQueryModel);
         if (validationResult.IsValid)
         {
-            await LoadRoutesAsync(CancellationToken.None);
+            string? textToShow = await TravelMap.LoadRoutesAndGasStationsAsync(travelQueryModel, CancellationToken.None);
+            if (!string.IsNullOrWhiteSpace(textToShow))
+                _ = Snackbar.Add(new MarkupString($"<ul>{string.Join(string.Empty, textToShow)}</ul>"), MudBlazor.Severity.Info);
         }
         else
         {
             IEnumerable<string> errors = validationResult.Errors.Select(static x => $"<li>{x.ErrorMessage}</li>");
             _ = Snackbar.Add(new MarkupString($"<ul>{string.Join(string.Empty, errors)}</ul>"), MudBlazor.Severity.Error);
         }
-    }
-
-    private async Task LoadRoutesAsync(CancellationToken cancellationToken)
-    {
-        string? textToShow = await TravelMap.LoadRoutesAndGasStationsAsync(travelQueryModel, cancellationToken);
-        if (!string.IsNullOrWhiteSpace(textToShow))
-            _ = Snackbar.Add(new MarkupString($"<ul>{string.Join(string.Empty, textToShow)}</ul>"), MudBlazor.Severity.Info);
     }
 }

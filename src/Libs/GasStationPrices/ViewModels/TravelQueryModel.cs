@@ -1,5 +1,8 @@
-﻿namespace Seedysoft.Libs.GasStationPrices.ViewModels;
+﻿using Seedysoft.Libs.Core.Extensions;
 
+namespace Seedysoft.Libs.GasStationPrices.ViewModels;
+
+[System.Diagnostics.DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
 public record class TravelQueryModel
 {
     public required Travel.ViewModels.Place Orig { get; set; }
@@ -11,44 +14,49 @@ public record class TravelQueryModel
     [System.ComponentModel.DataAnnotations.Length(1, int.MaxValue)]
     public IReadOnlyCollection<Constants.ProductoPetroliferoId> PetroleumProductsSelectedIds { get; set; } = [];
 
+#if DEBUG
     public static TravelQueryModel CreateDefault()
     {
         return new()
         {
             Orig = new Travel.ViewModels.Place()
             {
-                Address = "CALLE JUAN RAMON JIMENEZ 8, Burgos",
-                Latitude = Travel.Constants.Earth.Burgos.Lat,
-                Longitude = Travel.Constants.Earth.Burgos.Lng,
+                Address = "8, Calle Juan Ramón Jiménez, Barrio Juan Pablo II - G9, Barriada de la Inmaculada, Gamonal, Distrito Este, Burgos, Castilla y León, 09007, España",
+                Lat = Travel.Constants.Earth.Burgos.Lat,
+                Lon = Travel.Constants.Earth.Burgos.Lon,
             },
             Dest = new Travel.ViewModels.Place()
             {
-                Address = "CALLE IGLESIA 12, Brazuelo",
-                Latitude = Travel.Constants.Earth.Brazuelo.Lat,
-                Longitude = Travel.Constants.Earth.Brazuelo.Lng,
+                Address = "Calle de la Iglesia, Brazuelo, León, Castilla y León, 24715, España",
+                Lat = Travel.Constants.Earth.Brazuelo.Lat,
+                Lon = Travel.Constants.Earth.Brazuelo.Lon,
             },
             MaxDistanceInKm = 10,
             PetroleumProductsSelectedIds = Models.Minetur.ProductoPetrolifero.Gasoline.Select(static x => x.IdProducto).ToHashSet(),
         };
     }
-    //public static TravelQueryModel CreateEmpty()
-    //{
-    //    return new()
-    //    {
-    //        Orig = new Travel.ViewModels.Place()
-    //        {
-    //            Address = string.Empty,
-    //            Latitude = 0.0,
-    //            Longitude = 0.0,
-    //        },
-    //        Dest = new Travel.ViewModels.Place()
-    //        {
-    //            Address = string.Empty,
-    //            Latitude = 0.0,
-    //            Longitude = 0.0,
-    //        },
-    //        MaxDistanceInKm = 10,
-    //        PetroleumProductsSelectedIds = Models.Minetur.ProductoPetrolifero.Gasoline.Select(static x => x.IdProducto).ToHashSet(),
-    //    };
-    //}
+#else
+    public static TravelQueryModel CreateEmpty()
+    {
+        return new()
+        {
+            Orig = new Travel.ViewModels.Place()
+            {
+                Address = string.Empty,
+                Lat = decimal.Zero,
+                Lon = decimal.Zero,
+            },
+            Dest = new Travel.ViewModels.Place()
+            {
+                Address = string.Empty,
+                Lat = decimal.Zero,
+                Lon = decimal.Zero,
+            },
+            MaxDistanceInKm = 10,
+            PetroleumProductsSelectedIds = Models.Minetur.ProductoPetrolifero.Gasoline.Select(static x => x.IdProducto).ToHashSet(),
+        };
+    }
+#endif
+
+    private string GetDebuggerDisplay() => this.ToJson();
 }

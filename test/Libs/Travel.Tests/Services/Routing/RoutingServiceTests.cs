@@ -4,11 +4,11 @@ using Seedysoft.Libs.Infrastructure.Extensions;
 
 namespace Seedysoft.Libs.Travel.Tests.Services.Routing;
 
-public sealed class RoutingTests : Infrastructure.Tests.TestClassBase
+public sealed class RoutingServiceTests : Infrastructure.Tests.TestClassBase
 {
     private readonly Travel.Services.Routing.RoutingService routingService = default!;
 
-    public RoutingTests() : base()
+    public RoutingServiceTests() : base()
     {
         HostApplicationBuilder appBuilder = new();
         _ = appBuilder.AddAllMyDependencies();
@@ -20,12 +20,15 @@ public sealed class RoutingTests : Infrastructure.Tests.TestClassBase
     [Test]
     public async Task GetRoutesAsyncTest()
     {
-        var Orig = new Models.Location() { Latitude = Constants.Earth.Burgos.Lat, Longitude = Constants.Earth.Burgos.Lng };
-        var Dest = new Models.Location() { Latitude = Constants.Earth.Brazuelo.Lat, Longitude = Constants.Earth.Brazuelo.Lng };
+        // Arrange
+        CancellationToken cancellationToken = CancellationToken.None;
 
-        IList<(string NombreRuta, double[,] Coordenadas)> Result = await routingService.GetRoutesAsync(Orig, Dest, CancellationToken.None);
+        // Act
+        IList<(string NombreRuta, double[,] Coordenadas)> result =
+            await routingService.GetRoutesAsync(Constants.Earth.Burgos, Constants.Earth.Brazuelo, cancellationToken);
 
-        _ = await Assert.That(Result).IsNotNull();
-        _ = await Assert.That(Result.Any()).IsTrue();
+        // Assert
+        _ = await Assert.That(result).IsNotNull();
+        _ = await Assert.That(result.Any()).IsTrue();
     }
 }

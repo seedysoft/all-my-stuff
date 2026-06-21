@@ -114,7 +114,7 @@ public sealed class PvpcCronBackgroundService : Libs.BackgroundServices.Cron
         {
             Libs.Core.Entities.Outbox OutboxMessage = new(
                 Libs.Core.Enums.SubscriptionName.electricidad,
-                System.Text.Json.JsonSerializer.Serialize(Prices.Cast<Libs.Core.Entities.Pvpc>().ToArray()));
+                Prices.Cast<Libs.Core.Entities.Pvpc>().ToArray().ToJson());
             _ = await dbCxt.Outbox.AddAsync(OutboxMessage, stoppingToken);
 
             _ = await dbCxt.SaveChangesAsync(stoppingToken);

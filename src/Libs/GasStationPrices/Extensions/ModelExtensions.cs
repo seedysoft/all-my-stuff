@@ -9,8 +9,8 @@ public static class ModelExtensions
         return new()
         {
 #pragma warning disable format
-            Lat             =   estacionTerrestre.Lat,
-            Lng             =   estacionTerrestre.Lng,
+            Lat             =   (double)estacionTerrestre.Lat,
+            Lon             =   (double)estacionTerrestre.Lon,
             Localizacion    =   estacionTerrestre.DireccionParsed,
             Rotulo          =   estacionTerrestre.Rotulo,
             bie             =   estacionTerrestre.PrecioBioetanol.ParseWithNumberFormatInfoES(),

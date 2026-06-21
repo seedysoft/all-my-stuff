@@ -30,22 +30,12 @@ public readonly record struct RoutingSettings
     public required RoutingApi[] RoutingApis { get; init; }
 }
 
-public class GeocodingApi : Api
-{
-    public required string Name { get; init; }
+public record GeocodingApi(string Name, string UrlFormat) : Api(UrlFormat);
 
-    public virtual string GetUrl(string text) => string.Format(UrlFormat, text);
-}
+public record RoutingApi(string Name, string UrlFormat) : Api(UrlFormat);
 
-public class RoutingApi : Api
+/// <param name="UrlFormat">Gets the URL format for the API endpoint.</param>
+public abstract record Api(string UrlFormat)
 {
-    public required string Name { get; init; }
-}
-
-public abstract class Api
-{
-    /// <summary>
-    /// Gets the URL format for the API endpoint.
-    /// </summary>
-    public required string UrlFormat { get; init; }
+    public virtual string GetUrl<T>(T text) => string.Format(UrlFormat, text);
 }

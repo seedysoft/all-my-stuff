@@ -5,10 +5,27 @@ namespace Seedysoft.Libs.Core.Extensions;
 public static class JsonExtensions
 {
     public static T FromJson<T>(this string json)
-        => JsonSerializer.Deserialize<T>(json, Converter.Settings) ?? throw new InvalidOperationException();
+        => JsonSerializer.Deserialize<T>(json, Converter.DefaultsReadOnly) ?? throw new InvalidOperationException();
 
-    public static string ToJson<T>(this T self)
-        => JsonSerializer.Serialize(self, Converter.Settings);
+    public static string ToJson<T>(
+        this T self,
+        bool allowReadOnlyFields = false,
+        bool allowReadOnlyProperties = false)
+    {
+        JsonSerializerOptions options;
+        if (allowReadOnlyFields || allowReadOnlyProperties)
+        {
+            options = Converter.GetSettings();
+            options.IgnoreReadOnlyProperties = !allowReadOnlyProperties;
+            options.IgnoreReadOnlyProperties = !allowReadOnlyProperties;
+        }
+        else
+        {
+            options = Converter.DefaultsReadOnly;
+        }
+
+        return JsonSerializer.Serialize(self, options);
+    }
 }
 
 public class EnumMemberJsonConverter<T> : System.Text.Json.Serialization.JsonConverter<T> where T : Enum
@@ -47,7 +64,16 @@ public class ParseStringConverter : System.Text.Json.Serialization.JsonConverter
 
 internal static class Converter
 {
-    public static readonly JsonSerializerOptions Settings = new(JsonSerializerDefaults.Web)
+    internal static JsonSerializerOptions DefaultsReadOnly
+    {
+        get
+        {
+            JsonSerializerOptions? jsonSerializerOptions = GetSettings();
+
+            return jsonSerializerOptions;
+        }
+    }
+    internal static JsonSerializerOptions GetSettings() => new(JsonSerializerDefaults.Web)
     {
         //Converters =
         //{
@@ -56,9 +82,12 @@ internal static class Converter
         //    new TimeOnlyConverter(),
         //    IsoDateTimeOffsetConverter.Singleton
         //},
+        AllowDuplicateProperties = false,
         IgnoreReadOnlyFields = true,
         IgnoreReadOnlyProperties = true,
         PropertyNameCaseInsensitive = true,
+        RespectNullableAnnotations = true,
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
     };
 }
 

@@ -6,7 +6,7 @@ public readonly record struct GeocodingImplementations
 
     //public const string MapboxDirections = "Geocoding";
 
-    public const string Nominatim = "NominatimGeocoding";
+    public const string Nominatim = "Nominatim";
 
     //public const string Here = "https://docs.here.com/routing/docs/routing-v8-get-started";
 }

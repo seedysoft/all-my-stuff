@@ -5,15 +5,15 @@ public static class Transformation
     private const double EarthRadius = 6_378_137.0;
     private const double OriginShift = Math.PI * EarthRadius;
 
-    public static (double X, double Y) LatLonToMercator(double lng, double lat)
+    public static (double X, double Y) LatLonToMercator(double lon, double lat)
     {
-        double x = lng * OriginShift / 180.0;
+        double x = lon * OriginShift / 180.0;
         double y = Math.Log(Math.Tan((90 + lat) * Math.PI / 360.0)) * EarthRadius;
 
         return new(x, y);
     }
 
-    public static (double Lng, double Lat) MercatorToLatLon(double x, double y)
+    public static (double Lon, double Lat) MercatorToLatLon(double x, double y)
     {
         double lon = x / OriginShift * 180.0;
         double lat = y / OriginShift * 180.0;
