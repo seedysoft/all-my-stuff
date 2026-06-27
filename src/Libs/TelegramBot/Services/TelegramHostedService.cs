@@ -68,7 +68,7 @@ public class TelegramHostedService : Core.NonBackgroundServiceBase, IHostedServi
     }
 
     private async Task StartReceivingAsync(
-        IEnumerable<BotCommand>? myCommands,
+        IReadOnlyList<BotCommand>? myCommands,
         CancellationToken stoppingToken)
     {
         Settings.CurrentBot.SetMe(await LocalTelegramBotClient.GetMe(stoppingToken));

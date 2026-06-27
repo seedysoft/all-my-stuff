@@ -27,8 +27,11 @@ public static class ArrayExtensions
     // Source - https://stackoverflow.com/a/26291720
     // Posted by Diligent Key Presser, modified by community. See post 'Timeline' for change history
     // Retrieved 2026-06-12, License - CC BY-SA 4.0
-    public static T[,] To2D<T>(this T[][] source)
+    public static T[,] To2D<T>(this T[][]? source)
     {
+        if (source == null)
+            return new T[0, 0];
+
         // throws InvalidOperationException if source is not rectangular
         int SecondDim = source.GroupBy(static row => row.Length).Single().Key;
         int FirstDim = source.Length;

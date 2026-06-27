@@ -82,7 +82,7 @@ public sealed class WebComparerCronBackgroundService : Libs.BackgroundServices.C
 
     private async Task FindDataToSendAsync(Libs.Infrastructure.DbContexts.DbCxt dbCtx, Libs.Core.Entities.WebData webData, CancellationToken cancellationToken)
     {
-        string Content = await GetContentAsync(webData);
+        string Content = await GetContentAsync(webData, cancellationToken);
 
         webData.DataToSend = GetDifferencesOrNull(webData, Content);
 
@@ -245,7 +245,7 @@ public sealed class WebComparerCronBackgroundService : Libs.BackgroundServices.C
         }
     }
 
-    private async Task<string> GetContentAsync(Libs.Core.Entities.WebData webData)
+    private async Task<string> GetContentAsync(Libs.Core.Entities.WebData webData, CancellationToken cancellationToken)
     {
         System.Text.StringBuilder ContentStringBuilder = new();
 
@@ -259,7 +259,7 @@ public sealed class WebComparerCronBackgroundService : Libs.BackgroundServices.C
             };
             HtmlAgilityPack.HtmlDocument htmlDocument = htmlWeb.Load(webData.WebUrl);
 
-            _ = ContentStringBuilder.Append(htmlDocument.DocumentNode.SelectSingleNode("//body")?.InnerText ?? default!);
+            ContentStringBuilder = ContentStringBuilder.Append(htmlDocument.DocumentNode.SelectSingleNode("//body")?.InnerText ?? default!);
         }
         else
         {
@@ -277,9 +277,12 @@ public sealed class WebComparerCronBackgroundService : Libs.BackgroundServices.C
                     System.Collections.ObjectModel.ReadOnlyCollection<OpenQA.Selenium.IWebElement> webElements = WebDriver.FindElements(OpenQA.Selenium.By.CssSelector(webData.CssSelector));
                     for (int i = 0; i < webElements.Count; i++)
                     {
+                        if (cancellationToken.IsCancellationRequested)
+                            return string.Empty;
+
                         OpenQA.Selenium.IWebElement webElement = webElements[i];
 
-                        _ = ContentStringBuilder.Append(webElement.Text);
+                        ContentStringBuilder = ContentStringBuilder.Append(webElement.Text);
                     }
 
                     WebDriver.Quit();
@@ -287,7 +290,7 @@ public sealed class WebComparerCronBackgroundService : Libs.BackgroundServices.C
             }
             catch (Exception e) when (Logger.LogAndHandle(e, "GetContent failed with ChromeDriver for '{WebUrl}'", webData.WebUrl))
             {
-                _ = ContentStringBuilder.Clear();
+                ContentStringBuilder = ContentStringBuilder.Clear();
             }
         }
 

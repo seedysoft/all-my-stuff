@@ -26,11 +26,11 @@ public class TravelQueryModelFluentValidator : AbstractValidator<TravelQueryMode
             .WithMessage("At least one product must be selected");
     }
 
-    public Func<object, string, Task<IEnumerable<string>>> ValidateValue => async (model, propertyName) =>
+    public Func<object, string, Task<IReadOnlyList<string>>> ValidateValue => async (model, propertyName) =>
     {
         FluentValidation.Results.ValidationResult result = await ValidateAsync(
             ValidationContext<TravelQueryModel>.CreateWithOptions((TravelQueryModel)model, x => x.IncludeProperties(propertyName)));
 
-        return result.IsValid ? [] : result.Errors.Select(e => e.ErrorMessage);
+        return result.IsValid ? [] : [.. result.Errors.Select(e => e.ErrorMessage)];
     };
 }

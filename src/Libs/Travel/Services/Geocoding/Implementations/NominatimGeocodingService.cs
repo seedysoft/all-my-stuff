@@ -1,12 +1,12 @@
 ﻿using RestSharp;
 using Seedysoft.Libs.Core.Extensions;
 
-namespace Seedysoft.Libs.Travel.Services.Geocoding;
+namespace Seedysoft.Libs.Travel.Services.Geocoding.Implementations;
 
-internal class NominatimGeocodingService(Settings.GeocodingApi api, Microsoft.Extensions.Logging.ILogger logger) : GeocodingBase(api)
+internal class NominatimGeocodingService(Settings.GeocodingApi api, Microsoft.Extensions.Logging.ILogger logger) : GeocodingImplementationBase(api)
 {
     // https://nominatim.openstreetmap.org/search?q={0}&format=json&limit=8
-    internal async override Task<IList<ViewModels.Place>> FindPlacesAsync(string textToFind, CancellationToken cancellationToken)
+    internal async override Task<IReadOnlyList<ViewModels.Place>> FindPlacesAsync(string textToFind, CancellationToken cancellationToken)
     {
         try
         {
@@ -16,26 +16,19 @@ internal class NominatimGeocodingService(Settings.GeocodingApi api, Microsoft.Ex
             RestClient restClient = new(new Uri(Api.UrlFormat).GetLeftPart(UriPartial.Authority));
             ResponseObject[]? restResponse = await restClient.GetAsync<ResponseObject[]>(Api.GetUrl(textToFind), cancellationToken);
 
-            if (restResponse == null)
-                return [];
-
-            IEnumerable<ViewModels.Place> places = restResponse
-                .Where(p => !string.IsNullOrWhiteSpace(p.Display_name))
-                .Where(p => p.Lat != 0 && p.Lon != 0)
-                .Select(p => new ViewModels.Place()
-                {
-                    Address = p.Display_name!,
-                    Lat = (decimal)p.Lat,
-                    Lon = (decimal)p.Lon
-                });
-
-            return [.. places];
+            return restResponse == null
+                ? []
+                : [.. restResponse
+                    .Where(p => !string.IsNullOrWhiteSpace(p.Display_name))
+                    .Where(p => p.Lat != 0 && p.Lon != 0)
+                    .Select(p => new ViewModels.Place(p.Display_name!, (decimal)p.Lat, (decimal)p.Lon))
+                ];
         }
         catch (Exception e) when (logger.LogAndHandle(e, "Unexpected error")) { }
 
         return [];
     }
-    public class ResponseObject
+    internal class ResponseObject
     {
         //public int place_id { get; set; }
         //public string licence { get; set; }

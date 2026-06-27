@@ -1,7 +1,9 @@
 ﻿namespace Seedysoft.Libs.Travel.Models;
 
-public class Location(decimal lat, decimal lon)
+[System.Diagnostics.DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
+public record Location(decimal Lat, decimal Lon)
 {
-    public decimal Lat { get; set; } = lat;
-    public decimal Lon { get; set; } = lon;
+    private string GetDebuggerDisplay() =>
+        $"Lat:{Lat.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat)};" +
+        $"Lon:{Lon.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat)}";
 }

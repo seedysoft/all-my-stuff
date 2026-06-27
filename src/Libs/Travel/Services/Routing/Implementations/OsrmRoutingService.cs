@@ -1,9 +1,9 @@
 ﻿using RestSharp;
 using Seedysoft.Libs.Core.Extensions;
 
-namespace Seedysoft.Libs.Travel.Services.Routing;
+namespace Seedysoft.Libs.Travel.Services.Routing.Implementations;
 
-internal class OpenSourceRoutingMachine(Settings.RoutingApi api, Microsoft.Extensions.Logging.ILogger logger) : RoutingBase(api)
+internal class OsrmRoutingService(Settings.RoutingApi api, Microsoft.Extensions.Logging.ILogger logger) : RoutingImplementationBase(api)
 {
     /// <summary>
     /// Obtiene las rutas entre el origen y el destino especificados en el modelo de consulta.
@@ -12,7 +12,7 @@ internal class OpenSourceRoutingMachine(Settings.RoutingApi api, Microsoft.Exten
     /// <param name="dest"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    internal override async Task<IList<(string NombreRuta, double[,] Coordenadas)>> GetRoutesAsync(
+    internal override async Task<IReadOnlyList<(string NombreRuta, double[,] Coordenadas)>> GetRoutesAsync(
         Models.Location orig
         , Models.Location dest
         , CancellationToken cancellationToken)
@@ -40,21 +40,24 @@ internal class OpenSourceRoutingMachine(Settings.RoutingApi api, Microsoft.Exten
 
         // Coordinates are in the format: [lng, lat]
         // We need to invert them to [lat, lng] for our application
-        IEnumerable<(string NombreRuta, double[,] Coordenadas)> Result =
-            from r in body.Trips
-            select (r.WeightName, InvertLongitudeLatitude(Extensions.ArrayExtensions.To2D(r.Geometry?.Coordinates ?? [])));
-
-        return [.. Result];
+        return body.Trips?
+            .Where(x => x.WeightName != null && x.Geometry?.Coordinates != null)
+            .Select(x => (
+                NombreRuta: x.WeightName!,
+                Coordenadas: InvertLongitudeLatitude(Extensions.ArrayExtensions.To2D(x.Geometry!.Coordinates))!
+            ))
+            // Non-null after Where
+            .ToList() ?? [];
     }
 
-    public class OsrmResponse
+    internal class OsrmResponse
     {
         [J("code")] public string? Code { get; set; }
         [J("trips")] public Trip[]? Trips { get; set; }
         [J("waypoints")] public Waypoint[]? Waypoints { get; set; }
     }
 
-    public class Trip
+    internal class Trip
     {
         [J("legs")] public Leg[]? Legs { get; set; }
         [J("weight_name")] public string? WeightName { get; set; }
@@ -64,14 +67,14 @@ internal class OpenSourceRoutingMachine(Settings.RoutingApi api, Microsoft.Exten
         [J("distance")] public float Distance { get; set; }
     }
 
-    public class Geometry
+    internal class Geometry
     {
         // Coordinates are in the format: [lng, lat]
         [J("coordinates")] public double[][]? Coordinates { get; set; }
         [J("type")] public string? Type { get; set; }
     }
 
-    public class Leg
+    internal class Leg
     {
         [J("steps")] public object[]? Steps { get; set; }
         [J("weight")] public float Weight { get; set; }
@@ -80,7 +83,7 @@ internal class OpenSourceRoutingMachine(Settings.RoutingApi api, Microsoft.Exten
         [J("distance")] public float Distance { get; set; }
     }
 
-    public class Waypoint
+    internal class Waypoint
     {
         [J("waypoint_index")] public int WaypointIndex { get; set; }
         [J("distance")] public float Distance { get; set; }

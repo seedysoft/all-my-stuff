@@ -24,7 +24,7 @@ public sealed class RoutingServiceTests : Infrastructure.Tests.TestClassBase
         CancellationToken cancellationToken = CancellationToken.None;
 
         // Act
-        IList<(string NombreRuta, double[,] Coordenadas)> result =
+        IReadOnlyList<(string NombreRuta, double[,] Coordenadas)> result =
             await routingService.GetRoutesAsync(Constants.Earth.Burgos, Constants.Earth.Brazuelo, cancellationToken);
 
         // Assert

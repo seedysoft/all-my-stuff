@@ -33,12 +33,12 @@ public sealed class GeocodingServiceTests : Infrastructure.Tests.TestClassBase
         CancellationToken cancellationToken = CancellationToken.None;
 
         // Act
-        IList<ViewModels.Place> result =
+        IReadOnlyList<ViewModels.Place> result =
             await geoplacingService.FindPlacesAsync(textToFind, cancellationToken);
 
         // Assert
         _ = await Assert.That(result).IsNotNull();
-        _ = await Assert.That(result).IsAssignableFrom<IList<ViewModels.Place>>();
+        _ = await Assert.That(result).IsAssignableFrom<IReadOnlyList<ViewModels.Place>>();
     }
 
     [Test]
@@ -49,7 +49,7 @@ public sealed class GeocodingServiceTests : Infrastructure.Tests.TestClassBase
         CancellationToken cancellationToken = CancellationToken.None;
 
         // Act & Assert
-        IList<ViewModels.Place> result = await geoplacingService.FindPlacesAsync(textToFind, cancellationToken);
+        IReadOnlyList<ViewModels.Place> result = await geoplacingService.FindPlacesAsync(textToFind, cancellationToken);
         Assert.NotNull(result);
     }
 
@@ -81,7 +81,7 @@ public sealed class GeocodingServiceTests : Infrastructure.Tests.TestClassBase
         // For now, it validates the current supported implementation doesn't throw
 
         // Act
-        IList<ViewModels.Place> result =
+        IReadOnlyList<ViewModels.Place> result =
             await geoplacingService.FindPlacesAsync(textToFind, cancellationToken);
 
         // Assert

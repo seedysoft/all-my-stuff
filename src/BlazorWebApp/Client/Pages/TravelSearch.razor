@@ -65,7 +65,7 @@
                            IconColor="@(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.All.Count == travelQueryModel.PetroleumProductsSelectedIds.Count ? Color.Primary : Color.Secondary)"
                            EndIcon="@Icons.Material.Filled.SelectAll"
                            IconSize="@Size.Large"
-                           OnClick="@(() => travelQueryModel.PetroleumProductsSelectedIds = Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.All.Select(static x => x.IdProducto).ToHashSet())">
+                           OnClick="@(()=> SetPetroleumProductsSelectedIds(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.All))">
                     @nameof(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.All)
                 </MudButton>
 
@@ -73,7 +73,7 @@
                            IconColor="@(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.Gasoline.Select(x => x.IdProducto).All(y => travelQueryModel.PetroleumProductsSelectedIds.Contains(y)) ? Color.Primary : Color.Secondary)"
                            EndIcon="@Icons.Material.Filled.PropaneTank"
                            IconSize="@Size.Large"
-                           OnClick="@(() => travelQueryModel.PetroleumProductsSelectedIds = Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.Gasoline.Select(static x => x.IdProducto).ToHashSet())">
+                           OnClick="@(()=> SetPetroleumProductsSelectedIds(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.Gasoline))">
                     @nameof(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.Gasoline)
                 </MudButton>
 
@@ -81,14 +81,14 @@
                            IconColor="@(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.Diesel.Select(x => x.IdProducto).All(y => travelQueryModel.PetroleumProductsSelectedIds.Contains(y)) ? Color.Primary : Color.Secondary)"
                            EndIcon="@Icons.Material.Filled.CarRepair"
                            IconSize="@Size.Large"
-                           OnClick="@(() => travelQueryModel.PetroleumProductsSelectedIds = Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.Diesel.Select(static x => x.IdProducto).ToHashSet())">
+                           OnClick="@(()=> SetPetroleumProductsSelectedIds(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.Diesel))">
                     @nameof(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.Diesel)
                 </MudButton>
 
                 <MudButton ButtonType="@ButtonType.Button"
                            EndIcon="@Icons.Material.Filled.Deselect"
                            IconSize="@Size.Large"
-                           OnClick="@(() => travelQueryModel.PetroleumProductsSelectedIds = [])">
+                           OnClick="@(()=> SetPetroleumProductsSelectedIds(null))">
                     None
                 </MudButton>
 
@@ -127,7 +127,7 @@
             <MudButton ButtonType="@ButtonType.Button"
                        Class="flex-grow-all"
                        IconSize="@Size.Large"
-                       OnClick="@ValidateSearch"
+                       OnClick="@ValidateSearchAsync"
                        Size="@Size.Large"
                        StartIcon="@Icons.Material.Filled.Search"
                        Variant="@variant">
