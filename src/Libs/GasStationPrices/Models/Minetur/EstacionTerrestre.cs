@@ -1,6 +1,6 @@
 ﻿namespace Seedysoft.Libs.GasStationPrices.Models.Minetur;
 
-public record class Body
+public record Body
 {
     private const string FechaFormat = "dd/MM/yyyy HH:mm:ss";
 
@@ -26,7 +26,7 @@ public record class Body
     [J("ResultadoConsulta")] public required string ResultadoConsulta { get; init; }
 }
 
-public record class EstacionTerrestre
+public record EstacionTerrestre
 {
     [J("C.P.")] public required string CodigoPostal { get; init; }
 

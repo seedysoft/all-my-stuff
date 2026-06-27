@@ -1,6 +1,6 @@
 ﻿namespace Seedysoft.Libs.SmtpService.Settings;
 
-public record class SmtpServiceSettings
+public record SmtpServiceSettings
 {
     public required string Host { get; init; }
 

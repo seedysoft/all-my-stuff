@@ -1,6 +1,6 @@
 ﻿namespace Seedysoft.Libs.GasStationPrices.Models.Minetur;
 
-public record class ProductoPetrolifero : IComparable<ProductoPetrolifero>
+public record ProductoPetrolifero : IComparable<ProductoPetrolifero>
 {
     [J("IDProducto"), K(typeof(Core.Extensions.ParseStringConverter))] public required Constants.ProductoPetroliferoId IdProducto { get; init; }
 

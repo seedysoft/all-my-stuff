@@ -1,24 +1,24 @@
-﻿namespace Seedysoft.Libs.GasStationPrices;
+﻿//namespace Seedysoft.Libs.GasStationPrices;
 
-public static class Transformation
-{
-    private const double EarthRadius = 6_378_137.0;
-    private const double OriginShift = Math.PI * EarthRadius;
+//public static class Transformation
+//{
+//    private const double EarthRadius = 6_378_137.0;
+//    private const double OriginShift = Math.PI * EarthRadius;
 
-    public static (double X, double Y) LatLonToMercator(double lon, double lat)
-    {
-        double x = lon * OriginShift / 180.0;
-        double y = Math.Log(Math.Tan((90 + lat) * Math.PI / 360.0)) * EarthRadius;
+//    public static (double X, double Y) LatLonToMercator(double lon, double lat)
+//    {
+//        double x = lon * OriginShift / 180.0;
+//        double y = Math.Log(Math.Tan((90 + lat) * Math.PI / 360.0)) * EarthRadius;
 
-        return new(x, y);
-    }
+//        return new(x, y);
+//    }
 
-    public static (double Lon, double Lat) MercatorToLatLon(double x, double y)
-    {
-        double lon = x / OriginShift * 180.0;
-        double lat = y / OriginShift * 180.0;
-        lat = 180 / Math.PI * ((2 * Math.Atan(Math.Exp(lat * Math.PI / 180.0))) - (Math.PI / 2));
+//    public static (double Lon, double Lat) MercatorToLatLon(double x, double y)
+//    {
+//        double lon = x / OriginShift * 180.0;
+//        double lat = y / OriginShift * 180.0;
+//        lat = 180 / Math.PI * ((2 * Math.Atan(Math.Exp(lat * Math.PI / 180.0))) - (Math.PI / 2));
 
-        return new(lon, lat);
-    }
-}
+//        return new(lon, lat);
+//    }
+//}

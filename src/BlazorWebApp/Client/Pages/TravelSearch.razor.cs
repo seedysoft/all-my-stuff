@@ -31,6 +31,9 @@ public partial class TravelSearch
             Logger.LogInformation($"Called {nameof(OnInitializedAsync)}");
     }
 
+    private void SetPetroleumProductsSelectedIds(System.Collections.Immutable.ImmutableSortedSet<Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero>? fromWhat) =>
+        travelQueryModel.PetroleumProductsSelectedIds = [.. fromWhat?.Select(static x => x.IdProducto) ?? []];
+
     private async Task<IEnumerable<Libs.Travel.ViewModels.Place>> FindPlacesAsync(string textToFind, CancellationToken cancellationToken)
     {
         try
@@ -43,19 +46,19 @@ public partial class TravelSearch
         return [];
     }
 
-    private async Task ValidateSearch()
+    private async Task ValidateSearchAsync(/*Microsoft.AspNetCore.Components.Web.MouseEventArgs args*/)
     {
         FluentValidation.Results.ValidationResult validationResult = await travelQueryModelFluentValidator.ValidateAsync(travelQueryModel);
         if (validationResult.IsValid)
         {
-            string? textToShow = await TravelMap.LoadRoutesAndGasStationsAsync(travelQueryModel, CancellationToken.None);
+            string? textToShow = await TravelMap.LoadRoutesAndGasStationsAsync(travelQueryModel, default);
             if (!string.IsNullOrWhiteSpace(textToShow))
                 _ = Snackbar.Add(new MarkupString($"<ul>{string.Join(string.Empty, textToShow)}</ul>"), MudBlazor.Severity.Info);
         }
         else
         {
             IEnumerable<string> errors = validationResult.Errors.Select(static x => $"<li>{x.ErrorMessage}</li>");
-            _ = Snackbar.Add(new MarkupString($"<ul>{string.Join(string.Empty, errors)}</ul>"), MudBlazor.Severity.Error);
+            _ = Snackbar.Add(new MarkupString($"<ul>{string.Concat(errors)}</ul>"), MudBlazor.Severity.Error);
         }
     }
 }

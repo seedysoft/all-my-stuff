@@ -1,6 +1,6 @@
 ﻿namespace Seedysoft.Libs.GasStationPrices.ViewModels;
 
-public record class GasStationModel
+public record GasStationModel
 {
     [J("lat")] public double Lat { get; init; }
     [J("lng")] public double Lon { get; init; }
@@ -29,4 +29,35 @@ public record class GasStationModel
     public decimal? gob { get; init; }
     public decimal? h2 { get; init; }
 #pragma warning restore IDE1006 // Naming Styles
+
+    public decimal? GetProdById(Constants.ProductoPetroliferoId productoPetroliferoId)
+    {
+        return productoPetroliferoId switch
+        {
+            Constants.ProductoPetroliferoId.BIE => bie,
+            Constants.ProductoPetroliferoId.BIO => bio,
+            Constants.ProductoPetroliferoId.G95E10 => g95e10,
+            Constants.ProductoPetroliferoId.G95E5 => g95e5,
+            Constants.ProductoPetroliferoId.G95E5Plus => g95e5plus,
+            Constants.ProductoPetroliferoId.G98E10 => g98e10,
+            Constants.ProductoPetroliferoId.G98E5 => g98e5,
+            Constants.ProductoPetroliferoId.GLP => glp,
+            Constants.ProductoPetroliferoId.GNC => gnc,
+            Constants.ProductoPetroliferoId.GNL => gnl,
+            Constants.ProductoPetroliferoId.GOA => goa,
+            Constants.ProductoPetroliferoId.GOAPlus => goaplus,
+            Constants.ProductoPetroliferoId.GOB => gob,
+            _ => throw new ArgumentOutOfRangeException(nameof(productoPetroliferoId), productoPetroliferoId, null),
+        };
+    }
+
+    public IReadOnlyList<(Constants.ProductoPetroliferoId IdProducto, decimal Value)> AllProducts()
+    {
+        return [..
+            from a in Models.Minetur.ProductoPetrolifero.All
+            let b = GetProdById(a.IdProducto)
+            where b.HasValue
+            select (a.IdProducto, b.Value)
+        ];
+    }
 }

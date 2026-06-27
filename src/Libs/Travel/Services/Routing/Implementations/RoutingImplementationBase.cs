@@ -1,6 +1,6 @@
-﻿namespace Seedysoft.Libs.Travel.Services.Routing;
+﻿namespace Seedysoft.Libs.Travel.Services.Routing.Implementations;
 
-internal abstract class RoutingBase(Settings.RoutingApi routingApi)
+internal abstract class RoutingImplementationBase(Settings.RoutingApi routingApi)
 {
     protected RestSharp.RestClient RestClient { get; } = new(new Uri(routingApi.UrlFormat).GetLeftPart(UriPartial.Authority));
     protected Settings.RoutingApi RoutingApi { get; } = routingApi;
@@ -12,7 +12,7 @@ internal abstract class RoutingBase(Settings.RoutingApi routingApi)
     /// <param name="dest"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    internal abstract Task<IList<(string NombreRuta, double[,] Coordenadas)>> GetRoutesAsync(
+    internal abstract Task<IReadOnlyList<(string NombreRuta, double[,] Coordenadas)>> GetRoutesAsync(
         Models.Location orig
         , Models.Location dest
         , CancellationToken cancellationToken);

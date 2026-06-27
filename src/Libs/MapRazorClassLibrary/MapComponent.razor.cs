@@ -5,6 +5,8 @@ namespace Seedysoft.Libs.MapRazorClassLibrary;
 
 public partial class MapComponent
 {
+    // Samples obtained from https://github.com/ichim/LeafletForBlazor-NuGet/issues/75
+
     #region Initialization
 
     private readonly RealTimeMap.LoadParameters parameters = new()  //general map settings
@@ -49,8 +51,6 @@ public partial class MapComponent
 
     private readonly string[] ColorsForRoutes = ["#007FFF", "#0074EA", "#0069D5", "#005EC0", "#0053AB", "#004896", "#003D81", "#00326C"];
 
-    private const string iconPath = "http://localhost:5146/icons/";
-
     private RealTimeMap realTimeMap = default!;
 
     private readonly LeafletForBlazor.Components.StreamLegend.ContentStyle contentStyle = new()
@@ -71,41 +71,6 @@ public partial class MapComponent
             paddingLeft = 20,
         },
     };
-
-    // rtm.Geometric.Points.AppearanceOnType((item) =>
-    //     item.type == "police crew" ||
-    //     item.type == "intervention crew" ||
-    //     item.type == "ambulance"
-    //     ).pattern = new RealTimeMap.PointSymbol()
-    //     {
-    //         radius = 6,
-    //         color = "gray",
-    //         opacity = 1,
-    //         fillColor = "blue",
-    //         fillOpacity = 0.5,
-    //         weight = 2
-    //     };
-    //   
-    // rtm.Geometric.Points.AppearanceOnType((item) =>
-    //     item.type == "suspicious vehicle"
-    //     ).pattern = new RealTimeMap.PointSymbol()
-    //     {
-    //         radius = 6,
-    //         color = "gray",
-    //         opacity = 1,
-    //         fillColor = "red",
-    //         fillOpacity = 0.5,
-    //         weight = 2
-    //     };
-
-    // realTimeMap.Geometric.Points.Appearance(item => item.type == "asked for help").pattern = new RealTimeMap.PointTooltip()
-    // {
-    //     content = "<b>Registration number: </b>${value.registrationNumber}</br><b>Vehicle type: </b>${value.vehicleType}</br>${value.description}"
-    // };
-    // realTimeMap.Geometric.Points.Appearance(item => item.type != "asked for help").pattern = new RealTimeMap.PointTooltip()
-    // {
-    //     content = "<b>${type}</b><br><b>Vehicle type: </b>${value.vehicleType}"
-    // };
 
     // realTimeMap.Geometric.Points.Appearance(item => !(item.type == "red" || item.type == "green" || item.type == "blue")).pattern = new RealTimeMap.PointSymbol() { radius = 8, color = "#28ffff", opacity = 0.68, fillColor = "orange", weight = 2, fillOpacity = 0.68 };
     // realTimeMap.Geometric.Points.Appearance(item => item.type == "red").pattern = new RealTimeMap.PointSymbol() { radius = 8, color = "rgb(200,100,0)", opacity = 0.68, fillColor = "red", weight = 4, fillOpacity = 0.68 };
@@ -149,33 +114,7 @@ public partial class MapComponent
 
     private static void OnDoubleClickMap(RealTimeMap.ClicksMapArgs args) { }
 
-    private void OnZoomLevelEndChange(RealTimeMap.MapZoomEventArgs args)
-    {
-        Zoom = args.zoomLevel;
-
-        if (args.zoomLevel < 16)
-        {
-            realTimeMap.Geometric.Points.Appearance(static item => item.type == "residency").pattern = new RealTimeMap.PointSymbol() { radius = 6, color = "black", opacity = 1, fillColor = "gray", fillOpacity = 1, weight = 2 };
-            realTimeMap.Geometric.Points.Appearance(static item => item.type == "unknown").pattern = new RealTimeMap.PointSymbol() { radius = 6, color = "blue", opacity = 1, fillColor = "azure", fillOpacity = 1, weight = 2 };
-            realTimeMap.Geometric.Points.Appearance(static item => item.type == "museum").pattern = new RealTimeMap.PointSymbol() { radius = 6, color = "orange", opacity = 1, fillColor = "#cd6420", fillOpacity = 1, weight = 2 };
-            realTimeMap.Geometric.Points.Appearance(static item => item.type == "post office").pattern = new RealTimeMap.PointSymbol() { radius = 6, color = "yellow", opacity = 1, fillColor = "red", fillOpacity = 1, weight = 4 };
-            realTimeMap.Geometric.Points.Appearance(static item => item.type == "food shop").pattern = new RealTimeMap.PointSymbol() { radius = 6, color = "#6fbb00", opacity = 1, fillColor = "#8bec00", fillOpacity = 1, weight = 2 };
-            realTimeMap.Geometric.Points.Appearance(static item => item.type == "souvenir shop").pattern = new RealTimeMap.PointSymbol() { radius = 6, color = "#02486a", opacity = 1, fillColor = "#009afe", fillOpacity = 1, weight = 2 };
-            realTimeMap.Geometric.Points.Appearance(static item => item.type == "cofee shop").pattern = new RealTimeMap.PointSymbol() { radius = 4, color = "#4c0090", opacity = 1, fillColor = "#8002f0", fillOpacity = 1, weight = 2 };
-            realTimeMap.Geometric.Points.Appearance(static item => item.type == "car rentals").pattern = new RealTimeMap.PointSymbol() { radius = 4, color = "#8c064b", opacity = 1, fillColor = "#fb188d", fillOpacity = 1, weight = 2 };
-        }
-        else
-        {
-            realTimeMap.Geometric.Points.Appearance(static item => item.type == "residency").pattern = new RealTimeMap.PointSymbol() { radius = 8, color = "black", opacity = 1, fillColor = "gray", fillOpacity = 1, weight = 2 };
-            realTimeMap.Geometric.Points.Appearance(static item => item.type == "unknown").pattern = new RealTimeMap.PointSymbol() { radius = 8, color = "blue", opacity = 1, fillColor = "azure", fillOpacity = 1, weight = 2 };
-            realTimeMap.Geometric.Points.Appearance(static item => item.type == "museum").pattern = new RealTimeMap.PointSymbol() { radius = 12, color = "orange", opacity = 1, fillColor = "#cd6420", fillOpacity = 1, weight = 2 };
-            realTimeMap.Geometric.Points.Appearance(static item => item.type == "post office").pattern = new RealTimeMap.PointSymbol() { radius = 12, color = "yellow", opacity = 1, fillColor = "red", fillOpacity = 1, weight = 4 };
-            realTimeMap.Geometric.Points.Appearance(static item => item.type == "food shop").pattern = new RealTimeMap.PointIcon() { iconUrl = $"{iconPath}food.png", iconSize = [32, 32] };
-            realTimeMap.Geometric.Points.Appearance(static item => item.type == "souvenir shop").pattern = new RealTimeMap.PointIcon() { iconUrl = $"{iconPath}souvenir.png", iconSize = [32, 32] };
-            realTimeMap.Geometric.Points.Appearance(static item => item.type == "cofee shop").pattern = new RealTimeMap.PointIcon() { iconUrl = $"{iconPath}cofee.png", iconSize = [32, 32] };
-            realTimeMap.Geometric.Points.Appearance(static item => item.type == "car rentals").pattern = new RealTimeMap.PointIcon() { iconUrl = $"{iconPath}carrentals.png", iconSize = [32, 32] };
-        }
-    }
+    private void OnZoomLevelEndChange(RealTimeMap.MapZoomEventArgs args) => Zoom = args.zoomLevel;
 
     private async Task ClearMapAsync()
     {
@@ -189,27 +128,25 @@ public partial class MapComponent
     /// <param name="sender"></param>
     private static void LoadGasStationAppearances(RealTimeMap sender)
     {
-        //sender.Geometric.Points.Appearance(item => item.type == "gas-station").pattern = new RealTimeMap.PointIcon()
-        //{
-        //    iconUrl = "https://www.google.com/s2/favicons?domain=$repsol&sz=16",
-        //};
+        // "Cheap" : "Rest"
+        sender.Geometric.Points.Appearance(item => item.type == "Cheap").pattern = new RealTimeMap.PointSymbol() { color = "white", fillColor = "green", fillOpacity = 0.68, opacity = 0.68, radius = 12, weight = 2 };
+        sender.Geometric.Points.Appearance(item => item.type == "Other").pattern = new RealTimeMap.PointSymbol() { color = "blue", fillColor = "orange", fillOpacity = 0.68, opacity = 0.68, radius = 10, weight = 2 };
 
-        sender.Geometric.Points.clusteringAfterCollectionUpdate = true;
-        sender.Geometric.Points.clusteringConfiguration = new LeafletForBlazor.RealTime.points.ClusteringConfiguration()
-        {
-            showCoverageOnHover = true,     // Show coverage on hover
-            spiderfyOnMaxZoom = true,       // Spiderfy markers when zoomed in
-            zoomToBoundsOnClick = false,    // Zoom to bounds when clicking on a cluster
-            maxClusterRadius = 120,         // Maximum radius of a cluster when it is not zoomed in px
-        };
+        //sender.Geometric.Points.clusteringAfterCollectionUpdate = true;
+        //sender.Geometric.Points.clusteringConfiguration = new LeafletForBlazor.RealTime.points.ClusteringConfiguration()
+        //{
+        //    maxClusterRadius = 120,         // Maximum radius of a cluster when it is not zoomed in px
+        //    showCoverageOnHover = true,     // Show coverage on hover
+        //    spiderfyOnMaxZoom = true,       // Spiderfy markers when zoomed in
+        //    zoomToBoundsOnClick = false,    // Zoom to bounds when clicking on a cluster
+        //};
     }
 
     public async Task<string?> LoadRoutesAndGasStationsAsync(GasStationPrices.ViewModels.TravelQueryModel model, CancellationToken cancellationToken)
     {
         await ClearMapAsync();
 
-        IList<(string NombreRuta, double[,] Coordenadas)> res;
-
+        IReadOnlyList<(string NombreRuta, double[,] Coordenadas)> res;
         try
         {
             res = await RoutingService.GetRoutesAsync(model.Orig.Location, model.Dest.Location, cancellationToken);
@@ -222,55 +159,60 @@ public partial class MapComponent
         if (res.Count == 0)
             return "No routes found";
 
-        await LoadRoutesDataIntoMapAsync(res);
+        await LoadRoutesDataIntoMapAsync(res, cancellationToken);
 
-        Travel.Models.Bounds ourBounds = ComputeBoundsFromRoutes(res);
+        Travel.Models.Bounds ourBounds = ComputeBoundsFromRoutes(res, cancellationToken);
 
         await LoadGasStationsIntoMapAsync(model, ourBounds, cancellationToken);
 
         return null;
 
-        // Samples obtained from https://github.com/ichim/LeafletForBlazor-NuGet/issues/75
-
         async Task LoadRoutesDataIntoMapAsync(
-            IList<(string NombreRuta,
-            double[,] Coordenadas)> res)
+            IReadOnlyList<(string NombreRuta
+            , double[,] Coordenadas)> res
+            , CancellationToken cancellationToken)
         {
             for (int i = 0; i < res.Count; i++)
             {
+                if (cancellationToken.IsCancellationRequested)
+                    break;
+
                 (string? NombreRuta, double[,]? Coordenadas) = res[i];
-
-                realTimeMap.Geometric.Points.Appearance(item => item.type != "gas-station").pattern = new RealTimeMap.PointSymbol()
-                {
-                    radius = 6, // default 4
-                    fillColor = ColorsForRoutes[i],
-                    //color = ColorsForRoutes[i], // default null
-                    //fillOpacity = 1.0, // default 1.0
-                    opacity = 1.0, // default 0.0
-                    weight = 1, // default 0
-                };
-
-                await realTimeMap.Geometric.DisplayPolylinesFromArray.addConnector(arrayPolyline: Coordenadas, start: 1);
+                await realTimeMap.Geometric.DisplayPolylinesFromArray.addConnector(
+                    arrayPolyline: Coordenadas
+                    , symbol: new RealTimeMap.PolylineSymbol() { color = ColorsForRoutes[i], /*smoothFactor = 1.0,*/ /*opacity = 1.0,*/ weight = 5, }
+                    , start: 1);
             }
         }
 
         Travel.Models.Bounds ComputeBoundsFromRoutes(
-            IList<(string NombreRuta,
-            double[,] Coordenadas)> res)
+            IReadOnlyList<(string NombreRuta
+            , double[,] Coordenadas)> res
+            , CancellationToken cancellationToken)
         {
+            // Take inverse limits, so any obtained point will be used
             RealTimeMap.Bounds routeBounds = new()
             {
-                northEast = new RealTimeMap.Location() { latitude = -90.0, longitude = -180.0, }, // South West limits
-                southWest = new RealTimeMap.Location() { latitude = 90.0, longitude = 180.0, },   // North East limits
+                northEast = new RealTimeMap.Location() { latitude = (double)Travel.Models.Bounds.Limits.South, longitude = (double)Travel.Models.Bounds.Limits.West, }, // South West limits
+                southWest = new RealTimeMap.Location() { latitude = (double)Travel.Models.Bounds.Limits.North, longitude = (double)Travel.Models.Bounds.Limits.East, },   // North East limits
             };
 
             foreach ((string NombreRuta, double[,] Coordenadas) in res)
             {
+                if (cancellationToken.IsCancellationRequested)
+                    return Travel.Models.Bounds.Empty;
+
                 for (int i = 0; i < Coordenadas.GetLength(0); i++)
                 {
+                    if (cancellationToken.IsCancellationRequested)
+                        return Travel.Models.Bounds.Empty;
+
                     for (int j = 0; j < Coordenadas.GetLength(1); j++)
                     {
-                        double v = (double)Coordenadas[i, j];
+                        if (cancellationToken.IsCancellationRequested)
+                            return Travel.Models.Bounds.Empty;
+
+                        double v = Coordenadas[i, j];
 
                         if (j == 0)
                         {
@@ -280,7 +222,7 @@ public partial class MapComponent
                             if (v < routeBounds.southWest.latitude)
                                 routeBounds.southWest.latitude = v;
                         }
-                        else
+                        else // (j == 1)
                         {
                             // longitude
                             if (v > routeBounds.northEast.longitude)
@@ -294,44 +236,59 @@ public partial class MapComponent
 
             realTimeMap.View.setBounds = routeBounds;
 
-            Travel.Models.Bounds boundsForGasStations = new()
-            {
-                NorthEast = new Travel.Models.Location(lat: (decimal)routeBounds.northEast.latitude, lon: (decimal)routeBounds.northEast.longitude),
-                SouthWest = new Travel.Models.Location(lat: (decimal)routeBounds.southWest.latitude, lon: (decimal)routeBounds.southWest.longitude),
-            };
+            Travel.Models.Bounds boundsForGasStations = new(
+                NorthEast: new Travel.Models.Location((decimal)routeBounds.northEast.latitude, (decimal)routeBounds.northEast.longitude),
+                SouthWest: new Travel.Models.Location((decimal)routeBounds.southWest.latitude, (decimal)routeBounds.southWest.longitude));
 
             return boundsForGasStations;
         }
 
         async Task LoadGasStationsIntoMapAsync(
-            GasStationPrices.ViewModels.TravelQueryModel model,
-            Travel.Models.Bounds bounds,
-            CancellationToken cancellationToken)
+            GasStationPrices.ViewModels.TravelQueryModel model
+            , Travel.Models.Bounds bounds
+            , CancellationToken cancellationToken)
         {
-            var gasStationPoints = (await GasStationPricesService.GetNearGasStationsAsync(bounds, model.MaxDistanceInKm, cancellationToken))
-                .Select(x => new RealTimeMap.StreamPoint()
-                {
-                    guid = Guid.NewGuid(),
-                    latitude = (double)x.Lat,
-                    longitude = (double)x.Lon,
-                    //timestamp =,
-                    type = "gas-station",
-                    value = x,
-                })
-                .ToList();
+            IReadOnlyList<GasStationPrices.ViewModels.GasStationModel> gasStations =
+                await GasStationPricesService.GetNearGasStationsAsync(bounds, model.MaxDistanceInKm, cancellationToken);
 
-            IEnumerable<string> plantillaPrecios =
+            // For each product, obtain min and average
+            var Products =
+                from p in GasStationPrices.Models.Minetur.ProductoPetrolifero.All
+                let v = gasStations.Select(x => x.GetProdById(p.IdProducto)).Where(x => x.HasValue)
+                select new
+                {
+                    IdP = p.IdProducto,
+                    Min = v.Min(),
+                    Avg = v.Average(),
+                };
+
+            IReadOnlyList<string> plantillaPrecios = [..
                 from a in GasStationPrices.Models.Minetur.ProductoPetrolifero.All
                 where model.PetroleumProductsSelectedIds.Contains(a.IdProducto)
-                select "<li><b>" + a.Abreviatura.ToUpperInvariant() + ": </b> " + "${value." + a.Abreviatura.ToLowerInvariant() + "} €" + "</li>";
+                select "<li><b>" + a.Abreviatura.ToUpperInvariant() + ": </b> " + "${value." + a.Abreviatura.ToLowerInvariant() + "} €" + "</li>"
+            ];
 
-            realTimeMap.Geometric.Points.Appearance(item => item.type == "gas-station").pattern = new RealTimeMap.PointTooltip()
+            realTimeMap.Geometric.Points.Appearance(p => (new[] { "Cheap", "Other" }).Contains(p.type)).pattern = new RealTimeMap.PointTooltip()
             {
-                content = "<h3>${value.rotulo}</h3><h5>${value.localizacion}<h5><ul>" + string.Concat(plantillaPrecios) + "</ul>",
-                permanent = false, // default true
+                content = "<h2>${value.rotulo}</h2><h4>${value.localizacion}<h4><ul>" + string.Concat(plantillaPrecios) + "</ul>",
                 offset = [0, -50], // default new double[2]
-                opacity = 1.0, // default 0.9
+                opacity = 1.0,     // default 0.9
+                permanent = false, // default true
             };
+
+            List<RealTimeMap.StreamPoint> gasStationPoints = [..
+                from g in gasStations
+                let any = g.AllProducts().Any(x => x.Value <= Products.First(p => p.IdP == x.IdProducto).Avg)
+                let pt = any ? "Cheap" : "Other"
+                select new RealTimeMap.StreamPoint()
+                {
+                    guid = Guid.NewGuid(),
+                    latitude = (double)g.Lat,
+                    longitude = (double)g.Lon,
+                    //timestamp =,
+                    type = pt,
+                    value = g,
+                }];
 
             await realTimeMap.Geometric.Points.upload(gasStationPoints);
         }

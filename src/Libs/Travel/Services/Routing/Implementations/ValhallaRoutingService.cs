@@ -2,11 +2,11 @@
 using RestSharp;
 using Seedysoft.Libs.Core.Extensions;
 
-namespace Seedysoft.Libs.Travel.Services.Routing;
+namespace Seedysoft.Libs.Travel.Services.Routing.Implementations;
 
-internal partial class ValhallaRoutingService(ValhallaRoutingApi api, ILogger logger) : RoutingBase(api)
+internal partial class ValhallaRoutingService(ValhallaRoutingApi api, ILogger logger) : RoutingImplementationBase(api)
 {
-    internal override async Task<IList<(string NombreRuta, double[,] Coordenadas)>> GetRoutesAsync(
+    internal override async Task<IReadOnlyList<(string NombreRuta, double[,] Coordenadas)>> GetRoutesAsync(
         Models.Location orig
         , Models.Location dest
         , CancellationToken cancellationToken)
@@ -34,11 +34,10 @@ internal partial class ValhallaRoutingService(ValhallaRoutingApi api, ILogger lo
 
         // Coordinates are in the format: [lng, lat]
         // We need to invert them to [lat, lng] for our application
-        IEnumerable<(string NombreRuta, double[,] Coordenadas)> Result = body.Routes?.Select((r, i) =>
+        return [.. 
+            (IEnumerable<(string NombreRuta, double[,] Coordenadas)>)(body.Routes?.Select((r, i) =>
             (r.Legs.First().Summary ?? i.ToString(),
-            InvertLongitudeLatitude(Extensions.ArrayExtensions.To2D(r.Geometry?.Coordinates ?? [])))) ?? [];
-
-        return [.. Result];
+            InvertLongitudeLatitude(Extensions.ArrayExtensions.To2D(r.Geometry?.Coordinates ?? [])))) ?? [])];
     }
 
     internal class RequestObject
@@ -118,5 +117,5 @@ internal record ValhallaRoutingApi : Settings.RoutingApi
 {
     internal ValhallaRoutingApi(Settings.RoutingApi original) : base(original.Name, original.UrlFormat) { }
 
-    public override string GetUrl<T>(T text) => string.Format(UrlFormat, text.ToJson(allowReadOnlyProperties: true));
+    public override string GetUrl<T>(T obj) => string.Format(UrlFormat, obj.ToJson(allowReadOnlyProperties: true));
 }

@@ -19,7 +19,7 @@ public static class IHostApplicationBuilderExtensions
         _ = hostApplicationBuilder.Configuration
             .AddEnvironmentVariables();
 
-        IEnumerable<System.Reflection.Assembly> referencedAssemblies = GetAllReferencedAssembliesSorted(entryAssembly);
+        IReadOnlyList<System.Reflection.Assembly> referencedAssemblies = GetAllReferencedAssembliesSorted(entryAssembly);
 
         Type[] typesToRegister = [.. referencedAssemblies.SelectMany(static (n) => n.GetTypes()).Where(static (t) => t is not null && t.IsSubclassOf(typeof(Core.Dependencies.ConfiguratorBase)))];
 
@@ -29,7 +29,7 @@ public static class IHostApplicationBuilderExtensions
         return hostApplicationBuilder;
     }
 
-    private static IEnumerable<System.Reflection.Assembly> GetAllReferencedAssembliesSorted(System.Reflection.Assembly source)
+    private static IReadOnlyList<System.Reflection.Assembly> GetAllReferencedAssembliesSorted(System.Reflection.Assembly source)
     {
         var results = new List<System.Reflection.Assembly> { source, };
 
@@ -42,6 +42,6 @@ public static class IHostApplicationBuilderExtensions
                 : [];
         }).Distinct());
 
-        return results.Distinct();
+        return [.. results.Distinct()];
     }
 }
