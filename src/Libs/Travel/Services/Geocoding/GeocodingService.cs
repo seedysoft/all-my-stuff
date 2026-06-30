@@ -12,11 +12,13 @@ public class GeocodingService(IConfiguration configuration, ILogger<GeocodingSer
         Implementations.GeocodingImplementationBase GeocodingImplementation = TravelSettings.GeocodingSettings.CurrentImplementation switch
         {
 #pragma warning disable format
-            //Settings.GeocodingImplementations.Google                     => new GoogleRoutes(api, logger),
+            //Settings.GeocodingImplementations.Google            => new GoogleRoutes(api, logger),
         
-            //Settings.GeocodingImplementations.MapboxDirections           => new MapboxDirectionsRouter(api, logger),
+            //Settings.GeocodingImplementations.MapboxDirections  => new MapboxDirectionsRouter(api, logger),
         
-            Settings.GeocodingImplementations.Nominatim                  => new Implementations.NominatimGeocodingService(api, logger),
+            Settings.GeocodingImplementations.Nominatim         => new Implementations.NominatimGeocodingImplementation(api, logger),
+
+            Settings.GeocodingImplementations.Photon            => new Implementations.PhotonGeocodingImplementation(api, logger),
 #pragma warning restore format
 
             _ => throw new InvalidOperationException($"Unsupported geocoder: {TravelSettings.GeocodingSettings.CurrentImplementation}"),

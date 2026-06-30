@@ -1,12 +1,8 @@
 ﻿namespace Seedysoft.Libs.Travel.Settings;
 
-public readonly record struct GeocodingImplementations
+internal readonly record struct GeocodingImplementations
 {
-    //public const string GoogleRoutes = "GoogleRoutes";
+    internal const string Nominatim = nameof(Nominatim);
 
-    //public const string MapboxDirections = "Geocoding";
-
-    public const string Nominatim = "Nominatim";
-
-    //public const string Here = "https://docs.here.com/routing/docs/routing-v8-get-started";
+    internal const string Photon = nameof(Photon);
 }

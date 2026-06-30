@@ -22,11 +22,12 @@ public sealed class GeocodingServiceTests : Infrastructure.Tests.TestClassBase
     public async Task FindPlacesAsyncWithValidTextToFindReturnsPlaces(
         [Arguments("Barcelona")]
         [Arguments("Soria")]
-        [Arguments("Burgos")]
+        [Arguments("Juan Ramón Jiménez 8 Burgos")]
         [Arguments("Manciles")]
-        [Arguments("Brazuelo")]
+        [Arguments("La Iglesia 11 Brazuelo")]
         [Arguments("Hontalbilla")]
         [Arguments("Teruel")]
+        [Arguments("abba ordino babot hotel")]
         string textToFind)
     {
         // Arrange
@@ -36,9 +37,13 @@ public sealed class GeocodingServiceTests : Infrastructure.Tests.TestClassBase
         IReadOnlyList<ViewModels.Place> result =
             await geoplacingService.FindPlacesAsync(textToFind, cancellationToken);
 
+        //System.Diagnostics.Debug.WriteLine(textToFind);
+        //foreach (ViewModels.Place item in result)
+        //    System.Diagnostics.Debug.WriteLine(item.Address);
+        //System.Diagnostics.Debug.WriteLine(string.Empty);
+
         // Assert
-        _ = await Assert.That(result).IsNotNull();
-        _ = await Assert.That(result).IsAssignableFrom<IReadOnlyList<ViewModels.Place>>();
+        _ = await Assert.That(result).IsNotNull().And.HasAtLeast(1);
     }
 
     [Test]
@@ -50,7 +55,9 @@ public sealed class GeocodingServiceTests : Infrastructure.Tests.TestClassBase
 
         // Act & Assert
         IReadOnlyList<ViewModels.Place> result = await geoplacingService.FindPlacesAsync(textToFind, cancellationToken);
-        Assert.NotNull(result);
+
+        // Assert
+        _ = await Assert.That(result).IsNotNull().And.IsEmpty();
     }
 
     [Test]
@@ -64,8 +71,7 @@ public sealed class GeocodingServiceTests : Infrastructure.Tests.TestClassBase
         cts.Cancel();
 
         // Act & Assert
-        _ = await Assert.ThrowsAsync<OperationCanceledException>(
-            () => geoplacingService.FindPlacesAsync(textToFind, cts.Token));
+        _ = await Assert.ThrowsAsync<OperationCanceledException>(() => geoplacingService.FindPlacesAsync(textToFind, cts.Token));
     }
 
     [Test]
