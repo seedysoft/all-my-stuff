@@ -3,7 +3,7 @@ using Seedysoft.Libs.Core.Extensions;
 
 namespace Seedysoft.Libs.Travel.Services.Geocoding.Implementations;
 
-internal class NominatimGeocodingService(Settings.GeocodingApi api, Microsoft.Extensions.Logging.ILogger logger) : GeocodingImplementationBase(api)
+internal class NominatimGeocodingImplementation(Settings.GeocodingApi api, Microsoft.Extensions.Logging.ILogger logger) : GeocodingImplementationBase(api)
 {
     // https://nominatim.openstreetmap.org/search?q={0}&format=json&limit=8
     internal async override Task<IReadOnlyList<ViewModels.Place>> FindPlacesAsync(string textToFind, CancellationToken cancellationToken)
@@ -28,21 +28,21 @@ internal class NominatimGeocodingService(Settings.GeocodingApi api, Microsoft.Ex
 
         return [];
     }
-    internal class ResponseObject
+    internal record ResponseObject
     {
-        //public int place_id { get; set; }
-        //public string licence { get; set; }
-        //public string osm_type { get; set; }
-        //public int osm_id { get; set; }
-        [J("lat")] public double Lat { get; set; }
-        [J("lon")] public double Lon { get; set; }
-        //public string _class { get; set; }
-        //public string type { get; set; }
-        //public int place_rank { get; set; }
-        //public double importance { get; set; }
-        //public string addresstype { get; set; }
-        //public string name { get; set; }
-        [J("display_name")] public required string Display_name { get; set; }
-        //public double[] boundingbox { get; set; }
+        //public int place_id { get; init; }
+        //public string licence { get; init; }
+        //public string osm_type { get; init; }
+        //public int osm_id { get; init; }
+        [J("lat")] public double Lat { get; init; }
+        [J("lon")] public double Lon { get; init; }
+        //public string _class { get; init; }
+        //public string type { get; init; }
+        //public int place_rank { get; init; }
+        //public double importance { get; init; }
+        //public string addresstype { get; init; }
+        //public string name { get; init; }
+        [J("display_name")] public required string Display_name { get; init; }
+        //public double[] boundingbox { get; init; }
     }
 }

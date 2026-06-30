@@ -20,12 +20,12 @@ public record TravelQueryModel
         return new()
         {
             Orig = new Travel.ViewModels.Place(
-                Address: "8, Calle Juan Ramón Jiménez, Barrio Juan Pablo II - G9, Barriada de la Inmaculada, Gamonal, Distrito Este, Burgos, Castilla y León, 09007, España",
+                Address: "Calle Juan Ramón Jiménez, 8, Burgos, Castilla y León, España",
                 Lat: Travel.Constants.Earth.Burgos.Lat,
                 Lon: Travel.Constants.Earth.Burgos.Lon
             ),
             Dest = new Travel.ViewModels.Place(
-                Address: "Calle de la Iglesia, Brazuelo, León, Castilla y León, 24715, España",
+                Address: "Calle de la Iglesia, Brazuelo, Castilla y León, España",
                 Lat: Travel.Constants.Earth.Brazuelo.Lat,
                 Lon: Travel.Constants.Earth.Brazuelo.Lon
             ),
