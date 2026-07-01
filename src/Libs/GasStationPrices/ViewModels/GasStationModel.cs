@@ -13,51 +13,50 @@ public record GasStationModel
     [J("rotulo")] public required string Rotulo { get; init; }
     [J("rotulotrimed")] public string RotuloTrimed => Rotulo.Trim();
 
-#pragma warning disable IDE1006 // Naming Styles
-    public decimal? bie { get; init; }
-    public decimal? bio { get; init; }
-    public decimal? g95e10 { get; init; }
-    public decimal? g95e5 { get; init; }
-    public decimal? g95e5plus { get; init; }
-    public decimal? g98e10 { get; init; }
-    public decimal? g98e5 { get; init; }
-    public decimal? glp { get; init; }
-    public decimal? gnc { get; init; }
-    public decimal? gnl { get; init; }
-    public decimal? goa { get; init; }
-    public decimal? goaplus { get; init; }
-    public decimal? gob { get; init; }
-    public decimal? h2 { get; init; }
-#pragma warning restore IDE1006 // Naming Styles
+    [J("bie")] public decimal? Bie { get; init; }
+    [J("bio")] public decimal? Bio { get; init; }
+    [J("g95e10")] public decimal? G95e10 { get; init; }
+    [J("g95e5")] public decimal? G95e5 { get; init; }
+    [J("g95e5plus")] public decimal? G95e5plus { get; init; }
+    [J("g98e10")] public decimal? G98e10 { get; init; }
+    [J("g98e5")] public decimal? G98e5 { get; init; }
+    [J("glp")] public decimal? Glp { get; init; }
+    [J("gnc")] public decimal? Gnc { get; init; }
+    [J("gnl")] public decimal? Gnl { get; init; }
+    [J("goa")] public decimal? Goa { get; init; }
+    [J("goaplus")] public decimal? Goaplus { get; init; }
+    [J("gob")] public decimal? Gob { get; init; }
+    //[J("h2")] public decimal? H2 { get; init; }
 
     public decimal? GetProdById(Constants.ProductoPetroliferoId productoPetroliferoId)
     {
         return productoPetroliferoId switch
         {
-            Constants.ProductoPetroliferoId.BIE => bie,
-            Constants.ProductoPetroliferoId.BIO => bio,
-            Constants.ProductoPetroliferoId.G95E10 => g95e10,
-            Constants.ProductoPetroliferoId.G95E5 => g95e5,
-            Constants.ProductoPetroliferoId.G95E5Plus => g95e5plus,
-            Constants.ProductoPetroliferoId.G98E10 => g98e10,
-            Constants.ProductoPetroliferoId.G98E5 => g98e5,
-            Constants.ProductoPetroliferoId.GLP => glp,
-            Constants.ProductoPetroliferoId.GNC => gnc,
-            Constants.ProductoPetroliferoId.GNL => gnl,
-            Constants.ProductoPetroliferoId.GOA => goa,
-            Constants.ProductoPetroliferoId.GOAPlus => goaplus,
-            Constants.ProductoPetroliferoId.GOB => gob,
+            Constants.ProductoPetroliferoId.BIE => Bie,
+            Constants.ProductoPetroliferoId.BIO => Bio,
+            Constants.ProductoPetroliferoId.G95E10 => G95e10,
+            Constants.ProductoPetroliferoId.G95E5 => G95e5,
+            Constants.ProductoPetroliferoId.G95E5Plus => G95e5plus,
+            Constants.ProductoPetroliferoId.G98E10 => G98e10,
+            Constants.ProductoPetroliferoId.G98E5 => G98e5,
+            Constants.ProductoPetroliferoId.GLP => Glp,
+            Constants.ProductoPetroliferoId.GNC => Gnc,
+            Constants.ProductoPetroliferoId.GNL => Gnl,
+            Constants.ProductoPetroliferoId.GOA => Goa,
+            Constants.ProductoPetroliferoId.GOAPlus => Goaplus,
+            Constants.ProductoPetroliferoId.GOB => Gob,
             _ => throw new ArgumentOutOfRangeException(nameof(productoPetroliferoId), productoPetroliferoId, null),
         };
     }
 
-    public IReadOnlyList<(Constants.ProductoPetroliferoId IdProducto, decimal Value)> AllProducts()
+    public IReadOnlyList<(Constants.ProductoPetroliferoId IdProducto, decimal Value)> AllProducts(
+        IReadOnlyCollection<Constants.ProductoPetroliferoId> petroleumProductsSelectedIds)
     {
         return [..
-            from a in Models.Minetur.ProductoPetrolifero.All
-            let b = GetProdById(a.IdProducto)
+            from a in petroleumProductsSelectedIds
+            let b = GetProdById(a)
             where b.HasValue
-            select (a.IdProducto, b.Value)
+            select (a, b.Value)
         ];
     }
 }

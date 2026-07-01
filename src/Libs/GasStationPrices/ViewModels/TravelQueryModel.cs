@@ -20,14 +20,12 @@ public record TravelQueryModel
         return new()
         {
             Orig = new Travel.ViewModels.Place(
-                Address: "Calle Juan Ramón Jiménez, 8, Burgos, Castilla y León, España",
-                Lat: Travel.Constants.Earth.Burgos.Lat,
-                Lon: Travel.Constants.Earth.Burgos.Lon
+                "Calle Juan Ramón Jiménez, 8, Burgos, Castilla y León, España",
+                Travel.Constants.Earth.Burgos
             ),
             Dest = new Travel.ViewModels.Place(
-                Address: "Calle de la Iglesia, Brazuelo, Castilla y León, España",
-                Lat: Travel.Constants.Earth.Brazuelo.Lat,
-                Lon: Travel.Constants.Earth.Brazuelo.Lon
+                "Calle de la Iglesia, Brazuelo, Castilla y León, España",
+                Travel.Constants.Earth.Brazuelo
             ),
             MaxDistanceInKm = 10,
             PetroleumProductsSelectedIds = [.. Models.Minetur.ProductoPetrolifero.Gasoline.Select(static x => x.IdProducto)],
@@ -38,10 +36,10 @@ public record TravelQueryModel
     {
         return new()
         {
-            Orig = new Travel.ViewModels.Place(string.Empty, decimal.Zero, decimal.Zero),
-            Dest = new Travel.ViewModels.Place(string.Empty, decimal.Zero, decimal.Zero),
+            Orig = Travel.ViewModels.Place.Empty,
+            Dest = Travel.ViewModels.Place.Empty,
             MaxDistanceInKm = 10,
-            PetroleumProductsSelectedIds = Models.Minetur.ProductoPetrolifero.Gasoline.Select(static x => x.IdProducto).ToHashSet(),
+            PetroleumProductsSelectedIds = [.. Models.Minetur.ProductoPetrolifero.Gasoline.Select(static x => x.IdProducto)],
         };
     }
 #endif

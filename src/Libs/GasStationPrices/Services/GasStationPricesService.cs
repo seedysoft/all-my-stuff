@@ -13,7 +13,7 @@ public sealed class GasStationPricesService
 
     private readonly ILogger<GasStationPricesService> Logger;
 
-    private static Models.Minetur.Body MineturResponse = default!;
+    private static Models.Minetur.Body? MineturResponse = default!;
 
     public GasStationPricesService(IServiceProvider serviceProvider)
     {
@@ -32,7 +32,7 @@ public sealed class GasStationPricesService
         CancellationToken cancellationToken)
     {
         return await LoadGasStationsAsync(cancellationToken)
-            ? [.. MineturResponse.EstacionesTerrestres.Where(x => bounds.IsInside(x.LatLng)).Select(x => x.ToGasStationModel())]
+            ? [.. MineturResponse?.EstacionesTerrestres.Where(x => bounds.IsInside(x.LatLng)).Select(x => x.ToGasStationModel()) ?? []]
             : [];
     }
 
@@ -42,7 +42,7 @@ public sealed class GasStationPricesService
     /// <returns><code>true</code> if MineturResponse is not null. <code>false</code> if is null</returns>
     private async Task<bool> LoadGasStationsAsync(CancellationToken cancellationToken)
     {
-        if (MineturResponse == null || MineturResponse.DateTimeOffset < DateTimeOffset.Now.AddMinutes(-35))
+        if (MineturResponse == null || MineturResponse?.DateTimeOffset < DateTimeOffset.Now.AddMinutes(-35))
         {
             try
             {

@@ -53,29 +53,24 @@ public partial class MapComponent
 
     private RealTimeMap realTimeMap = default!;
 
-    private readonly LeafletForBlazor.Components.StreamLegend.ContentStyle contentStyle = new()
-    {
-        contentPadding = new LeafletForBlazor.Components.StreamLegend.ContentPadding()
-        {
-            paddingLeft = 20,  //values ​​in pixels, default value is 10px
-            paddingRight = 20, //values ​​in pixels, default value is 10px
-            paddingTop = 15    //values ​​in pixels, default value is 10px
-        },
-        labelStyle = new LeafletForBlazor.Components.StreamLegend.LabelStyle()
-        {
-            fontColor = "#626262",
-            fontFamily = "Verdana",
-            fontSize = 14,
-            fontWeight = "bold",
-            fontStyle = "italic",
-            paddingLeft = 20,
-        },
-    };
-
-    // realTimeMap.Geometric.Points.Appearance(item => !(item.type == "red" || item.type == "green" || item.type == "blue")).pattern = new RealTimeMap.PointSymbol() { radius = 8, color = "#28ffff", opacity = 0.68, fillColor = "orange", weight = 2, fillOpacity = 0.68 };
-    // realTimeMap.Geometric.Points.Appearance(item => item.type == "red").pattern = new RealTimeMap.PointSymbol() { radius = 8, color = "rgb(200,100,0)", opacity = 0.68, fillColor = "red", weight = 4, fillOpacity = 0.68 };
-    // realTimeMap.Geometric.Points.Appearance(item => item.type == "green").pattern = new RealTimeMap.PointSymbol() { radius = 10, color = "white", opacity = 0.68, fillColor = "green", weight = 2, fillOpacity = 0.68 };
-    // realTimeMap.Geometric.Points.Appearance(item => item.type == "blue").pattern = new RealTimeMap.PointSymbol() { radius = 12, color = "#28ffff", opacity = 0.68, fillColor = "blue", weight = 2, fillOpacity = 0.68 };
+    //private readonly LeafletForBlazor.Components.StreamLegend.ContentStyle contentStyle = new()
+    //{
+    //    contentPadding = new LeafletForBlazor.Components.StreamLegend.ContentPadding()
+    //    {
+    //        paddingLeft = 20,  //values ​​in pixels, default value is 10px
+    //        paddingRight = 20, //values ​​in pixels, default value is 10px
+    //        paddingTop = 15    //values ​​in pixels, default value is 10px
+    //    },
+    //    labelStyle = new LeafletForBlazor.Components.StreamLegend.LabelStyle()
+    //    {
+    //        fontColor = "#626262",
+    //        fontFamily = "Verdana",
+    //        fontSize = 14,
+    //        fontWeight = "bold",
+    //        fontStyle = "italic",
+    //        paddingLeft = 20,
+    //    },
+    //};
 
     [Inject] private GasStationPrices.Services.GasStationPricesService GasStationPricesService { get; set; } = default!;
     [Inject] private Travel.Services.Routing.RoutingService RoutingService { get; set; } = default!;
@@ -114,12 +109,17 @@ public partial class MapComponent
 
     private static void OnDoubleClickMap(RealTimeMap.ClicksMapArgs args) { }
 
-    private void OnZoomLevelEndChange(RealTimeMap.MapZoomEventArgs args) => Zoom = args.zoomLevel;
+    private void OnZoomLevelEndChange(RealTimeMap.MapZoomEventArgs args)
+    {
+        Zoom = args.zoomLevel;
+        StateHasChanged();
+    }
 
     private async Task ClearMapAsync()
     {
         await realTimeMap.Geometric.DisplayPolylinesFromArray.deleteConnectors();
         await realTimeMap.Geometric.Points.delete();
+        StateHasChanged();
     }
 
     /// <summary>
@@ -128,9 +128,21 @@ public partial class MapComponent
     /// <param name="sender"></param>
     private static void LoadGasStationAppearances(RealTimeMap sender)
     {
-        // "Cheap" : "Rest"
-        sender.Geometric.Points.Appearance(item => item.type == "Cheap").pattern = new RealTimeMap.PointSymbol() { color = "white", fillColor = "green", fillOpacity = 0.68, opacity = 0.68, radius = 12, weight = 2 };
-        sender.Geometric.Points.Appearance(item => item.type == "Other").pattern = new RealTimeMap.PointSymbol() { color = "blue", fillColor = "orange", fillOpacity = 0.68, opacity = 0.68, radius = 10, weight = 2 };
+        // "Cheap" : "Other"
+        sender.Geometric.Points.Appearance(static p => p.type == "Cheap").pattern = new RealTimeMap.PointSymbol() { color = "white", fillColor = "green", fillOpacity = 0.68, opacity = 0.68, radius = 12, weight = 2 };
+        sender.Geometric.Points.Appearance(static p => p.type == "Other").pattern = new RealTimeMap.PointSymbol() { color = "blue", fillColor = "orange", fillOpacity = 0.68, opacity = 0.68, radius = 10, weight = 2 };
+
+        IReadOnlyList<string> plantillaPrecios = [..
+            from a in GasStationPrices.Models.Minetur.ProductoPetrolifero.All
+            select $"<li><b>{a.Abreviatura.ToUpperInvariant()}: </b> ${{value.{a.Abreviatura.ToLowerInvariant()}}} €</li>"
+        ];
+        sender.Geometric.Points.Appearance(static p => p.type is "Cheap" or "Other").pattern = new RealTimeMap.PointTooltip()
+        {
+            content = $"<h2>${{value.rotulo}}</h2><h4>${{value.localizacion}}<h4><ul>{string.Concat(plantillaPrecios)}</ul>",
+            offset = [0, -50], // default new double[2]
+            opacity = 1.0,     // default 0.9
+            permanent = false, // default true
+        };
 
         //sender.Geometric.Points.clusteringAfterCollectionUpdate = true;
         //sender.Geometric.Points.clusteringConfiguration = new LeafletForBlazor.RealTime.points.ClusteringConfiguration()
@@ -194,7 +206,7 @@ public partial class MapComponent
             RealTimeMap.Bounds routeBounds = new()
             {
                 northEast = new RealTimeMap.Location() { latitude = (double)Travel.Models.Bounds.Limits.South, longitude = (double)Travel.Models.Bounds.Limits.West, }, // South West limits
-                southWest = new RealTimeMap.Location() { latitude = (double)Travel.Models.Bounds.Limits.North, longitude = (double)Travel.Models.Bounds.Limits.East, },   // North East limits
+                southWest = new RealTimeMap.Location() { latitude = (double)Travel.Models.Bounds.Limits.North, longitude = (double)Travel.Models.Bounds.Limits.East, }, // North East limits
             };
 
             foreach ((string NombreRuta, double[,] Coordenadas) in res)
@@ -254,6 +266,7 @@ public partial class MapComponent
             // For each product, obtain min and average
             var Products =
                 from p in GasStationPrices.Models.Minetur.ProductoPetrolifero.All
+                where model.PetroleumProductsSelectedIds.Contains(p.IdProducto)
                 let v = gasStations.Select(x => x.GetProdById(p.IdProducto)).Where(x => x.HasValue)
                 select new
                 {
@@ -262,23 +275,10 @@ public partial class MapComponent
                     Avg = v.Average(),
                 };
 
-            IReadOnlyList<string> plantillaPrecios = [..
-                from a in GasStationPrices.Models.Minetur.ProductoPetrolifero.All
-                where model.PetroleumProductsSelectedIds.Contains(a.IdProducto)
-                select "<li><b>" + a.Abreviatura.ToUpperInvariant() + ": </b> " + "${value." + a.Abreviatura.ToLowerInvariant() + "} €" + "</li>"
-            ];
-
-            realTimeMap.Geometric.Points.Appearance(p => (new[] { "Cheap", "Other" }).Contains(p.type)).pattern = new RealTimeMap.PointTooltip()
-            {
-                content = "<h2>${value.rotulo}</h2><h4>${value.localizacion}<h4><ul>" + string.Concat(plantillaPrecios) + "</ul>",
-                offset = [0, -50], // default new double[2]
-                opacity = 1.0,     // default 0.9
-                permanent = false, // default true
-            };
-
+            // RealTimeMap.StreamPoint[]
             List<RealTimeMap.StreamPoint> gasStationPoints = [..
                 from g in gasStations
-                let any = g.AllProducts().Any(x => x.Value <= Products.First(p => p.IdP == x.IdProducto).Avg)
+                let any = g.AllProducts(model.PetroleumProductsSelectedIds).Any(x => x.Value <= (Products.FirstOrDefault(p => p.IdP == x.IdProducto)?.Avg ?? decimal.Zero))
                 let pt = any ? "Cheap" : "Other"
                 select new RealTimeMap.StreamPoint()
                 {
@@ -290,7 +290,7 @@ public partial class MapComponent
                     value = g,
                 }];
 
-            await realTimeMap.Geometric.Points.upload(gasStationPoints);
+            await realTimeMap.Geometric.Points.upload(gasStationPoints, newCollection: true);
         }
     }
 }

@@ -32,7 +32,7 @@
                              SelectOnActivation
                              ShowProgressIndicator
                              T="Place"
-                             ToStringFunc="@(x => x?.Address)"
+                             ToStringFunc="@(x => x.Address)"
                              Variant="@variant" />
         </MudItem>
 
@@ -54,7 +54,7 @@
                              SelectOnActivation
                              ShowProgressIndicator
                              T="Place"
-                             ToStringFunc="@(x => x?.Address)"
+                             ToStringFunc="@(x => x.Address)"
                              Variant="@variant" />
         </MudItem>
 
@@ -104,7 +104,7 @@
                 {
                     <MudTooltip Text="@item.Nombre">
                         <MudChip Default="@(item.Abreviatura.StartsWith("G9", StringComparison.InvariantCultureIgnoreCase) && !item.Abreviatura.EndsWith("E10", StringComparison.InvariantCultureIgnoreCase))"
-                                 Text="@item.Abreviatura"
+                                 Text="@item.Abreviatura.ToUpperInvariant()"
                                  Value="@item.IdProducto" />
                     </MudTooltip>
                 }
