@@ -1,6 +1,6 @@
 ﻿namespace Seedysoft.Libs.GasStationPrices.Models.Minetur;
 
-public record Body
+public readonly record struct Body
 {
     private const string FechaFormat = "dd/MM/yyyy HH:mm:ss";
 
@@ -26,7 +26,7 @@ public record Body
     [J("ResultadoConsulta")] public required string ResultadoConsulta { get; init; }
 }
 
-public record EstacionTerrestre
+public readonly record struct EstacionTerrestre
 {
     [J("C.P.")] public required string CodigoPostal { get; init; }
 
@@ -62,7 +62,7 @@ public record EstacionTerrestre
 
     //[J("IDCCAA"), K(typeof(Core.Extensions.ParseStringConverter))] //public long IdComunidad { get; init; }
 
-    public string DireccionParsed => $"{Direccion} - {CodigoPostal} {Localidad} {(string.Equals(Localidad, Municipio, StringComparison.OrdinalIgnoreCase) ? string.Empty : Municipio)}".Trim();
+    public string DireccionParsed => $"{Direccion} - {CodigoPostal} <br> {Localidad} {(string.Equals(Localidad, Municipio, StringComparison.OrdinalIgnoreCase) ? string.Empty : Municipio)}".Trim();
 
     [J("Precio Biodiesel")] public required string PrecioBiodiesel { get; init; }
 

@@ -1,6 +1,6 @@
 ﻿namespace Seedysoft.Libs.GasStationPrices.Settings;
 
-public record GasStationPricesSettings
+public readonly record struct GasStationPricesSettings
 {
     public required Minetur Minetur { get; init; }
 }
@@ -8,12 +8,12 @@ public record GasStationPricesSettings
 /// <summary>
 /// For help visit https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/help
 /// </summary>
-public record Minetur
+public readonly record struct Minetur
 {
     public required Urls Urls { get; init; }
 }
 
-public record Urls
+public readonly record struct Urls
 {
     [J("Base")]
     public required string Base { get; init; }

@@ -21,7 +21,7 @@ internal class NominatimGeocodingImplementation(Settings.GeocodingApi api, Micro
                 : [.. restResponse
                     .Where(p => !string.IsNullOrWhiteSpace(p.Display_name))
                     .Where(p => p.Lat != 0 && p.Lon != 0)
-                    .Select(p => new ViewModels.Place(p.Display_name!, (decimal)p.Lat, (decimal)p.Lon))
+                    .Select(p => new ViewModels.Place(p.Display_name!, new Models.Location((decimal)p.Lat, (decimal)p.Lon)))
                 ];
         }
         catch (Exception e) when (logger.LogAndHandle(e, "Unexpected error")) { }
