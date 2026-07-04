@@ -1,0 +1,15 @@
+﻿{
+  "version": "3.0",
+  "defaultProvider": "unpkg",
+  "libraries": [
+    {
+      "provider": "unpkg",
+      "library": "leaflet@1.9.4",
+      "destination": "wwwroot/lib/leaflet/",
+      "files": [
+        "dist/leaflet.css",
+        "dist/leaflet.js"
+      ]
+    }
+  ]
+}
