@@ -4,12 +4,19 @@ namespace Seedysoft.Libs.MapRazorClassLibrary;
 
 public partial class MapComponent : IAsyncDisposable
 {
-    [Inject] MapService LeafletService { get; set; }
+    [Inject] private MapService LeafletService { get; set; } = default!;
 
-    [Parameter] public ILatLong OriginalPoint { get; set; } = new LatLong(15.192939, 120.586715);
-    [Parameter] public byte ZoomLevel { get; set; } = 19;
+    [Inject] private GasStationPrices.Services.GasStationPricesService GasStationPricesService { get; set; } = default!;
+
+    [Inject] private Travel.Services.Routing.RoutingService RoutingService { get; set; } = default!;
+
+    [Parameter] public Travel.Models.Location OriginalPoint { get; set; } = Travel.Constants.Earth.Burgos;
+    
+    [Parameter] public byte ZoomLevel { get; set; } = 14;
+    
     [Parameter] public EventCallback<MapComponent> OnMapCreatedAsync { get; set; }
-    [Parameter] public EventCallback<MapClickEventArgs> OnMapClickAsync { get; set; }
-    [Parameter] public EventCallback<DragendMarkerEventArgs> OnDragendAsync { get; set; }
-    [Parameter(CaptureUnmatchedValues = true)] public Dictionary<string, object> Attributes { get; set; }
+    //[Parameter] public EventCallback<MapClickEventArgs> OnMapClickAsync { get; set; }
+    //[Parameter] public EventCallback<DragendMarkerEventArgs> OnDragendAsync { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)] public Dictionary<string, object> Attributes { get; set; } = [];
 }

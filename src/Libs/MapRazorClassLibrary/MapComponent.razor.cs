@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Components;
 
 namespace Seedysoft.Libs.MapRazorClassLibrary;
 
-public partial class MapComponent
+public partial class MapComponent : IAsyncDisposable
 {
     //// Samples obtained from https://github.com/ichim/LeafletForBlazor-NuGet/issues/75
 
@@ -72,9 +72,6 @@ public partial class MapComponent
     ////    },
     ////};
 
-    //[Inject] private GasStationPrices.Services.GasStationPricesService GasStationPricesService { get; set; } = default!;
-    //[Inject] private Travel.Services.Routing.RoutingService RoutingService { get; set; } = default!;
-
     ///// <summary>
     ///// Gets or sets the height of the <see cref="RealTimeMap" />.
     ///// </summary>
@@ -115,13 +112,6 @@ public partial class MapComponent
     //    StateHasChanged();
     //}
 
-    //private async Task ClearMapAsync()
-    //{
-    //    await realTimeMap.Geometric.DisplayPolylinesFromArray.deleteConnectors();
-    //    await realTimeMap.Geometric.Points.delete();
-    //    StateHasChanged();
-    //}
-
     ///// <summary>
     ///// This method can be used to perform actions after the map has loaded
     ///// </summary>
@@ -154,145 +144,147 @@ public partial class MapComponent
     //    //};
     //}
 
-    //public async Task<string?> LoadRoutesAndGasStationsAsync(GasStationPrices.ViewModels.TravelQueryModel model, CancellationToken cancellationToken)
-    //{
-    //    await ClearMapAsync();
+    public async Task<string?> LoadRoutesAndGasStationsAsync(
+        GasStationPrices.ViewModels.TravelQueryModel model
+        , CancellationToken cancellationToken)
+    {
+        await RemoveMarkersAsync();
 
-    //    IReadOnlyList<(string NombreRuta, double[,] Coordenadas)> res;
-    //    try
-    //    {
-    //        res = await RoutingService.GetRoutesAsync(model.Orig.Location, model.Dest.Location, cancellationToken);
-    //    }
-    //    catch (Exception e)
-    //    {
-    //        return e.ToString();
-    //    }
+        IReadOnlyList<(string NombreRuta, double[,] Coordenadas)> res;
+        try
+        {
+            res = await RoutingService.GetRoutesAsync(model.Orig.Location, model.Dest.Location, cancellationToken);
+        }
+        catch (Exception e)
+        {
+            return e.ToString();
+        }
 
-    //    if (res.Count == 0)
-    //        return "No routes found";
+        if (res.Count == 0)
+            return "No routes found";
 
-    //    await LoadRoutesDataIntoMapAsync(res, cancellationToken);
+        //    await LoadRoutesDataIntoMapAsync(res, cancellationToken);
 
-    //    Travel.Models.Bounds ourBounds = ComputeBoundsFromRoutes(res, cancellationToken);
+        //    Travel.Models.Bounds ourBounds = ComputeBoundsFromRoutes(res, cancellationToken);
 
-    //    await LoadGasStationsIntoMapAsync(model, ourBounds, cancellationToken);
+        //    await LoadGasStationsIntoMapAsync(model, ourBounds, cancellationToken);
 
-    //    return null;
+        return null;
 
-    //    async Task LoadRoutesDataIntoMapAsync(
-    //        IReadOnlyList<(string NombreRuta
-    //        , double[,] Coordenadas)> res
-    //        , CancellationToken cancellationToken)
-    //    {
-    //        for (int i = 0; i < res.Count; i++)
-    //        {
-    //            if (cancellationToken.IsCancellationRequested)
-    //                break;
+        //    async Task LoadRoutesDataIntoMapAsync(
+        //        IReadOnlyList<(string NombreRuta
+        //        , double[,] Coordenadas)> res
+        //        , CancellationToken cancellationToken)
+        //    {
+        //        for (int i = 0; i < res.Count; i++)
+        //        {
+        //            if (cancellationToken.IsCancellationRequested)
+        //                break;
 
-    //            (string? NombreRuta, double[,]? Coordenadas) = res[i];
-    //            await realTimeMap.Geometric.DisplayPolylinesFromArray.addConnector(
-    //                arrayPolyline: Coordenadas
-    //                , symbol: new RealTimeMap.PolylineSymbol() { color = ColorsForRoutes[i], /*smoothFactor = 1.0,*/ /*opacity = 1.0,*/ weight = 5, }
-    //                , start: 1);
-    //        }
-    //    }
+        //            (string? NombreRuta, double[,]? Coordenadas) = res[i];
+        //            await realTimeMap.Geometric.DisplayPolylinesFromArray.addConnector(
+        //                arrayPolyline: Coordenadas
+        //                , symbol: new RealTimeMap.PolylineSymbol() { color = ColorsForRoutes[i], /*smoothFactor = 1.0,*/ /*opacity = 1.0,*/ weight = 5, }
+        //                , start: 1);
+        //        }
+        //    }
 
-    //    Travel.Models.Bounds ComputeBoundsFromRoutes(
-    //        IReadOnlyList<(string NombreRuta
-    //        , double[,] Coordenadas)> res
-    //        , CancellationToken cancellationToken)
-    //    {
-    //        // Take inverse limits, so any obtained point will be used
-    //        RealTimeMap.Bounds routeBounds = new()
-    //        {
-    //            northEast = new RealTimeMap.Location() { latitude = (double)Travel.Models.Bounds.Limits.South, longitude = (double)Travel.Models.Bounds.Limits.West, }, // South West limits
-    //            southWest = new RealTimeMap.Location() { latitude = (double)Travel.Models.Bounds.Limits.North, longitude = (double)Travel.Models.Bounds.Limits.East, }, // North East limits
-    //        };
+        //    Travel.Models.Bounds ComputeBoundsFromRoutes(
+        //        IReadOnlyList<(string NombreRuta
+        //        , double[,] Coordenadas)> res
+        //        , CancellationToken cancellationToken)
+        //    {
+        //        // Take inverse limits, so any obtained point will be used
+        //        RealTimeMap.Bounds routeBounds = new()
+        //        {
+        //            northEast = new RealTimeMap.Location() { latitude = (double)Travel.Models.Bounds.Limits.South, longitude = (double)Travel.Models.Bounds.Limits.West, }, // South West limits
+        //            southWest = new RealTimeMap.Location() { latitude = (double)Travel.Models.Bounds.Limits.North, longitude = (double)Travel.Models.Bounds.Limits.East, }, // North East limits
+        //        };
 
-    //        foreach ((string NombreRuta, double[,] Coordenadas) in res)
-    //        {
-    //            if (cancellationToken.IsCancellationRequested)
-    //                return Travel.Models.Bounds.Empty;
+        //        foreach ((string NombreRuta, double[,] Coordenadas) in res)
+        //        {
+        //            if (cancellationToken.IsCancellationRequested)
+        //                return Travel.Models.Bounds.Empty;
 
-    //            for (int i = 0; i < Coordenadas.GetLength(0); i++)
-    //            {
-    //                if (cancellationToken.IsCancellationRequested)
-    //                    return Travel.Models.Bounds.Empty;
+        //            for (int i = 0; i < Coordenadas.GetLength(0); i++)
+        //            {
+        //                if (cancellationToken.IsCancellationRequested)
+        //                    return Travel.Models.Bounds.Empty;
 
-    //                for (int j = 0; j < Coordenadas.GetLength(1); j++)
-    //                {
-    //                    if (cancellationToken.IsCancellationRequested)
-    //                        return Travel.Models.Bounds.Empty;
+        //                for (int j = 0; j < Coordenadas.GetLength(1); j++)
+        //                {
+        //                    if (cancellationToken.IsCancellationRequested)
+        //                        return Travel.Models.Bounds.Empty;
 
-    //                    double v = Coordenadas[i, j];
+        //                    double v = Coordenadas[i, j];
 
-    //                    if (j == 0)
-    //                    {
-    //                        // latitude
-    //                        if (v > routeBounds.northEast.latitude)
-    //                            routeBounds.northEast.latitude = v;
-    //                        if (v < routeBounds.southWest.latitude)
-    //                            routeBounds.southWest.latitude = v;
-    //                    }
-    //                    else // (j == 1)
-    //                    {
-    //                        // longitude
-    //                        if (v > routeBounds.northEast.longitude)
-    //                            routeBounds.northEast.longitude = v;
-    //                        if (v < routeBounds.southWest.longitude)
-    //                            routeBounds.southWest.longitude = v;
-    //                    }
-    //                }
-    //            }
-    //        }
+        //                    if (j == 0)
+        //                    {
+        //                        // latitude
+        //                        if (v > routeBounds.northEast.latitude)
+        //                            routeBounds.northEast.latitude = v;
+        //                        if (v < routeBounds.southWest.latitude)
+        //                            routeBounds.southWest.latitude = v;
+        //                    }
+        //                    else // (j == 1)
+        //                    {
+        //                        // longitude
+        //                        if (v > routeBounds.northEast.longitude)
+        //                            routeBounds.northEast.longitude = v;
+        //                        if (v < routeBounds.southWest.longitude)
+        //                            routeBounds.southWest.longitude = v;
+        //                    }
+        //                }
+        //            }
+        //        }
 
-    //        realTimeMap.View.setBounds = routeBounds;
+        //        realTimeMap.View.setBounds = routeBounds;
 
-    //        Travel.Models.Bounds boundsForGasStations = new(
-    //            NorthEast: new Travel.Models.Location((decimal)routeBounds.northEast.latitude, (decimal)routeBounds.northEast.longitude),
-    //            SouthWest: new Travel.Models.Location((decimal)routeBounds.southWest.latitude, (decimal)routeBounds.southWest.longitude));
+        //        Travel.Models.Bounds boundsForGasStations = new(
+        //            NorthEast: new Travel.Models.Location((decimal)routeBounds.northEast.latitude, (decimal)routeBounds.northEast.longitude),
+        //            SouthWest: new Travel.Models.Location((decimal)routeBounds.southWest.latitude, (decimal)routeBounds.southWest.longitude));
 
-    //        return boundsForGasStations;
-    //    }
+        //        return boundsForGasStations;
+        //    }
 
-    //    async Task LoadGasStationsIntoMapAsync(
-    //        GasStationPrices.ViewModels.TravelQueryModel model
-    //        , Travel.Models.Bounds bounds
-    //        , CancellationToken cancellationToken)
-    //    {
-    //        IReadOnlyList<GasStationPrices.ViewModels.GasStationModel> gasStations =
-    //            await GasStationPricesService.GetNearGasStationsAsync(bounds, model.MaxDistanceInKm, cancellationToken);
+        //    async Task LoadGasStationsIntoMapAsync(
+        //        GasStationPrices.ViewModels.TravelQueryModel model
+        //        , Travel.Models.Bounds bounds
+        //        , CancellationToken cancellationToken)
+        //    {
+        //        IReadOnlyList<GasStationPrices.ViewModels.GasStationModel> gasStations =
+        //            await GasStationPricesService.GetNearGasStationsAsync(bounds, model.MaxDistanceInKm, cancellationToken);
 
-    //        // For each product, obtain min and average
-    //        var Products =
-    //            from p in GasStationPrices.Models.Minetur.ProductoPetrolifero.All
-    //            where model.PetroleumProductsSelectedIds.Contains(p.IdProducto)
-    //            let v = gasStations.Select(x => x.GetProdById(p.IdProducto)).Where(x => x.HasValue)
-    //            select new
-    //            {
-    //                IdP = p.IdProducto,
-    //                Min = v.Min(),
-    //                Avg = v.Average(),
-    //            };
+        //        // For each product, obtain min and average
+        //        var Products =
+        //            from p in GasStationPrices.Models.Minetur.ProductoPetrolifero.All
+        //            where model.PetroleumProductsSelectedIds.Contains(p.IdProducto)
+        //            let v = gasStations.Select(x => x.GetProdById(p.IdProducto)).Where(x => x.HasValue)
+        //            select new
+        //            {
+        //                IdP = p.IdProducto,
+        //                Min = v.Min(),
+        //                Avg = v.Average(),
+        //            };
 
-    //        // RealTimeMap.StreamPoint[]
-    //        List<RealTimeMap.StreamPoint> gasStationPoints = [..
-    //            from g in gasStations
-    //            let any = g.AllProducts(model.PetroleumProductsSelectedIds).Any(x => x.Value <= (Products.FirstOrDefault(p => p.IdP == x.IdProducto)?.Avg ?? decimal.Zero))
-    //            let pt = any ? "Cheap" : "Other"
-    //            select new RealTimeMap.StreamPoint()
-    //            {
-    //                guid = Guid.NewGuid(),
-    //                latitude = (double)g.Lat,
-    //                longitude = (double)g.Lon,
-    //                //timestamp =,
-    //                type = pt,
-    //                value = g,
-    //            }];
+        //        // RealTimeMap.StreamPoint[]
+        //        List<RealTimeMap.StreamPoint> gasStationPoints = [..
+        //            from g in gasStations
+        //            let any = g.AllProducts(model.PetroleumProductsSelectedIds).Any(x => x.Value <= (Products.FirstOrDefault(p => p.IdP == x.IdProducto)?.Avg ?? decimal.Zero))
+        //            let pt = any ? "Cheap" : "Other"
+        //            select new RealTimeMap.StreamPoint()
+        //            {
+        //                guid = Guid.NewGuid(),
+        //                latitude = (double)g.Lat,
+        //                longitude = (double)g.Lon,
+        //                //timestamp =,
+        //                type = pt,
+        //                value = g,
+        //            }];
 
-    //        await realTimeMap.Geometric.Points.upload(gasStationPoints, newCollection: true);
-    //    }
-    //}
+        //        await realTimeMap.Geometric.Points.upload(gasStationPoints, newCollection: true);
+        //    }
+    }
 
     protected override void OnInitialized() => ObjRef = Microsoft.JSInterop.DotNetObjectReference.Create(this);
 
@@ -300,11 +292,5 @@ public partial class MapComponent
     {
         if (firstRender)
             await CreateMap(OriginalPoint, ZoomLevel);
-    }
-
-    public async ValueTask DisposeAsync()
-    {
-        await LeafletService.InvokeVoidAsync("deleteMap", MapId);
-        ObjRef?.Dispose();
     }
 }
