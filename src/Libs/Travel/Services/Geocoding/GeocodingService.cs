@@ -7,26 +7,26 @@ public class GeocodingService(IConfiguration configuration, ILogger<GeocodingSer
 {
     public async Task<IReadOnlyList<ViewModels.Place>> FindPlacesAsync(string textToFind, CancellationToken cancellationToken)
     {
-        Settings.GeocodingApi api = TravelSettings.GeocodingSettings.GeocodingApis.First(x => x.Name == TravelSettings.GeocodingSettings.CurrentImplementation);
+        Settings.GeocodingServiceApi api = TravelSettings.GeocodingSettings.GeocodingApis.First(x => x.Name == TravelSettings.GeocodingSettings.CurrentImplName);
 
-        Implementations.GeocodingImplementationBase GeocodingImplementation = TravelSettings.GeocodingSettings.CurrentImplementation switch
+        Impl.GeocodingServiceImplBase GeocodingImpl = TravelSettings.GeocodingSettings.CurrentImplName switch
         {
 #pragma warning disable format
-            //Settings.GeocodingImplementations.Google            => new GoogleRoutes(api, logger),
+            //Settings.GeocodingImplName.Google            => new GoogleRoutes(api, logger),
         
-            //Settings.GeocodingImplementations.MapboxDirections  => new MapboxDirectionsRouter(api, logger),
+            //Settings.GeocodingImplName.MapboxDirections  => new MapboxDirectionsRouter(api, logger),
         
-            Settings.GeocodingImplementations.Nominatim         => new Implementations.NominatimGeocodingImplementation(api, logger),
+            Settings.GeocodingImplName.Nominatim         => new Impl.NominatimGeocodingServiceImpl(api, logger),
 
-            Settings.GeocodingImplementations.Photon            => new Implementations.PhotonGeocodingImplementation(api, logger),
+            Settings.GeocodingImplName.Photon            => new Impl.PhotonGeocodingServiceImpl(api, logger),
 #pragma warning restore format
 
-            _ => throw new InvalidOperationException($"Unsupported geocoder: {TravelSettings.GeocodingSettings.CurrentImplementation}"),
+            _ => throw new InvalidOperationException($"Unsupported geocoder: {TravelSettings.GeocodingSettings.CurrentImplName}"),
         };
 
         if (logger.IsEnabled(LogLevel.Information))
-            logger.LogInformation("Using Geocoding implementation: {GeocodingImplementation}", TravelSettings.GeocodingSettings.CurrentImplementation);
+            logger.LogInformation("Using Geocoding impl: {GeocodingImpl}", TravelSettings.GeocodingSettings.CurrentImplName);
 
-        return await GeocodingImplementation.FindPlacesAsync(textToFind, cancellationToken);
+        return await GeocodingImpl.FindPlacesAsync(textToFind, cancellationToken);
     }
 }

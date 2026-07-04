@@ -1,9 +1,9 @@
 ﻿using RestSharp;
 using Seedysoft.Libs.Core.Extensions;
 
-namespace Seedysoft.Libs.Travel.Services.Geocoding.Implementations;
+namespace Seedysoft.Libs.Travel.Services.Geocoding.Impl;
 
-internal class PhotonGeocodingImplementation(Settings.GeocodingApi api, Microsoft.Extensions.Logging.ILogger logger) : GeocodingImplementationBase(api)
+internal class PhotonGeocodingServiceImpl(Settings.GeocodingServiceApi api, Microsoft.Extensions.Logging.ILogger logger) : GeocodingServiceImplBase(api)
 {
     internal override async Task<IReadOnlyList<ViewModels.Place>> FindPlacesAsync(string textToFind, CancellationToken cancellationToken)
     {

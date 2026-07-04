@@ -1,9 +1,9 @@
 ﻿using RestSharp;
 using Seedysoft.Libs.Core.Extensions;
 
-namespace Seedysoft.Libs.Travel.Services.Geocoding.Implementations;
+namespace Seedysoft.Libs.Travel.Services.Geocoding.Impl;
 
-internal class NominatimGeocodingImplementation(Settings.GeocodingApi api, Microsoft.Extensions.Logging.ILogger logger) : GeocodingImplementationBase(api)
+internal class NominatimGeocodingServiceImpl(Settings.GeocodingServiceApi api, Microsoft.Extensions.Logging.ILogger logger) : GeocodingServiceImplBase(api)
 {
     // https://nominatim.openstreetmap.org/search?q={0}&format=json&limit=8
     internal async override Task<IReadOnlyList<ViewModels.Place>> FindPlacesAsync(string textToFind, CancellationToken cancellationToken)

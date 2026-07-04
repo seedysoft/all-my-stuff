@@ -76,7 +76,7 @@ public sealed class GeocodingServiceTests : Infrastructure.Tests.TestClassBase
 
     [Test]
     [CombinedDataSources]
-    public async Task FindPlacesAsyncWithUnsupportedGeocoderImplementationThrowsInvalidOperationException(
+    public async Task FindPlacesAsyncWithUnsupportedGeocoderImplThrowsInvalidOperationException(
         [Arguments("Paris")]
         string textToFind)
     {

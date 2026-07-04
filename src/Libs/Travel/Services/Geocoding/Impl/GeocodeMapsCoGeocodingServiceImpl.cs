@@ -1,4 +1,4 @@
-﻿//namespace Seedysoft.Libs.Travel.Services.Geocoding;
+﻿namespace Seedysoft.Libs.Travel.Services.Geocoding.Impl;
 
 //public class GeocodeMapsCo
 //{

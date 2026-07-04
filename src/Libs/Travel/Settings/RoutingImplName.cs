@@ -1,6 +1,6 @@
 ﻿namespace Seedysoft.Libs.Travel.Settings;
 
-public readonly record struct RoutingImplementations
+public readonly record struct RoutingImplName
 {
     //public const string GoogleRoutes = "GoogleRoutes";
 

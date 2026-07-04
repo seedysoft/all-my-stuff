@@ -1,9 +1,9 @@
 ﻿using RestSharp;
 using Seedysoft.Libs.Core.Extensions;
 
-namespace Seedysoft.Libs.Travel.Services.Routing.Implementations;
+namespace Seedysoft.Libs.Travel.Services.Routing.Impl;
 
-internal class OsrmRoutingService(Settings.RoutingApi api, Microsoft.Extensions.Logging.ILogger logger) : RoutingImplementationBase(api)
+internal class OsrmRoutingServiceImpl(Settings.RoutingServiceApi api, Microsoft.Extensions.Logging.ILogger logger) : RoutingServiceImplBase(api)
 {
     /// <summary>
     /// Obtiene las rutas entre el origen y el destino especificados en el modelo de consulta.

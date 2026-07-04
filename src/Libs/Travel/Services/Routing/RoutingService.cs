@@ -9,7 +9,7 @@ namespace Seedysoft.Libs.Travel.Services.Routing;
 /// </summary>
 /// <remarks>
 /// This service uses a factory pattern to instantiate the appropriate routing implementation
-/// based on the configured <see cref="Settings.TravelSettings.RoutingSettings.CurrentImplementation"/>.
+/// based on the configured <see cref="Settings.TravelSettings.RoutingSettings.CurrentImpl"/>.
 /// Supported implementations include:
 /// <list type="bullet">
 /// <item><description>Open Source Routing Machine (OSRM)</description></item>
@@ -32,7 +32,7 @@ public class RoutingService(IConfiguration configuration, ILogger<RoutingService
     /// </list>
     /// </returns>
     /// <exception cref="InvalidOperationException">
-    /// Thrown when the configured routing implementation in <see cref="Settings.TravelSettings.RoutingSettings.CurrentImplementation"/>
+    /// Thrown when the configured routing implementation in <see cref="Settings.TravelSettings.RoutingSettings.CurrentImpl"/>
     /// is not supported by this service.
     /// </exception>
     /// <remarks>
@@ -44,26 +44,26 @@ public class RoutingService(IConfiguration configuration, ILogger<RoutingService
         , Models.Location dest
         , CancellationToken cancellationToken)
     {
-        Settings.RoutingApi api = TravelSettings.RoutingSettings.RoutingApis.First(x => x.Name == TravelSettings.RoutingSettings.CurrentImplementation);
+        Settings.RoutingServiceApi api = TravelSettings.RoutingSettings.RoutingApis.First(x => x.Name == TravelSettings.RoutingSettings.CurrentImplName);
 
-        Implementations.RoutingImplementationBase RoutingImplementation = TravelSettings.RoutingSettings.CurrentImplementation switch
+        Impl.RoutingServiceImplBase RoutingImpl = TravelSettings.RoutingSettings.CurrentImplName switch
         {
 #pragma warning disable format
-            //Settings.RoutingImplementations.Google                     => new GoogleRoutes(api, logger),
+            //Settings.RoutingImplName.Google                     => new GoogleRoutes(api, logger),
         
-            //Settings.RoutingImplementations.MapboxDirections           => new MapboxDirectionsRouter(api, logger),
+            //Settings.RoutingImplName.MapboxDirections           => new MapboxDirectionsRouter(api, logger),
         
-            Settings.RoutingImplementations.OpenSourceRoutingMachine    => new Implementations.OsrmRoutingService(api, logger),
+            Settings.RoutingImplName.OpenSourceRoutingMachine    => new Impl.OsrmRoutingServiceImpl(api, logger),
 
-            Settings.RoutingImplementations.Valhalla                    => new Implementations.ValhallaRoutingService(new Implementations.ValhallaRoutingApi(api) , logger),
+            Settings.RoutingImplName.Valhalla                    => new Impl.ValhallaRoutingServiceImpl (new Impl.ValhallaRoutingApi(api) , logger),
 #pragma warning restore format
 
-            _ => throw new InvalidOperationException($"Unsupported router: {TravelSettings.RoutingSettings.CurrentImplementation}"),
+            _ => throw new InvalidOperationException($"Unsupported RoutingServiceImpl: {TravelSettings.RoutingSettings.CurrentImplName}"),
         };
 
         if (logger.IsEnabled(LogLevel.Information))
-            logger.LogInformation("Using routing implementation: {RoutingImplementation}", TravelSettings.RoutingSettings.CurrentImplementation);
+            logger.LogInformation("Using routing implementation: {RoutingImpl}", TravelSettings.RoutingSettings.CurrentImplName);
 
-        return await RoutingImplementation.GetRoutesAsync(orig, dest, cancellationToken);
+        return await RoutingImpl.GetRoutesAsync(orig, dest, cancellationToken);
     }
 }

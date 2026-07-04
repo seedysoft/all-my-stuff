@@ -1,4 +1,4 @@
-﻿//namespace Seedysoft.Libs.Geocoding.Services.Routers;
+﻿namespace Seedysoft.Libs.Travel.Services.Routing.Impl;
 
 //internal class MapboxDirectionsRouter(Settings.Api api, Microsoft.Extensions.Logging.ILogger logger) : RouterBase(api)
 //{

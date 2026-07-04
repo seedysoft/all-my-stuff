@@ -1,9 +1,9 @@
-﻿namespace Seedysoft.Libs.Travel.Services.Routing.Implementations;
+﻿namespace Seedysoft.Libs.Travel.Services.Routing.Impl;
 
-internal abstract class RoutingImplementationBase(Settings.RoutingApi routingApi)
+internal abstract class RoutingServiceImplBase(Settings.RoutingServiceApi routingApi)
 {
     protected RestSharp.RestClient RestClient { get; } = new(new Uri(routingApi.UrlFormat).GetLeftPart(UriPartial.Authority));
-    protected Settings.RoutingApi RoutingApi { get; } = routingApi;
+    protected Settings.RoutingServiceApi RoutingApi { get; } = routingApi;
 
     /// <summary>
     /// Obtiene las rutas entre el origen y el destino especificados en el modelo de consulta.
