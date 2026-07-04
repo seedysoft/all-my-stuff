@@ -44,8 +44,8 @@ internal partial class ValhallaRoutingServiceImpl(ValhallaRoutingApi api, ILogge
     {
         public RequestObject(Models.Location orig, Models.Location dest)
         {
-            Locations[0] = new Location(orig.Lat, orig.Lon);
-            Locations[1] = new Location(dest.Lat, dest.Lon);
+            Locations[0] = new Location(orig.Latitude, orig.Longitude);
+            Locations[1] = new Location(dest.Latitude, dest.Longitude);
         }
 
         [J("alternates")] public int Alternates { get; } = 3;
@@ -62,10 +62,10 @@ internal partial class ValhallaRoutingServiceImpl(ValhallaRoutingApi api, ILogge
     {
         [J("units")] public string Units { get; } = "kilometers";
     }
-    internal class Location(decimal lat, decimal lon)
+    internal class Location(double lat, double lon)
     {
-        [J("lat")] public double Lat { get; set; } = (double)lat;
-        [J("lon")] public double Lon { get; set; } = (double)lon;
+        [J("lat")] public double Lat { get; set; } = lat;
+        [J("lon")] public double Lon { get; set; } = lon;
     }
 
     internal class ResponseObject

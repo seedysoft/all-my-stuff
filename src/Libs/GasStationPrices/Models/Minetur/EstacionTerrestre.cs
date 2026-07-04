@@ -37,10 +37,10 @@ public readonly record struct EstacionTerrestre
     [J("Localidad")] public required string Localidad { get; init; }
 
     [J("Latitud")] public required string Latitud { get; init; }
-    public decimal Lat => decimal.Parse(Latitud, Core.Constants.Globalization.NumberFormatInfoES);
+    public double Lat => double.Parse(Latitud, Core.Constants.Globalization.NumberFormatInfoES);
 
     [J("Longitud (WGS84)")] public required string Longitud { get; init; }
-    public decimal Lon => decimal.Parse(Longitud, Core.Constants.Globalization.NumberFormatInfoES);
+    public double Lon => double.Parse(Longitud, Core.Constants.Globalization.NumberFormatInfoES);
 
     public Travel.Models.Location LatLng => new(Lat, Lon);
 

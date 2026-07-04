@@ -9,7 +9,7 @@ namespace Seedysoft.Libs.Travel.Services.Routing;
 /// </summary>
 /// <remarks>
 /// This service uses a factory pattern to instantiate the appropriate routing implementation
-/// based on the configured <see cref="Settings.TravelSettings.RoutingSettings.CurrentImpl"/>.
+/// based on the configured <see cref="TravelSettings.RoutingSettings.CurrentImpl"/>.
 /// Supported implementations include:
 /// <list type="bullet">
 /// <item><description>Open Source Routing Machine (OSRM)</description></item>
@@ -32,7 +32,7 @@ public class RoutingService(IConfiguration configuration, ILogger<RoutingService
     /// </list>
     /// </returns>
     /// <exception cref="InvalidOperationException">
-    /// Thrown when the configured routing implementation in <see cref="Settings.TravelSettings.RoutingSettings.CurrentImpl"/>
+    /// Thrown when the configured routing implementation in <see cref="TravelSettings.RoutingSettings.CurrentImpl"/>
     /// is not supported by this service.
     /// </exception>
     /// <remarks>

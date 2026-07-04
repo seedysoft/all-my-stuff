@@ -94,6 +94,6 @@ internal class PhotonGeocodingServiceImpl(Settings.GeocodingServiceApi api, Micr
         //[J("type")] public string Type { get; init; } = default!;
         [J("coordinates")] public float[] Coordinates { get; init; } = default!;
 
-        [I()] public Models.Location GetLocation => new(Lat: (decimal)Coordinates[1], Lon: (decimal)Coordinates[0]);
+        [I()] public Models.Location GetLocation => new(latitude: Coordinates[1], longitude: Coordinates[0]);
     }
 }

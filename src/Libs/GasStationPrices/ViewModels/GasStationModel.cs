@@ -6,7 +6,7 @@ public record GasStationModel
     [J("lng")] public double Lon { get; init; }
 
     // TODO                         Use Travel.Models.Location instead individual properties
-    public Travel.Models.Location Location => new((decimal)Lat, (decimal)Lon);
+    public Travel.Models.Location Location => new(Lat, Lon);
 
     [J("localizacion")] public string? Localizacion { get; init; }
 

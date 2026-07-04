@@ -2,13 +2,20 @@
 
 [System.Diagnostics.DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
 /// <summary>
-/// Represents a geographic location using decimal latitude and longitude in degrees.
+/// Represents a geographic location using double latitude and longitude in degrees.
 /// </summary>
-/// <param name="Lat">Latitude in decimal degrees. Positive values are north of the equator. Typical range: -90 to 90.</param>
-/// <param name="Lon">Longitude in decimal degrees. Positive values are east of the prime meridian. Typical range: -180 to 180.</param>
-public readonly record struct Location(decimal Lat, decimal Lon)
+public readonly record struct Location
 {
-    public static Location Empty => new(decimal.Zero, decimal.Zero);
+    public Location(double latitude, double longitude)
+    {
+        Latitude = latitude;
+        Longitude = longitude;
+    }
+
+    [J("latitude")] public double Latitude { get; init; }
+    [J("longitude")] public double Longitude { get; init; }
+
+    public static Location Empty => new(0, 0);
 
     /// <summary>
     /// Produces the string used by the <see cref="System.Diagnostics.DebuggerDisplayAttribute"/>
@@ -16,6 +23,20 @@ public readonly record struct Location(decimal Lat, decimal Lon)
     /// </summary>
     /// <returns>A culture-invariant string containing the latitude and longitude.</returns>
     private string GetDebuggerDisplay() =>
-        $"Lat: {Lat.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat)}; " +
-        $"Lon: {Lon.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat)}";
+        $"Lat: {Latitude.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat)}; " +
+        $"Lon: {Longitude.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat)}";
+
+    //    public readonly Location AddMetters(double angle, double distanceInMetters)
+    //    {
+    //        double latitude = Helpers.CoordinatesCalculatesHelper.GetLatitudeFromDegreesPerMetter(Latitude, angle, distanceInMetters);
+    //        double longitude = Helpers.CoordinatesCalculatesHelper.GetLongitudeFromDegreesPerMetter(Latitude, Longitude, angle, distanceInMetters);
+
+    //        return new Location(latitude, longitude);
+    //    }
+
+    //    public readonly Location AddKm(double angle, double distanceInKm) =>
+    //        AddMetters(angle, distanceInKm * 1_000);
+
+    //    public readonly Location AddCm(double angle, double distanceInKm) =>
+    //        AddMetters(angle, distanceInKm / 100);
 }
