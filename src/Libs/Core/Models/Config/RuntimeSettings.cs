@@ -1,8 +1,8 @@
 namespace Seedysoft.Libs.Core.Models.Config;
 
-public record RuntimeSettings
+public record class RuntimeSettings
 {
-    public short SecondsToDelayWebApplicationStart { get; set; }
+    public short SecondsToDelayWebApplicationStart { get; init; }
 
     //public bool TracingEnabled { get; set; }
 

@@ -1,4 +1,5 @@
-﻿using MudBlazor.Services;
+﻿using Microsoft.Extensions.DependencyInjection.Extensions;
+using MudBlazor.Services;
 
 namespace Seedysoft.BlazorWebApp.Server.Dependencies;
 
@@ -20,20 +21,31 @@ public sealed class Configurator : Libs.Core.Dependencies.ConfiguratorBase
         // Add Todo service for components adopting SSR
         //_ = hostApplicationBuilder.Services.AddScoped<IMovieService, ServerMovieService>();
 
-        if (System.Diagnostics.Debugger.IsAttached)
-            System.Diagnostics.Debugger.Break();
+        //if (System.Diagnostics.Debugger.IsAttached)
+        //    System.Diagnostics.Debugger.Break();
 
-        _ = hostApplicationBuilder.Services.AddHostedService<Libs.TelegramBot.Services.TelegramHostedService>();
+        Settings.BlazorWebAppServerSettings BlazorWebAppServerSettings = hostApplicationBuilder.Configuration
+            .GetSection(nameof(Settings.BlazorWebAppServerSettings)).Get<Settings.BlazorWebAppServerSettings>()!;
+        // Uncomment if needed outside here
+        // hostApplicationBuilder.Services.TryAddSingleton(BlazorWebAppServerSettings);
 
-        _ = hostApplicationBuilder.Services.AddHostedService<Outbox.Lib.Services.OutboxCronBackgroundService>();
+        if (BlazorWebAppServerSettings.UseOutbox)
+            _ = hostApplicationBuilder.Services.AddHostedService<Outbox.Lib.Services.OutboxCronBackgroundService>();
 
-        _ = hostApplicationBuilder.Services.AddHostedService<Pvpc.Lib.Services.PvpcCronBackgroundService>();
+        if (BlazorWebAppServerSettings.UsePvpc)
+            _ = hostApplicationBuilder.Services.AddHostedService<Pvpc.Lib.Services.PvpcCronBackgroundService>();
 
-        _ = hostApplicationBuilder.Services.AddHostedService<Pvpc.Lib.Services.TuyaManagerCronBackgroundService>();
+        if (BlazorWebAppServerSettings.UseTelegram)
+            _ = hostApplicationBuilder.Services.AddHostedService<Libs.TelegramBot.Services.TelegramHostedService>();
 
-        _ = hostApplicationBuilder.Services.AddHostedService<Libs.Update.Services.UpdaterCronBackgroundService>();
+        if (BlazorWebAppServerSettings.UseTuyaManager)
+            _ = hostApplicationBuilder.Services.AddHostedService<Pvpc.Lib.Services.TuyaManagerCronBackgroundService>();
 
-        _ = hostApplicationBuilder.Services.AddHostedService<WebComparer.Lib.Services.WebComparerCronBackgroundService>();
+        if (BlazorWebAppServerSettings.UseUpdater)
+            _ = hostApplicationBuilder.Services.AddHostedService<Libs.Update.Services.UpdaterCronBackgroundService>();
+
+        if (BlazorWebAppServerSettings.UseWebComparer)
+            _ = hostApplicationBuilder.Services.AddHostedService<WebComparer.Lib.Services.WebComparerCronBackgroundService>();
 
         // Add services to the container.
         _ = hostApplicationBuilder.Services

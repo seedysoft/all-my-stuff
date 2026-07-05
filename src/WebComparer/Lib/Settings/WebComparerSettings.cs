@@ -1,3 +1,3 @@
 ﻿namespace Seedysoft.WebComparer.Lib.Settings;
 
-public record WebComparerSettings : Libs.BackgroundServices.ScheduleConfig { }
+public record class WebComparerSettings : Libs.BackgroundServices.ScheduleConfig { }

@@ -1,6 +1,6 @@
 ﻿namespace Seedysoft.Pvpc.Lib.Settings;
 
-public record TuyaManagerSettings : Libs.BackgroundServices.ScheduleConfig
+public record class TuyaManagerSettings : Libs.BackgroundServices.ScheduleConfig
 {
     /// <summary>
     /// Precio por debajo del cual se activarán los dispositivos.
