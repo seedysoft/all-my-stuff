@@ -1,8 +1,9 @@
 ﻿<HeadContent>
     <link href=@($"{Core.Helpers.ContentHelper.ContentPath(typeof(MapComponent))}/lib/leaflet/dist/leaflet.css") rel="stylesheet" />
     @* <link href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" rel="stylesheet" /> *@
-    <script src="@($"{Core.Helpers.ContentHelper.ContentPath(typeof(MapComponent))}/lib/leaflet/dist/leaflet.js")" type="text/javascript"></script>
-    @* <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="" type="text/javascript"></script> *@
+
+    <script src="@($"{Core.Helpers.ContentHelper.ContentPath(typeof(MapComponent))}/lib/leaflet/dist/leaflet.js")"></script>
+    @* <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script> *@
 </HeadContent>
 
 @if (!IsMapReady)
@@ -25,7 +26,7 @@
 
 @* </RealTimeMap> *@
 
-<div id="@MapId" @attributes="Attributes"></div>
+<div id="@MapId" style="height:@Height; width:@Width;"></div>
 
 @* <div>
     <label>Current zoom: @Zoom</label>

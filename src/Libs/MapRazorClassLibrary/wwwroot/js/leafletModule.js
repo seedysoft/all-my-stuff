@@ -1,4 +1,5 @@
-import * as L from "../lib/leaflet/dist/leaflet.js"
+// import * as L from "../lib/leaflet/dist/leaflet.js"
+// import * as L from "../lib/leaflet/src/Leaflet.js";
 
 const maps = new Map(); // new Dictionary<string, object> in c#
 
@@ -228,12 +229,19 @@ const setClickHandler = async (mapId, dotNet, clickHandlerMethod) => {
     console.info(`Click handler added to map ${mapId}`);
 }
 
-const enableSpinner = (mapId) => {
-    maps.get(mapId).spin(true);
-}
-const disableSpinner = (mapId) => {
-    maps.get(mapId).spin(false);
-}
+// const enableSpinner = (mapId) => {
+//     maps.get(mapId).spin(true);
+// }
+// const disableSpinner = (mapId) => {
+//     maps.get(mapId).spin(false);
+// }
+
+const addDirection = e => {
+  _calculateArrowLines(JSON.parse(e.polyline), e.start, e.radianAngle, e.length, e.symbol, map, LeafletCore)
+};
+const route = e => {
+    _route(e, map, LeafletCore, _dotNetObjRef)
+};
 
 export {
     createMap
@@ -249,6 +257,8 @@ export {
     , setMarkerHelper
     , setPopupMarkerContent
     , setClickHandler
-    , enableSpinner
-    , disableSpinner
+    // , enableSpinner
+    // , disableSpinner
+    , addDirection
+    , route
 }

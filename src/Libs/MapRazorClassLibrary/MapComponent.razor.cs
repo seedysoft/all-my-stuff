@@ -1,5 +1,6 @@
 using LeafletForBlazor;
 using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
 
 namespace Seedysoft.Libs.MapRazorClassLibrary;
 
@@ -49,7 +50,7 @@ public partial class MapComponent : IAsyncDisposable
 
     //#endregion
 
-    //private readonly string[] ColorsForRoutes = ["#007FFF", "#0074EA", "#0069D5", "#005EC0", "#0053AB", "#004896", "#003D81", "#00326C"];
+    private readonly string[] ColorsForRoutes = ["#007FFF", "#0074EA", "#0069D5", "#005EC0", "#0053AB", "#004896", "#003D81", "#00326C"];
 
     //private RealTimeMap realTimeMap = default!;
 
@@ -163,7 +164,7 @@ public partial class MapComponent : IAsyncDisposable
         if (res.Count == 0)
             return "No routes found";
 
-        //    await LoadRoutesDataIntoMapAsync(res, cancellationToken);
+        await LoadRoutesDataIntoMapAsync(res, cancellationToken);
 
         //    Travel.Models.Bounds ourBounds = ComputeBoundsFromRoutes(res, cancellationToken);
 
@@ -171,23 +172,23 @@ public partial class MapComponent : IAsyncDisposable
 
         return null;
 
-        //    async Task LoadRoutesDataIntoMapAsync(
-        //        IReadOnlyList<(string NombreRuta
-        //        , double[,] Coordenadas)> res
-        //        , CancellationToken cancellationToken)
-        //    {
-        //        for (int i = 0; i < res.Count; i++)
-        //        {
-        //            if (cancellationToken.IsCancellationRequested)
-        //                break;
+        async Task LoadRoutesDataIntoMapAsync(
+            IReadOnlyList<(string NombreRuta, double[,] Coordenadas)> res
+            , CancellationToken cancellationToken)
+        {
+            for (int i = 0; i < res.Count; i++)
+            {
+                if (cancellationToken.IsCancellationRequested)
+                    break;
 
-        //            (string? NombreRuta, double[,]? Coordenadas) = res[i];
-        //            await realTimeMap.Geometric.DisplayPolylinesFromArray.addConnector(
-        //                arrayPolyline: Coordenadas
-        //                , symbol: new RealTimeMap.PolylineSymbol() { color = ColorsForRoutes[i], /*smoothFactor = 1.0,*/ /*opacity = 1.0,*/ weight = 5, }
-        //                , start: 1);
-        //        }
-        //    }
+                (string? NombreRuta, double[,]? Coordenadas) = res[i];
+
+                await AddConnector(
+                    arrayPolyline: Coordenadas
+                    , symbol: new MapModels.PolylineSymbol() { Color = ColorsForRoutes[i], /*smoothFactor = 1.0,*/ /*opacity = 1.0,*/ Weight = 5, }
+                    , start: 1);
+            }
+        }
 
         //    Travel.Models.Bounds ComputeBoundsFromRoutes(
         //        IReadOnlyList<(string NombreRuta
@@ -286,11 +287,19 @@ public partial class MapComponent : IAsyncDisposable
         //    }
     }
 
-    protected override void OnInitialized() => ObjRef = Microsoft.JSInterop.DotNetObjectReference.Create(this);
+    protected override void OnInitialized() => ObjRef = DotNetObjectReference.Create(this);
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender)
-            await CreateMap(OriginalPoint, ZoomLevel);
+        if (!firstRender)
+            return;
+
+        if (MapModule == null)
+        {
+            MapModule = await JsRuntime.InvokeAsync<IJSObjectReference>(
+                "import", $"./{Core.Helpers.ContentHelper.ContentPath(typeof(MapComponent))}/js/leafletModule.js");
+
+            await CreateMap();
+        }
     }
 }

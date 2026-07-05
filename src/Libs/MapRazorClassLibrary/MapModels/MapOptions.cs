@@ -1,10 +1,11 @@
-﻿namespace Seedysoft.Libs.MapRazorClassLibrary;
+﻿namespace Seedysoft.Libs.MapRazorClassLibrary.MapModels;
 
+// TODO                            USE MAP OPTIONS
 public class MapOptions
 {
-    [J("center")] public Travel.Models.Location? Center { get; set; }
+    [J("center")] public Point Center { get; set; } = new Point(Travel.Constants.Earth.Burgos.Latitude, Travel.Constants.Earth.Burgos.Longitude);
 
-    [J("zoom")] public int? Zoom { get; set; }
+    [J("zoom")] public int? Zoom { get; set; } = 14;
 
     [J("minZoom")] public int? MinZoom { get; set; }
 
@@ -34,16 +35,16 @@ public class TileLayer
     public string Attribution { get; set; } = string.Empty;
 }
 
-public enum ControlPosition
-{
-    [J("topleft")] TopLeft,
-    [J("topright")] TopRight,
-    [J("bottomleft")] BottomLeft,
-    [J("bottomright")] BottomRight
-}
-
 public abstract class ControlOptions
 {
+    public enum ControlPosition
+    {
+        [J("topleft")] TopLeft,
+        [J("topright")] TopRight,
+        [J("bottomleft")] BottomLeft,
+        [J("bottomright")] BottomRight
+    }
+
     public ControlPosition? Position { get; set; }
 }
 

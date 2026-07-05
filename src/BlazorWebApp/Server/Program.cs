@@ -27,11 +27,6 @@ public class Program : Libs.Core.ProgramBase
         if (webApplication.Environment.IsDevelopment())
         {
             webApplication.UseWebAssemblyDebugging();
-
-            // Add OpenAPI/Swagger generator and the Swagger UI
-            _ = webApplication
-                .UseOpenApi()
-                .UseSwaggerUi();
         }
         else
         {
