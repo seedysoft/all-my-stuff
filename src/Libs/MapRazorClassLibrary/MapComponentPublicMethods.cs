@@ -16,42 +16,11 @@ public partial class MapComponent : IAsyncDisposable
 
     public IJSObjectReference MapModule { get => field!; private set; }
 
-    //public ValueTask SetViewAsync(LatLong point, byte zoomLevel = 19) =>
-    //    LeafletService.InvokeVoidAsync("setView", MapId, point, zoomLevel);
+    public async Task AddMarker(MapModels.LatLng latLng, MapModels.MarkerOptions? options = default) => await MapModule.InvokeVoidAsync("addMarker", MapId, latLng, options);
 
-    //public ValueTask<int> AddMarkerAsync(LatLong point, string title, string description, string iconUrl) =>
-    //    LeafletService.InvokeAsyc<int>("addMarker", MapId, point, title, description, GetIconUrl(iconUrl));
+    public async Task DeleteMap() => await MapModule.InvokeVoidAsync("destroyMap", MapId);
 
-    //public ValueTask<int> AddMarkerAsync(LatLong point, string title, string description, Icon icon = Icon.PIN) =>
-    //    AddMarkerAsync(point, title, description, GetIcon(icon));
+    public async Task RemoveAllMarkers() => await MapModule.InvokeVoidAsync("removeAllMarkers", MapId);
 
-    //public ValueTask<int> AddMarkerAsync(LatLong point, string title, string description) =>
-    //    AddMarkerAsync(point, title, description, "marker-icon");
-
-    //public async ValueTask<int> AddDraggableMarkerAsync(LatLong point, string title, string description, string iconUrl)
-    //{
-    //    await LeafletService.InvokeVoidAsync("setMarkerHelper", MapId, ObjRef, nameof(OnDragend));
-    //    return await LeafletService.InvokeAsyc<int>("addDraggableMarker", MapId, point, title, description, GetIconUrl(iconUrl));
-    //}
-
-    //public ValueTask<int> AddDraggableMarkerAsync(LatLong point, string title, string description, Icon icon = Icon.PIN) =>
-    //    AddDraggableMarkerAsync(point, title, description, GetIcon(icon));
-
-    public ValueTask RemoveMarkersAsync() =>
-        MapModule.InvokeVoidAsync("removeMarkers", MapId);
-
-    //public Task DrawCircleAsync(LatLong point, string color, string fillColor, double fillOpacity, double radius) =>
-    //    LeafletService.InvokeVoidAsync("drawCircle", MapId, point, color, fillColor, fillOpacity, radius);
-
-    public ValueTask DeleteMap() =>
-        MapModule.InvokeVoidAsync("deleteMap", MapId);
-
-    //public Task MoveMarketAsync(int markerId, LatLong newPosition) =>
-    //    LeafletService.InvokeVoidAsync("moveMarker", MapId, markerId, newPosition);
-
-    public ValueTask SetPopupMarkerContent(int markerId, string content) =>
-        MapModule.InvokeVoidAsync("setPopupMarkerContent", MapId, markerId, content);
-
-    //public static double GetDistanceInMettersBetween(LatLong origin, LatLong destination) =>
-    //    Helpers.CoordinatesCalculatesHelper.CalculateDistanceInMetters(origin, destination);
+    public async Task SetView(MapModels.LatLng latLng, int zoom) => await MapModule.InvokeVoidAsync("setView", MapId, latLng, zoom);
 }

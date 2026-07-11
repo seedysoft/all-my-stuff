@@ -1,7 +1,6 @@
-import Browser from '../../core/Browser';
 
 // @namespace SVG; @section
-// There are several static functions which can be called without instantiating L.SVG:
+// There are several static functions which can be called without instantiating SVG:
 
 // @function create(name: String): SVGElement
 // Returns a instance of [SVGElement](https://developer.mozilla.org/docs/Web/API/SVGElement),
@@ -15,25 +14,12 @@ export function svgCreate(name) {
 // Generates a SVG path string for multiple rings, with each ring turning
 // into "M..L..L.." instructions
 export function pointsToPath(rings, closed) {
-	var str = '',
-	i, j, len, len2, points, p;
-
-	for (i = 0, len = rings.length; i < len; i++) {
-		points = rings[i];
-
-		for (j = 0, len2 = points.length; j < len2; j++) {
-			p = points[j];
-			str += (j ? 'L' : 'M') + p.x + ' ' + p.y;
-		}
-
-		// closes the ring for polygons; "x" is VML syntax
-		str += closed ? (Browser.svg ? 'z' : 'x') : '';
-	}
+	const str = rings.flatMap(points => [
+		...points.map((p, j) => `${(j ? 'L' : 'M') + p.x} ${p.y}`),
+		// closes the ring for polygons
+		closed ? 'z' : ''
+	]).join('');
 
 	// SVG complains about empty path strings
 	return str || 'M0 0';
 }
-
-
-
-

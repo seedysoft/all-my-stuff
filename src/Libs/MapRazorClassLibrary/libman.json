@@ -4,7 +4,7 @@
   "libraries": [
     {
       "provider": "unpkg",
-      "library": "leaflet@1.9.4",
+      "library": "leaflet@2.0.0-alpha.1",
       "destination": "wwwroot/lib/leaflet/"
     }
   ]

@@ -1,20 +1,19 @@
-import {Evented} from '../core/Events';
-import {Map} from '../map/Map';
-import * as Util from '../core/Util';
+import {Evented} from '../core/Events.js';
+import {Map} from '../map/Map.js';
+import * as Util from '../core/Util.js';
 
 /*
  * @class Layer
  * @inherits Evented
- * @aka L.Layer
  * @aka ILayer
  *
  * A set of methods from the Layer base class that all Leaflet layers use.
- * Inherits all methods, options and events from `L.Evented`.
+ * Inherits all methods, options and events from `Evented`.
  *
  * @example
  *
  * ```js
- * var layer = L.marker(latlng).addTo(map);
+ * const layer = new Marker(latlng).addTo(map);
  * layer.addTo(map);
  * layer.remove();
  * ```
@@ -27,37 +26,40 @@ import * as Util from '../core/Util';
  */
 
 
-export var Layer = Evented.extend({
+export class Layer extends Evented {
 
-	// Classes extending `L.Layer` will inherit the following options:
-	options: {
-		// @option pane: String = 'overlayPane'
-		// By default the layer will be added to the map's [overlay pane](#map-overlaypane). Overriding this option will cause the layer to be placed on another pane by default.
-		pane: 'overlayPane',
+	static {
+		// Classes extending `Layer` will inherit the following options:
+		this.setDefaultOptions({
+			// @option pane: String = 'overlayPane'
+			// By default the layer will be added to the map's [overlay pane](#map-overlaypane). Overriding this option will cause the layer to be placed on another pane by default.
+			// Not effective if the `renderer` option is set (the `renderer` option will override the `pane` option).
+			pane: 'overlayPane',
 
-		// @option attribution: String = null
-		// String to be shown in the attribution control, e.g. "© OpenStreetMap contributors". It describes the layer data and is often a legal obligation towards copyright holders and tile providers.
-		attribution: null,
+			// @option attribution: String = null
+			// String to be shown in the attribution control, e.g. "© OpenStreetMap contributors". It describes the layer data and is often a legal obligation towards copyright holders and tile providers.
+			attribution: null,
 
-		bubblingMouseEvents: true
-	},
+			bubblingPointerEvents: true
+		});
+	}
 
 	/* @section
-	 * Classes extending `L.Layer` will inherit the following methods:
+	 * Classes extending `Layer` will inherit the following methods:
 	 *
 	 * @method addTo(map: Map|LayerGroup): this
 	 * Adds the layer to the given map or layer group.
 	 */
-	addTo: function (map) {
+	addTo(map) {
 		map.addLayer(this);
 		return this;
-	},
+	}
 
 	// @method remove: this
 	// Removes the layer from the map it is currently active on.
-	remove: function () {
+	remove() {
 		return this.removeFrom(this._map || this._mapToAdd);
-	},
+	}
 
 	// @method removeFrom(map: Map): this
 	// Removes the layer from the given map
@@ -65,37 +67,35 @@ export var Layer = Evented.extend({
 	// @alternative
 	// @method removeFrom(group: LayerGroup): this
 	// Removes the layer from the given `LayerGroup`
-	removeFrom: function (obj) {
-		if (obj) {
-			obj.removeLayer(this);
-		}
+	removeFrom(obj) {
+		obj?.removeLayer(this);
 		return this;
-	},
+	}
 
 	// @method getPane(name? : String): HTMLElement
 	// Returns the `HTMLElement` representing the named pane on the map. If `name` is omitted, returns the pane for this layer.
-	getPane: function (name) {
+	getPane(name) {
 		return this._map.getPane(name ? (this.options[name] || name) : this.options.pane);
-	},
+	}
 
-	addInteractiveTarget: function (targetEl) {
+	addInteractiveTarget(targetEl) {
 		this._map._targets[Util.stamp(targetEl)] = this;
 		return this;
-	},
+	}
 
-	removeInteractiveTarget: function (targetEl) {
+	removeInteractiveTarget(targetEl) {
 		delete this._map._targets[Util.stamp(targetEl)];
 		return this;
-	},
+	}
 
 	// @method getAttribution: String
 	// Used by the `attribution control`, returns the [attribution option](#gridlayer-attribution).
-	getAttribution: function () {
+	getAttribution() {
 		return this.options.attribution;
-	},
+	}
 
-	_layerAdd: function (e) {
-		var map = e.target;
+	_layerAdd(e) {
+		const map = e.target;
 
 		// check in case layer gets added and then removed before the map is ready
 		if (!map.hasLayer(this)) { return; }
@@ -104,11 +104,9 @@ export var Layer = Evented.extend({
 		this._zoomAnimated = map._zoomAnimated;
 
 		if (this.getEvents) {
-			var events = this.getEvents();
+			const events = this.getEvents();
 			map.on(events, this);
-			this.once('remove', function () {
-				map.off(events, this);
-			}, this);
+			this.once('remove', () => map.off(events, this));
 		}
 
 		this.onAdd(map);
@@ -116,12 +114,12 @@ export var Layer = Evented.extend({
 		this.fire('add');
 		map.fire('layeradd', {layer: this});
 	}
-});
+}
 
 /* @section Extension methods
  * @uninheritable
  *
- * Every layer should extend from `L.Layer` and (re-)implement the following methods.
+ * Every layer should extend from `Layer` and (re-)implement the following methods.
  *
  * @method onAdd(map: Map): this
  * Should contain code that creates DOM elements for the layer, adds them to `map panes` where they should belong and puts listeners on relevant map events. Called on [`map.addLayer(layer)`](#map-addlayer).
@@ -130,7 +128,7 @@ export var Layer = Evented.extend({
  * Should contain all clean up code that removes the layer's elements from the DOM and removes listeners previously added in [`onAdd`](#layer-onadd). Called on [`map.removeLayer(layer)`](#map-removelayer).
  *
  * @method getEvents(): Object
- * This optional method should return an object like `{ viewreset: this._reset }` for [`addEventListener`](#evented-addeventlistener). The event handlers in this object will be automatically added and removed from the map with your layer.
+ * This optional method should return an object like `{ viewreset: this._reset }` for [`on`](#evented-on). The event handlers in this object will be automatically added and removed from the map with your layer.
  *
  * @method getAttribution(): String
  * This optional method should return a string containing HTML to be shown on the `Attribution control` whenever the layer is visible.
@@ -154,12 +152,12 @@ export var Layer = Evented.extend({
 Map.include({
 	// @method addLayer(layer: Layer): this
 	// Adds the given layer to the map
-	addLayer: function (layer) {
+	addLayer(layer) {
 		if (!layer._layerAdd) {
 			throw new Error('The provided object is not a Layer.');
 		}
 
-		var id = Util.stamp(layer);
+		const id = Util.stamp(layer);
 		if (this._layers[id]) { return this; }
 		this._layers[id] = layer;
 
@@ -176,8 +174,8 @@ Map.include({
 
 	// @method removeLayer(layer: Layer): this
 	// Removes the given layer from the map.
-	removeLayer: function (layer) {
-		var id = Util.stamp(layer);
+	removeLayer(layer) {
+		const id = Util.stamp(layer);
 
 		if (!this._layers[id]) { return this; }
 
@@ -188,7 +186,7 @@ Map.include({
 		delete this._layers[id];
 
 		if (this._loaded) {
-			this.fire('layerremove', {layer: layer});
+			this.fire('layerremove', {layer});
 			layer.fire('remove');
 		}
 
@@ -199,7 +197,7 @@ Map.include({
 
 	// @method hasLayer(layer: Layer): Boolean
 	// Returns `true` if the given layer is currently added to the map
-	hasLayer: function (layer) {
+	hasLayer(layer) {
 		return Util.stamp(layer) in this._layers;
 	},
 
@@ -211,30 +209,30 @@ Map.include({
 	 * });
 	 * ```
 	 */
-	eachLayer: function (method, context) {
-		for (var i in this._layers) {
-			method.call(context, this._layers[i]);
+	eachLayer(method, context) {
+		for (const layer of Object.values(this._layers)) {
+			method.call(context, layer);
 		}
 		return this;
 	},
 
-	_addLayers: function (layers) {
-		layers = layers ? (Util.isArray(layers) ? layers : [layers]) : [];
+	_addLayers(layers) {
+		layers = layers ? (Array.isArray(layers) ? layers : [layers]) : [];
 
-		for (var i = 0, len = layers.length; i < len; i++) {
-			this.addLayer(layers[i]);
+		for (const layer of layers) {
+			this.addLayer(layer);
 		}
 	},
 
-	_addZoomLimit: function (layer) {
+	_addZoomLimit(layer) {
 		if (!isNaN(layer.options.maxZoom) || !isNaN(layer.options.minZoom)) {
 			this._zoomBoundLayers[Util.stamp(layer)] = layer;
 			this._updateZoomLevels();
 		}
 	},
 
-	_removeZoomLimit: function (layer) {
-		var id = Util.stamp(layer);
+	_removeZoomLimit(layer) {
+		const id = Util.stamp(layer);
 
 		if (this._zoomBoundLayers[id]) {
 			delete this._zoomBoundLayers[id];
@@ -242,16 +240,15 @@ Map.include({
 		}
 	},
 
-	_updateZoomLevels: function () {
-		var minZoom = Infinity,
-		    maxZoom = -Infinity,
-		    oldZoomSpan = this._getZoomSpan();
+	_updateZoomLevels() {
+		let minZoom = Infinity,
+		maxZoom = -Infinity;
+		const oldZoomSpan = this._getZoomSpan();
 
-		for (var i in this._zoomBoundLayers) {
-			var options = this._zoomBoundLayers[i].options;
-
-			minZoom = options.minZoom === undefined ? minZoom : Math.min(minZoom, options.minZoom);
-			maxZoom = options.maxZoom === undefined ? maxZoom : Math.max(maxZoom, options.maxZoom);
+		for (const l of Object.values(this._zoomBoundLayers)) {
+			const options = l.options;
+			minZoom = Math.min(minZoom, options.minZoom ?? Infinity);
+			maxZoom = Math.max(maxZoom, options.maxZoom ?? -Infinity);
 		}
 
 		this._layersMaxZoom = maxZoom === -Infinity ? undefined : maxZoom;

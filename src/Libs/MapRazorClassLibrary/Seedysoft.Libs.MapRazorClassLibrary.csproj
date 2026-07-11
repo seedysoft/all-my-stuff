@@ -1,8 +1,8 @@
-<Project Sdk="Microsoft.NET.Sdk.Razor">
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
     <PropertyGroup>
-        <TargetFramework>net10.0</TargetFramework>
-        <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <TargetFramework>net10.0</TargetFramework>
     </PropertyGroup>
 
     <ItemGroup>
@@ -14,7 +14,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="LeafletForBlazor" Version="2.4.6.28" />
         <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="10.0.9" />
     </ItemGroup>
 

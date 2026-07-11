@@ -1,6 +1,5 @@
-export {GridLayer, gridLayer} from './GridLayer';
-import {TileLayer, tileLayer} from './TileLayer';
-import {TileLayerWMS, tileLayerWMS} from './TileLayer.WMS';
+export {GridLayer} from './GridLayer.js';
+import {TileLayer} from './TileLayer.js';
+import {TileLayerWMS} from './TileLayer.WMS.js';
 TileLayer.WMS = TileLayerWMS;
-tileLayer.wms = tileLayerWMS;
-export {TileLayer, tileLayer};
+export {TileLayer};

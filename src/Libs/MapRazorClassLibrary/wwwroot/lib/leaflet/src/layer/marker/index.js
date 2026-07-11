@@ -1,8 +1,7 @@
-import {Icon} from './Icon';
-export {icon} from './Icon';
-import {IconDefault} from './Icon.Default';
+import {Icon} from './Icon.js';
+import {IconDefault} from './Icon.Default.js';
 Icon.Default = IconDefault;
 export {Icon};
 
-export {DivIcon, divIcon} from './DivIcon';
-export {Marker, marker} from './Marker';
+export {DivIcon} from './DivIcon.js';
+export {Marker} from './Marker.js';

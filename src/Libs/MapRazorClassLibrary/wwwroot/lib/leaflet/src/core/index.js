@@ -1,15 +1,7 @@
-import Browser from './Browser';
-export {Browser};
+export {default as Browser} from './Browser.js';
+export {Class} from './Class.js';
+export {Evented} from './Events.js';
+export {Handler} from './Handler.js';
 
-export {Class} from './Class';
-
-import {Evented} from './Events';
-import {Events} from './Events';
-export {Evented};
-export var Mixin = {Events: Events};
-
-export {Handler} from './Handler';
-
-import * as Util from './Util';
+import * as Util from './Util.js';
 export {Util};
-export {extend, bind, stamp, setOptions} from './Util';

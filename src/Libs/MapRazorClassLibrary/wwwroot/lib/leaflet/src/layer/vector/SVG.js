@@ -1,53 +1,44 @@
-import {Renderer} from './Renderer';
-import * as DomUtil from '../../dom/DomUtil';
-import * as DomEvent from '../../dom/DomEvent';
-import Browser from '../../core/Browser';
-import {stamp} from '../../core/Util';
-import {svgCreate, pointsToPath} from './SVG.Util';
+import {Renderer} from './Renderer.js';
+import * as DomUtil from '../../dom/DomUtil.js';
+import {splitWords, stamp} from '../../core/Util.js';
+import {svgCreate, pointsToPath} from './SVG.Util.js';
 export {pointsToPath};
-import {vmlMixin, vmlCreate} from './SVG.VML';
 
-export var create = Browser.vml ? vmlCreate : svgCreate;
+export const create = svgCreate;
 
 /*
  * @class SVG
  * @inherits Renderer
- * @aka L.SVG
  *
  * Allows vector layers to be displayed with [SVG](https://developer.mozilla.org/docs/Web/SVG).
  * Inherits `Renderer`.
- *
- * Due to [technical limitations](https://caniuse.com/svg), SVG is not
- * available in all web browsers, notably Android 2.x and 3.x.
- *
- * Although SVG is not available on IE7 and IE8, these browsers support
- * [VML](https://en.wikipedia.org/wiki/Vector_Markup_Language)
- * (a now deprecated technology), and the SVG renderer will fall back to VML in
- * this case.
  *
  * @example
  *
  * Use SVG by default for all paths in the map:
  *
  * ```js
- * var map = L.map('map', {
- * 	renderer: L.svg()
+ * const map = new Map('map', {
+ * 	renderer: new SVG()
  * });
  * ```
  *
  * Use a SVG renderer with extra padding for specific vector geometries:
  *
  * ```js
- * var map = L.map('map');
- * var myRenderer = L.svg({ padding: 0.5 });
- * var line = L.polyline( coordinates, { renderer: myRenderer } );
- * var circle = L.circle( center, { renderer: myRenderer } );
+ * const map = new Map('map');
+ * const myRenderer = new SVG({ padding: 0.5 });
+ * const line = new Polyline( coordinates, { renderer: myRenderer } );
+ * const circle = new Circle( center, { renderer: myRenderer, radius: 100 } );
  * ```
  */
 
-export var SVG = Renderer.extend({
+// @namespace SVG
+// @constructor SVG(options?: Renderer options)
+// Creates a SVG renderer with the given options.
+export class SVG extends Renderer {
 
-	_initContainer: function () {
+	_initContainer() {
 		this._container = create('svg');
 
 		// makes it possible to click through svg root; we'll reset it back in individual paths
@@ -55,79 +46,78 @@ export var SVG = Renderer.extend({
 
 		this._rootGroup = create('g');
 		this._container.appendChild(this._rootGroup);
-	},
+	}
 
-	_destroyContainer: function () {
-		DomUtil.remove(this._container);
-		DomEvent.off(this._container);
-		delete this._container;
+	_destroyContainer() {
+		Renderer.prototype._destroyContainer.call(this);
 		delete this._rootGroup;
 		delete this._svgSize;
-	},
+	}
 
-	_update: function () {
-		if (this._map._animatingZoom && this._bounds) { return; }
-
-		Renderer.prototype._update.call(this);
-
-		var b = this._bounds,
-		    size = b.getSize(),
-		    container = this._container;
+	_resizeContainer() {
+		const size = Renderer.prototype._resizeContainer.call(this);
 
 		// set size of svg-container if changed
 		if (!this._svgSize || !this._svgSize.equals(size)) {
 			this._svgSize = size;
-			container.setAttribute('width', size.x);
-			container.setAttribute('height', size.y);
+			this._container.setAttribute('width', size.x);
+			this._container.setAttribute('height', size.y);
 		}
+	}
+
+	_update() {
+		if (this._map._animatingZoom && this._bounds) { return; }
+
+		const b = this._bounds,
+		size = b.getSize(),
+		container = this._container;
 
 		// movement: update container viewBox so that we don't have to change coordinates of individual layers
-		DomUtil.setPosition(container, b.min);
 		container.setAttribute('viewBox', [b.min.x, b.min.y, size.x, size.y].join(' '));
 
 		this.fire('update');
-	},
+	}
 
 	// methods below are called by vector layers implementations
 
-	_initPath: function (layer) {
-		var path = layer._path = create('path');
+	_initPath(layer) {
+		const path = layer._path = create('path');
 
 		// @namespace Path
 		// @option className: String = null
 		// Custom class name set on an element. Only for SVG renderer.
 		if (layer.options.className) {
-			DomUtil.addClass(path, layer.options.className);
+			path.classList.add(...splitWords(layer.options.className));
 		}
 
 		if (layer.options.interactive) {
-			DomUtil.addClass(path, 'leaflet-interactive');
+			path.classList.add('leaflet-interactive');
 		}
 
 		this._updateStyle(layer);
 		this._layers[stamp(layer)] = layer;
-	},
+	}
 
-	_addPath: function (layer) {
+	_addPath(layer) {
 		if (!this._rootGroup) { this._initContainer(); }
 		this._rootGroup.appendChild(layer._path);
 		layer.addInteractiveTarget(layer._path);
-	},
+	}
 
-	_removePath: function (layer) {
-		DomUtil.remove(layer._path);
+	_removePath(layer) {
+		layer._path.remove();
 		layer.removeInteractiveTarget(layer._path);
 		delete this._layers[stamp(layer)];
-	},
+	}
 
-	_updatePath: function (layer) {
+	_updatePath(layer) {
 		layer._project();
 		layer._update();
-	},
+	}
 
-	_updateStyle: function (layer) {
-		var path = layer._path,
-		    options = layer.options;
+	_updateStyle(layer) {
+		const path = layer._path,
+		options = layer.options;
 
 		if (!path) { return; }
 
@@ -160,48 +150,38 @@ export var SVG = Renderer.extend({
 		} else {
 			path.setAttribute('fill', 'none');
 		}
-	},
+	}
 
-	_updatePoly: function (layer, closed) {
+	_updatePoly(layer, closed) {
 		this._setPath(layer, pointsToPath(layer._parts, closed));
-	},
+	}
 
-	_updateCircle: function (layer) {
-		var p = layer._point,
-		    r = Math.max(Math.round(layer._radius), 1),
-		    r2 = Math.max(Math.round(layer._radiusY), 1) || r,
-		    arc = 'a' + r + ',' + r2 + ' 0 1,0 ';
+	_updateCircle(layer) {
+		const p = layer._point,
+		r = Math.max(Math.round(layer._radius), 1),
+		r2 = Math.max(Math.round(layer._radiusY), 1) || r,
+		arc = `a${r},${r2} 0 1,0 `;
 
 		// drawing a circle with two half-arcs
-		var d = layer._empty() ? 'M0 0' :
-			'M' + (p.x - r) + ',' + p.y +
-			arc + (r * 2) + ',0 ' +
-			arc + (-r * 2) + ',0 ';
+		const d = layer._empty() ? 'M0 0' :
+			`M${p.x - r},${p.y
+			}${arc}${r * 2},0 ${
+				arc}${-r * 2},0 `;
 
 		this._setPath(layer, d);
-	},
+	}
 
-	_setPath: function (layer, path) {
+	_setPath(layer, path) {
 		layer._path.setAttribute('d', path);
-	},
+	}
 
 	// SVG does not have the concept of zIndex so we resort to changing the DOM order of elements
-	_bringToFront: function (layer) {
+	_bringToFront(layer) {
 		DomUtil.toFront(layer._path);
-	},
+	}
 
-	_bringToBack: function (layer) {
+	_bringToBack(layer) {
 		DomUtil.toBack(layer._path);
 	}
-});
-
-if (Browser.vml) {
-	SVG.include(vmlMixin);
 }
 
-// @namespace SVG
-// @factory L.svg(options?: Renderer options)
-// Creates a SVG renderer with the given options.
-export function svg(options) {
-	return Browser.svg || Browser.vml ? new SVG(options) : null;
-}

@@ -1,5 +1,3 @@
-using LeafletForBlazor;
-using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 
 namespace Seedysoft.Libs.MapRazorClassLibrary;
@@ -149,7 +147,7 @@ public partial class MapComponent : IAsyncDisposable
         GasStationPrices.ViewModels.TravelQueryModel model
         , CancellationToken cancellationToken)
     {
-        await RemoveMarkersAsync();
+        await RemoveAllMarkers();
 
         IReadOnlyList<(string NombreRuta, double[,] Coordenadas)> res;
         try

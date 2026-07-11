@@ -1,15 +1,9 @@
-import {Layer} from '../Layer';
-import * as DomUtil from '../../dom/DomUtil';
-import * as Util from '../../core/Util';
-import Browser from '../../core/Browser';
-import {Bounds} from '../../geometry/Bounds';
-
-
+import {BlanketOverlay} from '../BlanketOverlay.js';
+import * as Util from '../../core/Util.js';
 
 /*
  * @class Renderer
- * @inherits Layer
- * @aka L.Renderer
+ * @inherits BlanketOverlay
  *
  * Base class for vector renderer implementations (`SVG`, `Canvas`). Handles the
  * DOM container of the renderer, its bounds, and its zoom animation.
@@ -21,113 +15,59 @@ import {Bounds} from '../../geometry/Bounds';
  *
  * Do not use this class directly, use `SVG` and `Canvas` instead.
  *
+ * The `continuous` option inherited from `BlanketOverlay` cannot be set to `true`
+ * (otherwise, renderers get out of place during a pinch-zoom operation).
+ *
  * @event update: Event
  * Fired when the renderer updates its bounds, center and zoom, for example when
  * its map has moved
  */
 
-export var Renderer = Layer.extend({
+export class Renderer extends BlanketOverlay {
 
-	// @section
-	// @aka Renderer options
-	options: {
-		// @option padding: Number = 0.1
-		// How much to extend the clip area around the map view (relative to its size)
-		// e.g. 0.1 would be 10% of map view in each direction
-		padding: 0.1
-	},
-
-	initialize: function (options) {
-		Util.setOptions(this, options);
+	initialize(options) {
+		Util.setOptions(this, {...options, continuous: false});
 		Util.stamp(this);
-		this._layers = this._layers || {};
-	},
-
-	onAdd: function () {
-		if (!this._container) {
-			this._initContainer(); // defined by renderer implementations
-
-			// always keep transform-origin as 0 0
-			DomUtil.addClass(this._container, 'leaflet-zoom-animated');
-		}
-
-		this.getPane().appendChild(this._container);
-		this._update();
-		this.on('update', this._updatePaths, this);
-	},
-
-	onRemove: function () {
-		this.off('update', this._updatePaths, this);
-		this._destroyContainer();
-	},
-
-	getEvents: function () {
-		var events = {
-			viewreset: this._reset,
-			zoom: this._onZoom,
-			moveend: this._update,
-			zoomend: this._onZoomEnd
-		};
-		if (this._zoomAnimated) {
-			events.zoomanim = this._onAnimZoom;
-		}
-		return events;
-	},
-
-	_onAnimZoom: function (ev) {
-		this._updateTransform(ev.center, ev.zoom);
-	},
-
-	_onZoom: function () {
-		this._updateTransform(this._map.getCenter(), this._map.getZoom());
-	},
-
-	_updateTransform: function (center, zoom) {
-		var scale = this._map.getZoomScale(zoom, this._zoom),
-		    viewHalf = this._map.getSize().multiplyBy(0.5 + this.options.padding),
-		    currentCenterPoint = this._map.project(this._center, zoom),
-
-		    topLeftOffset = viewHalf.multiplyBy(-scale).add(currentCenterPoint)
-				  .subtract(this._map._getNewPixelOrigin(center, zoom));
-
-		if (Browser.any3d) {
-			DomUtil.setTransform(this._container, topLeftOffset, scale);
-		} else {
-			DomUtil.setPosition(this._container, topLeftOffset);
-		}
-	},
-
-	_reset: function () {
-		this._update();
-		this._updateTransform(this._center, this._zoom);
-
-		for (var id in this._layers) {
-			this._layers[id]._reset();
-		}
-	},
-
-	_onZoomEnd: function () {
-		for (var id in this._layers) {
-			this._layers[id]._project();
-		}
-	},
-
-	_updatePaths: function () {
-		for (var id in this._layers) {
-			this._layers[id]._update();
-		}
-	},
-
-	_update: function () {
-		// Update pixel bounds of renderer container (for positioning/sizing/clipping later)
-		// Subclasses are responsible of firing the 'update' event.
-		var p = this.options.padding,
-		    size = this._map.getSize(),
-		    min = this._map.containerPointToLayerPoint(size.multiplyBy(-p)).round();
-
-		this._bounds = new Bounds(min, min.add(size.multiplyBy(1 + p * 2)).round());
-
-		this._center = this._map.getCenter();
-		this._zoom = this._map.getZoom();
+		this._layers ??= {};
 	}
-});
+
+	onAdd(map) {
+		super.onAdd(map);
+		this.on('update', this._updatePaths, this);
+	}
+
+	onRemove() {
+		super.onRemove();
+		this.off('update', this._updatePaths, this);
+	}
+
+	_onZoomEnd() {
+		// When a zoom ends, the "origin pixel" changes. Internal coordinates
+		// of paths are relative to the origin pixel and therefore need to
+		// be recalculated.
+		for (const layer of Object.values(this._layers)) {
+			layer._project();
+		}
+	}
+
+	_updatePaths() {
+		for (const layer of Object.values(this._layers)) {
+			layer._update();
+		}
+	}
+
+	_onViewReset() {
+		for (const layer of Object.values(this._layers)) {
+			layer._reset();
+		}
+	}
+
+	_onSettled() {
+		this._update();
+	}
+
+	// Subclasses are responsible of implementing `_update()`. It should fire
+	// the 'update' event whenever appropriate (before/after rendering).
+	_update() {}
+
+}
