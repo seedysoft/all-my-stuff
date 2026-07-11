@@ -181,10 +181,7 @@ public partial class MapComponent : IAsyncDisposable
 
                 (string? NombreRuta, double[,]? Coordenadas) = res[i];
 
-                await AddConnector(
-                    arrayPolyline: Coordenadas
-                    , symbol: new MapModels.PolylineSymbol() { Color = ColorsForRoutes[i], /*smoothFactor = 1.0,*/ /*opacity = 1.0,*/ Weight = 5, }
-                    , start: 1);
+                await AddPolyline(arrayPolyline: Coordenadas, color: ColorsForRoutes[i]);
             }
         }
 

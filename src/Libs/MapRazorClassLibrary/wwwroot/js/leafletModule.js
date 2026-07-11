@@ -46,6 +46,11 @@ export function registerClick(id, dotnetObj) {
     });
 }
 
-export function addDirection(e) {
-    // TODO     
+export function addPolyline(id, route) {
+    debugger
+    const map = maps[id];
+    const polyline = new L.Polyline(route.points, route.options).addTo(map);
+
+    // zoom the map to the polyline
+    map.fitBounds(polyline.getBounds());
 }
