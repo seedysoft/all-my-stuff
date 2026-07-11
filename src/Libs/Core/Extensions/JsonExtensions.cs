@@ -83,11 +83,13 @@ internal static class Converter
         //    IsoDateTimeOffsetConverter.Singleton
         //},
         AllowDuplicateProperties = false,
+        DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull,
         IgnoreReadOnlyFields = true,
         IgnoreReadOnlyProperties = true,
         PropertyNameCaseInsensitive = true,
-        RespectNullableAnnotations = true,
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        RespectNullableAnnotations = true,
+        WriteIndented = false,
     };
 }
 

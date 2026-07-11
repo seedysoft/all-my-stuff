@@ -1,75 +1,11 @@
 using Microsoft.JSInterop;
+using Seedysoft.Libs.MapRazorClassLibrary.MapModels;
 
 namespace Seedysoft.Libs.MapRazorClassLibrary;
 
 public partial class MapComponent : IAsyncDisposable
 {
-    //// Samples obtained from https://github.com/ichim/LeafletForBlazor-NuGet/issues/75
-
-    //#region Initialization
-
-    //private readonly RealTimeMap.LoadParameters parameters = new()  //general map settings
-    //{
-    //    basemap = new RealTimeMap.Basemap()
-    //    {
-    //        basemapLayers = [
-    //            new RealTimeMap.BasemapLayer()
-    //            {
-    //                url = "http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-    //                attribution = "©Open Street Map",
-    //                title = "Open Street Map",
-    //                detectRetina = true,
-    //            },
-    //        ]
-    //    },
-    //    location = new RealTimeMap.Location()
-    //    {
-    //        latitude = (double)Travel.Constants.Earth.Burgos.Lat,
-    //        longitude = (double)Travel.Constants.Earth.Burgos.Lon,
-    //    },
-    //    zoomLevel = 14,
-    //};
-
-    //private readonly RealTimeMap.MapOptions options = new()
-    //{
-    //    interactionOptions = new()
-    //    {
-    //        doubleClickZoom = true,
-    //        dragging = true,
-    //        shiftBoxZoom = false,
-    //        trackResize = true,
-    //    },
-    //    keyboardNavigationOptions = new()
-    //    {
-    //        keyboard = false,
-    //        keyboardPanDelta = 0
-    //    },
-    //};
-
-    //#endregion
-
     private readonly string[] ColorsForRoutes = ["#007FFF", "#0074EA", "#0069D5", "#005EC0", "#0053AB", "#004896", "#003D81", "#00326C"];
-
-    //private RealTimeMap realTimeMap = default!;
-
-    ////private readonly LeafletForBlazor.Components.StreamLegend.ContentStyle contentStyle = new()
-    ////{
-    ////    contentPadding = new LeafletForBlazor.Components.StreamLegend.ContentPadding()
-    ////    {
-    ////        paddingLeft = 20,  //values ​​in pixels, default value is 10px
-    ////        paddingRight = 20, //values ​​in pixels, default value is 10px
-    ////        paddingTop = 15    //values ​​in pixels, default value is 10px
-    ////    },
-    ////    labelStyle = new LeafletForBlazor.Components.StreamLegend.LabelStyle()
-    ////    {
-    ////        fontColor = "#626262",
-    ////        fontFamily = "Verdana",
-    ////        fontSize = 14,
-    ////        fontWeight = "bold",
-    ////        fontStyle = "italic",
-    ////        paddingLeft = 20,
-    ////    },
-    ////};
 
     ///// <summary>
     ///// Gets or sets the height of the <see cref="RealTimeMap" />.
@@ -95,54 +31,6 @@ public partial class MapComponent : IAsyncDisposable
     ///// </remarks>
     //[Parameter] public int Zoom { get; set; } = 18;
 
-    //public static async Task OnAfterMapLoaded(RealTimeMap.MapEventArgs args)
-    //{
-    //    if (args.sender != null)
-    //        LoadGasStationAppearances(args.sender);
-    //}
-
-    //private static void OnClickMap(RealTimeMap.ClicksMapArgs args) { }
-
-    //private static void OnDoubleClickMap(RealTimeMap.ClicksMapArgs args) { }
-
-    //private void OnZoomLevelEndChange(RealTimeMap.MapZoomEventArgs args)
-    //{
-    //    Zoom = args.zoomLevel;
-    //    StateHasChanged();
-    //}
-
-    ///// <summary>
-    ///// This method can be used to perform actions after the map has loaded
-    ///// </summary>
-    ///// <param name="sender"></param>
-    //private static void LoadGasStationAppearances(RealTimeMap sender)
-    //{
-    //    // "Cheap" : "Other"
-    //    sender.Geometric.Points.Appearance(static p => p.type == "Cheap").pattern = new RealTimeMap.PointSymbol() { color = "white", fillColor = "green", fillOpacity = 0.68, opacity = 0.68, radius = 12, weight = 2 };
-    //    sender.Geometric.Points.Appearance(static p => p.type == "Other").pattern = new RealTimeMap.PointSymbol() { color = "blue", fillColor = "orange", fillOpacity = 0.68, opacity = 0.68, radius = 10, weight = 2 };
-
-    //    IReadOnlyList<string> plantillaPrecios = [..
-    //        from a in GasStationPrices.Models.Minetur.ProductoPetrolifero.All
-    //        select $"<li><b>{a.Abreviatura.ToUpperInvariant()}: </b> ${{value.{a.Abreviatura.ToLowerInvariant()}}} €</li>"
-    //    ];
-    //    sender.Geometric.Points.Appearance(static p => p.type is "Cheap" or "Other").pattern = new RealTimeMap.PointTooltip()
-    //    {
-    //        content = $"<h2>${{value.rotulo}}</h2><h4>${{value.localizacion}}<h4><ul>{string.Concat(plantillaPrecios)}</ul>",
-    //        offset = [0, -50], // default new double[2]
-    //        opacity = 1.0,     // default 0.9
-    //        permanent = false, // default true
-    //    };
-
-    //    //sender.Geometric.Points.clusteringAfterCollectionUpdate = true;
-    //    //sender.Geometric.Points.clusteringConfiguration = new LeafletForBlazor.RealTime.points.ClusteringConfiguration()
-    //    //{
-    //    //    maxClusterRadius = 120,         // Maximum radius of a cluster when it is not zoomed in px
-    //    //    showCoverageOnHover = true,     // Show coverage on hover
-    //    //    spiderfyOnMaxZoom = true,       // Spiderfy markers when zoomed in
-    //    //    zoomToBoundsOnClick = false,    // Zoom to bounds when clicking on a cluster
-    //    //};
-    //}
-
     public async Task<string?> LoadRoutesAndGasStationsAsync(
         GasStationPrices.ViewModels.TravelQueryModel model
         , CancellationToken cancellationToken)
@@ -164,9 +52,9 @@ public partial class MapComponent : IAsyncDisposable
 
         await LoadRoutesDataIntoMapAsync(res, cancellationToken);
 
-        //    Travel.Models.Bounds ourBounds = ComputeBoundsFromRoutes(res, cancellationToken);
+        Travel.Models.Bounds ourBounds = ComputeBoundsFromRoutes(res, cancellationToken);
 
-        //    await LoadGasStationsIntoMapAsync(model, ourBounds, cancellationToken);
+        await LoadGasStationsIntoMapAsync(model, ourBounds, cancellationToken);
 
         return null;
 
@@ -185,101 +73,90 @@ public partial class MapComponent : IAsyncDisposable
             }
         }
 
-        //    Travel.Models.Bounds ComputeBoundsFromRoutes(
-        //        IReadOnlyList<(string NombreRuta
-        //        , double[,] Coordenadas)> res
-        //        , CancellationToken cancellationToken)
-        //    {
-        //        // Take inverse limits, so any obtained point will be used
-        //        RealTimeMap.Bounds routeBounds = new()
-        //        {
-        //            northEast = new RealTimeMap.Location() { latitude = (double)Travel.Models.Bounds.Limits.South, longitude = (double)Travel.Models.Bounds.Limits.West, }, // South West limits
-        //            southWest = new RealTimeMap.Location() { latitude = (double)Travel.Models.Bounds.Limits.North, longitude = (double)Travel.Models.Bounds.Limits.East, }, // North East limits
-        //        };
+        Travel.Models.Bounds ComputeBoundsFromRoutes(
+            IReadOnlyList<(string NombreRuta
+            , double[,] Coordenadas)> res
+            , CancellationToken cancellationToken)
+        {
+            // Take inverse limits, so any obtained point will be used
+            double NorthEastLatitude = Travel.Models.Bounds.Inverse.NorthEast.Latitude;
+            double NorthEastLongitude = Travel.Models.Bounds.Inverse.NorthEast.Longitude;
+            double SouthWestLatitude = Travel.Models.Bounds.Inverse.SouthWest.Latitude;
+            double SouthWestLongitude = Travel.Models.Bounds.Inverse.SouthWest.Longitude;
 
-        //        foreach ((string NombreRuta, double[,] Coordenadas) in res)
-        //        {
-        //            if (cancellationToken.IsCancellationRequested)
-        //                return Travel.Models.Bounds.Empty;
+            foreach ((string NombreRuta, double[,] Coordenadas) in res)
+            {
+                if (cancellationToken.IsCancellationRequested)
+                    return Travel.Models.Bounds.Empty;
 
-        //            for (int i = 0; i < Coordenadas.GetLength(0); i++)
-        //            {
-        //                if (cancellationToken.IsCancellationRequested)
-        //                    return Travel.Models.Bounds.Empty;
+                for (int i = 0; i < Coordenadas.GetLength(0); i++)
+                {
+                    if (cancellationToken.IsCancellationRequested)
+                        return Travel.Models.Bounds.Empty;
 
-        //                for (int j = 0; j < Coordenadas.GetLength(1); j++)
-        //                {
-        //                    if (cancellationToken.IsCancellationRequested)
-        //                        return Travel.Models.Bounds.Empty;
+                    for (int j = 0; j < Coordenadas.GetLength(1); j++)
+                    {
+                        if (cancellationToken.IsCancellationRequested)
+                            return Travel.Models.Bounds.Empty;
 
-        //                    double v = Coordenadas[i, j];
+                        double v = Coordenadas[i, j];
 
-        //                    if (j == 0)
-        //                    {
-        //                        // latitude
-        //                        if (v > routeBounds.northEast.latitude)
-        //                            routeBounds.northEast.latitude = v;
-        //                        if (v < routeBounds.southWest.latitude)
-        //                            routeBounds.southWest.latitude = v;
-        //                    }
-        //                    else // (j == 1)
-        //                    {
-        //                        // longitude
-        //                        if (v > routeBounds.northEast.longitude)
-        //                            routeBounds.northEast.longitude = v;
-        //                        if (v < routeBounds.southWest.longitude)
-        //                            routeBounds.southWest.longitude = v;
-        //                    }
-        //                }
-        //            }
-        //        }
+                        if (j == 0)
+                        {
+                            // latitude
+                            if (v > NorthEastLatitude)
+                                NorthEastLatitude = v;
+                            if (v < SouthWestLatitude)
+                                SouthWestLatitude = v;
+                        }
+                        else // (j == 1)
+                        {
+                            // longitude
+                            if (v > NorthEastLongitude)
+                                NorthEastLongitude = v;
+                            if (v < SouthWestLongitude)
+                                SouthWestLongitude = v;
+                        }
+                    }
+                }
+            }
 
-        //        realTimeMap.View.setBounds = routeBounds;
+            Travel.Models.Bounds boundsForGasStations = new(
+                NorthEast: new Travel.Models.Location(NorthEastLatitude, NorthEastLongitude),
+                SouthWest: new Travel.Models.Location(SouthWestLatitude, SouthWestLongitude));
 
-        //        Travel.Models.Bounds boundsForGasStations = new(
-        //            NorthEast: new Travel.Models.Location((decimal)routeBounds.northEast.latitude, (decimal)routeBounds.northEast.longitude),
-        //            SouthWest: new Travel.Models.Location((decimal)routeBounds.southWest.latitude, (decimal)routeBounds.southWest.longitude));
+            return boundsForGasStations;
+        }
 
-        //        return boundsForGasStations;
-        //    }
+        async Task LoadGasStationsIntoMapAsync(
+            GasStationPrices.ViewModels.TravelQueryModel model
+            , Travel.Models.Bounds bounds
+            , CancellationToken cancellationToken)
+        {
+            IReadOnlyList<GasStationPrices.ViewModels.GasStationModel> gasStations =
+                await GasStationPricesService.GetNearGasStationsAsync(bounds, model.MaxDistanceInKm, cancellationToken);
 
-        //    async Task LoadGasStationsIntoMapAsync(
-        //        GasStationPrices.ViewModels.TravelQueryModel model
-        //        , Travel.Models.Bounds bounds
-        //        , CancellationToken cancellationToken)
-        //    {
-        //        IReadOnlyList<GasStationPrices.ViewModels.GasStationModel> gasStations =
-        //            await GasStationPricesService.GetNearGasStationsAsync(bounds, model.MaxDistanceInKm, cancellationToken);
+            // For each product, obtain min and average
+            var Products =
+                from p in GasStationPrices.Models.Minetur.ProductoPetrolifero.All
+                where model.PetroleumProductsSelectedIds.Contains(p.IdProducto)
+                let v = gasStations.Select(x => x.GetProdById(p.IdProducto)).Where(x => x.HasValue)
+                select new
+                {
+                    IdP = p.IdProducto,
+                    Min = v.Min(),
+                    Avg = v.Average(),
+                };
 
-        //        // For each product, obtain min and average
-        //        var Products =
-        //            from p in GasStationPrices.Models.Minetur.ProductoPetrolifero.All
-        //            where model.PetroleumProductsSelectedIds.Contains(p.IdProducto)
-        //            let v = gasStations.Select(x => x.GetProdById(p.IdProducto)).Where(x => x.HasValue)
-        //            select new
-        //            {
-        //                IdP = p.IdProducto,
-        //                Min = v.Min(),
-        //                Avg = v.Average(),
-        //            };
+            LatLng[] gasStationPoints = [..
+                from g in gasStations
+                let any = g.AllProducts(model.PetroleumProductsSelectedIds).Any(x => x.Value <= (Products.FirstOrDefault(p => p.IdP == x.IdProducto)?.Avg ?? decimal.Zero))
+                let pt = any ? "Cheap" : "Other"
+                select new LatLng(lat: g.Lat, lng: g.Lon)
+            ];
 
-        //        // RealTimeMap.StreamPoint[]
-        //        List<RealTimeMap.StreamPoint> gasStationPoints = [..
-        //            from g in gasStations
-        //            let any = g.AllProducts(model.PetroleumProductsSelectedIds).Any(x => x.Value <= (Products.FirstOrDefault(p => p.IdP == x.IdProducto)?.Avg ?? decimal.Zero))
-        //            let pt = any ? "Cheap" : "Other"
-        //            select new RealTimeMap.StreamPoint()
-        //            {
-        //                guid = Guid.NewGuid(),
-        //                latitude = (double)g.Lat,
-        //                longitude = (double)g.Lon,
-        //                //timestamp =,
-        //                type = pt,
-        //                value = g,
-        //            }];
-
-        //        await realTimeMap.Geometric.Points.upload(gasStationPoints, newCollection: true);
-        //    }
+            await AddMarkers(gasStationPoints);
+        }
     }
 
     protected override void OnInitialized() => ObjRef = DotNetObjectReference.Create(this);

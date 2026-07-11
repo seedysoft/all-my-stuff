@@ -12,7 +12,8 @@ public record Bounds(Location NorthEast, Location SouthWest)
     /// </summary>
     public static Location MaxSouthWest { get; } = new(latitude: Limits.South, longitude: Limits.West);
 
-    public static Bounds Empty => new(MaxNorthEast, MaxSouthWest);
+    public static Bounds Empty => new(NorthEast: MaxNorthEast, SouthWest: MaxSouthWest);
+    public static Bounds Inverse => new(NorthEast: MaxSouthWest, SouthWest: MaxNorthEast);
 
     public bool IsInside(Location location)
     {

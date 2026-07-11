@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
+using Seedysoft.Libs.MapRazorClassLibrary.MapModels;
 
 namespace Seedysoft.Libs.MapRazorClassLibrary;
 
@@ -72,11 +73,11 @@ public partial class MapComponent : IAsyncDisposable
             if (arrayPolyline.GetLength(1) != 2)
                 throw new ArgumentException("The arrayPolyline must be a 2D array with two columns for latitude and longitude.");
 
-            IEnumerable<MapModels.LatLng> values =
+            IEnumerable<LatLng> values =
             from i in Enumerable.Range(0, arrayPolyline.GetLength(0))
-            select new MapModels.LatLng(lat: arrayPolyline[i, 0], lng: arrayPolyline[i, 1]);
+            select new LatLng(lat: arrayPolyline[i, 0], lng: arrayPolyline[i, 1]);
 
-            MapModels.Polyline polyline = new([.. values], new MapModels.PolylineOptions()
+            Polyline polyline = new([.. values], new PolylineOptions()
             {
                 Color = color,
                 Weight = 10,
