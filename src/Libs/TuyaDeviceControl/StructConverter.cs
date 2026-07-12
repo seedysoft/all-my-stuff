@@ -1,7 +1,4 @@
-﻿using System.Diagnostics;
-using System.Text;
-
-namespace Seedysoft.Libs.TuyaDeviceControl;
+﻿namespace Seedysoft.Libs.TuyaDeviceControl;
 
 // This is a crude implementation of a format string based struct converter for C#.
 // This is probably not the best implementation, the fastest implementation, the most bug-proof implementation, or even the most functional implementation.
@@ -73,7 +70,7 @@ public static class StructConverter
         bool isLittleEndian = fmt.StartsWith(LittleEndianChar);
 
         // start working on the output string
-        StringBuilder outString = new(isLittleEndian ? LittleEndianChar : BigEndianChar);
+        System.Text.StringBuilder outString = new(isLittleEndian ? LittleEndianChar : BigEndianChar);
 
         List<object> itemsArray = [.. items];
         if (itemsArray is System.Collections.IEnumerable enumerable)
@@ -180,7 +177,7 @@ public static class StructConverter
                         break;
 
                     case 'x':
-                        Debug.WriteLine($"  Ignoring a byte");
+                        System.Diagnostics.Debug.WriteLine($"  Ignoring a byte");
                         break;
 
                     default:

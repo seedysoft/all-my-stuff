@@ -1,13 +1,13 @@
 ﻿namespace Seedysoft.Libs.MapRazorClassLibrary.MapModels;
 
-public record Path : Layer
+public record Path : InteractiveLayer
 {
     [J("options")] public override PathOptions? Options { get; }
 
     public Path(PathOptions? pathOptions = default) : base(pathOptions) => Options = pathOptions;
 }
 
-public record PathOptions : LayerOptions
+public record PathOptions : InteractiveLayerOptions
 {
     /// <summary>
     /// Stroke color

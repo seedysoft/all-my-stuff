@@ -1,5 +1,5 @@
 using Microsoft.JSInterop;
-using Seedysoft.Libs.MapRazorClassLibrary.MapModels;
+using Seedysoft.Libs.Core.Extensions;
 
 namespace Seedysoft.Libs.MapRazorClassLibrary;
 
@@ -8,7 +8,7 @@ public partial class MapComponent : IAsyncDisposable
     #region IAsyncDisposable Impl
     public async ValueTask DisposeAsync()
     {
-        await DeleteMap();
+        await DeleteMapAsync();
         ObjRef?.Dispose();
         await MapModule.DisposeAsync();
         GC.SuppressFinalize(this);
@@ -17,12 +17,15 @@ public partial class MapComponent : IAsyncDisposable
 
     public IJSObjectReference MapModule { get => field!; private set; }
 
-    public async Task AddMarker(LatLng latLng, MarkerOptions? options = default) => await MapModule.InvokeVoidAsync("addMarker", MapId, latLng, options);
-    public async Task AddMarkers(LatLng[] latLngs, MarkerOptions? options = default) => await MapModule.InvokeVoidAsync("addMarkers", MapId, latLngs, options);
+    public async Task AddMarkerAsync(
+        MapModels.LatLng latLng,
+        MapModels.MarkerOptions? options = default,
+        string? popupContent = default) => await MapModule.InvokeVoidAsync("addMarker", MapId, latLng, options, popupContent);
 
-    public async Task DeleteMap() => await MapModule.InvokeVoidAsync("destroyMap", MapId);
+    public async Task DeleteMapAsync() => await MapModule.InvokeVoidAsync("destroyMap", MapId);
 
-    public async Task RemoveAllMarkers() => await MapModule.InvokeVoidAsync("removeAllMarkers", MapId);
+    public async Task RemoveAllMarkersAsync() => await MapModule.InvokeVoidAsync("removeAllMarkers", MapId);
 
-    public async Task SetView(LatLng latLng, int zoom) => await MapModule.InvokeVoidAsync("setView", MapId, latLng, zoom);
+    // Unused. Uncomment if ncccessary
+    //public async Task SetViewAsync(LatLng latLng, int zoom) => await MapModule.InvokeVoidAsync("setView", MapId, latLng, zoom);
 }

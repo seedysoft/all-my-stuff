@@ -4,11 +4,11 @@ namespace Seedysoft.Libs.MapRazorClassLibrary;
 
 public partial class MapComponent : IAsyncDisposable
 {
-    [Parameter] public EventCallback<MapComponent> OnMapCreatedAsync { get; set; }
+    [Parameter] public EventCallback<MapComponent> OnMapCreatedAsyncEventCallback { get; set; }
 
-    [Parameter] public EventCallback<MapClickEventArgs> OnMapClickAsync { get; set; }
+    [Parameter] public EventCallback<MapClickEventArgs> OnMapClickAsyncEventCallback { get; set; }
 
-    //[Parameter] public EventCallback<DragendMarkerEventArgs> OnDragendAsync { get; set; }
+    //[Parameter] public EventCallback<DragendMarkerEventArgs> OnDragendAsyncEventCallback { get; set; }
 
     [Parameter] public string Height { get; set; } = "500px";
 

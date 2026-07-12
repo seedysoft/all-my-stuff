@@ -17,17 +17,14 @@ export function destroyMap(id) {
     maps[id].remove();
 }
 
-export function addMarker(id, latLng, options) {
+export function addMarker(id, latLng, options, popupContent) {
     debugger
     const map = maps[id];
-    const marker = new L.Marker(latLng, options).addTo(map);
-}
-export function addMarkers(id, latLngs, options) {
-    debugger
-    const map = maps[id];
-    for (const latLng of latLngs) {
-        const marker = new L.Marker(latLng, options).addTo(map);
-    }
+    const icon = new L.Icon(options.icon);
+    options.icon = undefined;
+    const marker = new L.Marker(latLng, options).setIcon(icon).addTo(map);
+    if (popupContent)
+        marker.bindPopup(popupContent);
 }
 
 export function removeAllMarkers(id) {
@@ -36,22 +33,22 @@ export function removeAllMarkers(id) {
     //maps[id].eachLayer(removeLayer);
 }
 
-export function setView(id, lat, lng, zoom) {
-    debugger
-    maps[id].setView([lat, lng], zoom);
-}
+// export function setView(id, lat, lng, zoom) {
+//     debugger
+//     maps[id].setView([lat, lng], zoom);
+// }
 
 export function registerClick(id, dotnetObj) {
     debugger
     maps[id].on('click', function (e) {
-        dotnetObj.invokeMethodAsync("OnMapClick", {
+        dotnetObj.invokeMethodAsync("OnMapClickAsync", {
             latLng: e.latlng
         });
     });
 }
 
 export function addPolyline(id, route) {
-    debugger
+    // debugger
     const map = maps[id];
     const polyline = new L.Polyline(route.points, route.options);
     //.addTo(map);

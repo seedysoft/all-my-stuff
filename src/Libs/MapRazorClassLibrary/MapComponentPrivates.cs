@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
-using Seedysoft.Libs.MapRazorClassLibrary.MapModels;
 
 namespace Seedysoft.Libs.MapRazorClassLibrary;
 
@@ -18,38 +17,14 @@ public partial class MapComponent : IAsyncDisposable
 
     [Inject] private Travel.Services.Routing.RoutingService RoutingService { get; set; } = default!;
 
-    //private static void ThreadSetts()
-    //{
-    //    if (!(Thread.CurrentThread.CurrentCulture.NumberFormat.NumberDecimalSeparator != "."))
-    //        return;
-
-    //    if (!Thread.CurrentThread.CurrentCulture.IsReadOnly && !Thread.CurrentThread.CurrentCulture.NumberFormat.IsReadOnly)
-    //    {
-    //        Thread.CurrentThread.CurrentCulture.NumberFormat.NumberDecimalSeparator = ".";
-    //        return;
-    //    }
-
-    //    System.Globalization.CultureInfo cultureInfo = System.Globalization.CultureInfo.DefaultThreadCurrentUICulture = System.Globalization.CultureInfo.DefaultThreadCurrentCulture = new System.Globalization.CultureInfo("en-us")
-    //    {
-    //        NumberFormat =
-    //        {
-    //            CurrencyDecimalSeparator = ".",
-    //            NumberDecimalSeparator = "."
-    //        }
-    //    };
-
-    //    Thread.CurrentThread.CurrentCulture = cultureInfo;
-    //    Thread.CurrentThread.CurrentUICulture = cultureInfo;
-    //}
-
-    private async Task CreateMap()
+    private async Task CreateMapAsync()
     {
         try
         {
             await MapModule.InvokeVoidAsync("createMap", MapId, Options);
 
-            if (OnMapCreatedAsync.HasDelegate)
-                await OnMapCreatedAsync.InvokeAsync(this);
+            if (OnMapCreatedAsyncEventCallback.HasDelegate)
+                await OnMapCreatedAsyncEventCallback.InvokeAsync(this);
 
             //if (OnMapClickAsync.HasDelegate)
             //    await LeafletService.InvokeVoidAsync("setClickHandler", MapId, ObjRef, nameof(OnMapClick));
@@ -64,20 +39,18 @@ public partial class MapComponent : IAsyncDisposable
         await InvokeAsync(StateHasChanged);
     }
 
-    private async Task AddPolyline(double[,] arrayPolyline, string color)
+    private async Task AddPolylineAsync(double[,] arrayPolyline, string color)
     {
-        //ThreadSetts();
-
         await Task.Run(async delegate
         {
             if (arrayPolyline.GetLength(1) != 2)
                 throw new ArgumentException("The arrayPolyline must be a 2D array with two columns for latitude and longitude.");
 
-            IEnumerable<LatLng> values =
+            IEnumerable<MapModels.LatLng> values =
             from i in Enumerable.Range(0, arrayPolyline.GetLength(0))
-            select new LatLng(lat: arrayPolyline[i, 0], lng: arrayPolyline[i, 1]);
+            select new MapModels.LatLng(lat: arrayPolyline[i, 0], lng: arrayPolyline[i, 1]);
 
-            Polyline polyline = new([.. values], new PolylineOptions()
+            MapModels.Polyline polyline = new([.. values], new MapModels.PolylineOptions()
             {
                 Color = color,
                 Weight = 10,

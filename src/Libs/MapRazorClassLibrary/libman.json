@@ -6,6 +6,16 @@
       "provider": "unpkg",
       "library": "leaflet@2.0.0-alpha.1",
       "destination": "wwwroot/lib/leaflet/"
+    },
+    {
+      "library": "font-awesome@4.7.0",
+      "provider": "unpkg",
+      "destination": "wwwroot/lib/font-awesome/"
+    },
+    {
+      "destination": "wwwroot/lib/MDIDX/",
+      "library": "material-design-icons-iconfont@6.7.0",
+      "provider": "unpkg"
     }
   ]
 }

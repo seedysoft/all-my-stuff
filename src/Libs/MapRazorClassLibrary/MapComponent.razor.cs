@@ -1,5 +1,6 @@
 using Microsoft.JSInterop;
-using Seedysoft.Libs.MapRazorClassLibrary.MapModels;
+
+// TODO                                     Add https://opengeo.tech/maps/leaflet-loader/
 
 namespace Seedysoft.Libs.MapRazorClassLibrary;
 
@@ -35,7 +36,7 @@ public partial class MapComponent : IAsyncDisposable
         GasStationPrices.ViewModels.TravelQueryModel model
         , CancellationToken cancellationToken)
     {
-        await RemoveAllMarkers();
+        await RemoveAllMarkersAsync();
 
         IReadOnlyList<(string NombreRuta, double[,] Coordenadas)> res;
         try
@@ -69,7 +70,7 @@ public partial class MapComponent : IAsyncDisposable
 
                 (string? NombreRuta, double[,]? Coordenadas) = res[i];
 
-                await AddPolyline(arrayPolyline: Coordenadas, color: ColorsForRoutes[i]);
+                await AddPolylineAsync(arrayPolyline: Coordenadas, color: ColorsForRoutes[i]);
             }
         }
 
@@ -148,14 +149,27 @@ public partial class MapComponent : IAsyncDisposable
                     Avg = v.Average(),
                 };
 
-            LatLng[] gasStationPoints = [..
-                from g in gasStations
-                let any = g.AllProducts(model.PetroleumProductsSelectedIds).Any(x => x.Value <= (Products.FirstOrDefault(p => p.IdP == x.IdProducto)?.Avg ?? decimal.Zero))
-                let pt = any ? "Cheap" : "Other"
-                select new LatLng(lat: g.Lat, lng: g.Lon)
-            ];
+            var CheapIcon = MapModels.Icon.Default;// MapModels.Icon.Create(iconUrl: "local_gas_station");
 
-            await AddMarkers(gasStationPoints);
+            for (int i = 0; i < gasStations.Count; i++)
+            {
+                GasStationPrices.ViewModels.GasStationModel g = gasStations[i];
+
+                bool IsCheap = g.AllProducts(model.PetroleumProductsSelectedIds).Any(x => x.Value <= (Products.FirstOrDefault(p => p.IdP == x.IdProducto)?.Avg ?? decimal.Zero));
+
+                MapModels.MarkerOptions Options = new()
+                {
+                    Alt = g.Rotulo,
+                    Icon = IsCheap ? CheapIcon : MapModels.Icon.Default,
+                    Keyboard = false,
+                    RiseOnHover = true,
+                    Title = g.RotuloTrimed,
+                };
+
+                string PopupContent = "";
+
+                await AddMarkerAsync(new MapModels.LatLng(lat: g.Lat, lng: g.Lon), Options, PopupContent);
+            }
         }
     }
 
@@ -171,7 +185,7 @@ public partial class MapComponent : IAsyncDisposable
             MapModule = await JsRuntime.InvokeAsync<IJSObjectReference>(
                 "import", $"./{Core.Helpers.ContentHelper.ContentPath(typeof(MapComponent))}/js/leafletModule.js");
 
-            await CreateMap();
+            await CreateMapAsync();
         }
     }
 }
