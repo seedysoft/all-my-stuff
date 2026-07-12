@@ -442,3 +442,6 @@ globalPackages
 
 # Local cache for Visual Studio Code C# Dev Kit extension
 *.lscache
+
+# Local files of Client-Side Libraries
+src/Libs/MapRazorClassLibrary/wwwroot/lib
