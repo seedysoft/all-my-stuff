@@ -1,13 +1,10 @@
 ﻿namespace Seedysoft.Libs.MapRazorClassLibrary.MapModels;
 
-public record Layer : Evented
-{
-    [J("options")] public override LayerOptions? Options { get; }
-
-    public Layer(LayerOptions? layerOptions = default) : base(layerOptions) => Options = layerOptions;
-}
-
-public record LayerOptions : EventedOptions
+/// <summary>
+/// A set of methods from the Layer base class that all Leaflet layers use.
+/// Inherits all methods, options and events from <see cref="Evented"/>.
+/// </summary>
+public record class Layer : Evented
 {
     /// <summary>
     /// By default the layer will be added to the map's overlay pane.

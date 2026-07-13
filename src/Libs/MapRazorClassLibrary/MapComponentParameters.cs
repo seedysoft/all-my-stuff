@@ -14,5 +14,5 @@ public partial class MapComponent : IAsyncDisposable
 
     [Parameter] public string Width { get; set; } = "100%";
 
-    [Parameter] public MapModels.MapOptions Options { get; set; } = new();
+    [Parameter] public MapModels.Map Map { get; set; } = new();
 }

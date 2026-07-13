@@ -1,13 +1,11 @@
 ﻿namespace Seedysoft.Libs.MapRazorClassLibrary.MapModels;
 
-public record Path : InteractiveLayer
-{
-    [J("options")] public override PathOptions? Options { get; }
-
-    public Path(PathOptions? pathOptions = default) : base(pathOptions) => Options = pathOptions;
-}
-
-public record PathOptions : InteractiveLayerOptions
+/// <summary>
+/// An abstract class that contains options and constants shared between vector overlays (Polygon, Polyline, Circle).
+/// Do not use it directly.
+/// Extends <see cref="Layer"/>.
+/// </summary>
+public abstract record class Path : InteractiveLayer
 {
     /// <summary>
     /// Stroke color

@@ -21,7 +21,7 @@ public partial class MapComponent : IAsyncDisposable
     {
         try
         {
-            await MapModule.InvokeVoidAsync("createMap", MapId, Options);
+            await MapModule.InvokeVoidAsync("createMap", MapId, Map);
 
             if (OnMapCreatedAsyncEventCallback.HasDelegate)
                 await OnMapCreatedAsyncEventCallback.InvokeAsync(this);
@@ -44,17 +44,17 @@ public partial class MapComponent : IAsyncDisposable
         await Task.Run(async delegate
         {
             if (arrayPolyline.GetLength(1) != 2)
-                throw new ArgumentException("The arrayPolyline must be a 2D array with two columns for latitude and longitude.");
+                throw new ArgumentException($"The {nameof(arrayPolyline)} must be a 2D array with two columns for latitude and longitude.");
 
             IEnumerable<MapModels.LatLng> values =
             from i in Enumerable.Range(0, arrayPolyline.GetLength(0))
             select new MapModels.LatLng(lat: arrayPolyline[i, 0], lng: arrayPolyline[i, 1]);
 
-            MapModels.Polyline polyline = new([.. values], new MapModels.PolylineOptions()
+            MapModels.Polyline polyline = new([.. values])
             {
                 Color = color,
                 Weight = 10,
-            });
+            };
 
             await MapModule.InvokeVoidAsync("addPolyline", MapId, polyline);
         });

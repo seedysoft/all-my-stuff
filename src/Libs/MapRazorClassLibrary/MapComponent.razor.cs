@@ -157,10 +157,9 @@ public partial class MapComponent : IAsyncDisposable
 
                 bool IsCheap = g.AllProducts(model.PetroleumProductsSelectedIds).Any(x => x.Value <= (Products.FirstOrDefault(p => p.IdP == x.IdProducto)?.Avg ?? decimal.Zero));
 
-                MapModels.MarkerOptions Options = new()
+                MapModels.Marker marker = new(new MapModels.LatLng(g.Lat, g.Lon))
                 {
                     Alt = g.Rotulo,
-                    Icon = IsCheap ? CheapIcon : MapModels.Icon.Default,
                     Keyboard = false,
                     RiseOnHover = true,
                     Title = g.RotuloTrimed,
@@ -168,7 +167,7 @@ public partial class MapComponent : IAsyncDisposable
 
                 string PopupContent = "";
 
-                await AddMarkerAsync(new MapModels.LatLng(lat: g.Lat, lng: g.Lon), Options, PopupContent);
+                await AddMarkerAsync(marker, IsCheap ? CheapIcon : MapModels.Icon.Default, PopupContent);
             }
         }
     }

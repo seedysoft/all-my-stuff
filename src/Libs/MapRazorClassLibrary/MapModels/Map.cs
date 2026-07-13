@@ -1,6 +1,9 @@
 ﻿namespace Seedysoft.Libs.MapRazorClassLibrary.MapModels;
 
-public record MapOptions
+/// <summary>
+/// The central class of the API — it is used to create a map on a page and manipulate it.
+/// </summary>
+public record Map : Evented
 {
     /// <summary>
     /// Initial geographic center of the map
@@ -31,40 +34,40 @@ public record MapOptions
     ///// <summary>
     ///// Whether a attribution control is added to the map by default.
     ///// </summary>
-    ///// <remarks>Default: <code>true</code></remarks>
+    ///// <remarks>Default: <c>true</c></remarks>
     //[J("attributionControl")] public bool AttributionControl { get; set; } = true;
 
     ///// <summary>
     ///// Whether a zoom control is added to the map by default.
     ///// </summary>
-    ///// <remarks>Default: <code>true</code></remarks>
+    ///// <remarks>Default: <c>true</c></remarks>
     //[J("zoomControl")] public bool ZoomControl { get; set; } = true;
 
     ///// <summary>
     ///// Whether the map can be zoomed by using the mouse wheel.
     ///// If passed 'center', it will zoom to the center of the view regardless of where the pointer was.
     ///// </summary>
-    ///// <remarks>Default: <code>true</code></remarks>
+    ///// <remarks>Default: <c>true</c></remarks>
     //[J("scrollWheelZoom")] public OneOf<bool, string> ScrollWheelZoom { get; set; } = true;
 
     ///// <summary>
     ///// Whether the map can be zoomed in by double clicking on it and zoomed out by double clicking while holding shift.
     ///// If passed 'center', double-click zoom will zoom to the center of the view regardless of where the pointer was.
     ///// </summary>
-    ///// <remarks>Default: <code>true</code></remarks>
+    ///// <remarks>Default: <c>true</c></remarks>
     //[J("doubleClickZoom")] public OneOf<bool, string> DoubleClickZoom { get; set; } = true;
 
     ///// <summary>
     ///// Whether the map is draggable with pointer or not.
     ///// </summary>
-    ///// <remarks>Default: <code>true</code></remarks>
+    ///// <remarks>Default: <c>true</c></remarks>
     //[J("dragging")] public bool Dragging { get; set; } = true;
 
     ///// <summary>
     ///// Whether <see cref="Path"/>s should be rendered on a <see cref="Canvas"/> renderer.
     ///// By default, all <see cref="Path"/>s are rendered in a SVG renderer.
     ///// </summary>
-    ///// <remarks>Default: <code>false</code></remarks>
+    ///// <remarks>Default: <c>false</c></remarks>
     //[J("preferCanvas")] public bool PreferCanvas { get; set; } = false;
 
     //public List<TileLayer> TileLayers { get; set; } = [];

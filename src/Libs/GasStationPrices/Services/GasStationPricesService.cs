@@ -39,7 +39,7 @@ public sealed class GasStationPricesService
     /// <summary>
     /// Obtain Gas Stations with Prices from Minetur
     /// </summary>
-    /// <returns><code>true</code> if MineturResponse is not null. <code>false</code> if is null</returns>
+    /// <returns><c>true</c> if MineturResponse is not null or <c>false</c> otherwise.</returns>
     private async Task<bool> LoadGasStationsAsync(CancellationToken cancellationToken)
     {
         if (MineturResponse == null || MineturResponse?.DateTimeOffset < DateTimeOffset.Now.AddMinutes(-35))

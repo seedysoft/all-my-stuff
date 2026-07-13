@@ -17,12 +17,14 @@ export function destroyMap(id) {
     maps[id].remove();
 }
 
-export function addMarker(id, latLng, options, popupContent) {
-    debugger
+export function addMarker(id, markerOptions, iconOptions, popupContent) {
+    // debugger
     const map = maps[id];
-    const icon = new L.Icon(options.icon);
-    options.icon = undefined;
-    const marker = new L.Marker(latLng, options).setIcon(icon).addTo(map);
+    
+    const marker = new L.Marker(markerOptions.latLng, markerOptions)
+        .setIcon(new L.Icon(iconOptions))
+        .addTo(map);
+
     if (popupContent)
         marker.bindPopup(popupContent);
 }
@@ -30,7 +32,11 @@ export function addMarker(id, latLng, options, popupContent) {
 export function removeAllMarkers(id) {
     debugger
     const map = maps[id];
-    //maps[id].eachLayer(removeLayer);
+
+    // const overlay = map.getPane('overlayPane');
+    // marker.remove();
+
+    // const overlay = map.getPane('markerPane');
 }
 
 // export function setView(id, lat, lng, zoom) {
