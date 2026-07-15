@@ -1,9 +1,21 @@
 ﻿<HeadContent>
     <link href=@($"{Core.Helpers.ContentHelper.ContentPath(typeof(MapComponent))}/lib/leaflet/dist/leaflet.css") rel="stylesheet" />
+    <link href=@($"{Core.Helpers.ContentHelper.ContentPath(typeof(MapComponent))}/css/leaflet-loader.css") rel="stylesheet" />
+    <link href=@($"{Core.Helpers.ContentHelper.ContentPath(typeof(MapComponent))}/css/map-style-sheet.css") rel="stylesheet" />
     <link href=@($"{Core.Helpers.ContentHelper.ContentPath(typeof(MapComponent))}/lib/font-awesome/css/font-awesome.min.css") rel="stylesheet" />
     <link href=@($"{Core.Helpers.ContentHelper.ContentPath(typeof(MapComponent))}/lib/mdidx/dist/material-design-icons.min.css") rel="stylesheet" />
 
-    <script src="@($"{Core.Helpers.ContentHelper.ContentPath(typeof(MapComponent))}/lib/leaflet/dist/leaflet-global.js")"></script>
+    <script type="importmap">
+        {
+        "imports": {
+        "leaflet": "@LeafletJavascriptFile",
+        "leaflet-loader": "@($"{Core.Helpers.ContentHelper.ContentPath(typeof(MapComponent))}/js/leaflet-loader.js")"
+        }
+        }
+    </script>
+
+    @* <script src="@($"{Core.Helpers.ContentHelper.ContentPath(typeof(MapComponent))}/lib/leaflet/dist/leaflet.js")"></script> *@
+    @* <script src="@($"{Core.Helpers.ContentHelper.ContentPath(typeof(MapComponent))}/js/leaflet-loader.js")"></script> *@
 </HeadContent>
 
 @if (!IsMapReady)

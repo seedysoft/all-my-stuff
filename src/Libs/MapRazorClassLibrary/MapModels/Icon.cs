@@ -1,4 +1,8 @@
-﻿namespace Seedysoft.Libs.MapRazorClassLibrary.MapModels;
+﻿using OneOf;
+
+// TODO                                 perform icon images
+
+namespace Seedysoft.Libs.MapRazorClassLibrary.MapModels;
 
 /// <summary>
 /// Represents an icon to provide when creating a marker.
@@ -8,17 +12,17 @@ public record class Icon
     public Icon(string iconUrl = "marker-icon.png")
     {
         IconUrl = iconUrl;
-        IconRetinaUrl = Default.IconRetinaUrl;
-        IconSize = Default.IconSize;
-        IconAnchor = Default.IconAnchor;
-        PopupAnchor = Default.PopupAnchor;
-        TooltipAnchor = Default.TooltipAnchor;
-        ShadowUrl = Default.ShadowUrl;
-        ShadowRetinaUrl = Default.ShadowRetinaUrl;
-        ShadowSize = Default.ShadowSize;
-        ShadowAnchor = Default.ShadowAnchor;
-        ClassName = Default.ClassName;
-        //CrossOrigin = Default.CrossOrigin;
+        IconRetinaUrl = Default?.IconRetinaUrl;
+        IconSize = Default?.IconSize;
+        IconAnchor = Default?.IconAnchor;
+        PopupAnchor = Default?.PopupAnchor;
+        TooltipAnchor = Default?.TooltipAnchor;
+        ShadowUrl = Default?.ShadowUrl;
+        ShadowRetinaUrl = Default?.ShadowRetinaUrl;
+        ShadowSize = Default?.ShadowSize;
+        ShadowAnchor = Default?.ShadowAnchor;
+        ClassName = Default?.ClassName;
+        //CrossOrigin = Default?.CrossOrigin;
     }
 
     /// <summary>
@@ -52,13 +56,13 @@ public record class Icon
     /// The coordinates of the point from which popups will "open", relative to the icon anchor.
     /// </summary>
     /// <remarks>Default: [0, 0]</remarks>
-    [J("popupAnchor")] public Point PopupAnchor { get; set; } = new Point(0, 0);
+    [J("popupAnchor")] public Point? PopupAnchor { get; set; } = new Point(0, 0);
 
     /// <summary>
     /// The coordinates of the point from which tooltips will "open", relative to the icon anchor.
     /// </summary>
     /// <remarks>Default: [0, 0]</remarks>
-    [J("tooltipAnchor")] public Point TooltipAnchor { get; set; } = new Point(0, 0);
+    [J("tooltipAnchor")] public Point? TooltipAnchor { get; set; } = new Point(0, 0);
 
     /// <summary>
     /// The URL to the icon shadow image.
@@ -99,7 +103,7 @@ public record class Icon
     ///// Refer to CORS Settings for valid String values.
     ///// </summary>
     ///// <remarks>Default: <c>false</c></remarks>
-    //[J("crossOrigin")] public OneOf<bool, string> CrossOrigin { get; set; }
+    //[J("crossOrigin")] public OneOf<bool, string>? CrossOrigin { get; set; } = false;
 
     /// <summary>
     /// A trivial subclass of <see cref="Icon"/>, represents the icon to use in Markers when no icon is specified.
@@ -108,12 +112,13 @@ public record class Icon
     public static Icon Default { get; } = new()
     {
         IconUrl = "marker-icon.png",
-        IconRetinaUrl = "marker-icon-2x.png",
-        ShadowUrl = "marker-shadow.png",
-        IconSize = new Point(25, 41),
-        IconAnchor = new Point(12, 41),
-        PopupAnchor = new Point(1, -34),
-        TooltipAnchor = new Point(16, -28),
-        ShadowSize = new Point(41, 41),
+        //IconRetinaUrl = "marker-icon-2x.png",
+        //ShadowUrl = "marker-shadow.png",
+        //IconSize = new Point(25, 41),
+        //IconAnchor = new Point(12, 41),
+        //PopupAnchor = new Point(1, -34),
+        //TooltipAnchor = new Point(16, -28),
+        //ShadowSize = new Point(41, 41),
+        //CrossOrigin = false,
     };
 }

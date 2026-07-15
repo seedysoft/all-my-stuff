@@ -1,6 +1,4 @@
-﻿using OneOf;
-
-namespace Seedysoft.Libs.MapRazorClassLibrary.MapModels;
+﻿namespace Seedysoft.Libs.MapRazorClassLibrary.MapModels;
 
 /// <summary>
 /// Marker is used to display clickable/draggable icons on the map.
@@ -19,13 +17,13 @@ public record class Marker : InteractiveLayer
     /// <see href="https://leafletjs.com/examples/accessibility/#markers-must-be-labelled">Useful for accessibility.</see>
     /// </summary>
     /// <remarks>Default: 'Marker'</remarks>
-    [J("alt")] public string? Alt { get; set; }
+    [J("alt")] public string? Alt { get; set; } = "Marker";
 
     /// <summary>
     /// When true, the map will pan whenever the marker is focused (via e.g. pressing tab on the keyboard) to ensure the marker is visible within the map's bounds.
     /// </summary>
     /// <remarks>Default: <c>true</c></remarks>
-    [J("autoPanOnFocus")] public bool? AutoPanOnFocus { get; set; }
+    [J("autoPanOnFocus")] public bool? AutoPanOnFocus { get; set; } = true;
 
     /// <summary>
     /// Icon instance to use for rendering the marker.
@@ -38,25 +36,25 @@ public record class Marker : InteractiveLayer
     /// Whether the marker can be tabbed to with a keyboard and clicked by pressing enter.
     /// </summary>
     /// <remarks>Default: <c>true</c></remarks>
-    [J("keyboard")] public bool? Keyboard { get; set; }
+    [J("keyboard")] public bool? Keyboard { get; set; } = true;
 
     /// <summary>
     /// The opacity of the marker.
     /// </summary>
     /// <remarks>Default: 1.0</remarks>
-    [J("opacity")] public double? Opacity { get; set; }
+    [J("opacity")] public double? Opacity { get; set; } = 1;
 
     /// <summary>
     /// Map pane where the markers icon will be added.
     /// </summary>
     /// <remarks>Default: 'markerPane'</remarks>
-    [J("pane")] public new string? Pane { get; set; }
+    [J("pane")] public new string? Pane { get; set; } = "markerPane";
 
     /// <summary>
     /// The z-index offset used for the riseOnHover feature.
     /// </summary>
     /// <remarks>Default: 250</remarks>
-    [J("riseOffset")] public double? RiseOffset { get; set; }
+    [J("riseOffset")] public double? RiseOffset { get; set; } = 250;
 
     /// <summary>
     /// If true, the marker will get on top of others when you hover the pointer over it.
@@ -68,19 +66,19 @@ public record class Marker : InteractiveLayer
     /// Map pane where the markers shadow will be added.
     /// </summary>
     /// <remarks>Default: 'shadowPane'</remarks>
-    [J("shadowPane")] public string? ShadowPane { get; set; }
+    [J("shadowPane")] public string? ShadowPane { get; set; } = "shadowPane";
 
     /// <summary>
     /// Text for the browser tooltip that appear on marker hover (no tooltip by default).
     /// <see href="https://leafletjs.com/examples/accessibility/#markers-must-be-labelled">Useful for accessibility.</see>
     /// </summary>
     /// <remarks>Default: ''</remarks>
-    [J("title")] public string? Title { get; set; }
+    [J("title")] public string? Title { get; set; } = string.Empty;
 
     /// <summary>
     /// By default, marker images zIndex is set automatically based on its latitude.
     /// Use this option if you want to put the marker on top of all others (or below), specifying a high value like 1000 (or high negative value, respectively).
     /// </summary>
     /// <remarks>Default: 0</remarks>
-    [J("zIndexOffset")] public double? ZIndexOffset { get; set; }
+    [J("zIndexOffset")] public double? ZIndexOffset { get; set; } = 0;
 }

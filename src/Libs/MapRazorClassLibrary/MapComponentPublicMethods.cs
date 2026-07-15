@@ -20,12 +20,12 @@ public partial class MapComponent : IAsyncDisposable
     public async Task AddMarkerAsync(
         MapModels.Marker? marker = default,
         MapModels.Icon? icon = default,
-        string? popupContent = default) => await MapModule.InvokeVoidAsync("addMarker", MapId, marker, icon, popupContent);
+        string? popupContent = default) => await MapModule.InvokeVoidAsync("addMarker", marker, icon, popupContent);
 
-    public async Task DeleteMapAsync() => await MapModule.InvokeVoidAsync("destroyMap", MapId);
+    public async Task DeleteMapAsync() => await MapModule.InvokeVoidAsync("destroyMap");
 
-    public async Task RemoveAllMarkersAsync() => await MapModule.InvokeVoidAsync("removeAllMarkers", MapId);
+    public async Task RemoveAllMarkersAsync() => await MapModule.InvokeVoidAsync("removeAllMarkers");
 
     // Unused. Uncomment if ncccessary
-    //public async Task SetViewAsync(LatLng latLng, int zoom) => await MapModule.InvokeVoidAsync("setView", MapId, latLng, zoom);
+    //public async Task SetViewAsync(LatLng latLng, int zoom) => await MapModule.InvokeVoidAsync("setView", latLng, zoom);
 }

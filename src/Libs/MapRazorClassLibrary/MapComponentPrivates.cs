@@ -11,6 +11,13 @@ public partial class MapComponent : IAsyncDisposable
 
     private bool IsMapReady = false;
 
+    private readonly string LeafletJavascriptFile =
+#if DEBUG
+        $"{Core.Helpers.ContentHelper.ContentPath(typeof(MapComponent))}/lib/leaflet/src/leaflet.js";
+#else
+        $"{Core.Helpers.ContentHelper.ContentPath(typeof(MapComponent))}/lib/leaflet/dist/leaflet.js";
+#endif
+
     [Inject] private IJSRuntime JsRuntime { get; set; } = default!;
 
     [Inject] private GasStationPrices.Services.GasStationPricesService GasStationPricesService { get; set; } = default!;
@@ -47,8 +54,8 @@ public partial class MapComponent : IAsyncDisposable
                 throw new ArgumentException($"The {nameof(arrayPolyline)} must be a 2D array with two columns for latitude and longitude.");
 
             IEnumerable<MapModels.LatLng> values =
-            from i in Enumerable.Range(0, arrayPolyline.GetLength(0))
-            select new MapModels.LatLng(lat: arrayPolyline[i, 0], lng: arrayPolyline[i, 1]);
+                from i in Enumerable.Range(0, arrayPolyline.GetLength(0))
+                select new MapModels.LatLng(lat: arrayPolyline[i, 0], lng: arrayPolyline[i, 1]);
 
             MapModels.Polyline polyline = new([.. values])
             {
@@ -56,14 +63,12 @@ public partial class MapComponent : IAsyncDisposable
                 Weight = 10,
             };
 
-            await MapModule.InvokeVoidAsync("addPolyline", MapId, polyline);
+            await MapModule.InvokeVoidAsync("addPolyline", polyline);
         });
     }
 
-    //private async Task EnableSpinnerAsync() =>
-    //    await LeafletService.InvokeVoidAsync("enableSpinner", MapId);
-    //private async Task DisableSpinnerAsync() =>
-    //    await LeafletService.InvokeVoidAsync("disableSpinner", MapId);
+    private async Task ShowLoaderAsync() => await MapModule.InvokeVoidAsync("showLoader");
+    private async Task HideLoaderAsync() => await MapModule.InvokeVoidAsync("hideLoader");
 
     //private string GetIcon(Icon icon)
     //{

@@ -1,7 +1,5 @@
 using Microsoft.JSInterop;
 
-// TODO                                     Add https://opengeo.tech/maps/leaflet-loader/
-
 namespace Seedysoft.Libs.MapRazorClassLibrary;
 
 public partial class MapComponent : IAsyncDisposable
@@ -36,6 +34,8 @@ public partial class MapComponent : IAsyncDisposable
         GasStationPrices.ViewModels.TravelQueryModel model
         , CancellationToken cancellationToken)
     {
+        await ShowLoaderAsync();
+
         await RemoveAllMarkersAsync();
 
         IReadOnlyList<(string NombreRuta, double[,] Coordenadas)> res;
@@ -56,6 +56,8 @@ public partial class MapComponent : IAsyncDisposable
         Travel.Models.Bounds ourBounds = ComputeBoundsFromRoutes(res, cancellationToken);
 
         await LoadGasStationsIntoMapAsync(model, ourBounds, cancellationToken);
+
+        await HideLoaderAsync();
 
         return null;
 
@@ -167,7 +169,7 @@ public partial class MapComponent : IAsyncDisposable
 
                 string PopupContent = "";
 
-                await AddMarkerAsync(marker, IsCheap ? CheapIcon : MapModels.Icon.Default, PopupContent);
+                await AddMarkerAsync(marker, null /*IsCheap ? CheapIcon : MapModels.Icon.Default*/, PopupContent);
             }
         }
     }

@@ -21,4 +21,8 @@
         <ProjectReference Include="..\Core\Seedysoft.Libs.Core.csproj" />
         <ProjectReference Include="..\GasStationPrices\Seedysoft.Libs.GasStationPrices.csproj" />
     </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="wwwroot\css\images\" />
+    </ItemGroup>
 </Project>

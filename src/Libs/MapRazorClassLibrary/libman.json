@@ -3,8 +3,8 @@
   "defaultProvider": "unpkg",
   "libraries": [
     {
-      "provider": "unpkg",
       "library": "leaflet@2.0.0-alpha.1",
+      "provider": "unpkg",
       "destination": "wwwroot/lib/leaflet/"
     },
     {
@@ -13,9 +13,9 @@
       "destination": "wwwroot/lib/font-awesome/"
     },
     {
-      "destination": "wwwroot/lib/MDIDX/",
       "library": "material-design-icons-iconfont@6.7.0",
-      "provider": "unpkg"
+      "provider": "unpkg",
+      "destination": "wwwroot/lib/MDIDX/"
     }
   ]
 }

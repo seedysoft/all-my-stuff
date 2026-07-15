@@ -1,64 +1,83 @@
-let maps = {};
+import * as L from '../lib/leaflet/dist/leaflet.js';
+import { LoaderControl } from './leaflet-loader.js';
+
+var map;
+var controlLoader;
 
 export function createMap(id, options) {
-    const map = new L.Map(id).setView(options.center, options.zoom);
+    //debugger
+    map = new L.Map(id).setView(options.center, options.zoom);
     const tiles = new L.TileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
         attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
     }).addTo(map);
 
-    maps[id] = map;
+    controlLoader = new LoaderControl().addTo(map);
+
+    map.on('dragend', function () {
+        controlLoader.show();
+        setTimeout(function () {
+            controlLoader.hide();
+        }, 3000);
+    });
 
     return map;
 }
 
-export function destroyMap(id) {
+export function destroyMap() {
     debugger
-    maps[id].remove();
+    map.remove();
 }
 
-export function addMarker(id, markerOptions, iconOptions, popupContent) {
+export function addMarker(markerOptions, iconOptions, popupContent) {
     // debugger
-    const map = maps[id];
-    
-    const marker = new L.Marker(markerOptions.latLng, markerOptions)
-        .setIcon(new L.Icon(iconOptions))
-        .addTo(map);
+    const marker = new L.Marker(markerOptions.position, markerOptions);
+    if (iconOptions)
+        marker.setIcon(new L.Icon(iconOptions));
+    else
+        marker.setIcon(new L.Icon.Default);
+    marker.addTo(map);
 
     if (popupContent)
         marker.bindPopup(popupContent);
 }
 
-export function removeAllMarkers(id) {
-    debugger
-    const map = maps[id];
-
-    // const overlay = map.getPane('overlayPane');
-    // marker.remove();
-
-    // const overlay = map.getPane('markerPane');
+export function removeAllMarkers() {
+    // debugger
+    map.eachLayer(function (l) {
+        if (l.options.pane == 'overlayPane' || l.options.pane == 'markerPane')
+            l.remove();
+    })
 }
 
-// export function setView(id, lat, lng, zoom) {
+// export function setView(lat, lng, zoom) {
 //     debugger
-//     maps[id].setView([lat, lng], zoom);
+//     map.setView([lat, lng], zoom);
 // }
 
-export function registerClick(id, dotnetObj) {
+export function registerClick(dotnetObj) {
     debugger
-    maps[id].on('click', function (e) {
+    map.on('click', function (e) {
         dotnetObj.invokeMethodAsync("OnMapClickAsync", {
             latLng: e.latlng
         });
     });
 }
 
-export function addPolyline(id, route) {
+export function addPolyline(route) {
     // debugger
-    const map = maps[id];
-    const polyline = new L.Polyline(route.points, route.options);
-    //.addTo(map);
+    const polyline = new L.Polyline(route.points, route.options)
+        .addTo(map);
 
     // zoom the map to the polyline
     map.fitBounds(polyline.getBounds());
+}
+
+export function showLoader() {
+    // debugger
+    controlLoader.show();
+}
+export function hideLoader() {
+    // debugger
+    controlLoader.hide();
 }
