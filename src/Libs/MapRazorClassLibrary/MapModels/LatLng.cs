@@ -22,7 +22,7 @@ public sealed class LatLng(double lat, double lng, double? alt = default)
     /// <summary>
     /// Altitude in meters (optional).
     /// </summary>
-    [J("alt"), I(Condition = C.WhenWritingNull)] public double? Alt { get; set; } = alt;
+    [J("alt")] public double? Alt { get; set; } = alt;
 
     private string GetDebuggerDisplay()
     {

@@ -28,26 +28,26 @@ public static class JsonExtensions
     }
 }
 
-public class EnumMemberJsonConverter<T> : System.Text.Json.Serialization.JsonConverter<T> where T : Enum
-{
-    public override bool CanConvert(Type t) => t == typeof(T);
+//public class EnumMemberJsonConverter<T> : System.Text.Json.Serialization.JsonConverter<T> where T : Enum
+//{
+//    public override bool CanConvert(Type t) => t == typeof(T);
 
-    public override T? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-        => EnumExtensions.ToEnum<T>(reader.GetString()!);
+//    public override T? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+//        => EnumExtensions.ToEnum<T>(reader.GetString()!);
 
-    public override void Write(Utf8JsonWriter writer, T value, JsonSerializerOptions options)
-        => JsonSerializer.Serialize(writer, value.GetEnumMember(), options);
-}
-public class EnumMemberArrayJsonConverter<T> : System.Text.Json.Serialization.JsonConverter<T[]> where T : Enum
-{
-    public override bool CanConvert(Type t) => t == typeof(T[]);
+//    public override void Write(Utf8JsonWriter writer, T value, JsonSerializerOptions options)
+//        => JsonSerializer.Serialize(writer, value.GetEnumMember(), options);
+//}
+//public class EnumMemberArrayJsonConverter<T> : System.Text.Json.Serialization.JsonConverter<T[]> where T : Enum
+//{
+//    public override bool CanConvert(Type t) => t == typeof(T[]);
 
-    public override T[]? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-        => [.. reader.GetString()!.Split(',')!.Select(static x => EnumExtensions.ToEnum<T>(x)!)];
+//    public override T[]? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+//        => [.. reader.GetString()!.Split(',')!.Select(static x => EnumExtensions.ToEnum<T>(x)!)];
 
-    public override void Write(Utf8JsonWriter writer, T[] value, JsonSerializerOptions options)
-        => JsonSerializer.Serialize(writer, string.Join(",", value.Select(static x => x.GetEnumMember())), options);
-}
+//    public override void Write(Utf8JsonWriter writer, T[] value, JsonSerializerOptions options)
+//        => JsonSerializer.Serialize(writer, string.Join(",", value.Select(static x => x.GetEnumMember())), options);
+//}
 
 public class ParseStringConverter : System.Text.Json.Serialization.JsonConverter<long>
 {

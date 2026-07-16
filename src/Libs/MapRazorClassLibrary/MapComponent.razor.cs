@@ -151,7 +151,8 @@ public partial class MapComponent : IAsyncDisposable
                     Avg = v.Average(),
                 };
 
-            var CheapIcon = MapModels.Icon.Default;// MapModels.Icon.Create(iconUrl: "local_gas_station");
+            //var CheapIcon = new MapModels.Icon() { IconUrl = $"{Core.Helpers.ContentHelper.ContentPath(typeof(MapComponent))}/css/images/gas-station.png" };
+            //var RepsolIcon = new MapModels.Icon() { IconUrl = $"{Core.Helpers.ContentHelper.ContentPath(typeof(MapComponent))}/css/images/repsol.png" };
 
             for (int i = 0; i < gasStations.Count; i++)
             {
@@ -159,17 +160,25 @@ public partial class MapComponent : IAsyncDisposable
 
                 bool IsCheap = g.AllProducts(model.PetroleumProductsSelectedIds).Any(x => x.Value <= (Products.FirstOrDefault(p => p.IdP == x.IdProducto)?.Avg ?? decimal.Zero));
 
-                MapModels.Marker marker = new(new MapModels.LatLng(g.Lat, g.Lon))
+                //MapModels.Marker marker = new(new MapModels.LatLng(g.Lat, g.Lon))
+                //{
+                //    Alt = g.Rotulo,
+                //    Keyboard = false,
+                //    RiseOnHover = true,
+                //    Title = g.RotuloTrimed,
+                //};
+
+                //string PopupContent = "";
+
+                //await AddMarkerAsync(marker, IsCheap ? CheapIcon : RepsolIcon, PopupContent);
+
+                MapModels.CircleMarker circleMarker = new(new MapModels.LatLng(g.Lat, g.Lon))
                 {
-                    Alt = g.Rotulo,
-                    Keyboard = false,
-                    RiseOnHover = true,
-                    Title = g.RotuloTrimed,
+                    Color = IsCheap ? "#008000" : "#ffff00",
+                    //                          TODO Use colors, sizes, etc...
                 };
 
-                string PopupContent = "";
-
-                await AddMarkerAsync(marker, null /*IsCheap ? CheapIcon : MapModels.Icon.Default*/, PopupContent);
+                await AddAsync(circleMarker);
             }
         }
     }

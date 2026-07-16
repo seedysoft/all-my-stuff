@@ -42,6 +42,15 @@ export function addMarker(markerOptions, iconOptions, popupContent) {
         marker.bindPopup(popupContent);
 }
 
+export function addCircleMarker(circleOptions, popupContent) {
+    // debugger
+    const circleMarker = new L.CircleMarker(circleOptions.position, circleOptions)
+        .addTo(map);
+
+    if (popupContent)
+        circleMarker.bindPopup(popupContent);
+}
+
 export function removeAllMarkers() {
     // debugger
     map.eachLayer(function (l) {

@@ -114,7 +114,7 @@ public record class Icon
         IconUrl = "marker-icon.png",
         //IconRetinaUrl = "marker-icon-2x.png",
         //ShadowUrl = "marker-shadow.png",
-        //IconSize = new Point(25, 41),
+        IconSize = new Point(22, 22),
         //IconAnchor = new Point(12, 41),
         //PopupAnchor = new Point(1, -34),
         //TooltipAnchor = new Point(16, -28),
