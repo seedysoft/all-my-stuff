@@ -6,15 +6,17 @@
 /// </summary>
 public record class InteractiveLayer : Layer
 {
+    public InteractiveLayer() : base() { }
+
     /// <summary>
     /// If false, the layer will not emit pointer events and will act as a part of the underlying map.
     /// </summary>
     /// <remarks>Default: <c>true</c></remarks>
-    [J("interactive")] public bool? Interactive { get; set; }
+    [J("interactive")] public bool? Interactive { get; set; } = true;
 
     /// <summary>
     /// When true, a pointer event on this layer will trigger the same event on the map (unless <see href="https://leafletjs.com/reference-2.0.0.html#domevent-stoppropagation">DomEvent.stopPropagation</see> is used).
     /// </summary>
     /// <remarks>Default: <c>true</c></remarks>
-    [J("bubblingPointerEvents")] public bool? BubblingPointerEvents { get; set; }
+    [J("bubblingPointerEvents")] public bool? BubblingPointerEvents { get; set; } = true;
 }

@@ -149,6 +149,7 @@ public partial class MapComponent : IAsyncDisposable
                     IdP = p.IdProducto,
                     Min = v.Min(),
                     Avg = v.Average(),
+                    Max = v.Max(),
                 };
 
             //var CheapIcon = new MapModels.Icon() { IconUrl = $"{Core.Helpers.ContentHelper.ContentPath(typeof(MapComponent))}/css/images/gas-station.png" };
@@ -156,10 +157,12 @@ public partial class MapComponent : IAsyncDisposable
 
             for (int i = 0; i < gasStations.Count; i++)
             {
-                GasStationPrices.ViewModels.GasStationModel g = gasStations[i];
+                GasStationPrices.ViewModels.GasStationModel GasStation = gasStations[i];
 
-                bool IsCheap = g.AllProducts(model.PetroleumProductsSelectedIds).Any(x => x.Value <= (Products.FirstOrDefault(p => p.IdP == x.IdProducto)?.Avg ?? decimal.Zero));
+                IReadOnlyList<(GasStationPrices.Constants.ProductoPetroliferoId IdProducto, decimal Value)> GasStationProducts =
+                    GasStation.AllProducts(model.PetroleumProductsSelectedIds);
 
+                //bool IsCheap = GasStationProducts.Any(x => x.Value <= (Products.FirstOrDefault(p => p.IdP == x.IdProducto)?.Avg ?? decimal.Zero));
                 //MapModels.Marker marker = new(new MapModels.LatLng(g.Lat, g.Lon))
                 //{
                 //    Alt = g.Rotulo,
@@ -168,17 +171,36 @@ public partial class MapComponent : IAsyncDisposable
                 //    Title = g.RotuloTrimed,
                 //};
 
-                //string PopupContent = "";
+                string PopupContent = $"<b>{GasStation.RotuloTrimed}</b>";
 
                 //await AddMarkerAsync(marker, IsCheap ? CheapIcon : RepsolIcon, PopupContent);
 
-                MapModels.CircleMarker circleMarker = new(new MapModels.LatLng(g.Lat, g.Lon))
-                {
-                    Color = IsCheap ? "#008000" : "#ffff00",
-                    //                          TODO Use colors, sizes, etc...
-                };
+                MapModels.CircleMarker circleMarker = new(new MapModels.LatLng(GasStation.Lat, GasStation.Lon));
 
-                await AddAsync(circleMarker);
+                //                          TODO Use colors, sizes, etc...
+
+                if (GasStationProducts.Any(x => x.Value == (Products.FirstOrDefault(p => p.IdP == x.IdProducto)?.Min ?? decimal.Zero)))
+                {
+                    circleMarker.Color = "#ff0000"; // Green = Min
+                    circleMarker.Radius = 5;
+                }
+                else if (GasStationProducts.Any(x => x.Value == (Products.FirstOrDefault(p => p.IdP == x.IdProducto)?.Max ?? decimal.Zero)))
+                {
+                    circleMarker.Color = "#00ff00"; // Red = Max
+                    circleMarker.Radius = 20;
+                }
+                else if (GasStationProducts.Any(x => x.Value <= (Products.FirstOrDefault(p => p.IdP == x.IdProducto)?.Avg ?? decimal.Zero)))
+                {
+                    circleMarker.Color = "#FFFF00"; // Yellow <= Avg
+                    circleMarker.Radius = 10;
+                }
+                else
+                {
+                    circleMarker.Color = "#FF8C00"; // Orange > Avg
+                    circleMarker.Radius = 15;
+                }
+
+                await AddAsync(circleMarker, PopupContent);
             }
         }
     }

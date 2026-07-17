@@ -36,19 +36,21 @@ export function addMarker(markerOptions, iconOptions, popupContent) {
         marker.setIcon(new L.Icon(iconOptions));
     else
         marker.setIcon(new L.Icon.Default);
-    marker.addTo(map);
 
     if (popupContent)
         marker.bindPopup(popupContent);
+
+    marker.addTo(map);
 }
 
 export function addCircleMarker(circleOptions, popupContent) {
     // debugger
-    const circleMarker = new L.CircleMarker(circleOptions.position, circleOptions)
-        .addTo(map);
+    const circleMarker = new L.CircleMarker(circleOptions.position, circleOptions);
 
     if (popupContent)
         circleMarker.bindPopup(popupContent);
+
+    circleMarker.addTo(map);
 }
 
 export function removeAllMarkers() {

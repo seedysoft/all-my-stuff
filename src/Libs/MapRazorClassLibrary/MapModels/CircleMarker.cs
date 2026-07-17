@@ -5,7 +5,7 @@
 /// </summary>
 public record class CircleMarker : Path
 {
-    public CircleMarker(LatLng position) => Position = position;
+    public CircleMarker(LatLng position) : base() => Position = position;
 
     /// <summary>
     /// Geographical point.

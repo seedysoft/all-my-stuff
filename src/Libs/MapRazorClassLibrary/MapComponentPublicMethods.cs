@@ -28,10 +28,13 @@ public partial class MapComponent : IAsyncDisposable
         , params object[] otherParameters) where T : MapModels.InteractiveLayer
         => await MapModule.InvokeVoidAsync($"add{typeof(T).Name}", layer, otherParameters);
 
-    public async Task DeleteMapAsync() => await MapModule.InvokeVoidAsync("destroyMap");
+    public async Task DeleteMapAsync() 
+        => await MapModule.InvokeVoidAsync("destroyMap");
 
-    public async Task RemoveAllMarkersAsync() => await MapModule.InvokeVoidAsync("removeAllMarkers");
+    public async Task RemoveAllMarkersAsync() 
+        => await MapModule.InvokeVoidAsync("removeAllMarkers");
 
     // Unused. Uncomment if ncccessary
-    //public async Task SetViewAsync(LatLng latLng, int zoom) => await MapModule.InvokeVoidAsync("setView", latLng, zoom);
+    //public async Task SetViewAsync(LatLng latLng, int zoom)
+    //    => await MapModule.InvokeVoidAsync("setView", latLng, zoom);
 }
