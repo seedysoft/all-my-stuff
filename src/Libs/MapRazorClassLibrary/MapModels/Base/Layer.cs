@@ -13,7 +13,7 @@ public abstract record class Layer : Evented
     /// Overriding this option will cause the layer to be placed on another pane by default.
     /// Not effective if the renderer option is set (the renderer option will override the pane option).
     /// </summary>
-    /// <remarks>Default: 'overlayPane'</remarks>
+    /// <remarks>Default: <c>'overlayPane'</c></remarks>
     [J("pane")] public Map.Panes? Pane { get; set; } = Map.Panes.OverlayPane;
 
     /// <summary>

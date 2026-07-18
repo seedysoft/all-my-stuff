@@ -5,14 +5,18 @@
 /// </summary>
 public sealed record class Tooltip : DivOverlay
 {
-    public Tooltip() : base() => Pane = Map.Panes.TooltipPane;
+    public Tooltip() : base()
+    {
+        Pane = Map.Panes.TooltipPane;
+        Offset = Basic.Point.Empty;
+    }
 
     /// <summary>
     /// Direction where to open the tooltip.
     /// Possible values are: right, left, top, bottom, center, auto.
     /// auto will dynamically switch between right and left according to the tooltip position on the map.
     /// </summary>
-    /// <remarks>Default: 'auto'</remarks>
+    /// <remarks>Default: <c>'auto'</c></remarks>
     [J("direction")] public string? Direction { get; set; } = "auto";
 
     /// <summary>
@@ -30,6 +34,6 @@ public sealed record class Tooltip : DivOverlay
     /// <summary>
     /// Tooltip container opacity.
     /// </summary>
-    /// <remarks>Default: 0.9</remarks>
+    /// <remarks>Default: <c>0.9</c></remarks>
     [J("opacity")] public double? Opacity { get; set; } = 0.9;
 }

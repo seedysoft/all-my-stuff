@@ -12,6 +12,6 @@ public sealed record class Zoom : Base.Control
     /// <summary>
     /// The text set on the 'zoom in' button.
     /// </summary>
-    /// <remarks>Default: </remarks>
+    /// <remarks>Default: <c>'&lt;span aria-hidden="true"&gt;+&lt;/span&gt;'</c></remarks>
     [J("zoomInText")] public string? ZoomInText { get; set; } = "<span aria-hidden='true'>+</span>";
 }

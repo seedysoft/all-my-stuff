@@ -19,6 +19,6 @@ public sealed record class CircleMarker : Path
     /// <summary>
     /// Radius of the circle marker, in pixels.
     /// </summary>
-    /// <remarks>Default: 10</remarks>
+    /// <remarks>Default: <c>10</c></remarks>
     [J("radius")] public double? Radius { get; set; } = 10;
 }

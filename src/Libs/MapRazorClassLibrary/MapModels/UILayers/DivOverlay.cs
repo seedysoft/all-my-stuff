@@ -15,13 +15,13 @@ public abstract record class DivOverlay : Base.InteractiveLayer
     /// <summary>
     /// The offset of the overlay position.
     /// </summary>
-    /// <remarks>Default: Point(0, 0)</remarks>
+    /// <remarks>Default: <c>Point(0, 0)</c></remarks>
     [J("offset")] public Basic.Point? Offset { get; set; } = Basic.Point.Empty;
 
     /// <summary>
     /// A custom CSS class name to assign to the overlay.
     /// </summary>
-    /// <remarks>Default: ''</remarks>
+    /// <remarks>Default: <c>''</c></remarks>
     [J("className")] public string? ClassName { get; set; } = string.Empty;
 
     /// <summary>
@@ -30,6 +30,6 @@ public abstract record class DivOverlay : Base.InteractiveLayer
     /// The function should return a <c>String</c> or <c>HTMLElement</c> to be used in the overlay.
     /// String content is rendered as HTML; sanitize untrusted input or pass an <c>HTMLElement</c> with safe <c>textContent</c> instead.
     /// </summary>
-    /// <remarks>Default: ''</remarks>
+    /// <remarks>Default: <c>''</c></remarks>
     [J("content")] public string? Content { get; set; }
 }

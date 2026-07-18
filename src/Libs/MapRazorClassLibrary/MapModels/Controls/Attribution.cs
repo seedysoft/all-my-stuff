@@ -13,6 +13,6 @@ public sealed record class Attribution : Base.Control
     /// The HTML text shown before the attributions.
     /// Pass <c>false</c> to disable.
     /// </summary>
-    /// <remarks>Default: 'Leaflet'</remarks>
+    /// <remarks>Default: <c>'Leaflet'</c></remarks>
     [J("prefix")] public OneOf.OneOf<bool, string>? Prefix { get; set; } = "Leaflet";
 }

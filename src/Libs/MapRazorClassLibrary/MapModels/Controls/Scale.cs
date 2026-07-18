@@ -12,7 +12,7 @@ public sealed record class Scale : Base.Control
     /// Maximum width of the control in pixels.
     /// The width is set dynamically to show round values (e.g. 100, 200, 500).
     /// </summary>
-    /// <remarks>Default: 100</remarks>
+    /// <remarks>Default: <c>100</c></remarks>
     [J("maxWidth")] public double? MaxWidth { get; set; } = 100;
 
     //    /// <summary>

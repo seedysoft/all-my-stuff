@@ -53,14 +53,14 @@ public sealed record class Icon
     /// <summary>
     /// The coordinates of the point from which popups will "open", relative to the icon anchor.
     /// </summary>
-    /// <remarks>Default: [0, 0]</remarks>
-    [J("popupAnchor")] public Point? PopupAnchor { get; set; } = new Point(0, 0);
+    /// <remarks>Default: <c>Point(0, 0)</c></remarks>
+    [J("popupAnchor")] public Point? PopupAnchor { get; set; } = Point.Empty;
 
     /// <summary>
     /// The coordinates of the point from which tooltips will "open", relative to the icon anchor.
     /// </summary>
-    /// <remarks>Default: [0, 0]</remarks>
-    [J("tooltipAnchor")] public Point? TooltipAnchor { get; set; } = new Point(0, 0);
+    /// <remarks>Default: <c>Point(0, 0)</c></remarks>
+    [J("tooltipAnchor")] public Point? TooltipAnchor { get; set; } = Point.Empty;
 
     /// <summary>
     /// The URL to the icon shadow image.
@@ -91,7 +91,7 @@ public sealed record class Icon
     /// A custom class name to assign to both icon and shadow images.
     /// Empty by default.
     /// </summary>
-    /// <remarks>Default: ''</remarks>
+    /// <remarks>Default: <c>''</c></remarks>
     [J("className")] public string? ClassName { get; set; } = string.Empty;
 
     /// <summary>

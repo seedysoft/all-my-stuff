@@ -80,27 +80,27 @@ public sealed record class Map : Base.Evented
     /// <summary>
     /// Initial geographic center of the map.
     /// </summary>
-    /// <remarks>Default: undefined</remarks>
+    /// <remarks>Default: <c>undefined</c></remarks>
     [J("center")] public Basic.LatLng? Center { get; set; }
 
     /// <summary>
     /// Initial map zoom level
     /// </summary>
-    /// <remarks>Default: undefined</remarks>
+    /// <remarks>Default: <c>undefined</c></remarks>
     [J("zoom")] public double? Zoom { get; set; }
 
     /// <summary>
     /// Minimum zoom level of the map.
     /// If not specified and at least one <see cref="GridLayer"/> or <see cref="TileLayer"/> is in the map, the lowest of their minZoom options will be used instead.
     /// </summary>
-    /// <remarks>Default: *</remarks>
+    /// <remarks>Default: <c>*</c></remarks>
     [J("minZoom")] public double? MinZoom { get; set; }
 
     /// <summary>
     /// Maximum zoom level of the map.
     /// If not specified and at least one <see cref="GridLayer"/> or <see cref="TileLayer"/> is in the map, the highest of their maxZoom options will be used instead.
     /// </summary>
-    /// <remarks>Default: *</remarks>
+    /// <remarks>Default: <c>*</c></remarks>
     [J("maxZoom")] public double? MaxZoom { get; set; }
 
     #endregion
@@ -111,6 +111,12 @@ public sealed record class Map : Base.Evented
 
     //public List<TileLayer> TileLayers { get; set; } = [];
 
+    /// <summary>
+    /// Panes are DOM elements used to control the ordering of layers on the map.
+    /// You can access panes with map.getPane or map.getPanes methods.
+    /// New panes can be created with the map.createPane method.
+    /// Every map has the following default panes that differ only in zIndex.
+    /// </summary>
     public enum Panes
     {
         [J("tilePane")] TilePane,

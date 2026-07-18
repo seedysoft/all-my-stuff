@@ -12,7 +12,7 @@ public abstract record class BlanketOverlay : Layer
     /// <summary>
     /// How much to extend the clip area around the map view (relative to its size) e.g. 0.1 would be 10% of map view in each direction.
     /// </summary>
-    /// <remarks>Default: 0.1</remarks>
+    /// <remarks>Default: <c>0.1</c></remarks>
     [J("padding")] public double? Padding { get; set; } = 0.1;
 
     /// <summary>

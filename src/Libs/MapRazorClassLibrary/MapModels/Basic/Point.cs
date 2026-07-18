@@ -22,5 +22,8 @@ public record class Point
     /// </summary>
     [J("y")] public double Y { get; init; }
 
+    /// <summary>
+    /// Point(0, 0).
+    /// </summary>
     public static Point Empty { get; } = new(0, 0);
 }

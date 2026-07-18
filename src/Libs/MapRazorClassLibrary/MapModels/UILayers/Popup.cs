@@ -15,13 +15,13 @@ public sealed record class Popup : DivOverlay
     /// <summary>
     /// Max width of the popup, in pixels.
     /// </summary>
-    /// <remarks>Default: </remarks>
+    /// <remarks>Default: <c>300</c></remarks>
     [J("maxWidth")] public double? MaxWidth { get; set; } = 300;
 
     /// <summary>
     /// Min width of the popup, in pixels.
     /// </summary>
-    /// <remarks>Default: 50</remarks>
+    /// <remarks>Default: <c>50</c></remarks>
     [J("minWidth")] public double? MinWidth { get; set; } = 50;
 
     /// <summary>
