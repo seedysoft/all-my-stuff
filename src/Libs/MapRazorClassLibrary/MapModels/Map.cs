@@ -1,4 +1,6 @@
-﻿namespace Seedysoft.Libs.MapRazorClassLibrary.MapModels;
+﻿using System.Runtime.Serialization;
+
+namespace Seedysoft.Libs.MapRazorClassLibrary.MapModels;
 
 /// <summary>
 /// The central class of the API — it is used to create a map on a page and manipulate it.
@@ -103,6 +105,12 @@ public sealed record class Map : Base.Evented
     /// <remarks>Default: <c>*</c></remarks>
     [J("maxZoom")] public double? MaxZoom { get; set; }
 
+    /// <summary>
+    /// The default method for drawing vector layers on the map.
+    /// <see cref="VectorLayers.SVG"/> or <see cref="VectorLayers.Canvas"/> by default depending on browser support.
+    /// </summary>
+    [J("renderer")] public Base.Renderer? Renderer { get; set; } = new VectorLayers.SVG();
+
     #endregion
 
     #region Animation Options
@@ -119,11 +127,13 @@ public sealed record class Map : Base.Evented
     /// </summary>
     public enum Panes
     {
-        [J("tilePane")] TilePane,
-        [J("overlayPane")] OverlayPane,
-        [J("shadowPane")] ShadowPane,
-        [J("markerPane")] MarkerPane,
-        [J("tooltipPane")] TooltipPane,
-        [J("popupPane")] PopupPane,
+#pragma warning disable format
+        [EnumMember(Value = "tilePane")]    TilePane,
+        [EnumMember(Value = "overlayPane")] OverlayPane,
+        [EnumMember(Value = "shadowPane")]  ShadowPane,
+        [EnumMember(Value = "markerPane")]  MarkerPane,
+        [EnumMember(Value = "tooltipPane")] TooltipPane,
+        [EnumMember(Value = "popupPane")]   PopupPane,
+#pragma warning restore format
     }
 }

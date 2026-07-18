@@ -152,9 +152,6 @@ public partial class MapComponent : IAsyncDisposable
                     Max = v.Max(),
                 };
 
-            //var CheapIcon = new MapModels.Icon() { IconUrl = $"{Core.Helpers.ContentHelper.ContentPath(typeof(MapComponent))}/css/images/gas-station.png" };
-            //var RepsolIcon = new MapModels.Icon() { IconUrl = $"{Core.Helpers.ContentHelper.ContentPath(typeof(MapComponent))}/css/images/repsol.png" };
-
             for (int i = 0; i < gasStations.Count; i++)
             {
                 GasStationPrices.ViewModels.GasStationModel GasStation = gasStations[i];
@@ -162,22 +159,14 @@ public partial class MapComponent : IAsyncDisposable
                 IReadOnlyList<(GasStationPrices.Constants.ProductoPetroliferoId IdProducto, decimal Value)> GasStationProducts =
                     GasStation.AllProducts(model.PetroleumProductsSelectedIds);
 
-                //bool IsCheap = GasStationProducts.Any(x => x.Value <= (Products.FirstOrDefault(p => p.IdP == x.IdProducto)?.Avg ?? decimal.Zero));
-                //MapModels.Marker marker = new(new MapModels.LatLng(g.Lat, g.Lon))
-                //{
-                //    Alt = g.Rotulo,
-                //    Keyboard = false,
-                //    RiseOnHover = true,
-                //    Title = g.RotuloTrimed,
-                //};
-
-                string PopupContent = $"<b>{GasStation.RotuloTrimed}</b>";
-
-                //await AddMarkerAsync(marker, IsCheap ? CheapIcon : RepsolIcon, PopupContent);
-
-                MapModels.VectorLayers.CircleMarker circleMarker = new(new MapModels.Basic.LatLng(GasStation.Lat, GasStation.Lon));
-
                 //                          TODO Use colors, sizes, etc...
+                MapModels.VectorLayers.CircleMarker circleMarker = new(new MapModels.Basic.LatLng(GasStation.Lat, GasStation.Lon))
+                {
+                    ClassName = "material-icons local_gas_station",
+                    Fill = true,
+                    FillOpacity = 1.0,
+                    FillRule = "nonzero",
+                };
 
                 if (GasStationProducts.Any(x => x.Value == (Products.FirstOrDefault(p => p.IdP == x.IdProducto)?.Min ?? decimal.Zero)))
                 {
@@ -200,7 +189,11 @@ public partial class MapComponent : IAsyncDisposable
                     circleMarker.Radius = 15;
                 }
 
-                await AddAsync(circleMarker, PopupContent);
+                string PopupContent = $"<b>{GasStation.Localizacion}</b>";
+
+                string TooltipContent = $"<b>{GasStation.RotuloTrimed}</b>";
+
+                await AddCircleMarker(circleMarker, PopupContent, TooltipContent);
             }
         }
     }

@@ -28,16 +28,18 @@ public static class JsonExtensions
     }
 }
 
-//public class EnumMemberJsonConverter<T> : System.Text.Json.Serialization.JsonConverter<T> where T : Enum
-//{
-//    public override bool CanConvert(Type t) => t == typeof(T);
+public class EnumMemberJsonConverter<T> : System.Text.Json.Serialization.JsonConverter<T> where T : Enum
+{
+    public override bool CanConvert(Type t) => t == typeof(T);
 
-//    public override T? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-//        => EnumExtensions.ToEnum<T>(reader.GetString()!);
+    public override T? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        => EnumExtensions.ToEnum<T>(reader.GetString()!);
 
-//    public override void Write(Utf8JsonWriter writer, T value, JsonSerializerOptions options)
-//        => JsonSerializer.Serialize(writer, value.GetEnumMember(), options);
-//}
+    public override void Write(Utf8JsonWriter writer, T value, JsonSerializerOptions options)
+        => JsonSerializer.Serialize(writer, value.GetEnumMember(), options);
+
+    //public static readonly EnumMemberJsonConverter<T> Singleton = new();
+}
 //public class EnumMemberArrayJsonConverter<T> : System.Text.Json.Serialization.JsonConverter<T[]> where T : Enum
 //{
 //    public override bool CanConvert(Type t) => t == typeof(T[]);
@@ -49,7 +51,7 @@ public static class JsonExtensions
 //        => JsonSerializer.Serialize(writer, string.Join(",", value.Select(static x => x.GetEnumMember())), options);
 //}
 
-public class ParseStringConverter : System.Text.Json.Serialization.JsonConverter<long>
+public class ParseStringJsonConverter : System.Text.Json.Serialization.JsonConverter<long>
 {
     public override bool CanConvert(Type t) => t == typeof(long);
 
@@ -59,7 +61,7 @@ public class ParseStringConverter : System.Text.Json.Serialization.JsonConverter
     public override void Write(Utf8JsonWriter writer, long value, JsonSerializerOptions options)
         => JsonSerializer.Serialize(writer, value.ToString(), options);
 
-    public static readonly ParseStringConverter Singleton = new();
+    //public static readonly ParseStringJsonConverter Singleton = new();
 }
 
 internal static class Converter

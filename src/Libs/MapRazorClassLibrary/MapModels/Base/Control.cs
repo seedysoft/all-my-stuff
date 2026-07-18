@@ -1,4 +1,6 @@
-﻿namespace Seedysoft.Libs.MapRazorClassLibrary.MapModels.Base;
+﻿using System.Runtime.Serialization;
+
+namespace Seedysoft.Libs.MapRazorClassLibrary.MapModels.Base;
 
 /// <summary>
 /// Control is a base class for implementing map controls. Handles positioning.
@@ -15,9 +17,11 @@ public abstract record class Control
 
     public enum Positions
     {
-        [J("topleft")] TopLeft,
-        [J("topright")] TopRight,
-        [J("bottomleft")] BottomLeft,
-        [J("bottomright")] BottomRight
+#pragma warning disable format
+        [EnumMember(Value = "topleft")]     TopLeft,
+        [EnumMember(Value = "topright")]    TopRight,
+        [EnumMember(Value = "bottomleft")]  BottomLeft,
+        [EnumMember(Value = "bottomright")] BottomRight,
+#pragma warning restore format
     }
 }

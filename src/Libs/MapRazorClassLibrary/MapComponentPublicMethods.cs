@@ -16,25 +16,4 @@ public partial class MapComponent : IAsyncDisposable
     #endregion
 
     public IJSObjectReference MapModule { get => field!; private set; }
-
-    public async Task AddMarkerAsync(
-        MapModels.UILayers.Marker? marker = default
-        , MapModels.Basic.Icon? icon = default
-        , string? popupContent = default)
-        => await MapModule.InvokeVoidAsync("addMarker", marker, icon, popupContent);
-
-    public async Task AddAsync<T>(
-        T layer
-        , params object[] otherParameters) where T : MapModels.Base.InteractiveLayer
-        => await MapModule.InvokeVoidAsync($"add{typeof(T).Name}", layer, otherParameters);
-
-    public async Task DeleteMapAsync() 
-        => await MapModule.InvokeVoidAsync("destroyMap");
-
-    public async Task RemoveAllMarkersAsync() 
-        => await MapModule.InvokeVoidAsync("removeAllMarkers");
-
-    // Unused. Uncomment if ncccessary
-    //public async Task SetViewAsync(LatLng latLng, int zoom)
-    //    => await MapModule.InvokeVoidAsync("setView", latLng, zoom);
 }

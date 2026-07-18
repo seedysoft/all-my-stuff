@@ -69,26 +69,25 @@ public partial class MapComponent : IAsyncDisposable
         });
     }
 
+    //private async Task AddMarkerAsync(
+    //    MapModels.UILayers.Marker? marker = default
+    //    , MapModels.Basic.Icon? icon = default
+    //    , string? popupContent = default)
+    //    => await MapModule.InvokeVoidAsync("addMarker", marker, icon, popupContent);
+
+    private async Task AddCircleMarker(MapModels.VectorLayers.CircleMarker circleMarker, string popupContent, string tooltipContent)
+        => await MapModule.InvokeVoidAsync($"addCircleMarker", circleMarker, popupContent, tooltipContent);
+
+    private async Task DeleteMapAsync()
+        => await MapModule.InvokeVoidAsync("destroyMap");
+
+    private async Task RemoveAllMarkersAsync()
+        => await MapModule.InvokeVoidAsync("removeAllMarkers");
+
+    // Unused. Uncomment if ncccessary
+    //private async Task SetViewAsync(LatLng latLng, int zoom)
+    //    => await MapModule.InvokeVoidAsync("setView", latLng, zoom);
+
     private async Task ShowLoaderAsync() => await MapModule.InvokeVoidAsync("showLoader");
     private async Task HideLoaderAsync() => await MapModule.InvokeVoidAsync("hideLoader");
-
-    //private string GetIcon(Icon icon)
-    //{
-    //    string useIcon = icon switch
-    //    {
-    //        Icon.DRON => "drone",
-    //        Icon.HOME => "home",
-    //        Icon.DESTINATION => "destination",
-    //        _ => "marker-icon"
-    //    };
-    //    return useIcon;
-    //}
-
-    //private string GetIconUrl(string iconUrl)
-    //{
-    //    if (iconUrl.Contains("http"))
-    //        return iconUrl;
-    //    else
-    //        return $"./{Core.Helpers.ContentHelper.ContentPath}/css/images/{iconUrl}.png";
-    //}
 }

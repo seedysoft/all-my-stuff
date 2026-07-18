@@ -32,23 +32,27 @@ export function destroyMap() {
 export function addMarker(markerOptions, iconOptions, popupContent) {
     // debugger
     const marker = new L.Marker(markerOptions.position, markerOptions);
+
     if (iconOptions)
         marker.setIcon(new L.Icon(iconOptions));
     else
         marker.setIcon(new L.Icon.Default);
 
     if (popupContent)
-        marker.bindPopup(popupContent);
+        marker.bindPopup(DOMPurify.sanitize(popupContent, { USE_PROFILES: { html: true } }));
 
     marker.addTo(map);
 }
 
-export function addCircleMarker(circleOptions, popupContent) {
+export function addCircleMarker(circleOptions, popupContent, tooltipContent) {
     // debugger
     const circleMarker = new L.CircleMarker(circleOptions.position, circleOptions);
 
     if (popupContent)
-        circleMarker.bindPopup(popupContent);
+        circleMarker.bindPopup(DOMPurify.sanitize(popupContent, { USE_PROFILES: { html: true } }));
+
+    if (tooltipContent)
+        circleMarker.bindTooltip(DOMPurify.sanitize(tooltipContent, { USE_PROFILES: { html: true } }));
 
     circleMarker.addTo(map);
 }

@@ -14,7 +14,8 @@ public abstract record class Layer : Evented
     /// Not effective if the renderer option is set (the renderer option will override the pane option).
     /// </summary>
     /// <remarks>Default: <c>'overlayPane'</c></remarks>
-    [J("pane")] public Map.Panes? Pane { get; set; } = Map.Panes.OverlayPane;
+    [J("pane"), K(typeof(Core.Extensions.EnumMemberJsonConverter<Map.Panes>))]
+    public Map.Panes? Pane { get; set; } = Map.Panes.OverlayPane;
 
     /// <summary>
     /// String to be shown in the attribution control, e.g. "© OpenStreetMap contributors".
