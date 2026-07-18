@@ -1,10 +1,10 @@
-﻿namespace Seedysoft.Libs.MapRazorClassLibrary.MapModels;
+﻿namespace Seedysoft.Libs.MapRazorClassLibrary.MapModels.VectorLayers;
 
 /// <summary>
 /// Allows vector layers to be displayed with <canvas>.
-/// Inherits <see cref="Renderer"/>.
+/// Inherits <see cref="Base.Renderer"/>.
 /// </summary>
-public record class Canvas : Renderer
+public sealed record class Canvas : Base.Renderer
 {
     public Canvas() : base() { }
 

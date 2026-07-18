@@ -18,14 +18,14 @@ public partial class MapComponent : IAsyncDisposable
     public IJSObjectReference MapModule { get => field!; private set; }
 
     public async Task AddMarkerAsync(
-        MapModels.Marker? marker = default
-        , MapModels.Icon? icon = default
+        MapModels.UILayers.Marker? marker = default
+        , MapModels.Basic.Icon? icon = default
         , string? popupContent = default)
         => await MapModule.InvokeVoidAsync("addMarker", marker, icon, popupContent);
 
     public async Task AddAsync<T>(
         T layer
-        , params object[] otherParameters) where T : MapModels.InteractiveLayer
+        , params object[] otherParameters) where T : MapModels.Base.InteractiveLayer
         => await MapModule.InvokeVoidAsync($"add{typeof(T).Name}", layer, otherParameters);
 
     public async Task DeleteMapAsync() 

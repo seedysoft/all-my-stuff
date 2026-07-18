@@ -1,11 +1,11 @@
 ﻿// TODO                                 perform icon images
 
-namespace Seedysoft.Libs.MapRazorClassLibrary.MapModels;
+namespace Seedysoft.Libs.MapRazorClassLibrary.MapModels.Basic;
 
 /// <summary>
 /// Represents an icon to provide when creating a marker.
 /// </summary>
-public record class Icon
+public sealed record class Icon
 {
     public Icon(string iconUrl = "marker-icon.png")
     {
@@ -26,20 +26,20 @@ public record class Icon
     /// <summary>
     /// The URL to the icon image (absolute or relative to your script path).
     /// </summary>
-    /// <remarks>Default: null</remarks>
+    /// <remarks>Default: <c>null</c></remarks>
     [J("iconUrl")] public required string IconUrl { get; set; }
 
     /// <summary>
     /// The URL to a retina sized version of the icon image (absolute or relative to your script path).
     /// Used for Retina screen devices.
     /// </summary>
-    /// <remarks>Default: null</remarks>
+    /// <remarks>Default: <c>null</c></remarks>
     [J("iconRetinaUrl")] public string? IconRetinaUrl { get; set; }
 
     /// <summary>
     /// Size of the icon image in pixels.
     /// </summary>
-    /// <remarks>Default: null</remarks>
+    /// <remarks>Default: <c>null</c></remarks>
     [J("iconSize")] public Point? IconSize { get; set; }
 
     /// <summary>
@@ -47,7 +47,7 @@ public record class Icon
     /// The icon will be aligned so that this point is at the marker's geographical location.
     /// Centered by default if size is specified, also can be set in CSS with negative margins.
     /// </summary>
-    /// <remarks>Default: null</remarks>
+    /// <remarks>Default: <c>null</c></remarks>
     [J("iconAnchor")] public Point? IconAnchor { get; set; }
 
     /// <summary>
@@ -66,25 +66,25 @@ public record class Icon
     /// The URL to the icon shadow image.
     /// If not specified, no shadow image will be created.
     /// </summary>
-    /// <remarks>Default: null</remarks>
+    /// <remarks>Default: <c>null</c></remarks>
     [J("shadowUrl")] public string? ShadowUrl { get; set; }
 
     /// <summary>
     /// 
     /// </summary>
-    /// <remarks>Default: null</remarks>
+    /// <remarks>Default: <c>null</c></remarks>
     [J("shadowRetinaUrl")] public string? ShadowRetinaUrl { get; set; }
 
     /// <summary>
     /// Size of the shadow image in pixels.
     /// </summary>
-    /// <remarks>Default: null</remarks>
+    /// <remarks>Default: <c>null</c></remarks>
     [J("shadowSize")] public Point? ShadowSize { get; set; }
 
     /// <summary>
     /// The coordinates of the "tip" of the shadow (relative to its top left corner) (the same as iconAnchor if not specified).
     /// </summary>
-    /// <remarks>Default: null</remarks>
+    /// <remarks>Default: <c>null</c></remarks>
     [J("shadowAnchor")] public Point? ShadowAnchor { get; set; }
 
     /// <summary>

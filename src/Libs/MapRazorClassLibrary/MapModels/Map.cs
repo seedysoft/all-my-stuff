@@ -3,7 +3,7 @@
 /// <summary>
 /// The central class of the API — it is used to create a map on a page and manipulate it.
 /// </summary>
-public record Map : Evented
+public sealed record class Map : Base.Evented
 {
     /// <summary>
     /// Whether <see cref="Path"/>s should be rendered on a <see cref="Canvas"/> renderer.
@@ -31,12 +31,24 @@ public record Map : Evented
     #region Interaction Options
 
     /// <summary>
+    /// Set it to <c>false</c> if you don't want popups to close when user clicks the map.
+    /// </summary>
+    /// <remarks>Default: <c>true</c></remarks>
+    [J("closePopupOnClick")] public bool? ClosePopupOnClick { get; set; } = true;
+
+    /// <summary>
     /// Whether the map can be zoomed in by double clicking on it and zoomed out by double clicking while holding shift.
     /// If passed 'center', double-click zoom will zoom to the center of the view regardless of where the pointer was.
     /// </summary>
     /// <remarks>Default: <c>true</c></remarks>
     [J("doubleClickZoom"), K(typeof(OneOf.Serialization.SystemTextJson.OneOfJsonConverter))]
     public OneOf.OneOf<bool, string>? DoubleClickZoom { get; set; } = true;
+
+    ///// <summary>
+    /// Whether the map is draggable with pointer or not.
+    /// </summary>
+    /// <remarks>Default: <c>true</c></remarks>
+    [J("dragging")] public bool? Dragging { get; set; } = true;
 
     #endregion
 
@@ -69,7 +81,7 @@ public record Map : Evented
     /// Initial geographic center of the map.
     /// </summary>
     /// <remarks>Default: undefined</remarks>
-    [J("center")] public LatLng? Center { get; set; }
+    [J("center")] public Basic.LatLng? Center { get; set; }
 
     /// <summary>
     /// Initial map zoom level
@@ -97,83 +109,15 @@ public record Map : Evented
 
     #endregion
 
-    ///// <summary>
-    ///// Whether the map is draggable with pointer or not.
-    ///// </summary>
-    ///// <remarks>Default: <c>true</c></remarks>
-    //[J("dragging")] public bool Dragging { get; set; } = true;
-
     //public List<TileLayer> TileLayers { get; set; } = [];
 
-    //public LayersControlOptions? LayersControl { get; set; }
-
-    //public ScaleControlOptions? ScaleControl { get; set; }
+    public enum Panes
+    {
+        [J("tilePane")] TilePane,
+        [J("overlayPane")] OverlayPane,
+        [J("shadowPane")] ShadowPane,
+        [J("markerPane")] MarkerPane,
+        [J("tooltipPane")] TooltipPane,
+        [J("popupPane")] PopupPane,
+    }
 }
-
-//public abstract class ControlOptions
-//{
-//    public enum ControlPosition
-//    {
-//        [J("topleft")] TopLeft,
-//        [J("topright")] TopRight,
-//        [J("bottomleft")] BottomLeft,
-//        [J("bottomright")] BottomRight
-//    }
-
-//    public ControlPosition? Position { get; set; }
-//}
-
-//public sealed class LayersControlOptions : ControlOptions
-//{
-
-//    /// <summary>
-//    /// If true, the control will be collapsed into an icon and expanded on mouse hover, touch, or keyboard activation.
-//    /// </summary>
-//    /// <remarks>Default is <see langword="true"/></remarks>
-//    public bool? Collapsed { get; set; } = true;
-
-//    /// <summary>
-//    /// If true, the control will assign zIndexes in increasing order to all of its layers so that the order is preserved when switching them on/off.
-//    /// </summary>
-//    /// <remarks>Default is <see langword="true"/></remarks>
-//    public bool? AutoZIndex { get; set; } = true;
-
-//    /// <summary>
-//    /// If true, the base layers in the control will be hidden when there is only one.
-//    /// </summary>
-//    /// <remarks>Default is <see langword="false"/></remarks>
-//    public bool? HideSingleBase { get; set; }
-
-//    /// <summary>
-//    /// Whether to sort the layers. When false, layers will keep the order in which they were added to the control.
-//    /// </summary>
-//    /// <remarks>Default is <see langword="false"/></remarks>
-//    public bool? SortLayers { get; set; }
-//}
-
-//public class ScaleControlOptions : ControlOptions
-//{
-//    /// <summary>
-//    /// Maximum width of the control in pixels. The width is set dynamically to show round values (e.g. 100, 200, 500).
-//    /// </summary>
-//    /// <remarks>Default is 100.</remarks>
-//    public int? MaxWidth { get; set; } = 100;
-
-//    /// <summary>
-//    /// Whether to show the imperial scale line (mi/ft).
-//    /// </summary>
-//    /// <remarks>Default is <see langword="true"/></remarks>
-//    public bool? Imperial { get; set; } = true;
-
-//    /// <summary>
-//    /// Whether to show the metric scale line (m/km).
-//    /// </summary>
-//    /// <remarks>Default is <see langword="true"/></remarks>
-//    public bool? Metric { get; set; }
-
-//    /// <summary>
-//    /// If true, the control is updated on moveend, otherwise it's always up-to-date (updated on move).
-//    /// </summary>
-//    /// <remarks>Default is <see langword="false"/></remarks>
-//    public bool? UpdateWhenIdle { get; set; }
-//}

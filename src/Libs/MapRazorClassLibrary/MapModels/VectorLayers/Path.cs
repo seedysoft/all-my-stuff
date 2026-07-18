@@ -1,11 +1,11 @@
-﻿namespace Seedysoft.Libs.MapRazorClassLibrary.MapModels;
+﻿namespace Seedysoft.Libs.MapRazorClassLibrary.MapModels.VectorLayers;
 
 /// <summary>
 /// An abstract class that contains options and constants shared between vector overlays (Polygon, Polyline, Circle).
 /// Do not use it directly.
 /// Extends <see cref="Layer"/>.
 /// </summary>
-public abstract record class Path : InteractiveLayer
+public abstract record class Path : Base.InteractiveLayer
 {
     protected Path() : base() { }
 
@@ -50,13 +50,13 @@ public abstract record class Path : InteractiveLayer
     /// <summary>
     /// A string that defines the stroke dash pattern.
     /// </summary>
-    /// <remarks>Default: null</remarks>
+    /// <remarks>Default: <c>null</c></remarks>
     [J("dashArray")] public string? DashArray { get; set; } = null;
 
     /// <summary>
     /// A string that defines the distance into the dash pattern to start the dash.
     /// </summary>
-    /// <remarks>Default: null</remarks>
+    /// <remarks>Default: <c>null</c></remarks>
     [J("dashOffset")] public string? DashOffset { get; set; } = null;
 
     /// <summary>
@@ -90,12 +90,12 @@ public abstract record class Path : InteractiveLayer
     /// Takes precedence over the map's default renderer.
     /// If set, it will override the pane option of the path.
     /// </summary>
-    [J("renderer")] public Renderer? Renderer { get; set; }
+    [J("renderer")] public Base.Renderer? Renderer { get; set; }
 
     /// <summary>
     /// Custom class name set on an element.
     /// Only for SVG renderer.
     /// </summary>
-    /// <remarks>Default: null</remarks>
+    /// <remarks>Default: <c>null</c></remarks>
     [J("className")] public string? ClassName { get; set; } = null;
 }

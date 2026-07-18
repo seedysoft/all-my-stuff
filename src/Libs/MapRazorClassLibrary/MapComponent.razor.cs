@@ -175,28 +175,28 @@ public partial class MapComponent : IAsyncDisposable
 
                 //await AddMarkerAsync(marker, IsCheap ? CheapIcon : RepsolIcon, PopupContent);
 
-                MapModels.CircleMarker circleMarker = new(new MapModels.LatLng(GasStation.Lat, GasStation.Lon));
+                MapModels.VectorLayers.CircleMarker circleMarker = new(new MapModels.Basic.LatLng(GasStation.Lat, GasStation.Lon));
 
                 //                          TODO Use colors, sizes, etc...
 
                 if (GasStationProducts.Any(x => x.Value == (Products.FirstOrDefault(p => p.IdP == x.IdProducto)?.Min ?? decimal.Zero)))
                 {
-                    circleMarker.Color = "#ff0000"; // Green = Min
+                    circleMarker.Color = circleMarker.FillColor = "#ff0000"; // Green = Min
                     circleMarker.Radius = 5;
                 }
                 else if (GasStationProducts.Any(x => x.Value == (Products.FirstOrDefault(p => p.IdP == x.IdProducto)?.Max ?? decimal.Zero)))
                 {
-                    circleMarker.Color = "#00ff00"; // Red = Max
+                    circleMarker.Color = circleMarker.FillColor = "#00ff00"; // Red = Max
                     circleMarker.Radius = 20;
                 }
                 else if (GasStationProducts.Any(x => x.Value <= (Products.FirstOrDefault(p => p.IdP == x.IdProducto)?.Avg ?? decimal.Zero)))
                 {
-                    circleMarker.Color = "#FFFF00"; // Yellow <= Avg
+                    circleMarker.Color = circleMarker.FillColor = "#FFFF00"; // Yellow <= Avg
                     circleMarker.Radius = 10;
                 }
                 else
                 {
-                    circleMarker.Color = "#FF8C00"; // Orange > Avg
+                    circleMarker.Color = circleMarker.FillColor = "#FF8C00"; // Orange > Avg
                     circleMarker.Radius = 15;
                 }
 

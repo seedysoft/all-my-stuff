@@ -1,10 +1,10 @@
-﻿namespace Seedysoft.Libs.MapRazorClassLibrary.MapModels;
+﻿namespace Seedysoft.Libs.MapRazorClassLibrary.MapModels.Base;
 
 /// <summary>
 /// Some <see cref="Layer"/>s can be made interactive - when the user interacts with such a layer, pointer events like <c>click</c> and <c>pointerover</c> can be handled.
 /// Use the <see href="https://leafletjs.com/reference-2.0.0.html#evented-method">event handling methods</see> to handle these events.
 /// </summary>
-public record class InteractiveLayer : Layer
+public abstract record class InteractiveLayer : Layer
 {
     public InteractiveLayer() : base() { }
 

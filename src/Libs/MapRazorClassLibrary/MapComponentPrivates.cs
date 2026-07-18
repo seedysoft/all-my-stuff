@@ -55,11 +55,11 @@ public partial class MapComponent : IAsyncDisposable
             if (arrayPolyline.GetLength(1) != 2)
                 throw new ArgumentException($"The {nameof(arrayPolyline)} must be a 2D array with two columns for latitude and longitude.");
 
-            IEnumerable<MapModels.LatLng> values =
+            IEnumerable<MapModels.Basic.LatLng> values =
                 from i in Enumerable.Range(0, arrayPolyline.GetLength(0))
-                select new MapModels.LatLng(lat: arrayPolyline[i, 0], lng: arrayPolyline[i, 1]);
+                select new MapModels.Basic.LatLng(lat: arrayPolyline[i, 0], lng: arrayPolyline[i, 1]);
 
-            MapModels.Polyline polyline = new([.. values])
+            MapModels.VectorLayers.Polyline polyline = new([.. values])
             {
                 Color = color,
                 Weight = 10,

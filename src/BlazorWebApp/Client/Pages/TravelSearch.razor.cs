@@ -16,7 +16,7 @@ public partial class TravelSearch
 
     private Libs.MapRazorClassLibrary.MapModels.Map Map { get; set; } = new()
     {
-        Center = new Libs.MapRazorClassLibrary.MapModels.LatLng(Libs.Travel.Constants.Earth.Burgos.Latitude, Libs.Travel.Constants.Earth.Burgos.Longitude),
+        Center = new Libs.MapRazorClassLibrary.MapModels.Basic.LatLng(Libs.Travel.Constants.Earth.Burgos.Latitude, Libs.Travel.Constants.Earth.Burgos.Longitude),
         Zoom = 18,
     };
 

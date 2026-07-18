@@ -1,4 +1,4 @@
-﻿namespace Seedysoft.Libs.MapRazorClassLibrary.MapModels;
+﻿namespace Seedysoft.Libs.MapRazorClassLibrary.MapModels.Base;
 
 /// <summary>
 /// Base class for vector renderer implementations (<see cref="SVG"/>, <see cref="Canvas"/>).

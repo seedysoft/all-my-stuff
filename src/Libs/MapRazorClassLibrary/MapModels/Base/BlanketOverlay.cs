@@ -1,4 +1,4 @@
-﻿namespace Seedysoft.Libs.MapRazorClassLibrary.MapModels;
+﻿namespace Seedysoft.Libs.MapRazorClassLibrary.MapModels.Base;
 
 /// <summary>
 /// Represents an HTML element that covers ("blankets") the entire surface of the map.

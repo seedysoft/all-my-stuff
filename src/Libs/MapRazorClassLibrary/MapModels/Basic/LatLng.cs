@@ -1,4 +1,4 @@
-﻿namespace Seedysoft.Libs.MapRazorClassLibrary.MapModels;
+﻿namespace Seedysoft.Libs.MapRazorClassLibrary.MapModels.Basic;
 
 /// <summary>
 /// Represents a geographical point with a certain latitude and longitude.

@@ -1,10 +1,10 @@
-﻿namespace Seedysoft.Libs.MapRazorClassLibrary.MapModels;
+﻿namespace Seedysoft.Libs.MapRazorClassLibrary.MapModels.Base;
 
 /// <summary>
 /// A set of methods from the Layer base class that all Leaflet layers use.
 /// Inherits all methods, options and events from <see cref="Evented"/>.
 /// </summary>
-public record class Layer : Evented
+public abstract record class Layer : Evented
 {
     public Layer() : base() { }
 
@@ -14,12 +14,12 @@ public record class Layer : Evented
     /// Not effective if the renderer option is set (the renderer option will override the pane option).
     /// </summary>
     /// <remarks>Default: 'overlayPane'</remarks>
-    [J("pane")] public string? Pane { get; set; } = "overlayPane";
+    [J("pane")] public Map.Panes? Pane { get; set; } = Map.Panes.OverlayPane;
 
     /// <summary>
     /// String to be shown in the attribution control, e.g. "© OpenStreetMap contributors".
     /// It describes the layer data and is often a legal obligation towards copyright holders and tile providers.
     /// </summary>
-    /// <remarks>Default: null</remarks>
+    /// <remarks>Default: <c>null</c></remarks>
     [J("attribution")] public string? Attribution { get; set; } = null;
 }

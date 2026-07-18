@@ -1,17 +1,17 @@
-﻿namespace Seedysoft.Libs.MapRazorClassLibrary.MapModels;
+﻿namespace Seedysoft.Libs.MapRazorClassLibrary.MapModels.VectorLayers;
 
 /// <summary>
 /// A class for drawing polyline overlays on a map.
 /// Extends <see cref="Path"/>.
 /// </summary>
-public record class Polyline : Path
+public sealed record class Polyline : Path
 {
-    public Polyline(IReadOnlyList<LatLng> points) : base() => Points = points;
+    public Polyline(IReadOnlyList<Basic.LatLng> points) : base() => Points = points;
 
     /// <summary>
     /// Array of geographical points
     /// </summary>
-    [J("points")] public IReadOnlyList<LatLng> Points { get; set; }
+    [J("points")] public IReadOnlyList<Basic.LatLng> Points { get; set; }
 
     /// <summary>
     /// How much to simplify the polyline on each zoom level.

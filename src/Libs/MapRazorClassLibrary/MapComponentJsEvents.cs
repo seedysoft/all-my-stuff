@@ -6,8 +6,9 @@ public partial class MapComponent : IAsyncDisposable
 {
     public sealed class MapClickEventArgs : EventArgs
     {
-        [J("latLng")] public required MapModels.LatLng LatLng { get; set; }
+        [J("latLng")] public required MapModels.Basic.LatLng LatLng { get; set; }
     }
 
-    [JSInvokable] public async Task OnMapClickAsync(MapClickEventArgs args) => await OnMapClickAsyncEventCallback.InvokeAsync(args);
+    [JSInvokable] public async Task OnMapClickAsync(MapClickEventArgs args) 
+        => await OnMapClickAsyncEventCallback.InvokeAsync(args);
 }

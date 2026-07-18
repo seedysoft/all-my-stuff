@@ -1,28 +1,29 @@
-﻿namespace Seedysoft.Libs.MapRazorClassLibrary.MapModels;
+﻿namespace Seedysoft.Libs.MapRazorClassLibrary.MapModels.UILayers;
 
 /// <summary>
 /// Marker is used to display clickable/draggable icons on the map.
 /// </summary>
-public record class Marker : InteractiveLayer
+public sealed record class Marker : Base.InteractiveLayer
 {
-    public Marker(LatLng position) : base()
+    public Marker(Basic.LatLng position) : base()
     {
         Position = position;
         BubblingPointerEvents = false;
+        Pane = Map.Panes.MarkerPane;
     }
 
     /// <summary>
     /// Geographical point.
     /// </summary>
-    [J("position")] public LatLng Position { get; }
+    [J("position")] public Basic.LatLng Position { get; }
 
     /// <summary>
     /// Icon instance to use for rendering the marker.
     /// See <see href="https://leafletjs.com/reference-2.0.0.html#icon">Icon documentation</see> for details on how to customize the marker icon.
-    /// If not specified, a common instance of <see cref="Icon.Default"/> is used.
+    /// If not specified, a common instance of <see cref="Basic.Icon.Default"/> is used.
     /// </summary>
     /// <remarks>Default: *</remarks>
-    [J("icon")] public Icon? Icon { get; set; }
+    [J("icon")] public Basic.Icon? Icon { get; set; }
 
     /// <summary>
     /// Whether the marker can be tabbed to with a keyboard and clicked by pressing enter.
@@ -70,12 +71,6 @@ public record class Marker : InteractiveLayer
     [J("riseOffset")] public double? RiseOffset { get; set; } = 250;
 
     /// <summary>
-    /// Map pane where the markers icon will be added.
-    /// </summary>
-    /// <remarks>Default: 'markerPane'</remarks>
-    [J("pane")] public new string? Pane { get; set; } = "markerPane";
-
-    /// <summary>
     /// Map pane where the markers shadow will be added.
     /// </summary>
     /// <remarks>Default: 'shadowPane'</remarks>
@@ -87,11 +82,11 @@ public record class Marker : InteractiveLayer
     /// <remarks>Default: <c>true</c></remarks>
     [J("autoPanOnFocus")] public bool? AutoPanOnFocus { get; set; } = true;
 
-// Draggable marker options
-// Option	Type	Default	Description
-// draggable	Boolean	false	Whether the marker is draggable with pointer or not.
-// autoPan	Boolean	false	Whether to pan the map when dragging this marker near its edge or not.
-// autoPanPadding	Point	Point(50, 50)	Distance (in pixels to the left/right and to the top/bottom) of the map edge to start panning the map.
-// autoPanSpeed	Number	10	Number of pixels the map should pan by.
+    // Draggable marker options
+    // Option	Type	Default	Description
+    // draggable	Boolean	false	Whether the marker is draggable with pointer or not.
+    // autoPan	Boolean	false	Whether to pan the map when dragging this marker near its edge or not.
+    // autoPanPadding	Point	Point(50, 50)	Distance (in pixels to the left/right and to the top/bottom) of the map edge to start panning the map.
+    // autoPanSpeed	Number	10	Number of pixels the map should pan by.
 
 }
