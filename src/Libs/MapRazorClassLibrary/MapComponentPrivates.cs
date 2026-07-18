@@ -12,11 +12,13 @@ public partial class MapComponent : IAsyncDisposable
     private bool IsMapReady = false;
 
     private readonly string LeafletJavascriptFile =
+        $"{Core.Helpers.ContentHelper.ContentPath(typeof(MapComponent))}/lib/leaflet/" +
 #if DEBUG
-        $"{Core.Helpers.ContentHelper.ContentPath(typeof(MapComponent))}/lib/leaflet/src/leaflet.js";
+        "src" +
 #else
-        $"{Core.Helpers.ContentHelper.ContentPath(typeof(MapComponent))}/lib/leaflet/dist/leaflet.js";
+        "dist" +
 #endif
+        "/leaflet.js";
 
     [Inject] private IJSRuntime JsRuntime { get; set; } = default!;
 
