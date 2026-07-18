@@ -1,6 +1,4 @@
-﻿using OneOf;
-
-// TODO                                 perform icon images
+﻿// TODO                                 perform icon images
 
 namespace Seedysoft.Libs.MapRazorClassLibrary.MapModels;
 
@@ -96,14 +94,15 @@ public record class Icon
     /// <remarks>Default: ''</remarks>
     [J("className")] public string? ClassName { get; set; } = string.Empty;
 
-    ///// <summary>
-    ///// Whether the crossOrigin attribute will be added to the tiles.
-    ///// If a String is provided, all tiles will have their crossOrigin attribute set to the String provided.
-    ///// This is needed if you want to access tile pixel data.
-    ///// Refer to CORS Settings for valid String values.
-    ///// </summary>
-    ///// <remarks>Default: <c>false</c></remarks>
-    //[J("crossOrigin")] public OneOf<bool, string>? CrossOrigin { get; set; } = false;
+    /// <summary>
+    /// Whether the crossOrigin attribute will be added to the tiles.
+    /// If a String is provided, all tiles will have their crossOrigin attribute set to the String provided.
+    /// This is needed if you want to access tile pixel data.
+    /// Refer to CORS Settings for valid String values.
+    /// </summary>
+    /// <remarks>Default: <c>false</c></remarks>
+    [J("crossOrigin"), K(typeof(OneOf.Serialization.SystemTextJson.OneOfJsonConverter))]
+    public OneOf.OneOf<bool, string>? CrossOrigin { get; set; } = false;
 
     /// <summary>
     /// A trivial subclass of <see cref="Icon"/>, represents the icon to use in Markers when no icon is specified.

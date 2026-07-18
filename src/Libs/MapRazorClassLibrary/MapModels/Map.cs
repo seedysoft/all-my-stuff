@@ -1,6 +1,4 @@
-﻿using OneOf;
-
-namespace Seedysoft.Libs.MapRazorClassLibrary.MapModels;
+﻿namespace Seedysoft.Libs.MapRazorClassLibrary.MapModels;
 
 /// <summary>
 /// The central class of the API — it is used to create a map on a page and manipulate it.
@@ -37,7 +35,8 @@ public record Map : Evented
     /// If passed 'center', double-click zoom will zoom to the center of the view regardless of where the pointer was.
     /// </summary>
     /// <remarks>Default: <c>true</c></remarks>
-    [J("doubleClickZoom")] public OneOf<bool, string>? DoubleClickZoom { get; set; } = OneOf<bool, string>.FromT0(true);
+    [J("doubleClickZoom"), K(typeof(OneOf.Serialization.SystemTextJson.OneOfJsonConverter))]
+    public OneOf.OneOf<bool, string>? DoubleClickZoom { get; set; } = true;
 
     #endregion
 
