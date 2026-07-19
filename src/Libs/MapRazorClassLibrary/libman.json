@@ -8,16 +8,6 @@
       "destination": "wwwroot/lib/leaflet/"
     },
     {
-      "library": "font-awesome@4.7.0",
-      "provider": "unpkg",
-      "destination": "wwwroot/lib/font-awesome/"
-    },
-    {
-      "library": "material-design-icons-iconfont@6.7.0",
-      "provider": "unpkg",
-      "destination": "wwwroot/lib/MDIDX/"
-    },
-    {
       "library": "dompurify@3.4.12",
       "provider": "unpkg",
       "destination": "wwwroot/lib/DOMPurify"
