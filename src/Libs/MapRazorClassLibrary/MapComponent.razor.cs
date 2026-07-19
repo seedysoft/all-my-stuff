@@ -216,17 +216,16 @@ public partial class MapComponent : IAsyncDisposable
                 await GasStationPricesService.GetNearGasStationsAsync(bounds, model.MaxDistanceInKm, cancellationToken);
 
             // For each product, obtain min and average
-            var Products =
+            IEnumerable<ProductLimits> Products =
                 from p in GasStationPrices.Models.Minetur.ProductoPetrolifero.All
                 where model.PetroleumProductsSelectedIds.Contains(p.IdProducto)
                 let v = gasStations.Select(x => x.GetProdById(p.IdProducto)).Where(x => x.HasValue)
-                select new
-                {
-                    IdP = p.IdProducto,
-                    Min = v.Min(),
-                    Avg = v.Average(),
-                    Max = v.Max(),
-                };
+                select new ProductLimits(
+                    p.IdProducto,
+                    v.Min(),
+                    v.Average(),
+                    v.Max()
+                );
 
             for (int i = 0; i < gasStations.Count; i++)
             {
@@ -238,47 +237,97 @@ public partial class MapComponent : IAsyncDisposable
                 //                          TODO Use colors, sizes, etc...
                 MapModels.VectorLayers.CircleMarker circleMarker = new(new MapModels.Basic.LatLng(GasStation.Lat, GasStation.Lon))
                 {
-                    ClassName = "material-icons local_gas_station",
                     Fill = true,
                     FillOpacity = 1.0,
                     FillRule = "nonzero",
                 };
 
+                string CssClass;
                 if (GasStationProducts.Any(x => x.Value == (Products.FirstOrDefault(p => p.IdP == x.IdProducto)?.Min ?? decimal.Zero)))
                 {
+                    CssClass = "bgVerde";
                     circleMarker.Color = circleMarker.FillColor = "#ff0000"; // Green = Min
                     circleMarker.Radius = 5;
                 }
                 else if (GasStationProducts.Any(x => x.Value == (Products.FirstOrDefault(p => p.IdP == x.IdProducto)?.Max ?? decimal.Zero)))
                 {
+                    CssClass = "bgRojo";
                     circleMarker.Color = circleMarker.FillColor = "#00ff00"; // Red = Max
                     circleMarker.Radius = 20;
                 }
                 else if (GasStationProducts.Any(x => x.Value <= (Products.FirstOrDefault(p => p.IdP == x.IdProducto)?.Avg ?? decimal.Zero)))
                 {
+                    CssClass = "bgAmarillo";
                     circleMarker.Color = circleMarker.FillColor = "#FFFF00"; // Yellow <= Avg
                     circleMarker.Radius = 10;
                 }
                 else
                 {
+                    CssClass = "bgNaranja";
                     circleMarker.Color = circleMarker.FillColor = "#FF8C00"; // Orange > Avg
                     circleMarker.Radius = 15;
                 }
 
                 MapModels.UILayers.Popup popup = new()
                 {
-                    Content = $"<b>{GasStation.Localizacion}</b>",
+                    Content = BuildPopupContent(GasStation, Products),
                 };
 
                 MapModels.UILayers.Tooltip tooltip = new()
                 {
-                    Content = $"<b>{GasStation.RotuloTrimed}</b>",
+                    Content = $"<span class='{CssClass}'><b>{GasStation.RotuloTrimed}</b><span>",
                     Direction = MapModels.UILayers.Tooltip.Directions.Top,
                     Permanent = true,
                 };
 
                 await AddCircleMarker(circleMarker, popup, tooltip);
             }
+
+            static string BuildPopupContent(GasStationPrices.ViewModels.GasStationModel GasStation, IEnumerable<ProductLimits> Products)
+            {
+                System.Text.StringBuilder popupContent = new();
+                _ = popupContent
+                    .Append("<div class='container'>")
+                    .Append($"<p>{GasStation.Localizacion}</p>");
+
+                _ = popupContent
+                    .Append("<div class='divTable'>")
+                    .Append("<div class='divTableBody'>");
+
+                for (int i = 0; i < GasStationPrices.Models.Minetur.ProductoPetrolifero.All.Count; i++)
+                {
+                    GasStationPrices.Models.Minetur.ProductoPetrolifero productoPetrolifero = GasStationPrices.Models.Minetur.ProductoPetrolifero.All[i];
+
+                    decimal? GasVal = GasStation.GetProdById(productoPetrolifero.IdProducto);
+                    if (!GasVal.HasValue)
+                        continue;
+
+                    string CssClass;
+                    ProductLimits? productLimits = Products.FirstOrDefault(p => p.IdP == productoPetrolifero.IdProducto);
+                    if (GasVal.Value == (productLimits?.Min ?? decimal.Zero))
+                        CssClass = "bgVerde";
+                    else if (GasVal.Value == (productLimits?.Max ?? decimal.Zero))
+                        CssClass = "bgRojo";
+                    else if (GasVal.Value <= (productLimits?.Avg ?? decimal.Zero))
+                        CssClass = "bgAmarillo";
+                    else
+                        CssClass = "bgNaranja";
+
+                    _ = popupContent
+                        .Append($"<div class='divTableRow {CssClass}'>")
+                        .Append($"<div class='divTableCell'>{productoPetrolifero.Nombre}</div>")
+                        .Append($"<div class='divTableCell derecha'>{GasVal.Value.ToString("0.000 €")}</div>")
+                        .Append("</div>"); // .divTableRow
+                }
+
+                _ = popupContent
+                    .Append("</div>")   // .divTableBody
+                    .Append("</div>")   // .divTable
+                    .Append("</div>");  // .container
+
+                return popupContent.ToString();
+            }
         }
     }
 }
+internal record ProductLimits(GasStationPrices.Constants.ProductoPetroliferoId IdP, decimal? Min, decimal? Avg, decimal? Max);
