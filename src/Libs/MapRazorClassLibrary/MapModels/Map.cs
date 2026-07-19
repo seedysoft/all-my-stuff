@@ -1,6 +1,4 @@
-﻿using System.Runtime.Serialization;
-
-namespace Seedysoft.Libs.MapRazorClassLibrary.MapModels;
+﻿namespace Seedysoft.Libs.MapRazorClassLibrary.MapModels;
 
 /// <summary>
 /// The central class of the API — it is used to create a map on a page and manipulate it.
@@ -8,8 +6,8 @@ namespace Seedysoft.Libs.MapRazorClassLibrary.MapModels;
 public sealed record class Map : Base.Evented
 {
     /// <summary>
-    /// Whether <see cref="Path"/>s should be rendered on a <see cref="Canvas"/> renderer.
-    /// By default, all <see cref="Path"/>s are rendered in a <see cref="SVG"/> renderer.
+    /// Whether <see cref="Path"/>s should be rendered on a <see cref="VectorLayers.Canvas"/> renderer.
+    /// By default, all <see cref="Path"/>s are rendered in a <see cref="VectorLayers.SVG"/> renderer.
     /// </summary>
     /// <remarks>Default: <c>false</c></remarks>
     [J("preferCanvas")] public bool? PreferCanvas { get; set; } = false;
@@ -93,14 +91,14 @@ public sealed record class Map : Base.Evented
 
     /// <summary>
     /// Minimum zoom level of the map.
-    /// If not specified and at least one <see cref="GridLayer"/> or <see cref="TileLayer"/> is in the map, the lowest of their minZoom options will be used instead.
+    /// If not specified and at least one <see cref="OtherLayers.GridLayer"/> or <see cref="RasterLayers.TileLayer"/> is in the map, the lowest of their minZoom options will be used instead.
     /// </summary>
     /// <remarks>Default: <c>*</c></remarks>
     [J("minZoom")] public double? MinZoom { get; set; }
 
     /// <summary>
     /// Maximum zoom level of the map.
-    /// If not specified and at least one <see cref="GridLayer"/> or <see cref="TileLayer"/> is in the map, the highest of their maxZoom options will be used instead.
+    /// If not specified and at least one <see cref="OtherLayers.GridLayer"/> or <see cref="RasterLayers.TileLayer"/> is in the map, the highest of their maxZoom options will be used instead.
     /// </summary>
     /// <remarks>Default: <c>*</c></remarks>
     [J("maxZoom")] public double? MaxZoom { get; set; }
@@ -125,15 +123,16 @@ public sealed record class Map : Base.Evented
     /// New panes can be created with the map.createPane method.
     /// Every map has the following default panes that differ only in zIndex.
     /// </summary>
+    [K(typeof(Core.Serialization.EnumMemberJsonConverter<Panes>))]
     public enum Panes
     {
 #pragma warning disable format
-        [EnumMember(Value = "tilePane")]    TilePane,
-        [EnumMember(Value = "overlayPane")] OverlayPane,
-        [EnumMember(Value = "shadowPane")]  ShadowPane,
-        [EnumMember(Value = "markerPane")]  MarkerPane,
-        [EnumMember(Value = "tooltipPane")] TooltipPane,
-        [EnumMember(Value = "popupPane")]   PopupPane,
+        [System.Runtime.Serialization.EnumMember(Value = "tilePane")]       TilePane,
+        [System.Runtime.Serialization.EnumMember(Value = "overlayPane")]    OverlayPane,
+        [System.Runtime.Serialization.EnumMember(Value = "shadowPane")]     ShadowPane,
+        [System.Runtime.Serialization.EnumMember(Value = "markerPane")]     MarkerPane,
+        [System.Runtime.Serialization.EnumMember(Value = "tooltipPane")]    TooltipPane,
+        [System.Runtime.Serialization.EnumMember(Value = "popupPane")]      PopupPane,
 #pragma warning restore format
     }
 }

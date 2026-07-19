@@ -17,7 +17,7 @@ public sealed record class Tooltip : DivOverlay
     /// auto will dynamically switch between right and left according to the tooltip position on the map.
     /// </summary>
     /// <remarks>Default: <c>'auto'</c></remarks>
-    [J("direction")] public string? Direction { get; set; } = "auto";
+    [J("direction")] public Directions? Direction { get; set; } = Directions.Auto;
 
     /// <summary>
     /// Whether to open the tooltip permanently or only on pointerover.
@@ -36,4 +36,17 @@ public sealed record class Tooltip : DivOverlay
     /// </summary>
     /// <remarks>Default: <c>0.9</c></remarks>
     [J("opacity")] public double? Opacity { get; set; } = 0.9;
+
+    [K(typeof(Core.Serialization.EnumMemberJsonConverter<Directions>))]
+    public enum Directions
+    {
+#pragma warning disable format
+        [System.Runtime.Serialization.EnumMember(Value = "right")]   Right,
+        [System.Runtime.Serialization.EnumMember(Value = "left")]    Left,
+        [System.Runtime.Serialization.EnumMember(Value = "top")]     Top,
+        [System.Runtime.Serialization.EnumMember(Value = "bottom")]  Bottom,
+        [System.Runtime.Serialization.EnumMember(Value = "center")]  Center,
+        [System.Runtime.Serialization.EnumMember(Value = "auto")]    Auto,
+#pragma warning restore format
+    }
 }

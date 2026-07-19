@@ -2,8 +2,7 @@
 
 public readonly record struct ProductoPetrolifero : IComparable<ProductoPetrolifero>
 {
-    [J("IDProducto"), K(typeof(Core.Extensions.ParseStringJsonConverter))]
-    public required Constants.ProductoPetroliferoId IdProducto { get; init; }
+    [J("IDProducto")] public required Constants.ProductoPetroliferoId IdProducto { get; init; }
 
     [J("NombreProducto")] public required string Nombre { get; init; }
 

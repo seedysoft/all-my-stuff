@@ -1,5 +1,6 @@
 ﻿namespace Seedysoft.Libs.GasStationPrices.Constants;
 
+[K(typeof(Core.Serialization.ParseStringJsonConverter))]
 public enum ProductoPetroliferoId : long
 {
 #pragma warning disable format

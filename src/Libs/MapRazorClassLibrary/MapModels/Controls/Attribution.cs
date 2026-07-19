@@ -14,5 +14,6 @@ public sealed record class Attribution : Base.Control
     /// Pass <c>false</c> to disable.
     /// </summary>
     /// <remarks>Default: <c>'Leaflet'</c></remarks>
-    [J("prefix")] public OneOf.OneOf<bool, string>? Prefix { get; set; } = "Leaflet";
+    [J("prefix"), K(typeof(OneOf.Serialization.SystemTextJson.OneOfJsonConverter))]
+    public OneOf.OneOf<bool, string>? Prefix { get; set; } = "Leaflet";
 }

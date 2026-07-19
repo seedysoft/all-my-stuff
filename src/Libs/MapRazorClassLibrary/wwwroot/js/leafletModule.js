@@ -44,15 +44,21 @@ export function addMarker(markerOptions, iconOptions, popupContent) {
     marker.addTo(map);
 }
 
-export function addCircleMarker(circleOptions, popupContent, tooltipContent) {
+export function addCircleMarker(circleOptions, popup, tooltip) {
     // debugger
     const circleMarker = new L.CircleMarker(circleOptions.position, circleOptions);
 
-    if (popupContent)
-        circleMarker.bindPopup(DOMPurify.sanitize(popupContent, { USE_PROFILES: { html: true } }));
+    if (typeof popup === 'string') {
+        circleMarker.bindPopup(DOMPurify.sanitize(popup, { USE_PROFILES: { html: true } }));
+    } else if (typeof popup === 'object' && 'content' in popup) {
+        circleMarker.bindPopup(DOMPurify.sanitize(popup.content, { USE_PROFILES: { html: true } }), popup);
+    }
 
-    if (tooltipContent)
-        circleMarker.bindTooltip(DOMPurify.sanitize(tooltipContent, { USE_PROFILES: { html: true } }));
+    if (typeof tooltip === 'string') {
+        circleMarker.bindTooltip(DOMPurify.sanitize(tooltip, { USE_PROFILES: { html: true } }));
+    } else if (typeof tooltip === 'object' && 'content' in tooltip) {
+        circleMarker.bindTooltip(DOMPurify.sanitize(tooltip.content, { USE_PROFILES: { html: true } }), tooltip);
+    }
 
     circleMarker.addTo(map);
 }

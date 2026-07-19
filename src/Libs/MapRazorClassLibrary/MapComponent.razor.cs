@@ -2,37 +2,78 @@ using Microsoft.JSInterop;
 
 namespace Seedysoft.Libs.MapRazorClassLibrary;
 
+/// <summary>
+/// Blazor component that manages an interactive map with route visualization and gas station markers.
+/// Integrates Leaflet.js for map rendering and provides functionality to display travel routes and nearby gas stations.
+/// </summary>
+/// <remarks>
+/// This component:
+/// - Loads a Leaflet map module dynamically on first render
+/// - Displays multiple routes with distinct colors
+/// - Marks gas stations with color-coded indicators based on fuel prices
+/// - Supports cancellation tokens for async operations
+/// - Implements IAsyncDisposable for proper resource cleanup
+/// 
+/// The component uses local JavaScript interop to interact with Leaflet library features.
+/// </remarks>
 public partial class MapComponent : IAsyncDisposable
 {
+    /// <summary>
+    /// Array of hex color codes used to differentiate multiple routes on the map.
+    /// Supports up to 8 distinct routes with varying shades of blue.
+    /// </summary>
     private readonly string[] ColorsForRoutes = ["#007FFF", "#0074EA", "#0069D5", "#005EC0", "#0053AB", "#004896", "#003D81", "#00326C"];
 
-    ///// <summary>
-    ///// Gets or sets the height of the <see cref="RealTimeMap" />.
-    ///// </summary>
-    ///// <remarks>
-    ///// Default value is <see langword="null" />.
-    ///// </remarks>
-    //[Parameter] public string? Height { get; set; } = "calc(100vh - 6rem)";
+    /// <summary>
+    /// Initializes the component by creating a DotNet object reference for JavaScript interop.
+    /// Called automatically by Blazor during component initialization.
+    /// </summary>
+    protected override void OnInitialized() => ObjRef = DotNetObjectReference.Create(this);
 
-    ///// <summary>
-    ///// Gets or sets the width of the <see cref="RealTimeMap" />.
-    ///// </summary>
-    ///// <remarks>
-    ///// Default value is <see langword="null" />.
-    ///// </remarks>
-    //[Parameter] public string? Width { get; set; } = "calc(100vw - 18rem)";
+    /// <summary>
+    /// Initializes the map module and creates the map instance on first render.
+    /// </summary>
+    /// <param name="firstRender">Indicates whether this is the first render pass.</param>
+    /// <remarks>
+    /// - Skips execution on subsequent renders
+    /// - Dynamically imports the Leaflet module from the component's JavaScript folder
+    /// - Initializes the map by calling CreateMapAsync()
+    /// </remarks>
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+            return;
 
-    ///// <summary>
-    ///// Gets or sets the zoom level of the <see cref="RealTimeMap" />.
-    ///// </summary>
-    ///// <remarks>
-    ///// Default value is 14.
-    ///// </remarks>
-    //[Parameter] public int Zoom { get; set; } = 18;
+        if (MapModule == null)
+        {
+            MapModule = await JsRuntime.InvokeAsync<IJSObjectReference>(
+                "import", $"./{Core.Helpers.ContentHelper.ContentPath(typeof(MapComponent))}/js/leafletModule.js");
 
-    public async Task<string?> LoadRoutesAndGasStationsAsync(
-        GasStationPrices.ViewModels.TravelQueryModel model
-        , CancellationToken cancellationToken)
+            await CreateMapAsync();
+        }
+    }
+
+    /// <summary>
+    /// Loads travel routes and gas stations onto the map based on the provided travel query.
+    /// </summary>
+    /// <param name="model">The travel query containing origin, destination, petroleum products, and max distance.</param>
+    /// <param name="cancellationToken">Token to cancel the operation.</param>
+    /// <returns>
+    /// Returns null on success, or an error message string if routes cannot be found or an exception occurs.
+    /// </returns>
+    /// <remarks>
+    /// Process flow:
+    /// 1. Shows a loading indicator
+    /// 2. Clears all existing markers
+    /// 3. Retrieves routes from the routing service
+    /// 4. Displays routes as colored polylines on the map
+    /// 5. Fetches gas stations within the computed bounds
+    /// 6. Marks gas stations with color-coded indicators based on fuel prices
+    /// 7. Hides the loading indicator
+    /// 
+    /// Supports cancellation at multiple points during execution.
+    /// </remarks>
+    public async Task<string?> LoadRoutesAndGasStationsAsync(GasStationPrices.ViewModels.TravelQueryModel model, CancellationToken cancellationToken)
     {
         await ShowLoaderAsync();
 
@@ -53,14 +94,21 @@ public partial class MapComponent : IAsyncDisposable
 
         await LoadRoutesDataIntoMapAsync(res, cancellationToken);
 
-        Travel.Models.Bounds ourBounds = ComputeBoundsFromRoutes(res, cancellationToken);
-
-        await LoadGasStationsIntoMapAsync(model, ourBounds, cancellationToken);
+        await LoadGasStationsIntoMapAsync(model, ComputeBoundsFromRoutes(res, cancellationToken), cancellationToken);
 
         await HideLoaderAsync();
 
         return null;
 
+        /// <summary>
+        /// Displays route polylines on the map using color-coded lines.
+        /// </summary>
+        /// <param name="res">Collection of routes with their coordinate arrays.</param>
+        /// <param name="cancellationToken">Token to cancel the operation.</param>
+        /// <remarks>
+        /// Each route is assigned a color from the ColorsForRoutes array based on its index.
+        /// Respects cancellation requests and breaks early if cancellation is requested.
+        /// </remarks>
         async Task LoadRoutesDataIntoMapAsync(
             IReadOnlyList<(string NombreRuta, double[,] Coordenadas)> res
             , CancellationToken cancellationToken)
@@ -76,6 +124,18 @@ public partial class MapComponent : IAsyncDisposable
             }
         }
 
+        /// <summary>
+        /// Calculates the geographic bounds (bounding box) encompassing all route coordinates.
+        /// </summary>
+        /// <param name="res">Collection of routes with their coordinate arrays.</param>
+        /// <param name="cancellationToken">Token to cancel the operation.</param>
+        /// <returns>A Bounds object representing the geographic area covered by all routes.</returns>
+        /// <remarks>
+        /// - Uses inverse limits initially to ensure any valid coordinate will adjust the bounds
+        /// - Iterates through all coordinates in all routes to find extreme latitude and longitude values
+        /// - Returns Empty bounds if cancellation is requested
+        /// - Coordinate format: [latitude, longitude] (column 0 = latitude, column 1 = longitude)
+        /// </remarks>
         Travel.Models.Bounds ComputeBoundsFromRoutes(
             IReadOnlyList<(string NombreRuta
             , double[,] Coordenadas)> res
@@ -131,6 +191,22 @@ public partial class MapComponent : IAsyncDisposable
             return boundsForGasStations;
         }
 
+        /// <summary>
+        /// Retrieves gas stations within the calculated bounds and displays them on the map as markers.
+        /// </summary>
+        /// <param name="model">The travel query model containing selected petroleum product filters.</param>
+        /// <param name="bounds">The geographic bounds to search for gas stations.</param>
+        /// <param name="cancellationToken">Token to cancel the operation.</param>
+        /// <remarks>
+        /// Process:
+        /// 1. Queries the gas station service for stations within the bounds and max distance
+        /// 2. Calculates min, average, and max prices for each selected petroleum product
+        /// 3. Creates circle markers for each gas station
+        /// 4. Color-codes markers to indicate stations with minimum prices (red indicates minimum)
+        /// 5. Sets marker size and styling based on price tier (TODO: enhance color and size logic)
+        /// 
+        /// Future enhancement: Use colors, sizes, and SVG icons to better represent price tiers.
+        /// </remarks>
         async Task LoadGasStationsIntoMapAsync(
             GasStationPrices.ViewModels.TravelQueryModel model
             , Travel.Models.Bounds bounds
@@ -189,28 +265,20 @@ public partial class MapComponent : IAsyncDisposable
                     circleMarker.Radius = 15;
                 }
 
-                string PopupContent = $"<b>{GasStation.Localizacion}</b>";
+                MapModels.UILayers.Popup popup = new()
+                {
+                    Content = $"<b>{GasStation.Localizacion}</b>",
+                };
 
-                string TooltipContent = $"<b>{GasStation.RotuloTrimed}</b>";
+                MapModels.UILayers.Tooltip tooltip = new()
+                {
+                    Content = $"<b>{GasStation.RotuloTrimed}</b>",
+                    Direction = MapModels.UILayers.Tooltip.Directions.Top,
+                    Permanent = true,
+                };
 
-                await AddCircleMarker(circleMarker, PopupContent, TooltipContent);
+                await AddCircleMarker(circleMarker, popup, tooltip);
             }
-        }
-    }
-
-    protected override void OnInitialized() => ObjRef = DotNetObjectReference.Create(this);
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (!firstRender)
-            return;
-
-        if (MapModule == null)
-        {
-            MapModule = await JsRuntime.InvokeAsync<IJSObjectReference>(
-                "import", $"./{Core.Helpers.ContentHelper.ContentPath(typeof(MapComponent))}/js/leafletModule.js");
-
-            await CreateMapAsync();
         }
     }
 }

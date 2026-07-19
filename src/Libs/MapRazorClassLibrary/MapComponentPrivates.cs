@@ -72,11 +72,19 @@ public partial class MapComponent : IAsyncDisposable
     //private async Task AddMarkerAsync(
     //    MapModels.UILayers.Marker? marker = default
     //    , MapModels.Basic.Icon? icon = default
-    //    , string? popupContent = default)
-    //    => await MapModule.InvokeVoidAsync("addMarker", marker, icon, popupContent);
+    //    , string? popupContent = default) => await MapModule.InvokeVoidAsync("addMarker", marker, icon, popupContent);
 
-    private async Task AddCircleMarker(MapModels.VectorLayers.CircleMarker circleMarker, string popupContent, string tooltipContent)
-        => await MapModule.InvokeVoidAsync($"addCircleMarker", circleMarker, popupContent, tooltipContent);
+    private async Task AddCircleMarker(
+        MapModels.VectorLayers.CircleMarker circleMarker,
+        OneOf.OneOf<string, MapModels.UILayers.Popup>? popup,
+        OneOf.OneOf<string, MapModels.UILayers.Tooltip>? tooltip)
+    {
+        await MapModule.InvokeVoidAsync(
+            $"addCircleMarker",
+            circleMarker,
+            popup?.Value ?? null,
+            tooltip?.Value ?? null);
+    }
 
     private async Task DeleteMapAsync()
         => await MapModule.InvokeVoidAsync("destroyMap");

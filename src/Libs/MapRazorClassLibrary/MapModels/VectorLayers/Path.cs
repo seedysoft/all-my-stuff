@@ -3,7 +3,7 @@
 /// <summary>
 /// An abstract class that contains options and constants shared between vector overlays (Polygon, Polyline, Circle).
 /// Do not use it directly.
-/// Extends <see cref="Layer"/>.
+/// Extends <see cref="Base.Layer"/>.
 /// </summary>
 public abstract record class Path : Base.InteractiveLayer
 {
@@ -86,7 +86,7 @@ public abstract record class Path : Base.InteractiveLayer
     [J("fillRule")] public string? FillRule { get; set; } = "evenodd";
 
     /// <summary>
-    /// Use this specific instance of <see cref="Renderer"/> for this path.
+    /// Use this specific instance of <see cref="Base.Renderer"/> for this path.
     /// Takes precedence over the map's default renderer.
     /// If set, it will override the pane option of the path.
     /// </summary>
