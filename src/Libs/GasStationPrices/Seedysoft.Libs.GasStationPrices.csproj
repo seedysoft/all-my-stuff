@@ -53,7 +53,6 @@
         <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.10" />
         <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="10.0.10" />
         <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="10.0.10" />
-        <PackageReference Include="OneOf" Version="3.0.271" />
         <PackageReference Include="RestSharp" Version="114.0.0" />
         <PackageReference Include="Serilog" Version="4.4.0" />
         <PackageReference Include="Serilog.Extensions.Logging" Version="10.0.0" />
@@ -63,23 +62,13 @@
 
     <ItemGroup>
         <ProjectReference Include="..\..\Libs\Infrastructure\Seedysoft.Libs.Infrastructure.csproj" />
+        <ProjectReference Include="..\Core\Seedysoft.Libs.Core.csproj" />
         <ProjectReference Include="..\Cryptography\Seedysoft.Libs.Cryptography.csproj" />
-        <ProjectReference Include="..\GoogleApis\Seedysoft.Libs.GoogleApis.csproj" />
+        <ProjectReference Include="..\Travel\Seedysoft.Libs.Travel.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-        <Using Include="System.Text.Json.Serialization.JsonConverterAttribute">
-            <Alias>K</Alias>
-        </Using>
-        <Using Include="System.Text.Json.Serialization.JsonIgnoreAttribute">
-            <Alias>I</Alias>
-        </Using>
-        <Using Include="System.Text.Json.Serialization.JsonIgnoreCondition">
-            <Alias>C</Alias>
-        </Using>
-        <Using Include="System.Text.Json.Serialization.JsonPropertyNameAttribute">
-            <Alias>J</Alias>
-        </Using>
+        <Compile Include="..\..\Usings.cs" Link="Usings.cs" />
     </ItemGroup>
 
     <ItemGroup>

@@ -2,8 +2,8 @@
 
 @attribute [StreamRendering(true)]
 
-@using Seedysoft.BlazorWebApp.Client.Components
-@using Seedysoft.Libs.GoogleMapsRazorClassLib.GoogleMap
+@using Seedysoft.Libs.Travel.ViewModels
+@using Seedysoft.Libs.MapRazorClassLibrary
 
 @{
     Variant variant = Variant.Outlined;
@@ -14,44 +14,101 @@
     <MudGrid Justify="@Justify.SpaceBetween">
 
         <MudItem xs="12" md="6">
-            <MudAutocomplete @bind-Value="@travelQueryModel.Origin"
+            <MudAutocomplete @bind-Value="@travelQueryModel.Orig"
                              AutoFocus="@(!System.Diagnostics.Debugger.IsAttached)"
                              Clearable
                              DebounceInterval="450"
                              Dense
-                             For="@(() => travelQueryModel.Origin)"
+                             For="@(() => travelQueryModel.Orig)"
                              FullWidth
                              Label="Origin"
-                             MaxItems="20"
+                             MaxItems="8"
                              MinCharacters="3"
                              Placeholder="Select an origin place"
+                             RelativeWidth="MudBlazor.DropdownWidth.Adaptive"
                              Required
                              ResetValueOnEmptyText
                              SearchFunc="@FindPlacesAsync"
                              SelectOnActivation
                              ShowProgressIndicator
-                             T="string"
+                             T="Place"
+                             ToStringFunc="@(x => x.Address)"
                              Variant="@variant" />
         </MudItem>
 
         <MudItem xs="12" md="6">
-            <MudAutocomplete @bind-Value="@travelQueryModel.Destination"
+            <MudAutocomplete @bind-Value="@travelQueryModel.Dest"
                              Clearable
                              DebounceInterval="450"
                              Dense
-                             For="@(() => travelQueryModel.Destination)"
+                             For="@(() => travelQueryModel.Dest)"
                              FullWidth
                              Label="Destination"
-                             MaxItems="20"
+                             MaxItems="8"
                              MinCharacters="3"
                              Placeholder="Select a destination place"
+                             RelativeWidth="MudBlazor.DropdownWidth.Adaptive"
                              Required
                              ResetValueOnEmptyText
                              SearchFunc="@FindPlacesAsync"
                              SelectOnActivation
                              ShowProgressIndicator
-                             T="string"
+                             T="Place"
+                             ToStringFunc="@(x => x.Address)"
                              Variant="@variant" />
+        </MudItem>
+
+        <MudItem xs="12">
+            <MudButtonGroup Class="gap-4 pa-4" FullWidth Size="@Size.Medium" Variant="@variant">
+
+                <MudButton ButtonType="@ButtonType.Button"
+                           IconColor="@(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.All.Count == travelQueryModel.PetroleumProductsSelectedIds.Count ? Color.Primary : Color.Secondary)"
+                           EndIcon="@Icons.Material.Filled.SelectAll"
+                           IconSize="@Size.Large"
+                           OnClick="@(()=> SetPetroleumProductsSelectedIds(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.All))">
+                    @nameof(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.All)
+                </MudButton>
+
+                <MudButton ButtonType="@ButtonType.Button"
+                           IconColor="@(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.Gasoline.Select(x => x.IdProducto).All(y => travelQueryModel.PetroleumProductsSelectedIds.Contains(y)) ? Color.Primary : Color.Secondary)"
+                           EndIcon="@Icons.Material.Filled.PropaneTank"
+                           IconSize="@Size.Large"
+                           OnClick="@(()=> SetPetroleumProductsSelectedIds(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.Gasoline))">
+                    @nameof(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.Gasoline)
+                </MudButton>
+
+                <MudButton ButtonType="@ButtonType.Button"
+                           IconColor="@(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.Diesel.Select(x => x.IdProducto).All(y => travelQueryModel.PetroleumProductsSelectedIds.Contains(y)) ? Color.Primary : Color.Secondary)"
+                           EndIcon="@Icons.Material.Filled.CarRepair"
+                           IconSize="@Size.Large"
+                           OnClick="@(()=> SetPetroleumProductsSelectedIds(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.Diesel))">
+                    @nameof(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.Diesel)
+                </MudButton>
+
+                <MudButton ButtonType="@ButtonType.Button"
+                           EndIcon="@Icons.Material.Filled.Deselect"
+                           IconSize="@Size.Large"
+                           OnClick="@(()=> SetPetroleumProductsSelectedIds(null))">
+                    None
+                </MudButton>
+
+            </MudButtonGroup>
+
+            <MudChipSet @bind-SelectedValues="@travelQueryModel.PetroleumProductsSelectedIds"
+                        CheckMark="false"
+                        Color="@Color.Info"
+                        SelectionMode="@SelectionMode.MultiSelection"
+                        T="@Libs.GasStationPrices.Constants.ProductoPetroliferoId"
+                        Variant="@Variant.Text">
+                @foreach (var item in Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.All)
+                {
+                    <MudTooltip Text="@item.Nombre">
+                        <MudChip Default="@(item.Abreviatura.StartsWith("G9", StringComparison.InvariantCultureIgnoreCase) && !item.Abreviatura.EndsWith("E10", StringComparison.InvariantCultureIgnoreCase))"
+                                 Text="@item.Abreviatura.ToUpperInvariant()"
+                                 Value="@item.IdProducto" />
+                    </MudTooltip>
+                }
+            </MudChipSet>
         </MudItem>
 
         <MudItem xs="10">
@@ -70,7 +127,7 @@
             <MudButton ButtonType="@ButtonType.Button"
                        Class="flex-grow-all"
                        IconSize="@Size.Large"
-                       OnClick="@ValidateSearch"
+                       OnClick="@ValidateSearchAsync"
                        Size="@Size.Large"
                        StartIcon="@Icons.Material.Filled.Search"
                        Variant="@variant">
@@ -79,75 +136,11 @@
         </MudItem>
 
         <MudItem xs="12">
-            <Map @ref="@TravelGoogleMap"
-                 Id="@nameof(TravelGoogleMap)"
-                 ApiKey="@googleApisSettings.ApiKey"
-                 Center="@(new Libs.GoogleApis.Models.Shared.LatLngLiteral(Seedysoft.Libs.Core.Constants.Earth.Home.Lat, Seedysoft.Libs.Core.Constants.Earth.Home.Lng))"
-                 Height="450" HeightUnit="@Libs.Core.Enums.CssUnit.Px"
-                 Width="100" WidthUnit="@Libs.Core.Enums.CssUnit.Percentage"
-                 Zoom="14"
-                 IsClickable
-                 OnClickGmapRouteEventCallback="@OnClickGmapRouteAsync" />
-        </MudItem>
-
-        <MudItem xs="12">
-            <MudButtonGroup Class="gap-4 pa-4" FullWidth Size="@Size.Medium" Variant="@variant">
-
-                <MudButton ButtonType="@ButtonType.Button"
-                           IconColor="@(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.All.Count == travelQueryModel.PetroleumProductsSelectedIds.Count ? Color.Primary : Color.Secondary)"
-                           EndIcon="@Icons.Material.Filled.SelectAll"
-                           IconSize="@Size.Large"
-                           OnClick="@(() => travelQueryModel.PetroleumProductsSelectedIds = Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.All.Select(static x => x.IdProducto).ToHashSet())">
-                    @nameof(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.All)
-                </MudButton>
-
-                <MudButton ButtonType="@ButtonType.Button"
-                           IconColor="@(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.Gasoline.Select(x => x.IdProducto).All(y => travelQueryModel.PetroleumProductsSelectedIds.Contains(y)) ? Color.Primary : Color.Secondary)"
-                           EndIcon="@Icons.Material.Filled.PropaneTank"
-                           IconSize="@Size.Large"
-                           OnClick="@(() => travelQueryModel.PetroleumProductsSelectedIds = Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.Gasoline.Select(static x => x.IdProducto).ToHashSet())">
-                    @nameof(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.Gasoline)
-                </MudButton>
-
-                <MudButton ButtonType="@ButtonType.Button"
-                           IconColor="@(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.Diesel.Select(x => x.IdProducto).All(y => travelQueryModel.PetroleumProductsSelectedIds.Contains(y)) ? Color.Primary : Color.Secondary)"
-                           EndIcon="@Icons.Material.Filled.CarRepair"
-                           IconSize="@Size.Large"
-                           OnClick="@(() => travelQueryModel.PetroleumProductsSelectedIds = Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.Diesel.Select(static x => x.IdProducto).ToHashSet())">
-                    @nameof(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.Diesel)
-                </MudButton>
-
-                <MudButton ButtonType="@ButtonType.Button"
-                           EndIcon="@Icons.Material.Filled.Deselect"
-                           IconSize="@Size.Large"
-                           OnClick="@(() => travelQueryModel.PetroleumProductsSelectedIds = [])">
-                    None
-                </MudButton>
-
-            </MudButtonGroup>
-
-            <MudChipSet @bind-SelectedValues="@travelQueryModel.PetroleumProductsSelectedIds"
-                        CheckMark="false"
-                        Color="@Color.Info"
-                        SelectionMode="@SelectionMode.MultiSelection"
-                        T="@Libs.GasStationPrices.Constants.ProductoPetroliferoId"
-                        Variant="@Variant.Text">
-                @foreach (var item in Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.All)
-                {
-                    <MudTooltip Text="@item.Nombre">
-                        <MudChip Default="@(item.Abreviatura.StartsWith("G9") && !item.Abreviatura.EndsWith("E10"))"
-                                 Text="@item.Abreviatura"
-                                 Value="@item.IdProducto" />
-                    </MudTooltip>
-                }
-            </MudChipSet>
-        </MudItem>
-
-        <MudItem xs="12">
-            <GasStationsViewer Elements="@GasStationItems"
-                               IsLoading="@GasStationsViewerIsLoading"
-                               OnSelectedItemChanged="@OnGasStationSelectedItemChanged"
-                               PetroleumProductsSelectedIds="@travelQueryModel.PetroleumProductsSelectedIds" />
+            <MapComponent @ref="TravelMap"
+                          Height="calc(70vh)"
+                          Width="100%"
+                          Map="@Map">
+            </MapComponent>
         </MudItem>
 
     </MudGrid>

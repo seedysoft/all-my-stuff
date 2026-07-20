@@ -10,13 +10,13 @@ public class TravelQueryModelFluentValidator : AbstractValidator<TravelQueryMode
 {
     public TravelQueryModelFluentValidator()
     {
-        _ = RuleFor(static x => x.Origin)
-            .Must(static x => !string.IsNullOrWhiteSpace(x))
-            .WithMessage($"{nameof(TravelQueryModel.Origin)} must not be empty");
+        _ = RuleFor(static x => x.Orig)
+            .Must(static x => !string.IsNullOrWhiteSpace(x.Address))
+            .WithMessage($"{nameof(TravelQueryModel.Orig)} must not be empty");
 
-        _ = RuleFor(static x => x.Destination)
-            .Must(static x => !string.IsNullOrWhiteSpace(x))
-            .WithMessage($"{nameof(TravelQueryModel.Destination)} must not be empty");
+        _ = RuleFor(static x => x.Dest)
+            .Must(static x => !string.IsNullOrWhiteSpace(x.Address))
+            .WithMessage($"{nameof(TravelQueryModel.Dest)} must not be empty");
 
         _ = RuleFor(static x => x.MaxDistanceInKm)
             .InclusiveBetween(1, 50);
@@ -26,11 +26,11 @@ public class TravelQueryModelFluentValidator : AbstractValidator<TravelQueryMode
             .WithMessage("At least one product must be selected");
     }
 
-    public Func<object, string, Task<IEnumerable<string>>> ValidateValue => async (model, propertyName) =>
+    public Func<object, string, Task<IReadOnlyList<string>>> ValidateValue => async (model, propertyName) =>
     {
         FluentValidation.Results.ValidationResult result = await ValidateAsync(
             ValidationContext<TravelQueryModel>.CreateWithOptions((TravelQueryModel)model, x => x.IncludeProperties(propertyName)));
 
-        return result.IsValid ? [] : result.Errors.Select(e => e.ErrorMessage);
+        return result.IsValid ? [] : [.. result.Errors.Select(e => e.ErrorMessage)];
     };
 }

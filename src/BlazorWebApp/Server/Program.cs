@@ -21,17 +21,19 @@ public class Program : Libs.Core.ProgramBase
             .AddInteractiveServerComponents()
             .AddInteractiveWebAssemblyComponents();
 
+        _ = webApplicationBuilder.Services.ConfigureHttpJsonOptions(static configureOptions =>
+        {
+            configureOptions.SerializerOptions.DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull;
+            configureOptions.SerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
+            configureOptions.SerializerOptions.ReadCommentHandling = System.Text.Json.JsonCommentHandling.Skip;
+        });
+
         WebApplication webApplication = webApplicationBuilder.Build();
 
         // Configure the HTTP request pipeline.
         if (webApplication.Environment.IsDevelopment())
         {
             webApplication.UseWebAssemblyDebugging();
-
-            // Add OpenAPI/Swagger generator and the Swagger UI
-            _ = webApplication
-                .UseOpenApi()
-                .UseSwaggerUi();
         }
         else
         {

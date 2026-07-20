@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection.Extensions;
-using MudBlazor.Services;
+﻿using MudBlazor.Services;
 
 namespace Seedysoft.BlazorWebApp.Server.Dependencies;
 
@@ -59,12 +58,6 @@ public sealed class Configurator : Libs.Core.Dependencies.ConfiguratorBase
             .AddMudServices()
 
             .AddHttpClient() // Needed for server rendering
-        ;
-
-        // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-        _ = hostApplicationBuilder.Services
-            .AddEndpointsApiExplorer()
-            .AddOpenApiDocument()
         ;
     }
 }

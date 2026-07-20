@@ -1,0 +1,16 @@
+﻿{
+  "version": "3.0",
+  "defaultProvider": "unpkg",
+  "libraries": [
+    {
+      "library": "leaflet@2.0.0-alpha.1",
+      "provider": "unpkg",
+      "destination": "wwwroot/lib/leaflet/"
+    },
+    {
+      "library": "dompurify@3.4.12",
+      "provider": "unpkg",
+      "destination": "wwwroot/lib/DOMPurify"
+    }
+  ]
+}
