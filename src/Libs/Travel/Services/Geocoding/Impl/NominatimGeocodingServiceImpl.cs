@@ -24,6 +24,7 @@ internal class NominatimGeocodingServiceImpl(Settings.GeocodingServiceApi api, M
                     .Select(p => new ViewModels.Place(p.Display_name!, new Models.Location(p.Lat, p.Lon)))
                 ];
         }
+        catch (Exception e) when (e is OperationCanceledException || e.InnerException is OperationCanceledException) { throw; }
         catch (Exception e) when (logger.LogAndHandle(e, "Unexpected error")) { }
 
         return [];

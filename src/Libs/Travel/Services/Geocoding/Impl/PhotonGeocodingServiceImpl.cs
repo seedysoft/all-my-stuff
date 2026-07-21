@@ -21,6 +21,7 @@ internal class PhotonGeocodingServiceImpl(Settings.GeocodingServiceApi api, Micr
                     .Select(p => new ViewModels.Place(p.Properties.GetName, p.Geometry.GetLocation)) ?? []
                 ];
         }
+        catch (Exception e) when (e is OperationCanceledException || e.InnerException is OperationCanceledException) { throw; }
         catch (Exception e) when (logger.LogAndHandle(e, "Unexpected error")) { }
 
         return [];

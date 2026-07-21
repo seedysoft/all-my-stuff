@@ -20,11 +20,18 @@ public sealed class UpdaterCronBackgroundServiceTests : Infrastructure.Tests.Tes
     [Test]
     public async Task GetLatestReleaseFromGithubAsyncTest()
     {
-        Octokit.Release? release = await updaterCronBackgroundService.GetLatestReleaseFromGithubAsync();
-        _ = await Assert.That(release).IsNotNull();
+        try
+        {
+            Octokit.Release? release = await updaterCronBackgroundService.GetLatestReleaseFromGithubAsync();
+            _ = await Assert.That(release).IsNotNull();
 
-        var RelaseVersion = new Version(release.Name);
-        _ = await Assert.That(RelaseVersion < new Version(DateTime.UtcNow.ToString("yy.Mdd.Hmm.ss"))).IsTrue();
+            var RelaseVersion = new Version(release.Name);
+            _ = await Assert.That(RelaseVersion < new Version(DateTime.UtcNow.ToString("yy.Mdd.Hmm.ss"))).IsTrue();
+        }
+        catch (Octokit.RateLimitExceededException ex)
+        {
+            _ = await Assert.That(ex.Message.Contains("API rate limit exceeded", StringComparison.InvariantCultureIgnoreCase)).IsTrue();
+        }
     }
 
     //[Fact]
