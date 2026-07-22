@@ -537,6 +537,7 @@ public class TelegramHostedService : Core.NonBackgroundServiceBase, IHostedServi
         Task<Message> NextAction = receivedCommand switch
         {
             Enums.BotActionName.start => StartAsync(dbCtx, message, cancellationToken),
+            Enums.BotActionName.version => ShowVersionAsync(message, cancellationToken),
 
             Enums.BotActionName.email_show => MailShowAsync(dbCtx, message, cancellationToken),
             Enums.BotActionName.email_edit => MailSetAsync(dbCtx, message, cancellationToken),
@@ -778,7 +779,7 @@ public class TelegramHostedService : Core.NonBackgroundServiceBase, IHostedServi
             Core.Enums.SubscriptionName.webComparer => await MessageSendTextAsync(
                 telegramUserId,
                 pendingMessage.Payload[new Range(0, Math.Min(Core.Constants.Telegram.MessageLengthLimit, pendingMessage.Payload.Length))],
-parseMode: null,
+                parseMode: null,
                 stoppingToken),
 
             //Enums.SubscriptionName.amazon => await TelegramService.MessageSendTextAsync(
@@ -818,5 +819,18 @@ parseMode: null,
         }
 
         return sb.ToString();
+    }
+
+    private async Task<Message> ShowVersionAsync(
+        Message message
+        , CancellationToken cancellationToken)
+    {
+        Version CurrentVersion = System.Reflection.Assembly.GetEntryAssembly()!.GetName().Version ?? new Version();
+
+        string TextToSend = $"Current version is: {CurrentVersion}";
+
+        long TelegramUserId = message.From!.Id;
+
+        return await MessageSendTextAsync(TelegramUserId, TextToSend, null, cancellationToken);
     }
 }

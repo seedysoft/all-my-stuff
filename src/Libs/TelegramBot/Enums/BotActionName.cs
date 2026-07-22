@@ -1,6 +1,4 @@
-﻿// TODO            Remove all pragma warning disable
-
-#pragma warning disable CA1707 // Identifiers should not contain underscores
+﻿#pragma warning disable CA1707 // Identifiers should not contain underscores
 
 using System.ComponentModel;
 
@@ -16,6 +14,9 @@ public enum BotActionName
     /// Este comando es el que se usa para interactuar con el bot y es obligatorio.
     /// </summary>
     start = 000,
+
+    [Description("Muestra la versión de la aplicación.")]
+    version = 010,
 
     [Description("Muestra tu email.")]
     email_show = 110,
