@@ -41,13 +41,15 @@ public partial class MapComponent : IAsyncDisposable
     /// </remarks>
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        await base.OnAfterRenderAsync(firstRender);
+
         if (!firstRender)
             return;
 
         if (MapModule == null)
         {
             MapModule = await JsRuntime.InvokeAsync<IJSObjectReference>(
-                "import", $"./{Core.Helpers.ContentHelper.ContentPath(typeof(MapComponent))}/js/leafletModule.js");
+                "import", $"./{Assets["_content/Seedysoft.Libs.MapRazorClassLibrary/js/leafletModule.js"]}");
 
             await CreateMapAsync();
         }

@@ -1,18 +1,22 @@
-using Microsoft.JSInterop;
-
 namespace Seedysoft.Libs.MapRazorClassLibrary;
 
 public partial class MapComponent : IAsyncDisposable
 {
     #region IAsyncDisposable Impl
+
     public async ValueTask DisposeAsync()
     {
-        await DeleteMapAsync();
-        ObjRef?.Dispose();
-        await MapModule.DisposeAsync();
-        GC.SuppressFinalize(this);
-    }
-    #endregion
+        try
+        {
+            await DeleteMapAsync();
+            ObjRef?.Dispose();
+            if (MapModule is not null)
+                await MapModule.DisposeAsync();
 
-    public IJSObjectReference MapModule { get => field!; private set; }
+            GC.SuppressFinalize(this);
+        }
+        catch (Microsoft.JSInterop.JSDisconnectedException) { }
+    }
+
+    #endregion
 }

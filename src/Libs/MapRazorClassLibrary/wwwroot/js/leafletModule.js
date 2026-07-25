@@ -1,4 +1,4 @@
-import * as L from '../lib/leaflet/dist/leaflet.js';
+import * as L from '../lib/leaflet/leaflet.js';
 import { LoaderControl } from './leaflet-loader.js';
 
 var map;

@@ -1,10 +1,11 @@
 ﻿{
+  "$schema": "https://www.schemastore.org/libman.json",
   "version": "3.0",
   "defaultProvider": "unpkg",
   "libraries": [
     {
       "library": "leaflet@2.0.0-alpha.1",
-      "provider": "unpkg",
+      "provider": "cdnjs",
       "destination": "wwwroot/lib/leaflet/"
     },
     {

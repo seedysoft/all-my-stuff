@@ -1,4 +1,4 @@
-import { Control, DomUtil } from '../lib/leaflet/dist/leaflet.js';
+import { Control, DomUtil } from '../lib/leaflet/leaflet.js';
 
 export class LoaderControl extends Control {
 

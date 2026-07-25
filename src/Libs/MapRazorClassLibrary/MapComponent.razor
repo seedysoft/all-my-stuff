@@ -1,19 +1,13 @@
 ﻿<HeadContent>
-    <link href=@($"{Core.Helpers.ContentHelper.ContentPath(typeof(MapComponent))}/lib/leaflet/dist/leaflet.css") rel="stylesheet" />
-    <link href=@($"{Core.Helpers.ContentHelper.ContentPath(typeof(MapComponent))}/css/leaflet-loader.css") rel="stylesheet" />
-    <link href=@($"{Core.Helpers.ContentHelper.ContentPath(typeof(MapComponent))}/css/map-style-sheet.css") rel="stylesheet" />
-
-    <script src=@($"{Core.Helpers.ContentHelper.ContentPath(typeof(MapComponent))}/lib/dompurify/dist/purify.min.js") type="text/javascript"></script>
-
-    <script type="importmap">
-    {
-    "imports": {
-        "leaflet": "@LeafletJavascriptFile",
-        "leaflet-loader": "@($"{Core.Helpers.ContentHelper.ContentPath(typeof(MapComponent))}/js/leaflet-loader.js")"
-    }
-    }
-    </script>
+    <link rel="stylesheet" href="@Assets["_content/Seedysoft.Libs.MapRazorClassLibrary/lib/leaflet/leaflet.css"]" />
+    <link rel="stylesheet" href="@Assets["_content/Seedysoft.Libs.MapRazorClassLibrary/css/leaflet-loader.css"]" />
+    <link rel="stylesheet" href="@Assets["_content/Seedysoft.Libs.MapRazorClassLibrary/css/map-style-sheet.css"]" />
 </HeadContent>
+
+<script src="@Assets["_content/Seedysoft.Libs.MapRazorClassLibrary/lib/DOMPurify/dist/purify.min.js"]" type="text/javascript"></script>
+
+<script src="@Assets[LeafletJavascriptFile]" type="module"></script>
+<script src="@Assets["_content/Seedysoft.Libs.MapRazorClassLibrary/js/leaflet-loader.js"]" type="module"></script>
 
 @if (!IsMapReady)
 {

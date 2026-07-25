@@ -52,7 +52,10 @@ public class Program : Libs.Core.ProgramBase
         _ = webApplication.MapRazorComponents<Components.App>()
             .AddInteractiveServerRenderMode()
             .AddInteractiveWebAssemblyRenderMode()
-            .AddAdditionalAssemblies(typeof(Client._Imports).Assembly);
+            .AddAdditionalAssemblies([
+                typeof(Libs.MapRazorClassLibrary.MapComponent).Assembly,
+                typeof(Client._Imports).Assembly,
+            ]);
 
         await webApplication.RunAsync();
     }

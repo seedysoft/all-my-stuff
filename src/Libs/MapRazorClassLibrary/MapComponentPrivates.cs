@@ -12,13 +12,11 @@ public partial class MapComponent : IAsyncDisposable
     private bool IsMapReady = false;
 
     private readonly string LeafletJavascriptFile =
-        $"{Core.Helpers.ContentHelper.ContentPath(typeof(MapComponent))}/lib/leaflet/" +
+        $"{Core.Helpers.ContentHelper.ContentPath(typeof(MapComponent))}/lib/leaflet/leaflet" +
 #if DEBUG
-        "src" +
-#else
-        "dist" +
+        "-src" +
 #endif
-        "/leaflet.js";
+       ".js";
 
     [Inject] private IJSRuntime JsRuntime { get; set; } = default!;
 
@@ -26,10 +24,15 @@ public partial class MapComponent : IAsyncDisposable
 
     [Inject] private Travel.Services.Routing.RoutingService RoutingService { get; set; } = default!;
 
+    private IJSObjectReference? MapModule { get; set; }
+
     private async Task CreateMapAsync()
     {
         try
         {
+            if (MapModule == null)
+                return;
+
             await MapModule.InvokeVoidAsync("createMap", MapId, Map);
 
             if (OnMapCreatedAsyncEventCallback.HasDelegate)
@@ -37,21 +40,23 @@ public partial class MapComponent : IAsyncDisposable
 
             //if (OnMapClickAsync.HasDelegate)
             //    await LeafletService.InvokeVoidAsync("setClickHandler", MapId, ObjRef, nameof(OnMapClick));
+
+            IsMapReady = true;
+
+            await InvokeAsync(StateHasChanged);
         }
         catch (Exception ex)
         {
             await Console.Out.WriteAsync(ex.Message);
         }
-
-        IsMapReady = true;
-
-        await InvokeAsync(StateHasChanged);
     }
 
     private async Task AddPolylineAsync(double[,] arrayPolyline, string color)
     {
-        await Task.Run(async delegate
+        if (MapModule != null)
         {
+            //await Task.Run(async delegate
+            //{
             if (arrayPolyline.GetLength(1) != 2)
                 throw new ArgumentException($"The {nameof(arrayPolyline)} must be a 2D array with two columns for latitude and longitude.");
 
@@ -66,7 +71,8 @@ public partial class MapComponent : IAsyncDisposable
             };
 
             await MapModule.InvokeVoidAsync("addPolyline", polyline);
-        });
+            //});
+        }
     }
 
     //private async Task AddMarkerAsync(
@@ -79,23 +85,41 @@ public partial class MapComponent : IAsyncDisposable
         OneOf.OneOf<string, MapModels.UILayers.Popup>? popup,
         OneOf.OneOf<string, MapModels.UILayers.Tooltip>? tooltip)
     {
-        await MapModule.InvokeVoidAsync(
-            $"addCircleMarker",
-            circleMarker,
-            popup?.Value ?? null,
-            tooltip?.Value ?? null);
+        if (MapModule != null)
+        {
+            await MapModule.InvokeVoidAsync(
+                $"addCircleMarker",
+                circleMarker,
+                popup?.Value ?? null,
+                tooltip?.Value ?? null);
+        }
     }
 
     private async Task DeleteMapAsync()
-        => await MapModule.InvokeVoidAsync("destroyMap");
+    {
+        if (MapModule != null)
+            await MapModule.InvokeVoidAsync("destroyMap");
+    }
 
     private async Task RemoveAllMarkersAsync()
-        => await MapModule.InvokeVoidAsync("removeAllMarkers");
+    {
+        if (MapModule != null)
+            await MapModule.InvokeVoidAsync("removeAllMarkers");
+    }
 
     // Unused. Uncomment if ncccessary
     //private async Task SetViewAsync(LatLng latLng, int zoom)
     //    => await MapModule.InvokeVoidAsync("setView", latLng, zoom);
 
-    private async Task ShowLoaderAsync() => await MapModule.InvokeVoidAsync("showLoader");
-    private async Task HideLoaderAsync() => await MapModule.InvokeVoidAsync("hideLoader");
+    private async Task ShowLoaderAsync()
+    {
+        if (MapModule != null)
+            await MapModule.InvokeVoidAsync("showLoader");
+    }
+
+    private async Task HideLoaderAsync()
+    {
+        if (MapModule != null)
+            await MapModule.InvokeVoidAsync("hideLoader");
+    }
 }
