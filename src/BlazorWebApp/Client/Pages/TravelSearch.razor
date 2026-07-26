@@ -15,6 +15,7 @@
 
         <MudItem xs="12" md="6">
             <MudAutocomplete @bind-Value="@travelQueryModel.Orig"
+                             AdornmentIcon="@Icons.Material.Filled.Search"
                              AutoFocus="@(!System.Diagnostics.Debugger.IsAttached)"
                              Clearable
                              DebounceInterval="450"
@@ -30,6 +31,7 @@
                              ResetValueOnEmptyText
                              SearchFunc="@FindPlacesAsync"
                              SelectOnActivation
+                             SelectValueOnTab
                              ShowProgressIndicator
                              T="Place"
                              ToStringFunc="@(x => x.Address)"
@@ -38,6 +40,7 @@
 
         <MudItem xs="12" md="6">
             <MudAutocomplete @bind-Value="@travelQueryModel.Dest"
+                             AdornmentIcon="@Icons.Material.Filled.Search"
                              Clearable
                              DebounceInterval="450"
                              Dense
@@ -52,6 +55,7 @@
                              ResetValueOnEmptyText
                              SearchFunc="@FindPlacesAsync"
                              SelectOnActivation
+                             SelectValueOnTab
                              ShowProgressIndicator
                              T="Place"
                              ToStringFunc="@(x => x.Address)"
