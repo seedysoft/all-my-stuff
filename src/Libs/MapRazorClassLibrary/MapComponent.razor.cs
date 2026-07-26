@@ -94,9 +94,13 @@ public partial class MapComponent : IAsyncDisposable
         if (res.Count == 0)
             return "No routes found";
 
-        await LoadRoutesDataIntoMapAsync(res, cancellationToken);
+        string? LoadRoutesDataIntoMapAsyncResult = await LoadRoutesDataIntoMapAsync(res, cancellationToken);
+        if (!string.IsNullOrWhiteSpace(LoadRoutesDataIntoMapAsyncResult))
+            return LoadRoutesDataIntoMapAsyncResult;
 
-        await LoadGasStationsIntoMapAsync(model, ComputeBoundsFromRoutes(res, cancellationToken), cancellationToken);
+        string? LoadGasStationsIntoMapAsyncResult = await LoadGasStationsIntoMapAsync(model, ComputeBoundsFromRoutes(res, cancellationToken), cancellationToken);
+        if (!string.IsNullOrWhiteSpace(LoadGasStationsIntoMapAsyncResult))
+            return LoadGasStationsIntoMapAsyncResult;
 
         await HideLoaderAsync();
 
@@ -111,10 +115,13 @@ public partial class MapComponent : IAsyncDisposable
         /// Each route is assigned a color from the ColorsForRoutes array based on its index.
         /// Respects cancellation requests and breaks early if cancellation is requested.
         /// </remarks>
-        async Task LoadRoutesDataIntoMapAsync(
+        async Task<string?> LoadRoutesDataIntoMapAsync(
             IReadOnlyList<(string NombreRuta, double[,] Coordenadas)> res
             , CancellationToken cancellationToken)
         {
+            if (res.Count == 0)
+                return "⚠️ No route to load ⚠️";
+
             for (int i = 0; i < res.Count; i++)
             {
                 if (cancellationToken.IsCancellationRequested)
@@ -124,6 +131,8 @@ public partial class MapComponent : IAsyncDisposable
 
                 await AddPolylineAsync(arrayPolyline: Coordenadas, color: ColorsForRoutes[i]);
             }
+
+            return null;
         }
 
         /// <summary>
@@ -209,13 +218,15 @@ public partial class MapComponent : IAsyncDisposable
         /// 
         /// Future enhancement: Use colors, sizes, and SVG icons to better represent price tiers.
         /// </remarks>
-        async Task LoadGasStationsIntoMapAsync(
+        async Task<string?> LoadGasStationsIntoMapAsync(
             GasStationPrices.ViewModels.TravelQueryModel model
             , Travel.Models.Bounds bounds
             , CancellationToken cancellationToken)
         {
             IReadOnlyList<GasStationPrices.ViewModels.GasStationModel> gasStations =
                 await GasStationPricesService.GetNearGasStationsAsync(bounds, model.MaxDistanceInKm, cancellationToken);
+            if (gasStations.Count == 0)
+                return "⚠️ No Gas stations loaded ⚠️";
 
             // For each product, obtain min and average
             IEnumerable<ProductLimits> Products =
@@ -228,6 +239,8 @@ public partial class MapComponent : IAsyncDisposable
                     v.Average(),
                     v.Max()
                 );
+            if ((Products.TryGetNonEnumeratedCount(out int count) && count == 0) || !Products.Any())
+                return "⚠️ No Products to show ⚠️";
 
             for (int i = 0; i < gasStations.Count; i++)
             {
@@ -285,6 +298,8 @@ public partial class MapComponent : IAsyncDisposable
                 await AddCircleMarker(circleMarker, popup, tooltip);
             }
 
+            return null;
+
             static string BuildPopupContent(GasStationPrices.ViewModels.GasStationModel GasStation, IEnumerable<ProductLimits> Products)
             {
                 System.Text.StringBuilder popupContent = new();
@@ -306,6 +321,7 @@ public partial class MapComponent : IAsyncDisposable
 
                     string CssClass;
                     ProductLimits? productLimits = Products.FirstOrDefault(p => p.IdP == productoPetrolifero.IdProducto);
+#pragma warning disable IDE0045 // Convert to conditional expression
                     if (GasVal.Value == (productLimits?.Min ?? decimal.Zero))
                         CssClass = "bgVerde";
                     else if (GasVal.Value == (productLimits?.Max ?? decimal.Zero))
@@ -314,6 +330,7 @@ public partial class MapComponent : IAsyncDisposable
                         CssClass = "bgAmarillo";
                     else
                         CssClass = "bgNaranja";
+#pragma warning restore IDE0045 // Convert to conditional expression
 
                     _ = popupContent
                         .Append($"<div class='divTableRow {CssClass}'>")
