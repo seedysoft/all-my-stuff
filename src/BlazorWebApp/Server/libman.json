@@ -1,0 +1,6 @@
+﻿{
+  "$schema": "https://www.schemastore.org/libman.json",
+  "version": "3.0",
+  "defaultProvider": "unpkg",
+  "libraries": []
+}

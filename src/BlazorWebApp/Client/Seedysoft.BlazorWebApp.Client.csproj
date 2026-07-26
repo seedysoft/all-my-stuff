@@ -39,4 +39,10 @@
       <ProjectReference Include="..\..\Libs\MapRazorClassLibrary\Seedysoft.Libs.MapRazorClassLibrary.csproj" />
       <ProjectReference Include="..\..\Libs\GasStationPrices\Seedysoft.Libs.GasStationPrices.csproj" />
     </ItemGroup>
+
+    <ItemGroup>
+      <Content Update="libman.json">
+        <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      </Content>
+    </ItemGroup>
 </Project>

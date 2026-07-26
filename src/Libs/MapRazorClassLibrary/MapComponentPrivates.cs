@@ -12,7 +12,7 @@ public partial class MapComponent : IAsyncDisposable
     private bool IsMapReady = false;
 
     private readonly string LeafletJavascriptFile =
-        $"{Core.Helpers.ContentHelper.ContentPath(typeof(MapComponent))}/lib/leaflet/leaflet" +
+        "_content/Seedysoft.Libs.MapRazorClassLibrary/lib/leaflet/leaflet" +
 #if DEBUG
         "-src" +
 #endif

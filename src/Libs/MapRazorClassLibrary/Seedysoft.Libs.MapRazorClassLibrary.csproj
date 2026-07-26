@@ -27,4 +27,10 @@
     <ItemGroup>
       <Folder Include="wwwroot\css\images\" />
     </ItemGroup>
+
+    <ItemGroup>
+      <Content Update="libman.json">
+        <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      </Content>
+    </ItemGroup>
 </Project>

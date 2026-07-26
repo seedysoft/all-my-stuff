@@ -1,17 +1,29 @@
 ﻿{
   "$schema": "https://www.schemastore.org/libman.json",
   "version": "3.0",
-  "defaultProvider": "unpkg",
+  "defaultProvider": "cdnjs",
   "libraries": [
     {
       "library": "leaflet@2.0.0-alpha.1",
       "provider": "cdnjs",
-      "destination": "wwwroot/lib/leaflet/"
+      "destination": "wwwroot/lib/leaflet/",
+      "files": [
+        "images/*.*",
+        "leaflet.js",
+        "leaflet.js.map",
+        "leaflet.min.css",
+        "leaflet-src.js",
+        "leaflet-src.js.map"
+      ]
     },
     {
       "library": "dompurify@3.4.12",
       "provider": "unpkg",
-      "destination": "wwwroot/lib/DOMPurify"
+      "destination": "wwwroot/lib/DOMPurify",
+      "files": [
+        "dist/purify.min.js",
+        "dist/purify.min.js.map"
+      ]
     }
   ]
 }
