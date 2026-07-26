@@ -33,6 +33,11 @@
         <None Include="..\..\..\scripts\update.sh" Link="update.sh">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
+        <Content Remove="libman.json" />
+        <None Include="libman.json">
+            <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+            <CopyToPublishDirectory>Never</CopyToPublishDirectory>
+        </None>
     </ItemGroup>
 
     <ItemGroup Condition="'$(Configuration)' == 'Debug'">
@@ -61,6 +66,7 @@
         <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite.Core" Version="10.0.10" />
         <PackageReference Include="Microsoft.Extensions.DependencyModel" Version="10.0.10" />
         <PackageReference Include="Microsoft.Extensions.Hosting.Systemd" Version="10.0.10" />
+        <PackageReference Include="Microsoft.Web.LibraryManager.Build" Version="3.0.114" />
         <PackageReference Include="MudBlazor" Version="9.7.0" />
         <PackageReference Include="Octokit" Version="14.0.0" />
         <PackageReference Include="RestSharp" Version="114.0.0" />
@@ -81,11 +87,5 @@
         <ProjectReference Include="..\..\Outbox\Lib\Seedysoft.Outbox.Lib.csproj" />
         <ProjectReference Include="..\..\WebComparer\Lib\Seedysoft.WebComparer.Lib.csproj" />
         <ProjectReference Include="..\Client\Seedysoft.BlazorWebApp.Client.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Content Update="libman.json">
-        <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-      </Content>
     </ItemGroup>
 </Project>
