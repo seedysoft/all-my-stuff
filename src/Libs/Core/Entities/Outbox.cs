@@ -16,7 +16,7 @@ public abstract class OutboxBase
 [System.Diagnostics.DebuggerDisplay("{GetDebuggerDisplay,nq}")]
 public sealed class Outbox : OutboxBase
 {
-    public Outbox(Enums.SubscriptionName subscriptionName, string payload)
+    public Outbox(Enums.SubscriptionName subscriptionName, string payload) : base()
     {
         SubscriptionName = subscriptionName;
         Payload = payload;

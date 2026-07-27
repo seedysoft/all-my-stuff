@@ -31,7 +31,7 @@ public sealed class PvpcCronBackgroundService : Libs.BackgroundServices.Cron
         if (System.Diagnostics.Debugger.IsAttached)
             System.Diagnostics.Debugger.Break();
 
-        DateTime ForDate = DateTimeOffset.UtcNow.AddDays(1).Date;
+        DateTime ForDate = DateTime.UtcNow.AddDays(1).Date;
 
         _ = GetPvpcFromReeForDateAsync(ForDate, stoppingToken);
 

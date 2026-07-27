@@ -58,6 +58,8 @@ public sealed class OutboxCronBackgroundService : Libs.BackgroundServices.Cron
 
                 Libs.TelegramBot.Services.TelegramHostedService telegramHostedService = ServiceProvider.GetRequiredService<Libs.TelegramBot.Services.TelegramHostedService>();
 
+                Libs.SmtpService.Services.SmtpService smtpService = ServiceProvider.GetRequiredService<Libs.SmtpService.Services.SmtpService>();
+
                 for (int i = 0; i < PendingMessages.Length; i++)
                 {
                     Libs.Core.Entities.Outbox PendingMessage = PendingMessages[i];
@@ -86,12 +88,12 @@ public sealed class OutboxCronBackgroundService : Libs.BackgroundServices.Cron
                                 _ => throw new ApplicationException($"Unexpected SubscriptionName: '{PendingMessage.SubscriptionName}'"),
                             };
 
-                            await ServiceProvider.GetRequiredService<Libs.SmtpService.Services.SmtpService>().SendMailAsync(
-                                subscriber.MailAddress,
-                                PendingMessage.SubscriptionName.ToString(),
-                                Message,
-                                Libs.Core.Enums.SubscriptionName.electricidad == PendingMessage.SubscriptionName || Message.ContainsHtml(),
-                                stoppingToken);
+                            await smtpService.SendMailAsync(
+                                to: subscriber.MailAddress,
+                                subject: PendingMessage.SubscriptionName.ToString(),
+                                body: Message,
+                                isBodyHtml: Libs.Core.Enums.SubscriptionName.electricidad == PendingMessage.SubscriptionName || Message.ContainsHtml(),
+                                cancellationToken: stoppingToken);
                         }
                     }
 
@@ -116,7 +118,7 @@ public sealed class OutboxCronBackgroundService : Libs.BackgroundServices.Cron
 
     private static string GetHtmlBodyMail(string payload)
     {
-        IEnumerable<Libs.Core.Entities.Pvpc> entities = System.Text.Json.JsonSerializer.Deserialize<IEnumerable<Libs.Core.Entities.Pvpc>>(payload)!;
+        IEnumerable<Libs.Core.Entities.Pvpc> entities = payload.FromJson<IEnumerable<Libs.Core.Entities.Pvpc>>()!;
         if (!entities.Any())
             return string.Empty;
 

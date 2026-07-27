@@ -13,9 +13,14 @@ public readonly record struct Body
     {
         get
         {
-            return DateTimeOffset.TryParseExact(Fecha, FechaFormat, Core.Constants.Globalization.DateTimeFormatInfoES, System.Globalization.DateTimeStyles.AssumeUniversal, out DateTimeOffset result)
-                ? result
-                : DateTimeOffset.MinValue;
+            return DateTimeOffset.TryParseExact(
+                input: Fecha,
+                format: FechaFormat,
+                formatProvider: Core.Constants.Globalization.DateTimeFormatInfoES,
+                styles: System.Globalization.DateTimeStyles.AssumeUniversal,
+                result: out DateTimeOffset result)
+            ? result
+            : DateTimeOffset.MinValue;
         }
     }
 

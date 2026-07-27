@@ -28,7 +28,7 @@ public abstract class WebDataBase
 [System.Diagnostics.DebuggerDisplay("{GetDebuggerDisplay,nq}")]
 public sealed partial class WebData : WebDataBase
 {
-    public WebData(string webUrl, string description)
+    public WebData(string webUrl, string description) : base()
     {
         WebUrl = webUrl;
         Description = description;

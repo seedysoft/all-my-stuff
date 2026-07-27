@@ -452,7 +452,9 @@ public class TelegramHostedService : Core.NonBackgroundServiceBase, IHostedServi
             out DateTime dateTimeToObtain))
         {
             // Si pedimos después de las 20:30, nos devolverá los datos del día siguiente.
-            dateTimeToObtain = DateTime.Now.TimeOfDay > new TimeSpan(20, 30, 00) ? DateTime.Today.AddDays(1) : DateTime.Today;
+            dateTimeToObtain = DateTime.Now.TimeOfDay > new TimeSpan(20, 30, 00)
+                ? DateTime.Today.AddDays(1) // Tomorrow
+                : DateTime.Today;           // Today
         }
 
         await ServiceProvider.GetRequiredService<Pvpc.Lib.Services.PvpcCronBackgroundService>()
@@ -463,9 +465,11 @@ public class TelegramHostedService : Core.NonBackgroundServiceBase, IHostedServi
             .Where(x => x.AtDateTimeOffset < dateTimeToObtain.AddDays(1))
             .ToArrayAsync(cancellationToken);
 
-        string responseText = MessageGetMarkdownV2TextForPrices(Prices);
-
-        return await MessageSendTextAsync(message.Chat.Id, responseText, ParseMode.MarkdownV2, cancellationToken);
+        return await MessageSendTextAsync(
+            to: message.Chat.Id,
+            text: MessageGetMarkdownV2TextForPrices(Prices),
+            parseMode: ParseMode.MarkdownV2,
+            cancellationToken: cancellationToken);
     }
 
     private async Task<Message> MailSetAsync(
@@ -771,16 +775,16 @@ public class TelegramHostedService : Core.NonBackgroundServiceBase, IHostedServi
         _ = pendingMessage.SubscriptionName switch
         {
             Core.Enums.SubscriptionName.electricidad => await MessageSendTextAsync(
-                telegramUserId,
-                MessageGetMarkdownV2TextForPrices(System.Text.Json.JsonSerializer.Deserialize<Core.Entities.Pvpc[]>(pendingMessage.Payload)!),
-                ParseMode.MarkdownV2,
-                stoppingToken),
+                to: telegramUserId,
+                text: MessageGetMarkdownV2TextForPrices(pendingMessage.Payload.FromJson<Core.Entities.Pvpc[]>()!),
+                parseMode: ParseMode.MarkdownV2,
+                cancellationToken: stoppingToken),
 
             Core.Enums.SubscriptionName.webComparer => await MessageSendTextAsync(
-                telegramUserId,
-                pendingMessage.Payload[new Range(0, Math.Min(Core.Constants.Telegram.MessageLengthLimit, pendingMessage.Payload.Length))],
+                to: telegramUserId,
+                text: pendingMessage.Payload[new Range(0, Math.Min(Core.Constants.Telegram.MessageLengthLimit, pendingMessage.Payload.Length))],
                 parseMode: null,
-                stoppingToken),
+                cancellationToken: stoppingToken),
 
             //Enums.SubscriptionName.amazon => await TelegramService.MessageSendTextAsync(
             //    subscriber.TelegramUserId.Value,

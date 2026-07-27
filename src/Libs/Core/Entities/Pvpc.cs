@@ -19,7 +19,7 @@ public abstract class PvpcBase
 [System.Diagnostics.DebuggerDisplay("{GetDebuggerDisplay,nq}")]
 public sealed class Pvpc : PvpcBase
 {
-    public Pvpc(DateTimeOffset atDateTimeOffset, decimal mWhPriceInEuros)
+    public Pvpc(DateTimeOffset atDateTimeOffset, decimal mWhPriceInEuros) : base()
     {
         AtDateTimeOffset = atDateTimeOffset;
         MWhPriceInEuros = mWhPriceInEuros;
