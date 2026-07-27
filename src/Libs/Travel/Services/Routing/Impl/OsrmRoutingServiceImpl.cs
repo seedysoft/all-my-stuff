@@ -7,7 +7,7 @@ namespace Seedysoft.Libs.Travel.Services.Routing.Impl;
 /// Implementation of the routing service that integrates with the Open Source Routing Machine (OSRM) API.
 /// This class handles communication with OSRM to retrieve routing information between two geographic locations.
 /// </summary>
-internal class OsrmRoutingServiceImpl(Settings.RoutingServiceApi api, Microsoft.Extensions.Logging.ILogger logger) : RoutingServiceImplBase(api)
+internal class OsrmRoutingServiceImpl(OsrmRoutingApi api, Microsoft.Extensions.Logging.ILogger logger) : RoutingServiceImplBase(api)
 {
     /// <summary>
     /// Obtains the routes between the specified origin and destination locations.
@@ -26,9 +26,7 @@ internal class OsrmRoutingServiceImpl(Settings.RoutingServiceApi api, Microsoft.
         , CancellationToken cancellationToken)
     {
         // {origLng,origLat};{destLng,destLat}
-        RestRequest restRequest = new(string.Format(RoutingApi.UrlFormat,
-            $"{orig.Longitude.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat)},{orig.Latitude.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat)}",
-            $"{dest.Longitude.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat)},{dest.Latitude.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat)}"));
+        RestRequest restRequest = new(RoutingApi.GetUrl<Models.Location[]>([orig, dest]));
         RestResponse restResponse = await RestClient.ExecuteGetAsync(restRequest, cancellationToken);
 
         OsrmResponse? body = null;
@@ -200,5 +198,20 @@ internal class OsrmRoutingServiceImpl(Settings.RoutingServiceApi api, Microsoft.
         /// The index of the trip this waypoint belongs to in the trips array.
         /// </summary>
         [J("trips_index")] public int TripsIndex { get; set; }
+    }
+}
+
+internal record OsrmRoutingApi : Settings.RoutingServiceApi
+{
+    internal OsrmRoutingApi(Settings.RoutingServiceApi original) : base(original.Name, original.UrlFormat) { }
+
+    public override string GetUrl<T>(T obj)
+    {
+        Models.Location[] locations = obj as Models.Location[] ?? throw new ArgumentException($"You must send an array of {nameof(Models.Location)}");
+
+        return string.Format(
+            UrlFormat,
+            $"{locations[0].Longitude.ToString(Core.Constants.Globalization.NumberFormatInfoInvariant)},{locations[0].Latitude.ToString(Core.Constants.Globalization.NumberFormatInfoInvariant)}",
+            $"{locations[1].Longitude.ToString(Core.Constants.Globalization.NumberFormatInfoInvariant)},{locations[1].Latitude.ToString(Core.Constants.Globalization.NumberFormatInfoInvariant)}");
     }
 }

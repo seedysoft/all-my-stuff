@@ -49,13 +49,11 @@ public class RoutingService(IConfiguration configuration, ILogger<RoutingService
         Impl.RoutingServiceImplBase RoutingImpl = TravelSettings.RoutingSettings.CurrentImplName switch
         {
 #pragma warning disable format
-            //Settings.RoutingImplName.Google                     => new GoogleRoutes(api, logger),
+            //Settings.RoutingImplName.MapboxDirections           => new Impl.MapboxDirectionsRouter(       api,                                logger),
         
-            //Settings.RoutingImplName.MapboxDirections           => new MapboxDirectionsRouter(api, logger),
-        
-            Settings.RoutingImplName.OpenSourceRoutingMachine    => new Impl.OsrmRoutingServiceImpl(api, logger),
+            Settings.RoutingImplName.OpenSourceRoutingMachine    => new Impl.OsrmRoutingServiceImpl(        new Impl.OsrmRoutingApi(api),       logger),
 
-            Settings.RoutingImplName.Valhalla                    => new Impl.ValhallaRoutingServiceImpl(new Impl.ValhallaRoutingApi(api) , logger),
+            Settings.RoutingImplName.Valhalla                    => new Impl.ValhallaRoutingServiceImpl(    new Impl.ValhallaRoutingApi(api),   logger),
 #pragma warning restore format
 
             _ => throw new InvalidOperationException($"Unsupported RoutingServiceImpl: {TravelSettings.RoutingSettings.CurrentImplName}"),

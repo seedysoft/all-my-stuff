@@ -23,8 +23,8 @@ public readonly record struct Location
     /// </summary>
     /// <returns>A culture-invariant string containing the latitude and longitude.</returns>
     private string GetDebuggerDisplay() =>
-        $"Lat: {Latitude.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat)}; " +
-        $"Lon: {Longitude.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat)}";
+        $"Lat: {Latitude.ToString(Core.Constants.Globalization.NumberFormatInfoInvariant)}; " +
+        $"Lon: {Longitude.ToString(Core.Constants.Globalization.NumberFormatInfoInvariant)}";
 
     //    public readonly Location AddMetters(double angle, double distanceInMetters)
     //    {

@@ -13,7 +13,7 @@ public sealed class GasStationPricesService
 
     private readonly ILogger<GasStationPricesService> Logger;
 
-    private static Models.Minetur.Body? MineturResponse = default!;
+    private static Models.Minetur.Body? MineturResponse;
 
     public GasStationPricesService(IServiceProvider serviceProvider)
     {

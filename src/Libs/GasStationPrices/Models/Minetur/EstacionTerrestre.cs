@@ -2,10 +2,7 @@
 
 public readonly record struct Body
 {
-    private const string FechaFormat = "dd/MM/yyyy HH:mm:ss";
-
-    [J("Fecha")]
-    public required string Fecha { get; init; }
+    [J("Fecha")] public required string Fecha { get; init; }
     /// <summary>
     /// Sample: 05/02/2025 20:43:02
     /// </summary>
@@ -15,11 +12,11 @@ public readonly record struct Body
         {
             return DateTimeOffset.TryParseExact(
                 input: Fecha,
-                format: FechaFormat,
+                format: "dd/MM/yyyy HH:mm:ss",
                 formatProvider: Core.Constants.Globalization.DateTimeFormatInfoES,
                 styles: System.Globalization.DateTimeStyles.AssumeUniversal,
-                result: out DateTimeOffset result)
-            ? result
+                result: out DateTimeOffset res)
+            ? res
             : DateTimeOffset.MinValue;
         }
     }

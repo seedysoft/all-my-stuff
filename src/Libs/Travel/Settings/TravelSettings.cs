@@ -34,5 +34,5 @@ public record RoutingServiceApi(string Name, string UrlFormat) : Api(UrlFormat);
 /// <param name="UrlFormat">Gets the URL format for the API endpoint.</param>
 public abstract record Api(string UrlFormat)
 {
-    public virtual string GetUrl<T>(T text) => string.Format(UrlFormat, text);
+    public virtual string GetUrl<T>(T obj) => string.Format(UrlFormat, obj);
 }

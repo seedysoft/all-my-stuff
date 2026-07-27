@@ -46,7 +46,7 @@ public sealed class Program : Libs.Core.ProgramBase
                 || !DateTime.TryParseExact(
                     args?[0],
                     Libs.Core.Constants.Formats.YearMonthDay,
-                    System.Globalization.CultureInfo.InvariantCulture,
+                    Libs.Core.Constants.Globalization.CultureInfoInvariant,
                     System.Globalization.DateTimeStyles.None,
                     out ForDate))
             {

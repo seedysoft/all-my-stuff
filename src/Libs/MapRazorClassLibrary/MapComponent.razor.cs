@@ -77,6 +77,8 @@ public partial class MapComponent : IAsyncDisposable
     /// </remarks>
     public async Task<string?> LoadRoutesAndGasStationsAsync(GasStationPrices.ViewModels.TravelQueryModel model, CancellationToken cancellationToken)
     {
+        string? returnText = null;
+
         await ShowLoaderAsync();
 
         await RemoveAllMarkersAsync();
@@ -88,23 +90,25 @@ public partial class MapComponent : IAsyncDisposable
         }
         catch (Exception e)
         {
-            return e.ToString();
+            res = [];
+            returnText = e.ToString();
         }
 
-        if (res.Count == 0)
-            return "No routes found";
+        if (string.IsNullOrWhiteSpace(returnText))
+        {
+            if (res.Count == 0)
+                returnText = "No routes found";
 
-        string? LoadRoutesDataIntoMapAsyncResult = await LoadRoutesDataIntoMapAsync(res, cancellationToken);
-        if (!string.IsNullOrWhiteSpace(LoadRoutesDataIntoMapAsyncResult))
-            return LoadRoutesDataIntoMapAsyncResult;
+            if (string.IsNullOrWhiteSpace(returnText))
+                returnText = await LoadRoutesDataIntoMapAsync(res, cancellationToken);
 
-        string? LoadGasStationsIntoMapAsyncResult = await LoadGasStationsIntoMapAsync(model, ComputeBoundsFromRoutes(res, cancellationToken), cancellationToken);
-        if (!string.IsNullOrWhiteSpace(LoadGasStationsIntoMapAsyncResult))
-            return LoadGasStationsIntoMapAsyncResult;
+            if (string.IsNullOrWhiteSpace(returnText))
+                returnText = await LoadGasStationsIntoMapAsync(model, ComputeBoundsFromRoutes(res, cancellationToken), cancellationToken);
+        }
 
         await HideLoaderAsync();
 
-        return null;
+        return returnText;
 
         /// <summary>
         /// Displays route polylines on the map using color-coded lines.
