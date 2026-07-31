@@ -87,6 +87,8 @@ public partial class MapComponent
     /// path for static files in Razor Class Libraries served to Blazor WebAssembly applications.
     /// </para>
     /// </remarks>
+    /// <seealso cref="OnInitialized"/>
+    /// <seealso cref="CreateMapAsync"/>
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         await base.OnAfterRenderAsync(firstRender);
