@@ -95,6 +95,17 @@ public partial class MapComponent : IAsyncDisposable
         }
     }
 
+    private async Task LoadProductLimitsAsync(
+        ProductLimits[] productLimits)
+    {
+        if (MapModule != null)
+        {
+            await MapModule.InvokeVoidAsync(
+                $"loadProductLimits",
+                productLimits);
+        }
+    }
+
     private async Task DeleteMapAsync()
     {
         if (MapModule != null)
