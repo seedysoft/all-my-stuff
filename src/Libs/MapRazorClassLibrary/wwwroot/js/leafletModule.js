@@ -71,6 +71,11 @@ export function removeAllMarkers() {
     })
 }
 
+export function loadProductLimits(productLimits) {
+    debugger
+    // https://leafletjs.com/examples/layers-control/
+}
+
 // export function setView(lat, lng, zoom) {
 //     debugger
 //     map.setView([lat, lng], zoom);
