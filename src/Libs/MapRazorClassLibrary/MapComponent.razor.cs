@@ -24,7 +24,7 @@ namespace Seedysoft.Libs.MapRazorClassLibrary;
 /// </para>
 /// <para>
 /// Architecture:
-/// The component uses local JavaScript interop through a dynamically imported leafletModule.js file that handles all direct Leaflet
+/// The component uses local JavaScript interop through a dynamically imported MapComponent.js file that handles all direct Leaflet
 /// library interactions. This separation of concerns allows for maintainable and testable code while leveraging Leaflet's powerful
 /// mapping capabilities.
 /// </para>
@@ -73,7 +73,7 @@ public partial class MapComponent : IAsyncDisposable
     /// <remarks>
     /// <para>
     /// This lifecycle method is called automatically by Blazor once during the component initialization phase.
-    /// It creates a DotNetObjectReference that enables JavaScript code (in leafletModule.js) to invoke .NET methods
+    /// It creates a DotNetObjectReference that enables JavaScript code (in MapComponent.js) to invoke .NET methods
     /// on this component instance, establishing the bidirectional communication bridge.
     /// </para>
     /// <para>
@@ -102,7 +102,7 @@ public partial class MapComponent : IAsyncDisposable
     /// <item><description>Calls the base class OnAfterRenderAsync to ensure inheritance chain is maintained</description></item>
     /// <item><description>Checks if this is the first render pass; skips execution on subsequent renders for performance</description></item>
     /// <item><description>Verifies that MapModule has not already been initialized (null check)</description></item>
-    /// <item><description>Dynamically imports the leafletModule.js from the component's JavaScript folder using ES6 modules</description></item>
+    /// <item><description>Dynamically imports the MapComponent.js from the component's JavaScript folder using ES6 modules</description></item>
     /// <item><description>Invokes CreateMapAsync() to initialize the Leaflet map instance with default settings</description></item>
     /// </list>
     /// </para>
@@ -113,7 +113,7 @@ public partial class MapComponent : IAsyncDisposable
     /// </para>
     /// <para>
     /// Module Path:
-    /// The leafletModule.js is imported from _content/Seedysoft.Libs.MapRazorClassLibrary/js/, which is the standard
+    /// The MapComponent.js is imported from _content/Seedysoft.Libs.MapRazorClassLibrary/js/, which is the standard
     /// path for static files in Razor Class Libraries served to Blazor WebAssembly applications.
     /// </para>
     /// </remarks>
@@ -129,7 +129,8 @@ public partial class MapComponent : IAsyncDisposable
         if (MapModule == null)
         {
             MapModule = await JsRuntime.InvokeAsync<IJSObjectReference>(
-                "import", $"./{Assets["_content/Seedysoft.Libs.MapRazorClassLibrary/js/leafletModule.js"]}");
+                identifier: "import",
+                args: $"./{Assets["_content/Seedysoft.Libs.MapRazorClassLibrary/js/MapComponent.js"]}");
 
             await CreateMapAsync();
         }
