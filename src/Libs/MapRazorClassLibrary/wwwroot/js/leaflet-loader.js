@@ -8,7 +8,7 @@ export class LoaderControl extends Control {
 
     onAdd(map) {
         this._map = map;
-        this._container = L.DomUtil.create('div', 'leaflet-control-loader');
+        this._container = DomUtil.create('div', 'leaflet-control-loader');
         this.hide();
         return this._container;
     }

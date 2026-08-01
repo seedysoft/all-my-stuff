@@ -1,4 +1,4 @@
-import * as L from '../lib/leaflet/leaflet.js';
+import { Map, TileLayer, Marker, Icon, CircleMarker, Polyline, GeoJSON, Control, DomUtil, DomEvent } from '../lib/leaflet/leaflet.js';
 import { LoaderControl } from './leaflet-loader.js';
 
 var map;
@@ -6,20 +6,20 @@ var controlLoader;
 
 export function createMap(id, options) {
     //debugger
-    map = new L.Map(id).setView(options.center, options.zoom);
-    const tiles = new L.TileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    map = new Map(id).setView(options.center, options.zoom);
+    const tiles = new TileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
         attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
     }).addTo(map);
 
     controlLoader = new LoaderControl().addTo(map);
 
-    map.on('dragend', function () {
-        controlLoader.show();
-        setTimeout(function () {
-            controlLoader.hide();
-        }, 3000);
-    });
+    // map.on('dragend', function () {
+    //     controlLoader.show();
+    //     setTimeout(function () {
+    //         controlLoader.hide();
+    //     }, 3000);
+    // });
 
     return map;
 }
@@ -31,12 +31,12 @@ export function destroyMap() {
 
 export function addMarker(markerOptions, iconOptions, popupContent) {
     // debugger
-    const marker = new L.Marker(markerOptions.position, markerOptions);
+    const marker = new Marker(markerOptions.position, markerOptions);
 
     if (iconOptions)
-        marker.setIcon(new L.Icon(iconOptions));
+        marker.setIcon(new Icon(iconOptions));
     else
-        marker.setIcon(new L.Icon.Default);
+        marker.setIcon(new Icon.Default);
 
     if (popupContent)
         marker.bindPopup(DOMPurify.sanitize(popupContent, { USE_PROFILES: { html: true } }));
@@ -46,7 +46,7 @@ export function addMarker(markerOptions, iconOptions, popupContent) {
 
 export function addCircleMarker(circleOptions, popup, tooltip) {
     // debugger
-    const circleMarker = new L.CircleMarker(circleOptions.position, circleOptions);
+    const circleMarker = new CircleMarker(circleOptions.position, circleOptions);
 
     if (typeof popup === 'string') {
         circleMarker.bindPopup(DOMPurify.sanitize(popup, { USE_PROFILES: { html: true } }));
@@ -92,7 +92,7 @@ export function registerClick(dotnetObj) {
 
 export function addPolyline(route) {
     // debugger
-    const polyline = new L.Polyline(route.points, route.options)
+    const polyline = new Polyline(route.points, route.options)
         .addTo(map);
 
     // zoom the map to the polyline

@@ -27,10 +27,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Folder Include="wwwroot\css\images\" />
-    </ItemGroup>
-
-    <ItemGroup>
         <Content Remove="libman.json" />
         <None Include="libman.json">
             <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
