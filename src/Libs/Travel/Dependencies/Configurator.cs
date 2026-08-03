@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Seedysoft.Libs.Travel.Dependencies;
@@ -21,5 +22,7 @@ public sealed class Configurator : Core.Dependencies.ConfiguratorBase
     {
         hostApplicationBuilder.Services.TryAddScoped<Services.Geocoding.GeocodingService>();
         hostApplicationBuilder.Services.TryAddScoped<Services.Routing.RoutingService>();
+
+        _ = hostApplicationBuilder.Services.AddHttpClient();
     }
 }

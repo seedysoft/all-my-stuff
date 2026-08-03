@@ -1,9 +1,12 @@
-﻿using RestSharp;
+﻿using Microsoft.Extensions.Logging;
 using Seedysoft.Libs.Core.Extensions;
 
 namespace Seedysoft.Libs.Travel.Services.Geocoding.Impl;
 
-internal class PhotonGeocodingServiceImpl(Settings.GeocodingServiceApi api, Microsoft.Extensions.Logging.ILogger logger) : GeocodingServiceImplBase(api)
+internal class PhotonGeocodingServiceImpl(
+    IHttpClientFactory httpClientFactory
+    , Settings.GeocodingServiceApi api
+    , ILogger logger) : GeocodingServiceImplBase(httpClientFactory, api)
 {
     internal override async Task<IReadOnlyList<ViewModels.Place>> FindPlacesAsync(string textToFind, CancellationToken cancellationToken)
     {
@@ -13,13 +16,22 @@ internal class PhotonGeocodingServiceImpl(Settings.GeocodingServiceApi api, Micr
                 return [];
 
             // photon.komoot.io/api/?q=berlin&limit=1
-            RestClient restClient = new(new Uri(Api.UrlFormat).GetLeftPart(UriPartial.Authority));
-            ResponseObject? restResponse = await restClient.GetAsync<ResponseObject>(Api.GetUrl(Uri.EscapeDataString(textToFind)), cancellationToken);
+            
+            HttpResponseMessage httpResponseMessage = await HttpClient.GetAsync(Api.GetUrl(Uri.EscapeDataString(textToFind)), cancellationToken);
+            if (httpResponseMessage.IsSuccessStatusCode)
+            {
+                ResponseObject? restResponse = await httpResponseMessage.Content!.FromJsonAsync<ResponseObject>(cancellationToken);
 
-            return
-                [.. restResponse?.Features?
-                    .Select(p => new ViewModels.Place(p.Properties.GetName, p.Geometry.GetLocation)) ?? []
-                ];
+                return
+                    [.. restResponse?.Features?
+                        .Select(p => new ViewModels.Place(p.Properties.GetName, p.Geometry.GetLocation)) ?? []
+                    ];
+            }
+            else
+            {
+                if (logger.IsEnabled(LogLevel.Warning))
+                    logger.LogWarning("PhotonGeocodingServiceImpl: FindPlacesAsync: {StatusCode} {ReasonPhrase}", httpResponseMessage.StatusCode, httpResponseMessage.ReasonPhrase);
+            }
         }
         catch (Exception e) when (e is OperationCanceledException || e.InnerException is OperationCanceledException) { throw; }
         catch (Exception e) when (logger.LogAndHandle(e, "Unexpected error")) { }

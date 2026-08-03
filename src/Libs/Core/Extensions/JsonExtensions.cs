@@ -6,6 +6,8 @@ public static class JsonExtensions
 {
     public static T FromJson<T>(this string json)
         => JsonSerializer.Deserialize<T>(json, Serialization.DefaultJsonSerializerOptions.DefaultsReadOnly) ?? throw new InvalidOperationException();
+    public static async Task<T> FromJsonAsync<T>(this HttpContent content, CancellationToken cancellationToken)
+        => JsonSerializer.Deserialize<T>(await content.ReadAsStringAsync(cancellationToken), Serialization.DefaultJsonSerializerOptions.DefaultsReadOnly) ?? throw new InvalidOperationException();
 
     public static string ToJson<T>(
         this T self,

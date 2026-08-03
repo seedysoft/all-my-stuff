@@ -1,9 +1,12 @@
-﻿using RestSharp;
+﻿using Microsoft.Extensions.Logging;
 using Seedysoft.Libs.Core.Extensions;
 
 namespace Seedysoft.Libs.Travel.Services.Geocoding.Impl;
 
-internal class NominatimGeocodingServiceImpl(Settings.GeocodingServiceApi api, Microsoft.Extensions.Logging.ILogger logger) : GeocodingServiceImplBase(api)
+internal class NominatimGeocodingServiceImpl(
+    IHttpClientFactory httpClientFactory
+    , Settings.GeocodingServiceApi api
+    , ILogger logger) : GeocodingServiceImplBase(httpClientFactory, api)
 {
     // https://nominatim.openstreetmap.org/search?q={0}&format=json&limit=8
     internal async override Task<IReadOnlyList<ViewModels.Place>> FindPlacesAsync(string textToFind, CancellationToken cancellationToken)
@@ -13,12 +16,22 @@ internal class NominatimGeocodingServiceImpl(Settings.GeocodingServiceApi api, M
             if (string.IsNullOrWhiteSpace(textToFind))
                 return [];
 
-            RestClient restClient = new(new Uri(Api.UrlFormat).GetLeftPart(UriPartial.Authority));
-            ResponseObject[]? restResponse = await restClient.GetAsync<ResponseObject[]>(Api.GetUrl(textToFind), cancellationToken);
+            HttpResponseMessage httpResponseMessage = await HttpClient.GetAsync(Api.GetUrl(textToFind), cancellationToken);
 
-            return restResponse == null
+            ResponseObject[]? body = null;
+            if (httpResponseMessage.IsSuccessStatusCode)
+            {
+                body = await httpResponseMessage.Content.FromJsonAsync<ResponseObject[]>(cancellationToken);
+            }
+            else
+            {
+                if (logger.IsEnabled(LogLevel.Warning))
+                    logger.LogWarning("ValhallaRoutingServiceImpl: FindPlacesAsync: {StatusCode} {ReasonPhrase}", httpResponseMessage.StatusCode, httpResponseMessage.ReasonPhrase);
+            }
+
+            return body == null
                 ? []
-                : [.. restResponse
+                : [.. body
                     .Where(p => !string.IsNullOrWhiteSpace(p.Display_name))
                     .Where(p => p.Lat != 0 && p.Lon != 0)
                     .Select(p => new ViewModels.Place(p.Display_name!, new Models.Location(p.Lat, p.Lon)))

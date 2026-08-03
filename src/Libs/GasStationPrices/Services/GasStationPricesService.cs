@@ -1,15 +1,17 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using RestSharp;
 using Seedysoft.Libs.Core.Extensions;
 using Seedysoft.Libs.GasStationPrices.Extensions;
+using System.Net.Http.Json;
 
 namespace Seedysoft.Libs.GasStationPrices.Services;
 
 public sealed class GasStationPricesService
 {
     public Settings.GasStationPricesSettings GasStationPricesSettings { get; init; }
+
+    private readonly IHttpClientFactory httpClientFactory;
 
     private readonly ILogger<GasStationPricesService> Logger;
 
@@ -20,6 +22,8 @@ public sealed class GasStationPricesService
         GasStationPricesSettings = serviceProvider.GetRequiredService<IConfiguration>()
             .GetSection(nameof(Settings.GasStationPricesSettings))
             .Get<Settings.GasStationPricesSettings>()!;
+
+        httpClientFactory = serviceProvider.GetRequiredService<IHttpClientFactory>();
 
         Logger = serviceProvider.GetRequiredService<ILogger<GasStationPricesService>>();
 
@@ -48,14 +52,10 @@ public sealed class GasStationPricesService
             {
                 var sw = System.Diagnostics.Stopwatch.StartNew();
 
-                RestRequest restRequest = new(GasStationPricesSettings.Minetur.Urls.EstacionesTerrestres);
-                RestClient restClient = new(GasStationPricesSettings.Minetur.Urls.Base)
-                {
-                    AcceptedContentTypes = [System.Net.Mime.MediaTypeNames.Application.Json,],
-                };
-                RestResponse restResponse = await restClient.GetAsync(restRequest, cancellationToken);
-                if (restResponse.IsSuccessStatusCode)
-                    MineturResponse = restResponse.Content!.FromJson<Models.Minetur.Body>();
+                HttpClient httpClient = httpClientFactory.CreateClient();
+                HttpResponseMessage httpResponseMessage = await httpClient.GetAsync(GasStationPricesSettings.Minetur.Urls.EstacionesTerrestres, cancellationToken);
+                if (httpResponseMessage.IsSuccessStatusCode)
+                    MineturResponse = await httpResponseMessage.Content.FromJsonAsync<Models.Minetur.Body>(cancellationToken);
 
                 sw.Stop();
                 if (Logger.IsEnabled(LogLevel.Information))

@@ -16,7 +16,10 @@ namespace Seedysoft.Libs.Travel.Services.Routing;
 /// <item><description>Valhalla Routing Engine</description></item>
 /// </list>
 /// </remarks>
-public class RoutingService(IConfiguration configuration, ILogger<RoutingService> logger) : ServiceBase(configuration)
+public class RoutingService(
+    IServiceProvider serviceProvider
+    , IConfiguration configuration
+    , ILogger<RoutingService> logger) : ServiceBase(serviceProvider, configuration)
 {
     /// <summary>
     /// Retrieves a collection of optimized routes between the specified origin and destination.
@@ -51,9 +54,9 @@ public class RoutingService(IConfiguration configuration, ILogger<RoutingService
 #pragma warning disable format
             //Settings.RoutingImplName.MapboxDirections           => new Impl.MapboxDirectionsRouter(       api,                                logger),
         
-            Settings.RoutingImplName.OpenSourceRoutingMachine    => new Impl.OsrmRoutingServiceImpl(        new Impl.OsrmRoutingApi(api),       logger),
+            Settings.RoutingImplName.OpenSourceRoutingMachine    => new Impl.OsrmRoutingServiceImpl(        HttpClientFactory,  new Impl.OsrmRoutingApi(api),       logger),
 
-            Settings.RoutingImplName.Valhalla                    => new Impl.ValhallaRoutingServiceImpl(    new Impl.ValhallaRoutingApi(api),   logger),
+            Settings.RoutingImplName.Valhalla                    => new Impl.ValhallaRoutingServiceImpl(    HttpClientFactory,  new Impl.ValhallaRoutingApi(api),   logger),
 #pragma warning restore format
 
             _ => throw new InvalidOperationException($"Unsupported RoutingServiceImpl: {TravelSettings.RoutingSettings.CurrentImplName}"),
