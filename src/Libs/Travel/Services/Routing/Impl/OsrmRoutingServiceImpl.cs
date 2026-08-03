@@ -1,4 +1,4 @@
-﻿using RestSharp;
+﻿using Microsoft.Extensions.Logging;
 using Seedysoft.Libs.Core.Extensions;
 
 namespace Seedysoft.Libs.Travel.Services.Routing.Impl;
@@ -7,7 +7,10 @@ namespace Seedysoft.Libs.Travel.Services.Routing.Impl;
 /// Implementation of the routing service that integrates with the Open Source Routing Machine (OSRM) API.
 /// This class handles communication with OSRM to retrieve routing information between two geographic locations.
 /// </summary>
-internal class OsrmRoutingServiceImpl(OsrmRoutingApi api, Microsoft.Extensions.Logging.ILogger logger) : RoutingServiceImplBase(api)
+internal class OsrmRoutingServiceImpl(
+    IHttpClientFactory httpClientFactory
+    , OsrmRoutingApi api
+    , ILogger logger) : RoutingServiceImplBase(httpClientFactory, api)
 {
     /// <summary>
     /// Obtains the routes between the specified origin and destination locations.
@@ -26,14 +29,19 @@ internal class OsrmRoutingServiceImpl(OsrmRoutingApi api, Microsoft.Extensions.L
         , CancellationToken cancellationToken)
     {
         // {origLng,origLat};{destLng,destLat}
-        RestRequest restRequest = new(RoutingApi.GetUrl<Models.Location[]>([orig, dest]));
-        RestResponse restResponse = await RestClient.ExecuteGetAsync(restRequest, cancellationToken);
+
+        HttpResponseMessage httpResponseMessage = await HttpClient.GetAsync(Api.GetUrl<Models.Location[]>([orig, dest]), cancellationToken);
 
         OsrmResponse? body = null;
-        if (restResponse.IsSuccessStatusCode)
-            body = restResponse.Content!.FromJson<OsrmResponse>();
+        if (httpResponseMessage.IsSuccessStatusCode)
+        {
+            body = await httpResponseMessage.Content.FromJsonAsync<OsrmResponse>(cancellationToken);
+        }
         else
-            _ = logger.LogAndHandle(restResponse.ErrorException, restResponse.Content ?? "ERROR", []);
+        {
+            if (logger.IsEnabled(LogLevel.Warning))
+                logger.LogWarning("OsrmRoutingServiceImpl: FindPlacesAsync: {StatusCode} {ReasonPhrase}", httpResponseMessage.StatusCode, httpResponseMessage.ReasonPhrase);
+        }
 
         if (body == null)
             return [];
