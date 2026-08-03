@@ -12,6 +12,7 @@ internal abstract class HttpServiceImplBase<TApi>(IHttpClientFactory httpClientF
     /// Gets the configured HTTP client for making API requests.
     /// </summary>
     protected HttpClient HttpClient { get; } = httpClientFactory.CreateClient();
+
     /// <summary>
     /// Gets the API configuration for this service implementation.
     /// </summary>
