@@ -23,6 +23,28 @@ public sealed class Configurator : Core.Dependencies.ConfiguratorBase
         hostApplicationBuilder.Services.TryAddScoped<Services.Geocoding.GeocodingService>();
         hostApplicationBuilder.Services.TryAddScoped<Services.Routing.RoutingService>();
 
-        _ = hostApplicationBuilder.Services.AddHttpClient();
+        _ = hostApplicationBuilder.Services.AddHttpClient(name: Microsoft.Extensions.Options.Options.DefaultName)
+            .ConfigureHttpClient(static configureClient =>
+            {
+                configureClient.DefaultRequestHeaders.Accept.Clear();
+                configureClient.DefaultRequestHeaders.Accept.ParseAdd("*/*");
+                configureClient.DefaultRequestHeaders.AcceptEncoding.Clear();
+                configureClient.DefaultRequestHeaders.AcceptEncoding.ParseAdd("gzip, deflate, br");
+                configureClient.DefaultRequestHeaders.Connection.Clear();
+                configureClient.DefaultRequestHeaders.Connection.ParseAdd("keep-alive");
+                configureClient.DefaultRequestHeaders.UserAgent.Clear();
+                configureClient.DefaultRequestHeaders.UserAgent.ParseAdd("MiAppEnNet10/1.0 (Windows 10; Contacto: tu-email@dominio.com)");
+            })
+            .ConfigurePrimaryHttpMessageHandler(static () =>
+            {
+                HttpClientHandler handler = new()
+                {
+                    ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator,
+                    SslProtocols = System.Security.Authentication.SslProtocols.Tls13,
+                };
+
+                return handler;
+            })
+            ;
     }
 }
