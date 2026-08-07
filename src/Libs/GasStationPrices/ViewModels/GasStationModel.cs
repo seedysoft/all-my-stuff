@@ -12,7 +12,7 @@ public record GasStationModel
     [J("rotulo")] public required string Rotulo { get; init; }
     [J("rotulotrimed")] public string RotuloTrimed => Rotulo.Trim();
 
-    [J("bie")] public decimal? Bie { get; init; }
+    //[J("bie")] public decimal? Bie { get; init; }
     [J("bio")] public decimal? Bio { get; init; }
     [J("g95e10")] public decimal? G95e10 { get; init; }
     [J("g95e5")] public decimal? G95e5 { get; init; }
@@ -31,7 +31,7 @@ public record GasStationModel
     {
         return productoPetroliferoId switch
         {
-            Constants.ProductoPetroliferoId.BIE => Bie,
+            //Constants.ProductoPetroliferoId.BIE => Bie,
             Constants.ProductoPetroliferoId.BIO => Bio,
             Constants.ProductoPetroliferoId.G95E10 => G95e10,
             Constants.ProductoPetroliferoId.G95E5 => G95e5,
@@ -44,15 +44,16 @@ public record GasStationModel
             Constants.ProductoPetroliferoId.GOA => Goa,
             Constants.ProductoPetroliferoId.GOAPlus => Goaplus,
             Constants.ProductoPetroliferoId.GOB => Gob,
+            //Constants.ProductoPetroliferoId.H2 => H2,
             _ => throw new ArgumentOutOfRangeException(nameof(productoPetroliferoId), productoPetroliferoId, null),
         };
     }
 
     public IReadOnlyList<(Constants.ProductoPetroliferoId IdProducto, decimal Value)> AllProducts(
-        IReadOnlyCollection<Constants.ProductoPetroliferoId> petroleumProductsSelectedIds)
+        IEnumerable<Constants.ProductoPetroliferoId>? petroleumProductsSelectedIds)
     {
         return [..
-            from a in petroleumProductsSelectedIds
+            from a in petroleumProductsSelectedIds ?? []
             let b = GetProdById(a)
             where b.HasValue
             select (a, b.Value)

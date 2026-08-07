@@ -21,28 +21,11 @@ public sealed class Configurator : Core.Dependencies.ConfiguratorBase
     {
         hostApplicationBuilder.Services.TryAddScoped<Services.GasStationPricesService>();
 
-        _ = hostApplicationBuilder.Services.AddHttpClient();
-
-        //_ = hostApplicationBuilder.Services.AddHttpClient("Default")
-        //    .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
-        //    {
-        //        UseCookies = false
-        //    });
-
-        //_ = hostApplicationBuilder.Services.AddHttpClient("NoRedirectClient")
-        //    .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
-        //    {
-        //        AllowAutoRedirect = false
-        //    });
-
-        //_ = hostApplicationBuilder.Services.AddHttpClient("CookiesClient")
-        //    .ConfigurePrimaryHttpMessageHandler(() =>
-        //    {
-        //        return new HttpClientHandler
-        //        {
-        //            UseCookies = true,
-        //            CookieContainer = new System.Net.CookieContainer()
-        //        };
-        //    });
+        _ = hostApplicationBuilder.Services.AddHttpClient(string.Empty)
+            .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler()
+            {
+                ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator,
+                SslProtocols = System.Security.Authentication.SslProtocols.Tls12 | System.Security.Authentication.SslProtocols.Tls13,
+            });
     }
 }
