@@ -22,11 +22,11 @@ public partial class TravelSearch
 
     private readonly Libs.GasStationPrices.ViewModels.TravelQueryModel travelQueryModel = Libs.GasStationPrices.ViewModels.TravelQueryModel.
 #if DEBUG
-            CreateDefault()
+            CreateDefault();
 #else
-            CreateEmpty()
+            CreateEmpty();
 #endif
-;
+
     private readonly Libs.GasStationPrices.ViewModels.TravelQueryModelFluentValidator travelQueryModelFluentValidator = new();
 
     protected override async Task OnInitializedAsync()

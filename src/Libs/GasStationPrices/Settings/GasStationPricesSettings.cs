@@ -15,15 +15,13 @@ public readonly record struct Minetur
 
 public readonly record struct Urls
 {
-    [J("Base")]
     public required string Base { get; init; }
 
-    [J("EstacionesTerrestres")]
     public required string EstacionesTerrestres { get; init; }
 
-    [J("EstacionesTerrestresFiltroProducto")]
-    public required string EstacionesTerrestresFiltroProducto { get; init; }
+    public Uri GetUri() => new(Base + EstacionesTerrestres);
 
-    [J("ListadosBase")]
-    public required string ListadosBase { get; init; }
+    //public required string EstacionesTerrestresFiltroProducto { get; init; }
+
+    //public required string ListadosBase { get; init; }
 }

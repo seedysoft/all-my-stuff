@@ -13,7 +13,7 @@ public static class ModelExtensions
             Lon             =   (double)estacionTerrestre.Lon,
             Localizacion    =   estacionTerrestre.DireccionParsed,
             Rotulo          =   estacionTerrestre.Rotulo,
-            Bie             =   estacionTerrestre.PrecioBioetanol.ParseWithNumberFormatInfoES(),
+            //Bie             =   estacionTerrestre.PrecioBioetanol.ParseWithNumberFormatInfoES(),
             Bio             =   estacionTerrestre.PrecioBiodiesel.ParseWithNumberFormatInfoES(),
             Gob             =   estacionTerrestre.PrecioGasoleoB.ParseWithNumberFormatInfoES(),
             G95e10          =   estacionTerrestre.PrecioGasolina95E10.ParseWithNumberFormatInfoES(),

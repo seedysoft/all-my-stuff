@@ -11,7 +11,7 @@ public readonly record struct ProductoPetrolifero : IComparable<ProductoPetrolif
     public int CompareTo(ProductoPetrolifero other) => Abreviatura.CompareTo(other.Abreviatura);
 
     public static System.Collections.Immutable.ImmutableSortedSet<ProductoPetrolifero> All
-        => System.Collections.Immutable.ImmutableSortedSet.Create([BIE, BIO, G95E10, G95E5, G95E5Plus, G98E10, G98E5, GLP, GNC, GNL, GOA, GOAPlus, GOB/*, H2*/]);
+        => System.Collections.Immutable.ImmutableSortedSet.Create([/*BIE,*/ BIO, G95E10, G95E5, G95E5Plus, G98E10, G98E5, GLP, GNC, GNL, GOA, GOAPlus, GOB/*, H2*/]);
     public static System.Collections.Immutable.ImmutableSortedSet<ProductoPetrolifero> Gasoline
         => System.Collections.Immutable.ImmutableSortedSet.Create([G95E10, G95E5, G95E5Plus, G98E10, G98E5]);
     public static System.Collections.Immutable.ImmutableSortedSet<ProductoPetrolifero> Diesel
@@ -20,7 +20,7 @@ public readonly record struct ProductoPetrolifero : IComparable<ProductoPetrolif
     public override string ToString() => Nombre ?? "Unknown";
 
 #pragma warning disable format
-    public static readonly ProductoPetrolifero BIE          = new() { IdProducto = Constants.ProductoPetroliferoId.BIE,         Nombre = "Bioetanol",                   Abreviatura =   nameof(BIE).ToLowerInvariant() };
+    //public static readonly ProductoPetrolifero BIE          = new() { IdProducto = Constants.ProductoPetroliferoId.BIE,         Nombre = "Bioetanol",                   Abreviatura =   nameof(BIE).ToLowerInvariant() };
     public static readonly ProductoPetrolifero BIO          = new() { IdProducto = Constants.ProductoPetroliferoId.BIO,         Nombre = "Biodiésel",                   Abreviatura =   nameof(BIO).ToLowerInvariant() };
     public static readonly ProductoPetrolifero G95E10       = new() { IdProducto = Constants.ProductoPetroliferoId.G95E10,      Nombre = "Gasolina 95 E10",             Abreviatura =   nameof(G95E10).ToLowerInvariant() };
     public static readonly ProductoPetrolifero G95E5        = new() { IdProducto = Constants.ProductoPetroliferoId.G95E5,       Nombre = "Gasolina 95 E5",              Abreviatura =   nameof(G95E5).ToLowerInvariant() };

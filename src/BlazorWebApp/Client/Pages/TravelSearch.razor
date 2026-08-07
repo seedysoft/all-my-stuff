@@ -66,7 +66,7 @@
             <MudButtonGroup Class="gap-4 pa-4" FullWidth Size="@Size.Medium" Variant="@variant">
 
                 <MudButton ButtonType="@ButtonType.Button"
-                           IconColor="@(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.All.Count == travelQueryModel.PetroleumProductsSelectedIds.Count ? Color.Primary : Color.Secondary)"
+                           IconColor="@(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.All.Count == travelQueryModel.PetroleumProductsSelectedIds?.Count() ? Color.Primary : Color.Secondary)"
                            EndIcon="@Icons.Material.Filled.SelectAll"
                            IconSize="@Size.Large"
                            OnClick="@(()=> SetPetroleumProductsSelectedIds(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.All))">
@@ -74,7 +74,7 @@
                 </MudButton>
 
                 <MudButton ButtonType="@ButtonType.Button"
-                           IconColor="@(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.Gasoline.Select(x => x.IdProducto).All(y => travelQueryModel.PetroleumProductsSelectedIds.Contains(y)) ? Color.Primary : Color.Secondary)"
+                           IconColor="@(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.Gasoline.Select(x => x.IdProducto).All(y => (travelQueryModel.PetroleumProductsSelectedIds ??[]) .Contains(y)) ? Color.Primary : Color.Secondary)"
                            EndIcon="@Icons.Material.Filled.PropaneTank"
                            IconSize="@Size.Large"
                            OnClick="@(()=> SetPetroleumProductsSelectedIds(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.Gasoline))">
@@ -82,7 +82,7 @@
                 </MudButton>
 
                 <MudButton ButtonType="@ButtonType.Button"
-                           IconColor="@(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.Diesel.Select(x => x.IdProducto).All(y => travelQueryModel.PetroleumProductsSelectedIds.Contains(y)) ? Color.Primary : Color.Secondary)"
+                           IconColor="@(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.Diesel.Select(x => x.IdProducto).All(y => (travelQueryModel.PetroleumProductsSelectedIds ??[]) .Contains(y)) ? Color.Primary : Color.Secondary)"
                            EndIcon="@Icons.Material.Filled.CarRepair"
                            IconSize="@Size.Large"
                            OnClick="@(()=> SetPetroleumProductsSelectedIds(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.Diesel))">
@@ -98,21 +98,28 @@
 
             </MudButtonGroup>
 
-            <MudChipSet @bind-SelectedValues="@travelQueryModel.PetroleumProductsSelectedIds"
-                        CheckMark="false"
-                        Color="@Color.Info"
-                        SelectionMode="@SelectionMode.MultiSelection"
-                        T="@Libs.GasStationPrices.Constants.ProductoPetroliferoId"
-                        Variant="@Variant.Text">
-                @foreach (var item in Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.All)
-                {
-                    <MudTooltip Text="@item.Nombre">
-                        <MudChip Default="@(item.Abreviatura.StartsWith("G9", StringComparison.InvariantCultureIgnoreCase) && !item.Abreviatura.EndsWith("E10", StringComparison.InvariantCultureIgnoreCase))"
-                                 Text="@item.Abreviatura.ToUpperInvariant()"
-                                 Value="@item.IdProducto" />
-                    </MudTooltip>
+            <MudToggleGroup @bind-Values="@travelQueryModel.PetroleumProductsSelectedIds"
+                            CheckMark="false"
+                            Color="Color.Primary"
+                            SelectedClass="black white-text"
+                            SelectionMode="SelectionMode.MultiSelection"
+                            T="@Libs.GasStationPrices.Constants.ProductoPetroliferoId">
+                @{
+                    @foreach (Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero item in Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.All)
+                    {
+                        Libs.GasStationPrices.Models.ProductLimits? Price = TravelMap.Prices?.FirstOrDefault(x => x.IdP == item.IdProducto);
+                        <MudToggleItem Value="@item.IdProducto">
+                            <MudStack Justify="MudBlazor.Justify.Center">
+                                <MudText Typo="Typo.subtitle2">@item.Abreviatura.ToUpperInvariant()</MudText>
+                                <MudText Align="MudBlazor.Align.Right" Typo="Typo.caption">⬇ @(Price?.MinOrNull ?? string.Empty)</MudText>
+                                <MudText Align="MudBlazor.Align.Right" Typo="Typo.caption">~ @(Price?.AvgOrNull ?? string.Empty)</MudText>
+                                <MudText Align="MudBlazor.Align.Right" Typo="Typo.caption">⬆ @(Price?.MaxOrNull ?? string.Empty)</MudText>
+                            </MudStack>
+                        </MudToggleItem>
+                    }
                 }
-            </MudChipSet>
+            </MudToggleGroup>
+
         </MudItem>
 
         <MudItem xs="10">
@@ -141,7 +148,7 @@
 
         <MudItem xs="12">
             <MapComponent @ref="TravelMap"
-                          Height="calc(70vh)"
+                          Height="calc(50vh)"
                           Width="100%"
                           Map="@Map">
             </MapComponent>
