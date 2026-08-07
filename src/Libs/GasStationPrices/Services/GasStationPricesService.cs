@@ -3,7 +3,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Seedysoft.Libs.Core.Extensions;
 using Seedysoft.Libs.GasStationPrices.Extensions;
-using System.Net.Http.Json;
 
 namespace Seedysoft.Libs.GasStationPrices.Services;
 
@@ -53,7 +52,7 @@ public sealed class GasStationPricesService
                 var sw = System.Diagnostics.Stopwatch.StartNew();
 
                 HttpClient httpClient = httpClientFactory.CreateClient();
-                HttpResponseMessage httpResponseMessage = await httpClient.GetAsync(GasStationPricesSettings.Minetur.Urls.EstacionesTerrestres, cancellationToken);
+                HttpResponseMessage httpResponseMessage = await httpClient.GetAsync(GasStationPricesSettings.Minetur.Urls.GetUri(), cancellationToken);
                 if (httpResponseMessage.IsSuccessStatusCode)
                     MineturResponse = await httpResponseMessage.Content.FromJsonAsync<Models.Minetur.Body>(cancellationToken);
 
