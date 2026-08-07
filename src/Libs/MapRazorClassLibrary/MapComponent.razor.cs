@@ -69,6 +69,9 @@ public partial class MapComponent : IAsyncDisposable
     /// </remarks>
     private readonly string[] ColorsForRoutes = ["#007FFF", "#0074EA", "#0069D5", "#005EC0", "#0053AB", "#004896", "#003D81", "#00326C"];
 
+    public GasStationPrices.Models.ProductLimits[] Prices { get; private set; } =
+        [.. GasStationPrices.Models.Minetur.ProductoPetrolifero.All.Select(static p => new GasStationPrices.Models.ProductLimits(p.IdProducto))];
+
     /// <summary>
     /// Initializes the component by creating a DotNet object reference for JavaScript interop.
     /// </summary>
@@ -192,7 +195,7 @@ public partial class MapComponent : IAsyncDisposable
     /// </remarks>
     /// <seealso cref="LoadRoutesDataIntoMapAsync"/>
     /// <seealso cref="ComputeBoundsFromRoutes"/>
-    /// <seealso cref="LoadGasStationsIntoMapAsync"/>
+    /// <seealso cref="LoadDataIntoMapAsync"/>
     /// <seealso cref="ShowLoaderAsync"/>
     /// <seealso cref="HideLoaderAsync"/>
     /// <seealso cref="RemoveAllMarkersAsync"/>
@@ -203,6 +206,8 @@ public partial class MapComponent : IAsyncDisposable
         await ShowLoaderAsync();
 
         await RemoveAllMarkersAsync();
+
+        Array.ForEach(Prices, x => x.SetPrices(null));
 
         IReadOnlyList<(string NombreRuta, double[,] Coordenadas)> res;
         try
@@ -226,7 +231,7 @@ public partial class MapComponent : IAsyncDisposable
             if (string.IsNullOrWhiteSpace(returnText))
             {
                 IReadOnlyList<GasStationPrices.ViewModels.GasStationModel> gasStations =
-                await GasStationPricesService.GetNearGasStationsAsync(ComputeBoundsFromRoutes(res, cancellationToken), model.MaxDistanceInKm, cancellationToken);
+                    await GasStationPricesService.GetNearGasStationsAsync(ComputeBoundsFromRoutes(res, cancellationToken), model.MaxDistanceInKm, cancellationToken);
                 if (gasStations.Count == 0)
                 {
                     returnText = "⚠️ No Gas stations loaded ⚠️";
@@ -234,16 +239,18 @@ public partial class MapComponent : IAsyncDisposable
                 else
                 {
                     // For each product, obtain min, average and max
-                    ProductLimits[] productLimits = [..
+                    GasStationPrices.Models.ProductLimits[] productLimits = [..
                         from p in GasStationPrices.Models.Minetur.ProductoPetrolifero.All
-                        where model.PetroleumProductsSelectedIds.Contains(p.IdProducto)
-                        let v = gasStations.Select(x => x.GetProdById(p.IdProducto)).Where(x => x.HasValue)
-                        select new ProductLimits(
+                        //where model.PetroleumProductsSelectedIds.Contains(p.IdProducto)
+                        let v = gasStations.Select(x => x.GetProdById(p.IdProducto))//.Where(x => x.HasValue)
+                        select new GasStationPrices.Models.ProductLimits(
                             p.IdProducto,
-                            v.Min(),
-                            v.Average(),
-                            v.Max()
+                            v?.Min(),
+                            v?.Average(),
+                            v?.Max()
                         )];
+                    foreach (GasStationPrices.Models.ProductLimits item in Prices)
+                        item.SetPrices(productLimits.FirstOrDefault(x => x.IdP == item.IdP));
 
                     returnText = productLimits.Length == 0
                         ? "⚠️ No Products to show ⚠️"
@@ -467,7 +474,7 @@ public partial class MapComponent : IAsyncDisposable
         async Task<string?> LoadDataIntoMapAsync(
             GasStationPrices.ViewModels.TravelQueryModel model
             , IReadOnlyList<GasStationPrices.ViewModels.GasStationModel> gasStations
-            , ProductLimits[] productLimits
+            , GasStationPrices.Models.ProductLimits[] productLimits
             , CancellationToken cancellationToken)
         {
             await LoadProductLimitsAsync(productLimits);
@@ -555,7 +562,7 @@ public partial class MapComponent : IAsyncDisposable
             /// The HTML is displayed in a Leaflet popup when the user clicks on a station marker.
             /// </para>
             /// </remarks>
-            static string BuildPopupContent(GasStationPrices.ViewModels.GasStationModel GasStation, IEnumerable<ProductLimits> Products)
+            static string BuildPopupContent(GasStationPrices.ViewModels.GasStationModel GasStation, IEnumerable<GasStationPrices.Models.ProductLimits> Products)
             {
                 System.Text.StringBuilder popupContent = new();
                 _ = popupContent
@@ -575,7 +582,7 @@ public partial class MapComponent : IAsyncDisposable
                         continue;
 
                     string CssClass;
-                    ProductLimits? productLimits = Products.FirstOrDefault(p => p.IdP == productoPetrolifero.IdProducto);
+                    GasStationPrices.Models.ProductLimits? productLimits = Products.FirstOrDefault(p => p.IdP == productoPetrolifero.IdProducto);
 #pragma warning disable IDE0045 // Convert to conditional expression
                     if (GasVal.Value == (productLimits?.Min ?? decimal.Zero))
                         CssClass = "bgVerde";

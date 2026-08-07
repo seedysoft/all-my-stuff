@@ -267,7 +267,7 @@ public partial class MapComponent
     }
 
     private async Task LoadProductLimitsAsync(
-        ProductLimits[] productLimits)
+        GasStationPrices.Models.ProductLimits[] productLimits)
     {
         if (MapModule != null)
         {
