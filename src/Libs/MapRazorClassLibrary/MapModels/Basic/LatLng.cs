@@ -24,6 +24,13 @@ public sealed class LatLng(double lat, double lng, double? alt = default)
     /// </summary>
     [J("alt")] public double? Alt { get; set; } = alt;
 
+    /// <summary>
+    /// A "fake" id to store a dictionary
+    /// </summary>
+    [J("key")]
+    public string Key =>
+        $"{Lat.ToString(Core.Constants.Globalization.NumberFormatInfoInvariant)};{Lng.ToString(Core.Constants.Globalization.NumberFormatInfoInvariant)}";
+
     internal string GetDebuggerDisplay()
     {
         return Alt.HasValue

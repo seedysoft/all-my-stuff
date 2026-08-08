@@ -3,7 +3,7 @@ using Microsoft.JSInterop;
 
 namespace Seedysoft.Libs.MapRazorClassLibrary;
 
-public partial class MapComponent : IAsyncDisposable
+public partial class MapComponent
 {
     private DotNetObjectReference<MapComponent> ObjRef = default!;
 
@@ -33,7 +33,7 @@ public partial class MapComponent : IAsyncDisposable
             if (MapModule == null)
                 return;
 
-            await MapModule.InvokeVoidAsync("createMap", MapId, Map);
+            await MapModule.InvokeVoidAsync("createMap", MapId, Map, ObjRef);
 
             if (OnMapCreatedAsyncEventCallback.HasDelegate)
                 await OnMapCreatedAsyncEventCallback.InvokeAsync(this);
@@ -72,7 +72,7 @@ public partial class MapComponent : IAsyncDisposable
     //private async Task AddMarkerAsync(
     //    MapModels.UILayers.Marker? marker = default
     //    , MapModels.Basic.Icon? icon = default
-    //    , string? popupContent = default) => await MapModule.InvokeVoidAsync("addMarker", marker, icon, popupContent);
+    //    , string? popupContent = default) => await MapModule.InvokeVoidAsync("addOrUpdateMarker", marker, icon, popupContent);
 
     private async Task AddCircleMarker(
         MapModels.VectorLayers.CircleMarker circleMarker,
@@ -82,7 +82,7 @@ public partial class MapComponent : IAsyncDisposable
         if (MapModule != null)
         {
             await MapModule.InvokeVoidAsync(
-                $"addCircleMarker",
+                $"addOrUpdateCircleMarker",
                 circleMarker,
                 popup?.Value ?? null,
                 tooltip?.Value ?? null);

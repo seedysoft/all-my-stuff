@@ -1,15 +1,15 @@
 ﻿namespace Seedysoft.Libs.MapRazorClassLibrary.MapModels.Basic;
 
 [System.Diagnostics.DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
-public sealed class LatLngBounds(LatLng corner1, LatLng corner2)
+public sealed class LatLngBounds(LatLng northEast, LatLng southWest)
 {
-    private readonly LatLng Corner1 = corner1;
-    private readonly LatLng Corner2 = corner2;
+    [J("_northEast")] public LatLng NorthEast { get; init; } = northEast;
+    [J("_southWest")] public LatLng SouthWest { get; init; } = southWest;
 
     public static Travel.Models.Bounds Copy(LatLngBounds latLngBounds) =>
-        new(new Travel.Models.Location(latLngBounds.Corner1.Lat, latLngBounds.Corner1.Lng),
-            new Travel.Models.Location(latLngBounds.Corner2.Lat, latLngBounds.Corner2.Lng));
+        new(new Travel.Models.Location(latLngBounds.NorthEast.Lat, latLngBounds.NorthEast.Lng),
+            new Travel.Models.Location(latLngBounds.SouthWest.Lat, latLngBounds.SouthWest.Lng));
 
     private string GetDebuggerDisplay() =>
-        Corner1.GetDebuggerDisplay() + " " + Corner2.GetDebuggerDisplay();
+        NorthEast.GetDebuggerDisplay() + " " + SouthWest.GetDebuggerDisplay();
 }
