@@ -150,7 +150,10 @@
             <MapComponent @ref="TravelMap"
                           Height="calc(50vh)"
                           Width="100%"
-                          Map="@Map">
+                          Map="@Map"
+                          OnMapCreatedAsyncEventCallback="OnMapCreatedAsyncEventCallback"
+                          OnMapClickAsyncEventCallback="OnMapClickAsyncEventCallback"
+                          OnMapDragendAsyncEventCallback="OnMapDragendAsyncEventCallback">
             </MapComponent>
         </MudItem>
 

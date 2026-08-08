@@ -24,7 +24,7 @@ public sealed class LatLng(double lat, double lng, double? alt = default)
     /// </summary>
     [J("alt")] public double? Alt { get; set; } = alt;
 
-    private string GetDebuggerDisplay()
+    internal string GetDebuggerDisplay()
     {
         return Alt.HasValue
             ? $"Lat: {Lat}; Lng: {Lng}; Alt: {Alt}"
