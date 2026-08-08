@@ -1,12 +1,15 @@
-import { Map, TileLayer, Marker, Icon, CircleMarker, Polyline, GeoJSON, Control, DomUtil, DomEvent } from '../lib/leaflet/leaflet.js';
+import { Map as LeafletMap, TileLayer, Marker, Icon, CircleMarker, Polyline, GeoJSON, Control, DomUtil, DomEvent } from '../lib/leaflet/leaflet.js';
 import { LoaderControl } from './leaflet-loader.js';
 
-var map;
-var controlLoader;
+let map;
+let controlLoader;
+let dnRef;
 
-export function createMap(id, options) {
+const markersArray = new Map();
+
+export function createMap(id, options, dotNetRef) {
     //debugger
-    map = new Map(id).setView(options.center, options.zoom);
+    map = new LeafletMap(id).setView(options.center, options.zoom);
     const tiles = new TileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
         attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
@@ -14,12 +17,10 @@ export function createMap(id, options) {
 
     controlLoader = new LoaderControl().addTo(map);
 
-    // map.on('dragend', function () {
-    //     controlLoader.show();
-    //     setTimeout(function () {
-    //         controlLoader.hide();
-    //     }, 3000);
-    // });
+    dnRef = dotNetRef;
+
+    map.on('click', function (e) { dnRef.invokeMethodAsync("OnMapClickAsync", { latLng: e.latlng }); });
+    map.on('moveend', function () { dnRef.invokeMethodAsync('OnMapMoveEndAsync', map.getBounds()); });
 
     return map;
 }
@@ -27,40 +28,60 @@ export function createMap(id, options) {
 export function destroyMap() {
     debugger
     map.remove();
+
+    markersArray.forEach(function (m) { m.remove(); });
+
+    map = undefined;
+    controlLoader = undefined;
+    dnRef = undefined;
 }
 
-export function addMarker(markerOptions, iconOptions, popupContent) {
+export function addOrUpdateMarker(markerOptions, iconOptions, popupContent) {
     // debugger
-    const marker = new Marker(markerOptions.position, markerOptions);
+    let marker = markersArray.get(markerOptions.position.key);
+    if (marker == undefined) {
+        marker = new Marker(markerOptions.position, markerOptions);
+        marker.addTo(map);
+        markersArray.set(markerOptions.position.key, marker);
+    }
+    else {
+        marker.setStyle(markerOptions);
+    }
 
     if (iconOptions)
         marker.setIcon(new Icon(iconOptions));
     else
         marker.setIcon(new Icon.Default);
 
-    if (popupContent)
+    if (popupContent) {
+        marker.unbindPopup();
         marker.bindPopup(DOMPurify.sanitize(popupContent, { USE_PROFILES: { html: true } }));
-
-    marker.addTo(map);
+    }
 }
 
-export function addCircleMarker(circleOptions, popup, tooltip) {
+export function addOrUpdateCircleMarker(circleOptions, popup, tooltip) {
     // debugger
-    const circleMarker = new CircleMarker(circleOptions.position, circleOptions);
+    let circleMarker = markersArray.get(circleOptions.position.key);
+    if (circleMarker == undefined) {
+        circleMarker = new CircleMarker(circleOptions.position, circleOptions);
+        circleMarker.addTo(map);
+        markersArray.set(circleOptions.position.key, circleMarker);
+    }
+    else {
+        circleMarker.setStyle(circleOptions);
+    }
 
-    if (typeof popup === 'string') {
+    circleMarker.unbindPopup();
+    if (typeof popup === 'string')
         circleMarker.bindPopup(DOMPurify.sanitize(popup, { USE_PROFILES: { html: true } }));
-    } else if (typeof popup === 'object' && 'content' in popup) {
+    else if (typeof popup === 'object' && 'content' in popup)
         circleMarker.bindPopup(DOMPurify.sanitize(popup.content, { USE_PROFILES: { html: true } }), popup);
-    }
 
-    if (typeof tooltip === 'string') {
+    circleMarker.unbindTooltip();
+    if (typeof tooltip === 'string')
         circleMarker.bindTooltip(DOMPurify.sanitize(tooltip, { USE_PROFILES: { html: true } }));
-    } else if (typeof tooltip === 'object' && 'content' in tooltip) {
+    else if (typeof tooltip === 'object' && 'content' in tooltip)
         circleMarker.bindTooltip(DOMPurify.sanitize(tooltip.content, { USE_PROFILES: { html: true } }), tooltip);
-    }
-
-    circleMarker.addTo(map);
 }
 
 export function removeGasStations() {
@@ -78,24 +99,10 @@ export function removeRoutes() {
     })
 }
 
-export function loadProductLimits(productLimits) {
-    debugger
-    // https://leafletjs.com/examples/layers-control/
-}
-
 // export function setView(lat, lng, zoom) {
 //     debugger
 //     map.setView([lat, lng], zoom);
 // }
-
-export function registerClick(dotnetObj) {
-    debugger
-    map.on('click', function (e) {
-        dotnetObj.invokeMethodAsync("OnMapClickAsync", {
-            latLng: e.latlng
-        });
-    });
-}
 
 export function addPolyline(route) {
     // debugger

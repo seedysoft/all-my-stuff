@@ -13,14 +13,12 @@ public partial class MapComponent
     public async Task OnMapClickAsync(MapClickEventArgs args)
         => await OnMapClickAsyncEventCallback.InvokeAsync(args);
 
-    public sealed class MapDragendEventArgs : EventArgs
-    {
-
-    }
-
     [JSInvokable]
-    public async Task OnMapDragendAsync(MapDragendEventArgs args)
-        => await OnMapDragendAsyncEventCallback.InvokeAsync(args);
+    public async Task OnMapMoveEndAsync(MapModels.Basic.LatLngBounds latLngBounds)
+    {
+        if (OnMapMoveEndEventCallback.HasDelegate)
+            await OnMapMoveEndEventCallback.InvokeAsync(latLngBounds);
+    }
 
     /// <summary>
     /// Initializes the component by creating a DotNet object reference for JavaScript interop.

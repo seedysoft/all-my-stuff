@@ -2,13 +2,13 @@ using Microsoft.AspNetCore.Components;
 
 namespace Seedysoft.Libs.MapRazorClassLibrary;
 
-public partial class MapComponent : IAsyncDisposable
+public partial class MapComponent
 {
     [Parameter] public EventCallback<MapComponent> OnMapCreatedAsyncEventCallback { get; set; }
 
     [Parameter] public EventCallback<MapClickEventArgs> OnMapClickAsyncEventCallback { get; set; }
 
-    [Parameter] public EventCallback<MapDragendEventArgs> OnMapDragendAsyncEventCallback { get; set; }
+    [Parameter] public EventCallback<MapModels.Basic.LatLngBounds> OnMapMoveEndEventCallback { get; set; }
 
     [Parameter] public string Height { get; set; } = "500px";
 

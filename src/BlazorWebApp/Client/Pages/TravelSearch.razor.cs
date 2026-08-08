@@ -83,13 +83,8 @@ public partial class TravelSearch
 
     private void OnMapClickAsyncEventCallback(Libs.MapRazorClassLibrary.MapComponent.MapClickEventArgs mapClickEventArgs) { }
 
-    private async Task OnMapDragendAsyncEventCallback(Libs.MapRazorClassLibrary.MapComponent.MapDragendEventArgs mapDragendEventArgs)
-    {
-        // TODO                                                                     Register event in ja map
-        Libs.MapRazorClassLibrary.MapModels.Basic.LatLngBounds MapBounds = await TravelMap.GetBoundsAsync();
+    private async Task OnMapMoveEndEventCallback(Libs.MapRazorClassLibrary.MapModels.Basic.LatLngBounds latLngBounds)
+        => await ReloadGasStationsAsync(latLngBounds);
 
-        await ReloadGasStationsAsync(MapBounds);
-    }
-
-    // TODO                                                                                         Use independient gas filters and css display classes
+    // TODO                                                                                         Implement independient gas filters and css display classes
 }
