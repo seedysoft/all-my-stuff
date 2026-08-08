@@ -38,7 +38,7 @@ namespace Seedysoft.Libs.MapRazorClassLibrary;
 /// </remarks>
 /// <seealso cref="IAsyncDisposable"/>
 /// <seealso cref="LoadRoutesAndGasStationsAsync"/>
-public partial class MapComponent : IAsyncDisposable
+public partial class MapComponent
 {
     /// <summary>
     /// Array of hex color codes used to differentiate multiple routes on the map.
@@ -653,7 +653,11 @@ public partial class MapComponent : IAsyncDisposable
         return returnText;
     }
 
-    private async Task<string?> LoadDataIntoMapAsync(GasStationPrices.ViewModels.TravelQueryModel model, IReadOnlyList<GasStationPrices.ViewModels.GasStationModel> gasStations, GasStationPrices.Models.ProductLimits[] productLimits, CancellationToken cancellationToken)
+    private async Task<string?> LoadDataIntoMapAsync(
+        GasStationPrices.ViewModels.TravelQueryModel model
+        , IReadOnlyList<GasStationPrices.ViewModels.GasStationModel> gasStations
+        , GasStationPrices.Models.ProductLimits[] productLimits
+        , CancellationToken cancellationToken)
     {
         for (int i = 0; i < gasStations.Count; i++)
         {
@@ -751,8 +755,6 @@ public partial class MapComponent : IAsyncDisposable
             _ = popupContent
                 .Append("<div class='divTable'>")
                 .Append("<div class='divTableBody'>");
-
-            // TODO                                     Check cause most expensive price is green !!!
 
             for (int i = 0; i < GasStationPrices.Models.Minetur.ProductoPetrolifero.All.Count; i++)
             {
