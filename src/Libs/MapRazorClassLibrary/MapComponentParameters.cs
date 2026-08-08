@@ -8,7 +8,7 @@ public partial class MapComponent : IAsyncDisposable
 
     [Parameter] public EventCallback<MapClickEventArgs> OnMapClickAsyncEventCallback { get; set; }
 
-    //[Parameter] public EventCallback<DragendMarkerEventArgs> OnDragendAsyncEventCallback { get; set; }
+    [Parameter] public EventCallback<MapDragendEventArgs> OnMapDragendAsyncEventCallback { get; set; }
 
     [Parameter] public string Height { get; set; } = "500px";
 

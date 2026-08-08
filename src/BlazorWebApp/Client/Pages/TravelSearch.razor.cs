@@ -57,9 +57,7 @@ public partial class TravelSearch
         FluentValidation.Results.ValidationResult validationResult = await travelQueryModelFluentValidator.ValidateAsync(travelQueryModel);
         if (validationResult.IsValid)
         {
-            string? textToShow = await TravelMap.LoadRoutesAndGasStationsAsync(travelQueryModel, default);
-            if (!string.IsNullOrWhiteSpace(textToShow))
-                _ = Snackbar.Add(new MarkupString($"<ul>{string.Join(string.Empty, textToShow)}</ul>"), MudBlazor.Severity.Info);
+            await ReloadRoutesAsync();
         }
         else
         {
@@ -67,4 +65,31 @@ public partial class TravelSearch
             _ = Snackbar.Add(new MarkupString($"<ul>{string.Concat(errors)}</ul>"), MudBlazor.Severity.Error);
         }
     }
+
+    private async Task ReloadGasStationsAsync(Libs.MapRazorClassLibrary.MapModels.Basic.LatLngBounds mapBounds)
+    {
+        string? textToShow = await TravelMap.LoadGasStationsAsync(travelQueryModel, mapBounds, default);
+        if (!string.IsNullOrWhiteSpace(textToShow))
+            _ = Snackbar.Add(new MarkupString($"<ul>{string.Join(string.Empty, textToShow)}</ul>"), MudBlazor.Severity.Info);
+    }
+    private async Task ReloadRoutesAsync()
+    {
+        string? textToShow = await TravelMap.LoadRoutesAsync(travelQueryModel, default);
+        if (!string.IsNullOrWhiteSpace(textToShow))
+            _ = Snackbar.Add(new MarkupString($"<ul>{string.Join(string.Empty, textToShow)}</ul>"), MudBlazor.Severity.Info);
+    }
+
+    private void OnMapCreatedAsyncEventCallback(Libs.MapRazorClassLibrary.MapComponent mapComponent) { }
+
+    private void OnMapClickAsyncEventCallback(Libs.MapRazorClassLibrary.MapComponent.MapClickEventArgs mapClickEventArgs) { }
+
+    private async Task OnMapDragendAsyncEventCallback(Libs.MapRazorClassLibrary.MapComponent.MapDragendEventArgs mapDragendEventArgs)
+    {
+        // TODO                                                                     Register event in ja map
+        Libs.MapRazorClassLibrary.MapModels.Basic.LatLngBounds MapBounds = await TravelMap.GetBoundsAsync();
+
+        await ReloadGasStationsAsync(MapBounds);
+    }
+
+    // TODO                                                                                         Use independient gas filters and css display classes
 }

@@ -38,9 +38,6 @@ public partial class MapComponent : IAsyncDisposable
             if (OnMapCreatedAsyncEventCallback.HasDelegate)
                 await OnMapCreatedAsyncEventCallback.InvokeAsync(this);
 
-            //if (OnMapClickAsync.HasDelegate)
-            //    await LeafletService.InvokeVoidAsync("setClickHandler", MapId, ObjRef, nameof(OnMapClick));
-
             IsMapReady = true;
 
             await InvokeAsync(StateHasChanged);
@@ -55,8 +52,6 @@ public partial class MapComponent : IAsyncDisposable
     {
         if (MapModule != null)
         {
-            //await Task.Run(async delegate
-            //{
             if (arrayPolyline.GetLength(1) != 2)
                 throw new ArgumentException($"The {nameof(arrayPolyline)} must be a 2D array with two columns for latitude and longitude.");
 
@@ -71,7 +66,6 @@ public partial class MapComponent : IAsyncDisposable
             };
 
             await MapModule.InvokeVoidAsync("addPolyline", polyline);
-            //});
         }
     }
 
@@ -95,27 +89,21 @@ public partial class MapComponent : IAsyncDisposable
         }
     }
 
-    private async Task LoadProductLimitsAsync(
-        GasStationPrices.Models.ProductLimits[] productLimits)
-    {
-        if (MapModule != null)
-        {
-            await MapModule.InvokeVoidAsync(
-                $"loadProductLimits",
-                productLimits);
-        }
-    }
-
     private async Task DeleteMapAsync()
     {
         if (MapModule != null)
             await MapModule.InvokeVoidAsync("destroyMap");
     }
 
-    private async Task RemoveAllMarkersAsync()
+    private async Task RemoveGasStationsAsync()
     {
         if (MapModule != null)
-            await MapModule.InvokeVoidAsync("removeAllMarkers");
+            await MapModule.InvokeVoidAsync("removeGasStations");
+    }
+    private async Task RemoveRoutesAsync()
+    {
+        if (MapModule != null)
+            await MapModule.InvokeVoidAsync("removeRoutes");
     }
 
     // Unused. Uncomment if ncccessary

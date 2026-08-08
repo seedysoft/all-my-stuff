@@ -63,10 +63,17 @@ export function addCircleMarker(circleOptions, popup, tooltip) {
     circleMarker.addTo(map);
 }
 
-export function removeAllMarkers() {
+export function removeGasStations() {
     // debugger
     map.eachLayer(function (l) {
-        if (l.options.pane == 'overlayPane' || l.options.pane == 'markerPane')
+        if (l.options.pane == 'markerPane')
+            l.remove();
+    })
+}
+export function removeRoutes() {
+    // debugger
+    map.eachLayer(function (l) {
+        if (l.options.pane == 'overlayPane')
             l.remove();
     })
 }
