@@ -36,6 +36,13 @@ public sealed class LatLng(double lat, double lng, double? alt = default)
         return margin <= (maxDegreesMargin ?? 1.0E-9);
     }
 
+    /// <summary>
+    /// A "fake" id to store a dictionary
+    /// </summary>
+    [J("key")]
+    public string Key =>
+        $"{Lat.ToString(Core.Constants.Globalization.NumberFormatInfoInvariant)};{Lng.ToString(Core.Constants.Globalization.NumberFormatInfoInvariant)}";
+
     internal string GetDebuggerDisplay()
     {
         return Alt.HasValue
