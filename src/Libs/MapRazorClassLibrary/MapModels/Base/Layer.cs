@@ -4,7 +4,7 @@
 /// A set of methods from the Layer base class that all Leaflet layers use.
 /// Inherits all methods, options and events from <see cref="Evented"/>.
 /// </summary>
-public abstract record class Layer : Evented
+internal abstract class Layer : Evented
 {
     public Layer() : base() { }
 

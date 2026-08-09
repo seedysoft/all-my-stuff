@@ -4,7 +4,7 @@
 /// Allows vector layers to be displayed with <canvas>.
 /// Inherits <see cref="Base.Renderer"/>.
 /// </summary>
-public sealed record class Canvas : Base.Renderer
+internal sealed class Canvas : Base.Renderer
 {
     public Canvas() : base() { }
 

@@ -5,7 +5,7 @@
 /// Do not use this class directly.
 /// It's meant for <see cref="Renderer"/>, and for plugins that rely on one single HTML element.
 /// </summary>
-public abstract record class BlanketOverlay : Layer
+internal abstract class BlanketOverlay : Layer
 {
     public BlanketOverlay() : base() { }
 

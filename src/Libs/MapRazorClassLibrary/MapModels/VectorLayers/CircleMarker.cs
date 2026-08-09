@@ -3,7 +3,7 @@
 /// <summary>
 /// A circle of a fixed size with radius specified in pixels.
 /// </summary>
-public sealed record class CircleMarker : Path
+internal sealed class CircleMarker : Path
 {
     public CircleMarker(Basic.LatLng position) : base()
     {

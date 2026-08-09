@@ -4,7 +4,7 @@
 /// The layers control gives users the ability to switch between different base layers and switch overlays on/off (check out the detailed example).
 /// Extends <see cref="Base.Control"/>.
 /// </summary>
-public sealed record class Layers : Base.Control
+internal sealed class Layers : Base.Control
 {
     public Layers() : base() => Position = Positions.TopRight;
 

@@ -8,7 +8,7 @@
 /// Do not use this class directly, use SVG and Canvas instead.
 /// The <see cref="BlanketOverlay.Continuous"/> option inherited from <see cref="BlanketOverlay"/> cannot be set to <c>true</c> (otherwise, renderers get out of place during a pinch-zoom operation).
 /// </summary>
-public abstract record class Renderer : BlanketOverlay
+internal abstract class Renderer : BlanketOverlay
 {
     public Renderer() : base() { }
 }
