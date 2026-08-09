@@ -66,7 +66,7 @@
             <MudButtonGroup Class="gap-4 pa-4" FullWidth Size="@Size.Medium" Variant="@variant">
 
                 <MudButton ButtonType="@ButtonType.Button"
-                           IconColor="@(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.All.Count == travelQueryModel.PetroleumProductsSelectedIds?.Count() ? Color.Primary : Color.Secondary)"
+                           IconColor="@(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.All.Count == gasStationsQueryModel.PetroleumProductsSelectedIds?.Count() ? Color.Primary : Color.Secondary)"
                            EndIcon="@Icons.Material.Filled.SelectAll"
                            IconSize="@Size.Large"
                            OnClick="@(()=> SetPetroleumProductsSelectedIds(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.All))">
@@ -74,7 +74,7 @@
                 </MudButton>
 
                 <MudButton ButtonType="@ButtonType.Button"
-                           IconColor="@(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.Gasoline.Select(x => x.IdProducto).All(y => (travelQueryModel.PetroleumProductsSelectedIds ??[]) .Contains(y)) ? Color.Primary : Color.Secondary)"
+                           IconColor="@(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.Gasoline.Select(x => x.IdProducto).All(y => (gasStationsQueryModel.PetroleumProductsSelectedIds ??[]) .Contains(y)) ? Color.Primary : Color.Secondary)"
                            EndIcon="@Icons.Material.Filled.PropaneTank"
                            IconSize="@Size.Large"
                            OnClick="@(()=> SetPetroleumProductsSelectedIds(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.Gasoline))">
@@ -82,7 +82,7 @@
                 </MudButton>
 
                 <MudButton ButtonType="@ButtonType.Button"
-                           IconColor="@(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.Diesel.Select(x => x.IdProducto).All(y => (travelQueryModel.PetroleumProductsSelectedIds ??[]) .Contains(y)) ? Color.Primary : Color.Secondary)"
+                           IconColor="@(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.Diesel.Select(x => x.IdProducto).All(y => (gasStationsQueryModel.PetroleumProductsSelectedIds ??[]) .Contains(y)) ? Color.Primary : Color.Secondary)"
                            EndIcon="@Icons.Material.Filled.CarRepair"
                            IconSize="@Size.Large"
                            OnClick="@(()=> SetPetroleumProductsSelectedIds(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.Diesel))">
@@ -98,7 +98,7 @@
 
             </MudButtonGroup>
 
-            <MudToggleGroup @bind-Values="@travelQueryModel.PetroleumProductsSelectedIds"
+            <MudToggleGroup @bind-Values="@gasStationsQueryModel.PetroleumProductsSelectedIds"
                             CheckMark="false"
                             Color="Color.Primary"
                             SelectedClass="black white-text"
@@ -123,7 +123,7 @@
         </MudItem>
 
         <MudItem xs="10">
-            <MudSlider @bind-Value="@travelQueryModel.MaxDistanceInKm"
+            <MudSlider @bind-Value="@gasStationsQueryModel.MaxDistanceInKm"
                        Immediate="false"
                        Max="50"
                        Min="1"
@@ -152,9 +152,10 @@
                           Width="100%"
                           Center="@(new Libs.MapRazorClassLibrary.MapModels.Basic.LatLng(Libs.Travel.Constants.Earth.Burgos.Latitude, Libs.Travel.Constants.Earth.Burgos.Longitude))"
                           Zoom="18"
-                          OnMapCreatedAsyncEventCallback="OnMapCreatedAsyncEventCallback"
                           OnMapClickAsyncEventCallback="OnMapClickAsyncEventCallback"
-                          OnMapMoveEndEventCallback="OnMapMoveEndEventCallback">
+                          OnMapCreatedAsyncEventCallback="OnMapCreatedAsyncEventCallback"
+                          OnMapMoveEndEventCallback="OnMapMoveEndEventCallback"
+                          OnCircleMarkerClicEventCallback="OnCircleMarkerClicEventCallback">
             </MapComponent>
         </MudItem>
 

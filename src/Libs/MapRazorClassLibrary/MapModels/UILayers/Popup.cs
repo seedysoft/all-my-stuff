@@ -8,7 +8,7 @@ internal sealed class Popup : DivOverlay
 {
     public Popup() : base()
     {
-        Pane = Map.Panes.PopupPane;
+        Pane = Misc.Panes.PopupPane;
         Offset = new Basic.Point(0, 7);
     }
 

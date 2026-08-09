@@ -14,14 +14,20 @@ public partial class TravelSearch
 
     private Libs.MapRazorClassLibrary.MapComponent TravelMap { get; set; } = default!;
 
-    private readonly Libs.GasStationPrices.ViewModels.TravelQueryModel travelQueryModel = Libs.GasStationPrices.ViewModels.TravelQueryModel.
+    private readonly Libs.Travel.ViewModels.TravelQueryModel travelQueryModel = Libs.Travel.ViewModels.TravelQueryModel.
 #if DEBUG
             CreateDefault();
 #else
             CreateEmpty();
 #endif
+    private readonly Libs.Travel.ViewModels.TravelQueryModelFluentValidator travelQueryModelFluentValidator = new();
 
-    private readonly Libs.GasStationPrices.ViewModels.TravelQueryModelFluentValidator travelQueryModelFluentValidator = new();
+    private readonly Libs.GasStationPrices.ViewModels.GasStationsQueryModel gasStationsQueryModel = Libs.GasStationPrices.ViewModels.GasStationsQueryModel.
+#if DEBUG
+            CreateDefault();
+#else
+            CreateEmpty();
+#endif
 
     protected override async Task OnInitializedAsync()
     {
@@ -31,17 +37,22 @@ public partial class TravelSearch
             Logger.LogInformation($"Called {nameof(OnInitializedAsync)}");
     }
 
-    private void SetPetroleumProductsSelectedIds(System.Collections.Immutable.ImmutableSortedSet<Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero>? fromWhat) =>
-        travelQueryModel.PetroleumProductsSelectedIds = [.. fromWhat?.Select(static x => x.IdProducto) ?? []];
+    private void SetPetroleumProductsSelectedIds(System.Collections.Immutable.ImmutableSortedSet<Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero>? fromWhat)
+        => gasStationsQueryModel.PetroleumProductsSelectedIds = [.. fromWhat?.Select(static x => x.IdProducto) ?? []];
 
-    private async Task<IEnumerable<Libs.Travel.ViewModels.Place>> FindPlacesAsync(string textToFind, CancellationToken cancellationToken)
+    private async Task<IEnumerable<Libs.Travel.ViewModels.Place>> FindPlacesAsync(
+        string textToFind,
+        CancellationToken cancellationToken)
     {
         try
         {
             if (!string.IsNullOrWhiteSpace(textToFind))
                 return await GeocodingService.FindPlacesAsync(textToFind, cancellationToken) ?? [];
         }
-        catch (Exception e) when (Logger.LogAndHandle(e, "Unexpected error")) { _ = Snackbar.Add(new MarkupString($"<span>{e}</span>"), MudBlazor.Severity.Error); }
+        catch (Exception e) when (Logger.LogAndHandle(e, "Unexpected error"))
+        {
+            _ = Snackbar.Add(new MarkupString($"<span>{e}</span>"), MudBlazor.Severity.Error);
+        }
 
         return [];
     }
@@ -51,7 +62,7 @@ public partial class TravelSearch
         FluentValidation.Results.ValidationResult validationResult = await travelQueryModelFluentValidator.ValidateAsync(travelQueryModel);
         if (validationResult.IsValid)
         {
-            await ReloadRoutesAsync();
+            await LoadRoutesAsync();
         }
         else
         {
@@ -62,23 +73,25 @@ public partial class TravelSearch
 
     private async Task ReloadGasStationsAsync(Libs.MapRazorClassLibrary.MapModels.Basic.LatLngBounds mapBounds)
     {
-        string? textToShow = await TravelMap.LoadGasStationsAsync(travelQueryModel, mapBounds, default);
+        string? textToShow = await TravelMap.LoadGasStationsAsync(mapBounds, gasStationsQueryModel.PetroleumProductsSelectedIds, default);
         if (!string.IsNullOrWhiteSpace(textToShow))
             _ = Snackbar.Add(new MarkupString($"<ul>{string.Join(string.Empty, textToShow)}</ul>"), MudBlazor.Severity.Info);
     }
-    private async Task ReloadRoutesAsync()
+    private async Task LoadRoutesAsync()
     {
         string? textToShow = await TravelMap.LoadRoutesAsync(travelQueryModel, default);
         if (!string.IsNullOrWhiteSpace(textToShow))
             _ = Snackbar.Add(new MarkupString($"<ul>{string.Join(string.Empty, textToShow)}</ul>"), MudBlazor.Severity.Info);
     }
 
-    private void OnMapCreatedAsyncEventCallback(Libs.MapRazorClassLibrary.MapComponent mapComponent) { }
+    private void OnMapCreatedAsyncEventCallback(Libs.MapRazorClassLibrary.MapComponent args) { }
 
-    private void OnMapClickAsyncEventCallback(Libs.MapRazorClassLibrary.MapComponent.MapClickEventArgs mapClickEventArgs) { }
+    private void OnMapClickAsyncEventCallback(Libs.MapRazorClassLibrary.MapModels.Basic.LatLng args) { }
 
-    private async Task OnMapMoveEndEventCallback(Libs.MapRazorClassLibrary.MapModels.Basic.LatLngBounds latLngBounds)
-        => await ReloadGasStationsAsync(latLngBounds);
+    private async Task OnMapMoveEndEventCallback(Libs.MapRazorClassLibrary.MapModels.Basic.LatLngBounds args)
+        => await ReloadGasStationsAsync(args);
 
-    // TODO                                                                                         Implement independient gas filters and css display classes
+    private async Task OnCircleMarkerClicEventCallback(Libs.MapRazorClassLibrary.MapModels.Basic.LatLng args) { }
+
+    // TODO                                                         Implement independient gas filters and css display classes
 }

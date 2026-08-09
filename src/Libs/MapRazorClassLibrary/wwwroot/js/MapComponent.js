@@ -7,6 +7,10 @@ let dnRef;
 
 const markersArray = new Map();
 
+function parseKey(latLng) {
+    return latLng.lat + ";" + latLng.lng;
+}
+
 export function createMap(id, center, zoom, dotNetRef) {
     //debugger
     map = new LeafletMap(id).setView(center, zoom);
@@ -19,69 +23,96 @@ export function createMap(id, center, zoom, dotNetRef) {
 
     dnRef = dotNetRef;
 
-    map.on('click', function (e) { dnRef.invokeMethodAsync("OnMapClickAsync", { latLng: e.latlng }); });
-    map.on('moveend', function () { dnRef.invokeMethodAsync('OnMapMoveEndAsync', map.getBounds()); });
+    map.on('click', function (ev) {
+        // sends LatLng object as argument
+        dnRef.invokeMethodAsync("OnMapClickAsync", ev.sourceTarget.getLatLng());
+    });
+    map.on('moveend', function () {
+        // sends LatLngBounds object as argument
+        dnRef.invokeMethodAsync('OnMapMoveEndAsync', map.getBounds());
+    });
 
     return map;
 }
 
-export function destroyMap() {
-    debugger
-    map.remove();
+export function addPolyline(route) {
+    // debugger
+    const polyline = new Polyline(route.points, route.options)
+        .addTo(map);
 
-    markersArray.forEach(function (m) { m.remove(); });
-
-    map = undefined;
-    controlLoader = undefined;
-    dnRef = undefined;
+    // zoom the map to the polyline
+    map.fitBounds(polyline.getBounds());
 }
 
 export function addOrUpdateMarker(markerOptions, iconOptions, popupContent) {
     // debugger
-    let marker = markersArray.get(markerOptions.position.key);
+    const positionKey = parseKey(markerOptions.position);
+    let marker = markersArray.get(positionKey);
     if (marker == undefined) {
         marker = new Marker(markerOptions.position, markerOptions);
         marker.addTo(map);
-        markersArray.set(markerOptions.position.key, marker);
+        markersArray.set(positionKey, marker);
     }
     else {
         marker.setStyle(markerOptions);
     }
+
+    marker.off();
+    marker.on('click', function (ev) {
+        // sends LatLng object from Marker as argument
+        dnRef.invokeMethodAsync("OnMarkerClickAsync", ev.sourceTarget.getLatLng());
+    });
 
     if (iconOptions)
         marker.setIcon(new Icon(iconOptions));
     else
         marker.setIcon(new Icon.Default);
 
-    if (popupContent) {
-        marker.unbindPopup();
+    marker.unbindPopup();
+    if (popupContent)
         marker.bindPopup(DOMPurify.sanitize(popupContent, { USE_PROFILES: { html: true } }));
-    }
 }
 
 export function addOrUpdateCircleMarker(circleOptions, popup, tooltip) {
     // debugger
-    let circleMarker = markersArray.get(circleOptions.position.key);
+    const positionKey = parseKey(circleOptions.position);
+    let circleMarker = markersArray.get(positionKey);
     if (circleMarker == undefined) {
         circleMarker = new CircleMarker(circleOptions.position, circleOptions);
         circleMarker.addTo(map);
-        markersArray.set(circleOptions.position.key, circleMarker);
+        markersArray.set(positionKey, circleMarker);
     }
     else {
         circleMarker.setStyle(circleOptions);
     }
 
+    circleMarker.off();
+    circleMarker.on('click', function (ev) {
+        // sends LatLng object from CircleMarker as argument
+        dnRef.invokeMethodAsync("OnMarkerClickAsync", ev.sourceTarget.getLatLng());
+    });
+
     circleMarker.unbindPopup();
-    if (typeof popup === 'string')
-        circleMarker.bindPopup(DOMPurify.sanitize(popup, { USE_PROFILES: { html: true } }));
-    else if (typeof popup === 'object' && 'content' in popup)
-        circleMarker.bindPopup(DOMPurify.sanitize(popup.content, { USE_PROFILES: { html: true } }), popup);
+    if (popup) {
+        if (typeof popup === 'string')
+            circleMarker.bindPopup(DOMPurify.sanitize(popup, { USE_PROFILES: { html: true } }));
+        else if (typeof popup === 'object' && 'content' in popup)
+            circleMarker.bindPopup(DOMPurify.sanitize(popup.content, { USE_PROFILES: { html: true } }), popup);
+    }
 
     circleMarker.unbindTooltip();
-    if (typeof tooltip === 'string')
-        circleMarker.bindTooltip(DOMPurify.sanitize(tooltip, { USE_PROFILES: { html: true } }));
-    else if (typeof tooltip === 'object' && 'content' in tooltip)
-        circleMarker.bindTooltip(DOMPurify.sanitize(tooltip.content, { USE_PROFILES: { html: true } }), tooltip);
+    if (tooltip) {
+        if (typeof tooltip === 'string')
+            circleMarker.bindTooltip(DOMPurify.sanitize(tooltip, { USE_PROFILES: { html: true } }));
+        else if (typeof tooltip === 'object' && 'content' in tooltip)
+            circleMarker.bindTooltip(DOMPurify.sanitize(tooltip.content, { USE_PROFILES: { html: true } }), tooltip);
+        circleMarker.openTooltip();
+    }
+}
+
+export function showGasStationPopup(latLng, popup) {
+    // debugger
+    map.openPopup(popup, latLng);
 }
 
 export function removeGasStations() {
@@ -103,15 +134,6 @@ export function removeRoutes() {
 //     debugger
 //     map.setView([lat, lng], zoom);
 // }
-
-export function addPolyline(route) {
-    // debugger
-    const polyline = new Polyline(route.points, route.options)
-        .addTo(map);
-
-    // zoom the map to the polyline
-    map.fitBounds(polyline.getBounds());
-}
 
 export function showLoader() {
     // debugger
