@@ -14,12 +14,6 @@ public partial class TravelSearch
 
     private Libs.MapRazorClassLibrary.MapComponent TravelMap { get; set; } = default!;
 
-    private Libs.MapRazorClassLibrary.MapModels.Map Map { get; set; } = new()
-    {
-        Center = new Libs.MapRazorClassLibrary.MapModels.Basic.LatLng(Libs.Travel.Constants.Earth.Burgos.Latitude, Libs.Travel.Constants.Earth.Burgos.Longitude),
-        Zoom = 18,
-    };
-
     private readonly Libs.GasStationPrices.ViewModels.TravelQueryModel travelQueryModel = Libs.GasStationPrices.ViewModels.TravelQueryModel.
 #if DEBUG
             CreateDefault();

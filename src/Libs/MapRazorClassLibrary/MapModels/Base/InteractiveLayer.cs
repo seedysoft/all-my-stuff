@@ -4,7 +4,7 @@
 /// Some <see cref="Layer"/>s can be made interactive - when the user interacts with such a layer, pointer events like <c>click</c> and <c>pointerover</c> can be handled.
 /// Use the <see href="https://leafletjs.com/reference-2.0.0.html#evented-method">event handling methods</see> to handle these events.
 /// </summary>
-public abstract record class InteractiveLayer : Layer
+internal abstract class InteractiveLayer : Layer
 {
     public InteractiveLayer() : base() { }
 

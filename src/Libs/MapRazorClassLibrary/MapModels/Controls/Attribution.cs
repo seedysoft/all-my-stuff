@@ -5,7 +5,7 @@
 /// It is put on the map by default unless you set its <see cref="Map.AttributionControl"/> option to <c>false</c>, and it fetches attribution texts from layers with the getAttribution method automatically. 
 /// Extends <see cref="Base.Control"/>.
 /// </summary>
-public sealed record class Attribution : Base.Control
+internal sealed class Attribution : Base.Control
 {
     public Attribution() : base() => Position = Positions.BottomRight;
 

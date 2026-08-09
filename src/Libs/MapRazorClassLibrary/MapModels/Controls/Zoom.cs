@@ -5,7 +5,7 @@
 /// It is put on the map by default unless you set its <see cref="Map.ZoomControl"/> option to <c>false</c>.
 /// Extends <see cref="Base.Control"/>.
 /// </summary>
-public sealed record class Zoom : Base.Control
+internal sealed class Zoom : Base.Control
 {
     public Zoom() : base() => Position = Positions.TopLeft;
 

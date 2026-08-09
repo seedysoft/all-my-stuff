@@ -3,7 +3,7 @@
 /// <summary>
 /// The central class of the API — it is used to create a map on a page and manipulate it.
 /// </summary>
-public sealed record class Map : Base.Evented
+internal sealed class Map : Base.Evented
 {
     /// <summary>
     /// Whether <see cref="Path"/>s should be rendered on a <see cref="VectorLayers.Canvas"/> renderer.
@@ -115,7 +115,7 @@ public sealed record class Map : Base.Evented
 
     #endregion
 
-    //public List<TileLayer> TileLayers { get; set; } = [];
+    public List<RasterLayers.TileLayer> TileLayers { get; set; } = [];
 
     /// <summary>
     /// Panes are DOM elements used to control the ordering of layers on the map.

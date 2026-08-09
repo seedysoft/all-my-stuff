@@ -5,7 +5,7 @@
 /// Do not use it directly.
 /// Extends <see cref="Base.Layer"/>.
 /// </summary>
-public abstract record class Path : Base.InteractiveLayer
+internal abstract class Path : Base.InteractiveLayer
 {
     protected Path() : base() { }
 
