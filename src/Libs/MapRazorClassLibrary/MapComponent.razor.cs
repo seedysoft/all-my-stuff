@@ -559,20 +559,4 @@ public partial class MapComponent
 
         return null;
     }
-
-    #region Methods for Getting Map State
-
-    /// <summary>
-    /// Returns the geographical bounds visible in the current map view
-    /// </summary>
-    /// <returns></returns>
-    public async Task<MapModels.Basic.LatLngBounds> GetBoundsAsync()
-    {
-        // TODO                                     Center should be a parameter of MapComponent. Map should not be visible outside MapComponent
-        return MapModule == null
-            ? new MapModels.Basic.LatLngBounds(Map.Center, Map.Center)
-            : await MapModule.InvokeAsync<MapModels.Basic.LatLngBounds>("getMapBounds");
-    }
-
-    #endregion
 }
