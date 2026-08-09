@@ -150,7 +150,8 @@
             <MapComponent @ref="TravelMap"
                           Height="calc(50vh)"
                           Width="100%"
-                          Map="@Map"
+                          Center="@(new Libs.MapRazorClassLibrary.MapModels.Basic.LatLng(Libs.Travel.Constants.Earth.Burgos.Latitude, Libs.Travel.Constants.Earth.Burgos.Longitude))"
+                          Zoom="18"
                           OnMapCreatedAsyncEventCallback="OnMapCreatedAsyncEventCallback"
                           OnMapClickAsyncEventCallback="OnMapClickAsyncEventCallback"
                           OnMapMoveEndEventCallback="OnMapMoveEndEventCallback">
