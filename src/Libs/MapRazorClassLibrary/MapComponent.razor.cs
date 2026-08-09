@@ -41,23 +41,12 @@ public partial class MapComponent
     /// <summary>
     /// Initializes the component by creating a DotNet object reference for JavaScript interop.
     /// </summary>
-    /// <param name="model">The travel query model containing origin location, destination location, 
-    /// selected petroleum product IDs, and maximum search distance in kilometers.</param>
-    /// <param name="cancellationToken">A cancellation token that can be used to cancel the operation at any point during execution.</param>
-    /// <returns>
-    /// Returns null (string?) on successful completion of loading all routes and gas stations.
-    /// Returns an error message string if:
-    /// <list type="bullet">
-    /// <item><description>An exception occurs during route retrieval</description></item>
-    /// <item><description>No routes are found between origin and destination</description></item>
-    /// <item><description>No gas stations are found within the computed bounds and max distance</description></item>
-    /// <item><description>No petroleum products match the selected IDs</description></item>
-    /// </list>
-    /// </returns>
+    /// <param name="firstRender">Indicates whether this is the first render pass of the component.</param>
+    /// <returns>A Task representing the asynchronous operation.</returns>
     /// <remarks>
     /// <para>
-    /// This is the primary public method for loading and displaying map data. It orchestrates a multi-step pipeline
-    /// to fetch routes, display them, and then add relevant gas station markers.
+    /// This lifecycle method is invoked by Blazor after the component has been rendered to the browser DOM.
+    /// It is called twice per render cycle: once after the initial render and once after re-renders.
     /// </para>
     /// <para>
     /// The reference is stored in the ObjRef property for later cleanup during disposal.
@@ -81,56 +70,38 @@ public partial class MapComponent
     /// <para>
     /// Execution Flow on First Render:
     /// <list type="number">
-    /// <item><description>Displays a loading indicator to provide user feedback</description></item>
-    /// <item><description>Clears all existing markers from previous searches</description></item>
-    /// <item><description>Retrieves routes from RoutingService based on origin and destination coordinates</description></item>
-    /// <item><description>Displays routes as colored polylines on the map using LoadRoutesDataIntoMapAsync</description></item>
-    /// <item><description>Computes geographic bounds (bounding box) encompassing all route coordinates</description></item>
-    /// <item><description>Fetches gas stations within the computed bounds from GasStationPricesService</description></item>
-    /// <item><description>Calculates price statistics (min, average, max) for each selected petroleum product</description></item>
-    /// <item><description>Marks gas stations with color-coded circle indicators based on price comparisons</description></item>
-    /// <item><description>Hides the loading indicator</description></item>
+    /// <item><description>Calls the base class OnAfterRenderAsync to ensure inheritance chain is maintained</description></item>
+    /// <item><description>Checks if this is the first render pass; skips execution on subsequent renders for performance</description></item>
+    /// <item><description>Verifies that MapModule has not already been initialized (null check)</description></item>
+    /// <item><description>Dynamically imports the MapComponent.js from the component's JavaScript folder using ES6 modules</description></item>
+    /// <item><description>Invokes CreateMapAsync() to initialize the Leaflet map instance with default settings</description></item>
     /// </list>
     /// </para>
     /// <para>
-    /// Cancellation:
-    /// The operation supports cancellation at multiple checkpoints.
-    /// If cancellation is requested, the operation will stop gracefully at the next checkpoint and clean up resources appropriately.
+    /// Performance Optimization:
+    /// Returns immediately on non-first renders, preventing unnecessary module imports and map initialization.
+    /// The map is only created once during the component's lifetime.
     /// </para>
     /// <para>
-    /// Error Handling:
-    /// All exceptions during route retrieval are caught and converted to error message strings.
-    /// The pipeline continues to the next step only if the previous step returned null (success).
-    /// </para>
-    /// <para>
-    /// Dependencies:
-    /// - RoutingService: Provides route calculation between two locations
-    /// - GasStationPricesService: Provides gas station data with pricing information
-    /// - ProductoPetrolifero.All: Static collection of available petroleum products
+    /// Module Path:
+    /// The MapComponent.js is imported from _content/Seedysoft.Libs.MapRazorClassLibrary/js/, which is the standard
+    /// path for static files in Razor Class Libraries served to Blazor WebAssembly applications.
     /// </para>
     /// </remarks>
-    /// <seealso cref="LoadRoutesDataIntoMapAsync"/>
-    /// <seealso cref="ComputeBoundsFromRoutes"/>
-    /// <seealso cref="LoadDataIntoMapAsync"/>
-    /// <seealso cref="ShowLoaderAsync"/>
-    /// <seealso cref="HideLoaderAsync"/>
-    /// <seealso cref="RemoveRoutesAsync"/>
-    public async Task<string?> LoadRoutesAsync(
-        GasStationPrices.ViewModels.TravelQueryModel model,
-        CancellationToken cancellationToken)
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        string? returnText = null;
+        await base.OnAfterRenderAsync(firstRender);
 
-        await ShowLoaderAsync();
+        if (!firstRender)
+            return;
 
-        await RemoveRoutesAsync();
-
-        Array.ForEach(Prices, x => x.SetPrices(null));
-
-        IReadOnlyList<(string NombreRuta, double[,] Coordenadas)> res;
-        try
+        if (MapModule == null)
         {
-            res = await RoutingService.GetRoutesAsync(model.Orig.Location, model.Dest.Location, cancellationToken);
+            MapModule = await JsRuntime.InvokeAsync<IJSObjectReference>(
+                identifier: "import",
+                args: $"./{Assets["_content/Seedysoft.Libs.MapRazorClassLibrary/js/MapComponent.js"]}");
+
+            await CreateMapAsync();
         }
         catch (Exception e)
         {
