@@ -9,7 +9,7 @@ internal sealed class Marker : Base.InteractiveLayer
     {
         Position = position;
         BubblingPointerEvents = false;
-        Pane = Map.Panes.MarkerPane;
+        Pane = Misc.Panes.MarkerPane;
     }
 
     /// <summary>

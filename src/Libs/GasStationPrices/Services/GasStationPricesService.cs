@@ -29,13 +29,21 @@ public sealed class GasStationPricesService
         _ = Task.Run(async () => await LoadGasStationsAsync(CancellationToken.None));
     }
 
-    public async Task<IReadOnlyList<ViewModels.GasStationModel>> GetNearGasStationsAsync(
-        Travel.Models.Bounds bounds,
-        int maxDistanceInKm,
+    public async Task<ViewModels.GasStationModel?> GetGasStationAsync(
+        Travel.Models.Location latLng,
         CancellationToken cancellationToken)
     {
         return await LoadGasStationsAsync(cancellationToken)
-            ? [.. MineturResponse?.EstacionesTerrestres.Where(x => bounds.IsInside(x.LatLng)).Select(x => x.ToGasStationModel()) ?? []]
+          ? MineturResponse?.EstacionesTerrestres.FirstOrDefault(x => latLng.Equals(x.LatLng)).ToGasStationModel()
+          : null;
+    }
+
+    public async Task<IReadOnlyList<ViewModels.GasStationModel>> GetNearGasStationsAsync(
+        Travel.Models.Bounds bounds,
+        CancellationToken cancellationToken)
+    {
+        return await LoadGasStationsAsync(cancellationToken)
+            ? [.. MineturResponse?.EstacionesTerrestres.Where(x => bounds.IsInside(x.LatLng)).Select(x => x.ToGasStationModel()!) ?? []]
             : [];
     }
 

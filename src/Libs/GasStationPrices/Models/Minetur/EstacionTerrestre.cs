@@ -28,7 +28,7 @@ public readonly record struct Body
     [J("ResultadoConsulta")] public required string ResultadoConsulta { get; init; }
 }
 
-public readonly record struct EstacionTerrestre
+public sealed class EstacionTerrestre
 {
     [J("C.P.")] public required string CodigoPostal { get; init; }
 

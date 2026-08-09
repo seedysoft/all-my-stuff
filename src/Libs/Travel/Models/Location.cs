@@ -12,8 +12,8 @@ public readonly record struct Location
         Longitude = longitude;
     }
 
-    [J("latitude")] public double Latitude { get; init; }
-    [J("longitude")] public double Longitude { get; init; }
+    public double Latitude { get; init; }
+    public double Longitude { get; init; }
 
     public static Location Empty => new(0, 0);
 

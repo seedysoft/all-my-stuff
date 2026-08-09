@@ -12,24 +12,17 @@ public sealed class LatLng(double lat, double lng, double? alt = default)
     /// <summary>
     /// Latitude in degrees.
     /// </summary>
-    [J("lat")] public double Lat { get; set; } = lat;
+    public double Lat { get; set; } = Math.Round(lat, 6);
 
     /// <summary>
     /// Longitude in degrees.
     /// </summary>
-    [J("lng")] public double Lng { get; set; } = lng;
+    public double Lng { get; set; } = Math.Round(lng, 6);
 
     /// <summary>
     /// Altitude in meters (optional).
     /// </summary>
-    [J("alt")] public double? Alt { get; set; } = alt;
-
-    /// <summary>
-    /// A "fake" id to store a dictionary
-    /// </summary>
-    [J("key")]
-    public string Key =>
-        $"{Lat.ToString(Core.Constants.Globalization.NumberFormatInfoInvariant)};{Lng.ToString(Core.Constants.Globalization.NumberFormatInfoInvariant)}";
+    public double? Alt { get; set; } = alt.HasValue ? Math.Round(alt.Value, 6) : null;
 
     internal string GetDebuggerDisplay()
     {

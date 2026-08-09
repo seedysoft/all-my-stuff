@@ -3,22 +3,22 @@
 /// <summary>
 /// A circle of a fixed size with radius specified in pixels.
 /// </summary>
-internal sealed class CircleMarker : Path
+public sealed class CircleMarker : Path
 {
     public CircleMarker(Basic.LatLng position) : base()
     {
         Position = position;
-        Pane = Map.Panes.OverlayPane;
+        Pane = Misc.Panes.OverlayPane;
     }
 
     /// <summary>
     /// Geographical point.
     /// </summary>
-    [J("position")] public Basic.LatLng Position { get; }
+    public Basic.LatLng Position { get; }
 
     /// <summary>
     /// Radius of the circle marker, in pixels.
     /// </summary>
     /// <remarks>Default: <c>10</c></remarks>
-    [J("radius")] public double? Radius { get; set; } = 10;
+    public double? Radius { get; set; } = 10;
 }
