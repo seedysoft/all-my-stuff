@@ -33,7 +33,7 @@ public partial class MapComponent
             if (MapModule == null)
                 return;
 
-            await MapModule.InvokeVoidAsync("createMap", MapId, Map, ObjRef);
+            await MapModule.InvokeVoidAsync("createMap", MapId, Center, Zoom, ObjRef);
 
             if (OnMapCreatedAsyncEventCallback.HasDelegate)
                 await OnMapCreatedAsyncEventCallback.InvokeAsync(this);

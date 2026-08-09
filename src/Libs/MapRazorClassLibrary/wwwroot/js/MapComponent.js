@@ -7,9 +7,9 @@ let dnRef;
 
 const markersArray = new Map();
 
-export function createMap(id, options, dotNetRef) {
+export function createMap(id, center, zoom, dotNetRef) {
     //debugger
-    map = new LeafletMap(id).setView(options.center, options.zoom);
+    map = new LeafletMap(id).setView(center, zoom);
     const tiles = new TileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
         attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'

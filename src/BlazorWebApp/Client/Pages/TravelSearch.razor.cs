@@ -47,7 +47,7 @@ public partial class TravelSearch
             if (!string.IsNullOrWhiteSpace(textToFind))
                 return await GeocodingService.FindPlacesAsync(textToFind, cancellationToken) ?? [];
         }
-        catch (Exception e) when (Logger.LogAndHandle(e, "Unexpected error")) { }
+        catch (Exception e) when (Logger.LogAndHandle(e, "Unexpected error")) { _ = Snackbar.Add(new MarkupString($"<span>{e}</span>"), MudBlazor.Severity.Error); }
 
         return [];
     }
