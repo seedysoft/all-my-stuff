@@ -530,4 +530,10 @@ public partial class MapComponent
 
         return null;
     }
+
+    protected async Task OnMudToggleGroupValuesChangedAsync(IEnumerable<GasStationPrices.Constants.ProductoPetroliferoId> args)
+    {
+        GasStationsQueryModel.PetroleumProductsSelectedIds = args;
+        await LoadDataAsync();
+    }
 }
