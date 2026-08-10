@@ -43,13 +43,6 @@ public sealed class LatLng(double lat, double lng, double? alt = default)
     public string Key =>
         $"{Lat.ToString(Core.Constants.Globalization.NumberFormatInfoInvariant)};{Lng.ToString(Core.Constants.Globalization.NumberFormatInfoInvariant)}";
 
-    /// <summary>
-    /// A "fake" id to store a dictionary
-    /// </summary>
-    [J("key")]
-    public string Key =>
-        $"{Lat.ToString(Core.Constants.Globalization.NumberFormatInfoInvariant)};{Lng.ToString(Core.Constants.Globalization.NumberFormatInfoInvariant)}";
-
     internal string GetDebuggerDisplay()
     {
         return Alt.HasValue

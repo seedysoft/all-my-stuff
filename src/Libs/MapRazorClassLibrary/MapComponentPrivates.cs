@@ -255,18 +255,7 @@ public partial class MapComponent
             await MapModule.InvokeVoidAsync($"addOrUpdateCircleMarker", circleMarker, popup?.Value, tooltip?.Value);
     }
 
-    private async Task LoadProductLimitsAsync(
-        ProductLimits[] productLimits)
-    {
-        if (MapModule != null)
-        {
-            await MapModule.InvokeVoidAsync(
-                $"loadProductLimits",
-                productLimits);
-        }
-    }
-
-    private async Task DeleteMapAsync()
+    private async Task RemoveRoutesAsync()
     {
         if (MapModule != null)
             await MapModule.InvokeVoidAsync("removeRoutes");
