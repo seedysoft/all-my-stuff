@@ -103,4 +103,10 @@ public partial class MapComponent
             await CreateMapAsync();
         }
     }
+
+    protected async Task OnMudToggleGroupValuesChangedAsync(IEnumerable<GasStationPrices.Constants.ProductoPetroliferoId> args)
+    {
+        GasStationsQueryModel.PetroleumProductsSelectedIds = args;
+        await LoadDataAsync();
+    }
 }
