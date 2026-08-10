@@ -34,8 +34,8 @@ public sealed class GasStationPricesService
         CancellationToken cancellationToken)
     {
         return await LoadGasStationsAsync(cancellationToken)
-          ? MineturResponse?.EstacionesTerrestres.FirstOrDefault(x => latLng.Equals(x.LatLng)).ToGasStationModel()
-          : null;
+            ? MineturResponse?.EstacionesTerrestres.FirstOrDefault(x => latLng.Equals(x.LatLng)).ToGasStationModel()
+            : null;
     }
 
     public async Task<IReadOnlyList<ViewModels.GasStationModel>> GetNearGasStationsAsync(

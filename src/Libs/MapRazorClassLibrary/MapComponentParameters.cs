@@ -20,6 +20,14 @@ public partial class MapComponent
     /// <remarks>Default: <c>undefined</c></remarks>
     [Parameter] public required double Zoom { get; set; }
 
+    [Parameter]
+    public required Travel.ViewModels.TravelQueryModel TravelQueryModel { get; set; } = Travel.ViewModels.TravelQueryModel.
+#if DEBUG
+        CreateDefault();
+#else
+        CreateEmpty();
+#endif
+
     [Parameter] public EventCallback<MapComponent> OnMapCreatedAsyncEventCallback { get; set; }
 
     [Parameter] public EventCallback<MapModels.Basic.LatLng> OnMapClickAsyncEventCallback { get; set; }

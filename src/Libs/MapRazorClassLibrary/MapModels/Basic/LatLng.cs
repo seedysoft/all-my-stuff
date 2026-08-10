@@ -9,6 +9,8 @@
 [System.Diagnostics.DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
 public sealed class LatLng(double lat, double lng, double? alt = default)
 {
+    internal static readonly LatLng Empty = new(0, 0);
+
     /// <summary>
     /// Latitude in degrees.
     /// </summary>
@@ -23,6 +25,16 @@ public sealed class LatLng(double lat, double lng, double? alt = default)
     /// Altitude in meters (optional).
     /// </summary>
     public double? Alt { get; set; } = alt.HasValue ? Math.Round(alt.Value, 6) : null;
+
+    internal bool IsEquals(LatLng? args, double? maxDegreesMargin)
+    {
+        if (args == null)
+            return false;
+
+        double margin = Math.Max(Math.Abs(Lat - args.Lat), Math.Abs(Lng - args.Lng));
+
+        return margin <= (maxDegreesMargin ?? 1.0E-9);
+    }
 
     internal string GetDebuggerDisplay()
     {
