@@ -25,7 +25,7 @@ export function createMap(id, center, zoom, dotNetRef) {
 
     map.on('click', function (ev) {
         // sends LatLng object as argument
-        dnRef.invokeMethodAsync("OnMapClickAsync", ev.sourceTarget.getLatLng());
+        dnRef.invokeMethodAsync("OnMapClickAsync", ev.latlng);
     });
     map.on('moveend', function () {
         // sends LatLngBounds object as argument
@@ -110,7 +110,7 @@ export function addOrUpdateCircleMarker(circleOptions, popup, tooltip) {
     }
 }
 
-export function showGasStationPopup(latLng, popup) {
+export function showGasStationPopup(popup, latLng) {
     // debugger
     map.openPopup(popup, latLng);
 }

@@ -22,7 +22,7 @@ public sealed class Configurator : Core.Dependencies.ConfiguratorBase
         hostApplicationBuilder.Services.TryAddScoped<Services.GasStationPricesService>();
 
         _ = hostApplicationBuilder.Services.AddHttpClient(string.Empty)
-            .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler()
+            .ConfigurePrimaryHttpMessageHandler(static () => new HttpClientHandler()
             {
                 ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator,
                 SslProtocols = System.Security.Authentication.SslProtocols.Tls12 | System.Security.Authentication.SslProtocols.Tls13,

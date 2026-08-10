@@ -8,7 +8,7 @@ public record GasStationsQueryModel
     public required int MaxDistanceInKm { get; set; }
 
     [System.ComponentModel.DataAnnotations.Length(1, int.MaxValue)]
-    public IEnumerable<Constants.ProductoPetroliferoId>? PetroleumProductsSelectedIds { get; set; } = [];
+    public IEnumerable<Constants.ProductoPetroliferoId> PetroleumProductsSelectedIds { get; set; } = [];
 
 #if DEBUG
     public static GasStationsQueryModel CreateDefault()
