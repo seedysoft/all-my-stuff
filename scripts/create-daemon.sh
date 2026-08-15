@@ -109,7 +109,7 @@ echo "'${EXECUTABLE_FILE_NAME}' file is in '${WORKER_SERVICE_DIRECTORY}'"
 if [ "${WORKER_SERVICE_USER}" == "root" ] || [ "${WORKER_SERVICE_USER}" == "UNKNOWN" ]; then
   echo "ERROR: The owner of '${WORKER_SERVICE_DIRECTORY}' directory is '${WORKER_SERVICE_USER}'"
   echo "Please, change the owner with the command 'chown <user>:<user> -R \"${WORKER_SERVICE_DIRECTORY}\"'"
-  echo "The user <user> will be used to run '${WORKER_SERVICE_NAME}'"
+  echo "The user '${WORKER_SERVICE_USER}' will be used to run '${WORKER_SERVICE_NAME}'"
   exit 1
 fi
 echo "'${WORKER_SERVICE_NAME}' will be executed with the user '${WORKER_SERVICE_USER}'"
