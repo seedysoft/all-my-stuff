@@ -32,20 +32,22 @@ public class Program : Libs.Core.ProgramBase
 
         // Configure the HTTP request pipeline.
         if (webApplication.Environment.IsDevelopment())
-        {
             webApplication.UseWebAssemblyDebugging();
-        }
         else
-        {
             _ = webApplication.UseExceptionHandler("/Error");
-            // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-            _ = webApplication.UseHsts();
-        }
+
+        // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/servers/kestrel/security-considerations?view=aspnetcore-10.0#security-checklist
+        _ = webApplication.UseHostFiltering();      // Validate Host header
+        _ = webApplication.UseHttpsRedirection();   // Redirect HTTP -> HTTPS
+        _ = webApplication.UseHsts();               // Add Strict-Transport-Security
+        _ = webApplication.UseRateLimiter();        // Rate limiting
+        //_ = webApplication.UseCors();               // CORS (if needed)
+        //_ = webApplication.UseAuthentication();
+        //_ = webApplication.UseAuthorization();
 
         _ = webApplication
-            .UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true)
-            .UseHttpsRedirection()
-            .UseAntiforgery();
+            .UseAntiforgery()
+            .UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true);
 
         _ = webApplication.MapStaticAssets();
 
