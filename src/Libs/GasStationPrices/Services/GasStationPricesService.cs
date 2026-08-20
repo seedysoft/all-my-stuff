@@ -61,6 +61,8 @@ public sealed class GasStationPricesService
         {
             try
             {
+                isLoading = true;
+
                 var sw = System.Diagnostics.Stopwatch.StartNew();
 
                 //Uri requestUri = GasStationPricesSettings.Minetur.Urls.GetUri();
