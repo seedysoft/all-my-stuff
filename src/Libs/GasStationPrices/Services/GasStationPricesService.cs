@@ -14,6 +14,7 @@ public sealed class GasStationPricesService
     private readonly ILogger<GasStationPricesService> Logger;
 
     private static Models.Minetur.Body? MineturResponse;
+    private bool isLoading;
 
     public GasStationPricesService(IServiceProvider serviceProvider)
     {
@@ -42,17 +43,32 @@ public sealed class GasStationPricesService
     /// <returns><c>true</c> if MineturResponse is not null or <c>false</c> otherwise.</returns>
     private async Task<bool> LoadGasStationsAsync(CancellationToken cancellationToken)
     {
-        if (MineturResponse == null || MineturResponse?.DateTimeOffset < DateTimeOffset.Now.AddMinutes(-35))
+        if (!isLoading && (MineturResponse == null || MineturResponse?.DateTimeOffset < DateTimeOffset.Now.AddMinutes(-35)))
         {
             try
             {
+                isLoading = true;
+
                 var sw = System.Diagnostics.Stopwatch.StartNew();
 
-                RestRequest restRequest = new(GasStationPricesSettings.Minetur.Urls.EstacionesTerrestres);
+                RestRequest restRequest = new(GasStationPricesSettings.Minetur.Urls.EstacionesTerrestres)
+                {
+                    Version = System.Net.HttpVersion.Version20,
+                };
                 RestClient restClient = new(GasStationPricesSettings.Minetur.Urls.Base)
                 {
                     AcceptedContentTypes = [System.Net.Mime.MediaTypeNames.Application.Json,],
                 };
+                //restClient.Options.RemoteCertificateValidationCallback?. = () => { };
+                System.Diagnostics.Debugger.Break();
+
+                RestClientOptions options = new(GasStationPricesSettings.Minetur.Urls.Base)
+                {
+                    RemoteCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true
+                };
+                RestClient client = new(options);
+                RestResponse response = await client.GetAsync(restRequest, cancellationToken);
+
                 RestResponse restResponse = await restClient.GetAsync(restRequest, cancellationToken);
                 if (restResponse.IsSuccessStatusCode)
                     MineturResponse = restResponse.Content!.FromJson<Models.Minetur.Body>();
@@ -62,6 +78,7 @@ public sealed class GasStationPricesService
                     Logger.LogInformation("Loaded gas stations in {Elapsed} secs.", sw.Elapsed.ToString(@"s\.fff"));
             }
             catch (Exception e) when (Logger.LogAndHandle(e, "Unexpected error")) { }
+            finally { isLoading = false; }
         }
 
         return MineturResponse != null;
