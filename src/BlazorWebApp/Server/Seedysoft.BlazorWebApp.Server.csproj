@@ -1,11 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
     <PropertyGroup>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
-        <RuntimeIdentifiers>linux-arm64</RuntimeIdentifiers>
         <SelfContained>true</SelfContained>
         <StartupObject>Seedysoft.BlazorWebApp.Server.Program</StartupObject>
-        <TargetFramework>net10.0</TargetFramework>
         <UserSecretsId>953853f7-9384-457c-a3c0-3492059196ab</UserSecretsId>
         <WasmBuildNative>true</WasmBuildNative>
     </PropertyGroup>

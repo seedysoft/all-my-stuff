@@ -15,6 +15,7 @@ public sealed class GasStationPricesService
     private readonly ILogger<GasStationPricesService> Logger;
 
     private static Models.Minetur.Body? MineturResponse;
+    private bool isLoading;
 
     public GasStationPricesService(IServiceProvider serviceProvider)
     {
@@ -53,10 +54,12 @@ public sealed class GasStationPricesService
     /// <returns><c>true</c> if MineturResponse is not null or <c>false</c> otherwise.</returns>
     private async Task<bool> LoadGasStationsAsync(CancellationToken cancellationToken)
     {
-        if (MineturResponse == null || MineturResponse?.DateTimeOffset < DateTimeOffset.Now.AddMinutes(-35))
+        if (!isLoading && (MineturResponse == null || MineturResponse?.DateTimeOffset < DateTimeOffset.Now.AddMinutes(-35)))
         {
             try
             {
+                isLoading = true;
+
                 var sw = System.Diagnostics.Stopwatch.StartNew();
 
                 HttpClient httpClient = httpClientFactory.CreateClient();
@@ -69,6 +72,7 @@ public sealed class GasStationPricesService
                     Logger.LogInformation("Loaded gas stations in {Elapsed} secs.", sw.Elapsed.ToString(@"s\.fff"));
             }
             catch (Exception e) when (Logger.LogAndHandle(e, "Unexpected error")) { }
+            finally { isLoading = false; }
         }
 
         return MineturResponse != null;

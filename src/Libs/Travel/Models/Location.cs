@@ -4,8 +4,9 @@
 /// <summary>
 /// Represents a geographic location using double latitude and longitude in degrees.
 /// </summary>
-public readonly record struct Location
+public class Location
 {
+    private Location() { }
     public Location(double latitude, double longitude)
     {
         Latitude = latitude;

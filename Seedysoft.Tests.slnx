@@ -3,9 +3,10 @@
     <Project Path="src/Libs/BackgroundServices/Seedysoft.Libs.BackgroundServices.csproj" />
     <Project Path="src/Libs/Core/Seedysoft.Libs.Core.csproj" />
     <Project Path="src/Libs/Cryptography/Seedysoft.Libs.Cryptography.csproj" />
+    <Project Path="src/Libs/GasStationPrices.ConsoleApp/Seedysoft.Libs.GasStationPrices.ConsoleApp.csproj" />
     <Project Path="src/Libs/GasStationPrices/Seedysoft.Libs.GasStationPrices.csproj" />
     <Project Path="src/Libs/Infrastructure/Seedysoft.Libs.Infrastructure.csproj" />
-    <Project Path="src/Libs/MapRazorClassLibrary/Seedysoft.Libs.MapRazorClassLibrary.csproj" Id="afa01aea-b700-49ea-b48c-3432bee80bba" />
+    <Project Path="src/Libs/MapRazorClassLibrary/Seedysoft.Libs.MapRazorClassLibrary.csproj" />
     <Project Path="src/Libs/SmtpService/Seedysoft.Libs.SmtpService.csproj" />
     <Project Path="src/Libs/TelegramBot/Seedysoft.Libs.TelegramBot.csproj" />
     <Project Path="src/Libs/Travel/Seedysoft.Libs.Travel.csproj" />
@@ -38,7 +39,7 @@
     <File Path=".runsettings" />
     <File Path="global.json" />
     <File Path="nuget.config" />
-    <File Path="src/Directory.Build.props" />
+    <File Path="Directory.Build.props" />
   </Folder>
   <Folder Name="/_SolutionItems/doc/">
     <File Path="doc/DotnetInstallDocumentation.txt" />
