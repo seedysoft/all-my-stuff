@@ -124,7 +124,6 @@ public class TuyaDeviceBase
         Version = version ?? float.Parse(ProtocolVersionsAndHeaders.VERSION_31);
     }
 
-    // TODO                     Wrap results into class/record
     public object? GetStatus(bool noWait = false)
     {
         Debug.WriteLine($"{nameof(GetStatus)}() called ({nameof(DevType)} is '{DevType}')");

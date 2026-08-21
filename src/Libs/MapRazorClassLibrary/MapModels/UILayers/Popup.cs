@@ -4,11 +4,11 @@
 /// Used to open popups in certain places of the map.
 /// Use Map.openPopup to open popups while making sure that only one popup is open at one time (recommended for usability), or use Map.addLayer to open as many as you want.
 /// </summary>
-public sealed record class Popup : DivOverlay
+internal sealed class Popup : DivOverlay
 {
     public Popup() : base()
     {
-        Pane = Map.Panes.PopupPane;
+        Pane = Misc.Panes.PopupPane;
         Offset = new Basic.Point(0, 7);
     }
 

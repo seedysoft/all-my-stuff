@@ -5,42 +5,27 @@ namespace Seedysoft.Libs.MapRazorClassLibrary.MapModels.Basic;
 /// <summary>
 /// Represents an icon to provide when creating a marker.
 /// </summary>
-public sealed record class Icon
+internal sealed class Icon(string iconUrl = "marker-icon.png")
 {
-    public Icon(string iconUrl = "marker-icon.png")
-    {
-        IconUrl = iconUrl;
-        IconRetinaUrl = Default?.IconRetinaUrl;
-        IconSize = Default?.IconSize;
-        IconAnchor = Default?.IconAnchor;
-        PopupAnchor = Default?.PopupAnchor;
-        TooltipAnchor = Default?.TooltipAnchor;
-        ShadowUrl = Default?.ShadowUrl;
-        ShadowRetinaUrl = Default?.ShadowRetinaUrl;
-        ShadowSize = Default?.ShadowSize;
-        ShadowAnchor = Default?.ShadowAnchor;
-        ClassName = Default?.ClassName;
-        //CrossOrigin = Default?.CrossOrigin;
-    }
 
     /// <summary>
     /// The URL to the icon image (absolute or relative to your script path).
     /// </summary>
     /// <remarks>Default: <c>null</c></remarks>
-    [J("iconUrl")] public required string IconUrl { get; set; }
+    [J("iconUrl")] public required string IconUrl { get; set; } = iconUrl;
 
     /// <summary>
     /// The URL to a retina sized version of the icon image (absolute or relative to your script path).
     /// Used for Retina screen devices.
     /// </summary>
     /// <remarks>Default: <c>null</c></remarks>
-    [J("iconRetinaUrl")] public string? IconRetinaUrl { get; set; }
+    [J("iconRetinaUrl")] public string? IconRetinaUrl { get; set; } = Default?.IconRetinaUrl;
 
     /// <summary>
     /// Size of the icon image in pixels.
     /// </summary>
     /// <remarks>Default: <c>null</c></remarks>
-    [J("iconSize")] public Point? IconSize { get; set; }
+    [J("iconSize")] public Point? IconSize { get; set; } = Default?.IconSize;
 
     /// <summary>
     /// The coordinates of the "tip" of the icon (relative to its top left corner).
@@ -48,51 +33,51 @@ public sealed record class Icon
     /// Centered by default if size is specified, also can be set in CSS with negative margins.
     /// </summary>
     /// <remarks>Default: <c>null</c></remarks>
-    [J("iconAnchor")] public Point? IconAnchor { get; set; }
+    [J("iconAnchor")] public Point? IconAnchor { get; set; } = Default?.IconAnchor;
 
     /// <summary>
     /// The coordinates of the point from which popups will "open", relative to the icon anchor.
     /// </summary>
     /// <remarks>Default: <c>Point(0, 0)</c></remarks>
-    [J("popupAnchor")] public Point? PopupAnchor { get; set; } = Point.Empty;
+    [J("popupAnchor")] public Point? PopupAnchor { get; set; } = Default?.PopupAnchor;
 
     /// <summary>
     /// The coordinates of the point from which tooltips will "open", relative to the icon anchor.
     /// </summary>
     /// <remarks>Default: <c>Point(0, 0)</c></remarks>
-    [J("tooltipAnchor")] public Point? TooltipAnchor { get; set; } = Point.Empty;
+    [J("tooltipAnchor")] public Point? TooltipAnchor { get; set; } = Default?.TooltipAnchor;
 
     /// <summary>
     /// The URL to the icon shadow image.
     /// If not specified, no shadow image will be created.
     /// </summary>
     /// <remarks>Default: <c>null</c></remarks>
-    [J("shadowUrl")] public string? ShadowUrl { get; set; }
+    [J("shadowUrl")] public string? ShadowUrl { get; set; } = Default?.ShadowUrl;
 
     /// <summary>
     /// 
     /// </summary>
     /// <remarks>Default: <c>null</c></remarks>
-    [J("shadowRetinaUrl")] public string? ShadowRetinaUrl { get; set; }
+    [J("shadowRetinaUrl")] public string? ShadowRetinaUrl { get; set; } = Default?.ShadowRetinaUrl;
 
     /// <summary>
     /// Size of the shadow image in pixels.
     /// </summary>
     /// <remarks>Default: <c>null</c></remarks>
-    [J("shadowSize")] public Point? ShadowSize { get; set; }
+    [J("shadowSize")] public Point? ShadowSize { get; set; } = Default?.ShadowSize;
 
     /// <summary>
     /// The coordinates of the "tip" of the shadow (relative to its top left corner) (the same as iconAnchor if not specified).
     /// </summary>
     /// <remarks>Default: <c>null</c></remarks>
-    [J("shadowAnchor")] public Point? ShadowAnchor { get; set; }
+    [J("shadowAnchor")] public Point? ShadowAnchor { get; set; } = Default?.ShadowAnchor;
 
     /// <summary>
     /// A custom class name to assign to both icon and shadow images.
     /// Empty by default.
     /// </summary>
     /// <remarks>Default: <c>''</c></remarks>
-    [J("className")] public string? ClassName { get; set; } = string.Empty;
+    [J("className")] public string? ClassName { get; set; } = Default?.ClassName;
 
     /// <summary>
     /// Whether the crossOrigin attribute will be added to the tiles.

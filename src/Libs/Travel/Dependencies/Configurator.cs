@@ -40,7 +40,7 @@ public sealed class Configurator : Core.Dependencies.ConfiguratorBase
                 HttpClientHandler handler = new()
                 {
                     ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator,
-                    SslProtocols = System.Security.Authentication.SslProtocols.Tls13,
+                    SslProtocols = System.Security.Authentication.SslProtocols.Tls12 | System.Security.Authentication.SslProtocols.Tls13,
                 };
 
                 return handler;

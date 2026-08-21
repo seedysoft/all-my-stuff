@@ -2,13 +2,30 @@ using Microsoft.JSInterop;
 
 namespace Seedysoft.Libs.MapRazorClassLibrary;
 
-public partial class MapComponent : IAsyncDisposable
+public partial class MapComponent
 {
-    public sealed class MapClickEventArgs : EventArgs
+    [JSInvokable]
+    public async Task OnMapClickAsync(MapModels.Basic.LatLng args)
+        => await OnMapClickAsyncEventCallback.InvokeAsync(args);
+
+    [JSInvokable]
+    public async Task OnMapMoveEndAsync(MapModels.Basic.LatLngBounds args)
     {
-        [J("latLng")] public required MapModels.Basic.LatLng LatLng { get; set; }
+        await OnMapMoveEndEventCallback.InvokeAsync(args);
+
+        if (!CurrentLatLngBounds.IsEquals(args: args, maxDegreesMargin: 0.001))
+        {
+            CurrentLatLngBounds = args;
+
+            await LoadDataAsync();
+        }
     }
 
-    [JSInvokable] public async Task OnMapClickAsync(MapClickEventArgs args) 
-        => await OnMapClickAsyncEventCallback.InvokeAsync(args);
+    [JSInvokable]
+    public async Task OnMarkerClickAsync(MapModels.Basic.LatLng args)
+    {
+        await OnCircleMarkerClicEventCallback.InvokeAsync(args);
+
+        await ShowGasStationPopupAsync(args);
+    }
 }

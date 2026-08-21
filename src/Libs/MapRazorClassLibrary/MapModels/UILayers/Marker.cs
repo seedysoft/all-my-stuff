@@ -3,13 +3,13 @@
 /// <summary>
 /// Marker is used to display clickable/draggable icons on the map.
 /// </summary>
-public sealed record class Marker : Base.InteractiveLayer
+internal sealed class Marker : Base.InteractiveLayer
 {
     public Marker(Basic.LatLng position) : base()
     {
         Position = position;
         BubblingPointerEvents = false;
-        Pane = Map.Panes.MarkerPane;
+        Pane = Misc.Panes.MarkerPane;
     }
 
     /// <summary>

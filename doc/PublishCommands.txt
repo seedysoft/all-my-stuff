@@ -9,14 +9,14 @@ $PublishDirectory="$env:USERPROFILE\_prog\seedysoft\all-my-stuff\publish\linux-a
 $PublishDirectory="$env:USERPROFILE\_prog\seedysoft\all-my-stuff\publish\win-arm64\"
 $PublishDirectory="$env:USERPROFILE\_prog\seedysoft\Test\linux-x64\"
 
-$Configuration="-c Debug"
-$Configuration="-c Release"
+$Configuration="--configuration Debug"
+$Configuration="--configuration Release"
 # Release is by default, so can be ommited:
 $Configuration=""
 
 # <RuntimeIdentifiers>linux-arm64;linux-x64;win-x64</RuntimeIdentifiers>
 # <RuntimeIdentifiers>linux-arm64;win-x64</RuntimeIdentifiers>
-# <RuntimeIdentifiers>linux-arm64</RuntimeIdentifiers>
+# <RuntimeIdentifiers>win-x64</RuntimeIdentifiers>
 
 # $Runtime="linux-x64"
 # $Runtime="win-x64"
@@ -24,6 +24,11 @@ $Runtime="linux-arm64"
 
 $version=Get-Date -AsUTC -Format "yy.Mdd.Hmm.ss"
 
+$Configuration="--configuration Debug"
+$ProjectOrSolution="$env:USERPROFILE\_prog\seedysoft\all-my-stuff\src\Libs\GasStationPrices.ConsoleApp\Seedysoft.Libs.GasStationPrices.ConsoleApp.csproj"
+dotnet publish $ProjectOrSolution -p:PublishDir=$PublishDirectory $Configuration -r $Runtime -p:AssemblyVersion=$version --sc ;
+
+$Configuration="--configuration Release"
 $ProjectOrSolution="$env:USERPROFILE\_prog\seedysoft\all-my-stuff\src\Outbox\ConsoleApp\Seedysoft.Outbox.ConsoleApp.csproj"
 dotnet publish $ProjectOrSolution -p:PublishDir=$PublishDirectory $Configuration -r $Runtime -p:AssemblyVersion=$version --sc ;
 $ProjectOrSolution="$env:USERPROFILE\_prog\seedysoft\all-my-stuff\src\Pvpc\ConsoleApp\Seedysoft.Pvpc.ConsoleApp.csproj"

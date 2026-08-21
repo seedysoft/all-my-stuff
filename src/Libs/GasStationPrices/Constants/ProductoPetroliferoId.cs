@@ -4,7 +4,7 @@
 public enum ProductoPetroliferoId : long
 {
 #pragma warning disable format
-    BIE         = 16,
+    //BIE         = 16,
     BIO         =  8,
     G95E10      = 23,
     G95E5       =  1,

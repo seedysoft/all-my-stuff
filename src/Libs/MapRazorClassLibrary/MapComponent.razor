@@ -9,13 +9,101 @@
 <script type="module" src="@Assets[LeafletJavascriptFile]"></script>
 <script type="module" src="@Assets["_content/Seedysoft.Libs.MapRazorClassLibrary/js/leaflet-loader.js"]"></script>
 
-@if (!IsMapReady)
-{
-    <p>Loading map...</p>
+@{
+    Variant variant = Variant.Outlined;
 }
 
-<div id="@MapId" style="height:@Height; width:@Width;"></div>
+<MudGrid Justify="@Justify.SpaceBetween">
 
-@* <div>
-    <label>Current zoom: @Zoom</label>
-</div> *@
+    <MudItem xs="12">
+        <MudButtonGroup Class="gap-4 pa-4" FullWidth Size="@Size.Medium" Variant="@variant">
+
+            <MudButton ButtonType="@ButtonType.Button"
+                       IconColor="@(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.All.Count == GasStationsQueryModel.PetroleumProductsSelectedIds?.Count() ? Color.Primary : Color.Secondary)"
+                       EndIcon="@Icons.Material.Filled.SelectAll"
+                       IconSize="@Size.Large"
+                       OnClick="@(()=> SetPetroleumProductsSelectedIds(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.All))">
+                @nameof(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.All)
+            </MudButton>
+
+            <MudButton ButtonType="@ButtonType.Button"
+                       IconColor="@(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.Gasoline.Select(x => x.IdProducto).All(y => (GasStationsQueryModel.PetroleumProductsSelectedIds ??[]) .Contains(y)) ? Color.Primary : Color.Secondary)"
+                       EndIcon="@Icons.Material.Filled.PropaneTank"
+                       IconSize="@Size.Large"
+                       OnClick="@(()=> SetPetroleumProductsSelectedIds(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.Gasoline))">
+                @nameof(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.Gasoline)
+            </MudButton>
+
+            <MudButton ButtonType="@ButtonType.Button"
+                       IconColor="@(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.Diesel.Select(x => x.IdProducto).All(y => (GasStationsQueryModel.PetroleumProductsSelectedIds ??[]) .Contains(y)) ? Color.Primary : Color.Secondary)"
+                       EndIcon="@Icons.Material.Filled.CarRepair"
+                       IconSize="@Size.Large"
+                       OnClick="@(()=> SetPetroleumProductsSelectedIds(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.Diesel))">
+                @nameof(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.Diesel)
+            </MudButton>
+
+            <MudButton ButtonType="@ButtonType.Button"
+                       EndIcon="@Icons.Material.Filled.Deselect"
+                       IconSize="@Size.Large"
+                       OnClick="@(()=> SetPetroleumProductsSelectedIds(null))">
+                None
+            </MudButton>
+
+        </MudButtonGroup>
+
+        <MudToggleGroup CheckMark="false"
+                        Color="Color.Primary"
+                        SelectedClass="black white-text"
+                        SelectionMode="SelectionMode.MultiSelection"
+                        T="@Libs.GasStationPrices.Constants.ProductoPetroliferoId"
+                        Values="@GasStationsQueryModel.PetroleumProductsSelectedIds"
+                        ValuesChanged="OnMudToggleGroupValuesChangedAsync">
+            @{
+                @foreach (Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero item in Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.All)
+                {
+                    Libs.GasStationPrices.Models.ProductLimits Price = Prices.First(x => x.IdP == item.IdProducto);
+                    <MudToggleItem Value="@item.IdProducto">
+                        <MudStack Justify="MudBlazor.Justify.Center">
+                            <MudTooltip Text="@item.Nombre">
+                                <MudText Typo="Typo.subtitle2">@item.Abreviatura.ToUpperInvariant()</MudText>
+                            </MudTooltip>
+                            <MudText Align="MudBlazor.Align.Right" Typo="Typo.caption">⬇ @(Price.MinOrNull)</MudText>
+                            <MudText Align="MudBlazor.Align.Right" Typo="Typo.caption">~ @(Price.AvgOrNull)</MudText>
+                            <MudText Align="MudBlazor.Align.Right" Typo="Typo.caption">⬆ @(Price.MaxOrNull)</MudText>
+                        </MudStack>
+                    </MudToggleItem>
+                }
+            }
+        </MudToggleGroup>
+
+    </MudItem>
+
+    <MudItem xs="12">
+        <MudSlider @bind-Value="@GasStationsQueryModel.MaxDistanceInKm"
+                   Immediate="false"
+                   Max="50"
+                   Min="1"
+                   Size="@Size.Large"
+                   Step="1"
+                   T="int"
+                   TickMarkLabels="@(Enumerable.Range(1, 50).Select(x => x == 1 || x % 5 == 0 ? $"{x}" : " ").ToArray())"
+                   TickMarks />
+    </MudItem>
+
+    <MudItem xs="12">
+        @if (!IsMapReady)
+        {
+            <p>Loading map...</p>
+        }
+
+        <div id="@MapId" style="height:@(Height); width:@(Width);"></div>
+
+        @if (IsMapReady)
+        {
+            <div>
+                <label>Current zoom: @Zoom</label>
+            </div>
+        }
+    </MudItem>
+
+</MudGrid>

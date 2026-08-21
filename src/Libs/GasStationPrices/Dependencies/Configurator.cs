@@ -12,7 +12,8 @@ public sealed class Configurator : Core.Dependencies.ConfiguratorBase
 
         _ = hostApplicationBuilder.Configuration
             .AddJsonFile($"appsettings.{nameof(Settings.GasStationPricesSettings)}.json", optional: false, reloadOnChange: true)
-            .AddJsonFile($"appsettings.{nameof(Settings.GasStationPricesSettings)}.{CurrentEnvironmentName}.json", optional: false, reloadOnChange: true);
+            .AddJsonFile($"appsettings.{nameof(Settings.GasStationPricesSettings)}.{CurrentEnvironmentName}.json", optional: false, reloadOnChange: true)
+        ;
     }
 
     protected override void AddDbContexts(Microsoft.Extensions.Hosting.IHostApplicationBuilder hostApplicationBuilder) { /* No DbContexts */ }
@@ -21,28 +22,11 @@ public sealed class Configurator : Core.Dependencies.ConfiguratorBase
     {
         hostApplicationBuilder.Services.TryAddScoped<Services.GasStationPricesService>();
 
-        _ = hostApplicationBuilder.Services.AddHttpClient();
-
-        //_ = hostApplicationBuilder.Services.AddHttpClient("Default")
-        //    .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
-        //    {
-        //        UseCookies = false
-        //    });
-
-        //_ = hostApplicationBuilder.Services.AddHttpClient("NoRedirectClient")
-        //    .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
-        //    {
-        //        AllowAutoRedirect = false
-        //    });
-
-        //_ = hostApplicationBuilder.Services.AddHttpClient("CookiesClient")
-        //    .ConfigurePrimaryHttpMessageHandler(() =>
-        //    {
-        //        return new HttpClientHandler
-        //        {
-        //            UseCookies = true,
-        //            CookieContainer = new System.Net.CookieContainer()
-        //        };
-        //    });
+        _ = hostApplicationBuilder.Services.AddHttpClient(string.Empty)
+            .ConfigurePrimaryHttpMessageHandler(static () => new HttpClientHandler()
+            {
+                ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator,
+                SslProtocols = System.Security.Authentication.SslProtocols.Tls12 | System.Security.Authentication.SslProtocols.Tls13,
+            });
     }
 }

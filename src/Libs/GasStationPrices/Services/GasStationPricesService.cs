@@ -16,6 +16,7 @@ public sealed class GasStationPricesService
     private readonly ILogger<GasStationPricesService> Logger;
 
     private static Models.Minetur.Body? MineturResponse;
+    private bool isLoading;
 
     public GasStationPricesService(IServiceProvider serviceProvider)
     {
@@ -30,13 +31,21 @@ public sealed class GasStationPricesService
         _ = Task.Run(async () => await LoadGasStationsAsync(CancellationToken.None));
     }
 
-    public async Task<IReadOnlyList<ViewModels.GasStationModel>> GetNearGasStationsAsync(
-        Travel.Models.Bounds bounds,
-        int maxDistanceInKm,
+    public async Task<ViewModels.GasStationModel?> GetGasStationAsync(
+        Travel.Models.Location latLng,
         CancellationToken cancellationToken)
     {
         return await LoadGasStationsAsync(cancellationToken)
-            ? [.. MineturResponse?.EstacionesTerrestres.Where(x => bounds.IsInside(x.LatLng)).Select(x => x.ToGasStationModel()) ?? []]
+            ? MineturResponse?.EstacionesTerrestres.FirstOrDefault(x => latLng.Equals(x.LatLng)).ToGasStationModel()
+            : null;
+    }
+
+    public async Task<IReadOnlyList<ViewModels.GasStationModel>> GetNearGasStationsAsync(
+        Travel.Models.Bounds bounds,
+        CancellationToken cancellationToken)
+    {
+        return await LoadGasStationsAsync(cancellationToken)
+            ? [.. MineturResponse?.EstacionesTerrestres.Where(x => bounds.IsInside(x.LatLng)).Select(x => x.ToGasStationModel()!) ?? []]
             : [];
     }
 
@@ -46,14 +55,16 @@ public sealed class GasStationPricesService
     /// <returns><c>true</c> if MineturResponse is not null or <c>false</c> otherwise.</returns>
     private async Task<bool> LoadGasStationsAsync(CancellationToken cancellationToken)
     {
-        if (MineturResponse == null || MineturResponse?.DateTimeOffset < DateTimeOffset.Now.AddMinutes(-35))
+        if (!isLoading && (MineturResponse == null || MineturResponse?.DateTimeOffset < DateTimeOffset.Now.AddMinutes(-35)))
         {
             try
             {
+                isLoading = true;
+
                 var sw = System.Diagnostics.Stopwatch.StartNew();
 
                 HttpClient httpClient = httpClientFactory.CreateClient();
-                HttpResponseMessage httpResponseMessage = await httpClient.GetAsync(GasStationPricesSettings.Minetur.Urls.EstacionesTerrestres, cancellationToken);
+                HttpResponseMessage httpResponseMessage = await httpClient.GetAsync(GasStationPricesSettings.Minetur.Urls.GetUri(), cancellationToken);
                 if (httpResponseMessage.IsSuccessStatusCode)
                     MineturResponse = await httpResponseMessage.Content.FromJsonAsync<Models.Minetur.Body>(cancellationToken);
 
@@ -62,6 +73,7 @@ public sealed class GasStationPricesService
                     Logger.LogInformation("Loaded gas stations in {Elapsed} secs.", sw.Elapsed.ToString(@"s\.fff"));
             }
             catch (Exception e) when (Logger.LogAndHandle(e, "Unexpected error")) { }
+            finally { isLoading = false; }
         }
 
         return MineturResponse != null;

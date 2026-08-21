@@ -7,18 +7,8 @@
     }
   },
   "profiles": {
-    "http": {
-      "applicationUrl": "http://seedysoft.dev.localhost:5062",
-      "commandLineArgs": "-d 2",
-      "commandName": "Project",
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      },
-      "inspectUri": "{wsProtocol}://{url.hostname}:{url.port}/_framework/debug/ws-proxy?browser={browserInspectUri}",
-      "launchBrowser": true
-    },
     "https": {
-      "applicationUrl": "https://seedysoft.dev.localhost:5364;http://seedysoft.dev.localhost:5062",
+      "applicationUrl": "https://localhost:5364",
       "commandLineArgs": "-d 2",
       "commandName": "Project",
       "environmentVariables": {
@@ -42,10 +32,10 @@
       "distributionName": "",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "ASPNETCORE_URLS": "https://seedysoft.dev.localhost:5364;http://seedysoft.dev.localhost:5062"
+        "ASPNETCORE_URLS": "https://localhost:5364"
       },
       "launchBrowser": true,
-      "launchUrl": "https://seedysoft.dev.localhost:5364"
+      "launchUrl": "https://localhost:5364"
     }
   }
 }

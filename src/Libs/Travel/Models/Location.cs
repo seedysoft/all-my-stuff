@@ -4,16 +4,17 @@
 /// <summary>
 /// Represents a geographic location using double latitude and longitude in degrees.
 /// </summary>
-public readonly record struct Location
+public class Location
 {
+    private Location() { }
     public Location(double latitude, double longitude)
     {
         Latitude = latitude;
         Longitude = longitude;
     }
 
-    [J("latitude")] public double Latitude { get; init; }
-    [J("longitude")] public double Longitude { get; init; }
+    public double Latitude { get; init; }
+    public double Longitude { get; init; }
 
     public static Location Empty => new(0, 0);
 

@@ -14,20 +14,8 @@ public partial class TravelSearch
 
     private Libs.MapRazorClassLibrary.MapComponent TravelMap { get; set; } = default!;
 
-    private Libs.MapRazorClassLibrary.MapModels.Map Map { get; set; } = new()
-    {
-        Center = new Libs.MapRazorClassLibrary.MapModels.Basic.LatLng(Libs.Travel.Constants.Earth.Burgos.Latitude, Libs.Travel.Constants.Earth.Burgos.Longitude),
-        Zoom = 18,
-    };
-
-    private readonly Libs.GasStationPrices.ViewModels.TravelQueryModel travelQueryModel = Libs.GasStationPrices.ViewModels.TravelQueryModel.
-#if DEBUG
-            CreateDefault()
-#else
-            CreateEmpty()
-#endif
-;
-    private readonly Libs.GasStationPrices.ViewModels.TravelQueryModelFluentValidator travelQueryModelFluentValidator = new();
+    private Libs.Travel.ViewModels.TravelQueryModel TravelQueryModel { get; set; }
+        = Libs.Travel.ViewModels.TravelQueryModel.CreateDefault();
 
     protected override async Task OnInitializedAsync()
     {
@@ -37,34 +25,37 @@ public partial class TravelSearch
             Logger.LogInformation($"Called {nameof(OnInitializedAsync)}");
     }
 
-    private void SetPetroleumProductsSelectedIds(System.Collections.Immutable.ImmutableSortedSet<Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero>? fromWhat) =>
-        travelQueryModel.PetroleumProductsSelectedIds = [.. fromWhat?.Select(static x => x.IdProducto) ?? []];
-
-    private async Task<IEnumerable<Libs.Travel.ViewModels.Place>> FindPlacesAsync(string textToFind, CancellationToken cancellationToken)
+    private async Task<IEnumerable<Libs.Travel.ViewModels.Place>> FindPlacesAsync(
+        string textToFind,
+        CancellationToken cancellationToken)
     {
         try
         {
             if (!string.IsNullOrWhiteSpace(textToFind))
                 return await GeocodingService.FindPlacesAsync(textToFind, cancellationToken) ?? [];
         }
-        catch (Exception e) when (Logger.LogAndHandle(e, "Unexpected error")) { }
+        catch (Exception e) when (Logger.LogAndHandle(e, "Unexpected error"))
+        {
+            _ = Snackbar.Add(new MarkupString($"<span>{e}</span>"), MudBlazor.Severity.Error);
+        }
 
         return [];
     }
 
-    private async Task ValidateSearchAsync(/*Microsoft.AspNetCore.Components.Web.MouseEventArgs args*/)
+    private async Task OnSearchMudButtonClick(/*Microsoft.AspNetCore.Components.Web.MouseEventArgs args*/)
     {
-        FluentValidation.Results.ValidationResult validationResult = await travelQueryModelFluentValidator.ValidateAsync(travelQueryModel);
-        if (validationResult.IsValid)
-        {
-            string? textToShow = await TravelMap.LoadRoutesAndGasStationsAsync(travelQueryModel, default);
-            if (!string.IsNullOrWhiteSpace(textToShow))
-                _ = Snackbar.Add(new MarkupString($"<ul>{string.Join(string.Empty, textToShow)}</ul>"), MudBlazor.Severity.Info);
-        }
-        else
-        {
-            IEnumerable<string> errors = validationResult.Errors.Select(static x => $"<li>{x.ErrorMessage}</li>");
-            _ = Snackbar.Add(new MarkupString($"<ul>{string.Concat(errors)}</ul>"), MudBlazor.Severity.Error);
-        }
+        string? textToShow = await TravelMap.LoadRoutesAsync(default);
+        if (!string.IsNullOrWhiteSpace(textToShow))
+            _ = Snackbar.Add(new MarkupString($"<ul>{string.Join(string.Empty, textToShow)}</ul>"), MudBlazor.Severity.Info);
     }
+
+    //private void OnMapCreatedAsyncEventCallback(Libs.MapRazorClassLibrary.MapComponent args) { }
+
+    //private void OnMapClickAsyncEventCallback(Libs.MapRazorClassLibrary.MapModels.Basic.LatLng args) { }
+
+    //private async Task OnMapMoveEndEventCallback(Libs.MapRazorClassLibrary.MapModels.Basic.LatLngBounds args) { } // => await ReloadGasStationsAsync();
+
+    //private async Task OnCircleMarkerClicEventCallback(Libs.MapRazorClassLibrary.MapModels.Basic.LatLng args) { }
+
+    // TODO                                                         Implement independient gas filters and css display classes
 }

@@ -4,7 +4,7 @@
 /// A simple scale control that shows the scale of the current center of screen in metric (m/km) and imperial (mi/ft) systems.
 /// Extends <see cref="Base.Control"/>.
 /// </summary>
-public sealed record class Scale : Base.Control
+internal sealed class Scale : Base.Control
 {
     public Scale() : base() => Position = Positions.BottomLeft;
 
