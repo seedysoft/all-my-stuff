@@ -46,6 +46,7 @@
     <File Path="doc/KnownErrors.txt" />
     <File Path="doc/MigrationCommands.txt" />
     <File Path="doc/PublishCommands.txt" />
+    <File Path="scripts/makeCert.sh" />
   </Folder>
   <Folder Name="/_SolutionItems/scripts/">
     <File Path="scripts/create-daemon.sh" />

@@ -9,10 +9,8 @@ $PublishDirectory="$env:USERPROFILE\_prog\seedysoft\all-my-stuff\publish\linux-a
 $PublishDirectory="$env:USERPROFILE\_prog\seedysoft\all-my-stuff\publish\win-arm64\"
 $PublishDirectory="$env:USERPROFILE\_prog\seedysoft\Test\linux-x64\"
 
-$Configuration="--configuration Debug"
-$Configuration="--configuration Release"
-# Release is by default, so can be ommited:
-$Configuration=""
+$Configuration="Debug"
+$Configuration="Release"
 
 # <RuntimeIdentifiers>linux-arm64;linux-x64;win-x64</RuntimeIdentifiers>
 # <RuntimeIdentifiers>linux-arm64;win-x64</RuntimeIdentifiers>
@@ -22,34 +20,34 @@ $Configuration=""
 # $Runtime="win-x64"
 $Runtime="linux-arm64"
 
-$version=Get-Date -AsUTC -Format "yy.Mdd.Hmm.ss"
+$version=(Get-Date).ToUniversalTime().ToString("yy.Mdd.Hmm.ss")
 
-$Configuration="--configuration Debug"
+$Configuration="Debug"
 $ProjectOrSolution="$env:USERPROFILE\_prog\seedysoft\all-my-stuff\src\Libs\GasStationPrices.ConsoleApp\Seedysoft.Libs.GasStationPrices.ConsoleApp.csproj"
-dotnet publish $ProjectOrSolution -p:PublishDir=$PublishDirectory $Configuration -r $Runtime -p:AssemblyVersion=$version --sc ;
+dotnet publish $ProjectOrSolution -p:PublishDir=$PublishDirectory -c $Configuration -r $Runtime -p:AssemblyVersion=$version --sc ;
 
-$Configuration="--configuration Release"
+$Configuration="Release"
 $ProjectOrSolution="$env:USERPROFILE\_prog\seedysoft\all-my-stuff\src\Outbox\ConsoleApp\Seedysoft.Outbox.ConsoleApp.csproj"
-dotnet publish $ProjectOrSolution -p:PublishDir=$PublishDirectory $Configuration -r $Runtime -p:AssemblyVersion=$version --sc ;
+dotnet publish $ProjectOrSolution -p:PublishDir=$PublishDirectory -c $Configuration -r $Runtime -p:AssemblyVersion=$version --sc ;
 $ProjectOrSolution="$env:USERPROFILE\_prog\seedysoft\all-my-stuff\src\Pvpc\ConsoleApp\Seedysoft.Pvpc.ConsoleApp.csproj"
-dotnet publish $ProjectOrSolution -p:PublishDir=$PublishDirectory $Configuration -r $Runtime -p:AssemblyVersion=$version --sc ;
+dotnet publish $ProjectOrSolution -p:PublishDir=$PublishDirectory -c $Configuration -r $Runtime -p:AssemblyVersion=$version --sc ;
 $ProjectOrSolution="$env:USERPROFILE\_prog\seedysoft\all-my-stuff\src\WebComparer\ConsoleApp\Seedysoft.WebComparer.ConsoleApp.csproj"
-dotnet publish $ProjectOrSolution -p:PublishDir=$PublishDirectory $Configuration -r $Runtime -p:AssemblyVersion=$version --sc ;
+dotnet publish $ProjectOrSolution -p:PublishDir=$PublishDirectory -c $Configuration -r $Runtime -p:AssemblyVersion=$version --sc ;
 $ProjectOrSolution="$env:USERPROFILE\_prog\seedysoft\all-my-stuff\src\BlazorWebApp\Server\Seedysoft.BlazorWebApp.Server.csproj"
-dotnet publish $ProjectOrSolution -p:PublishDir=$PublishDirectory $Configuration -r $Runtime -p:BlazorCacheBootResources=false -p:PublishReadyToRun -p:PublishReadyToRunShowWarnings=true -p:AssemblyVersion=$version --sc ;
+dotnet publish $ProjectOrSolution -p:PublishDir=$PublishDirectory -c $Configuration -r $Runtime -p:BlazorCacheBootResources=false -p:PublishReadyToRun -p:PublishReadyToRunShowWarnings=true -p:AssemblyVersion=$version --sc ;
 
 # Publish all projects from Raspberrypi4 ($>):
 
 # version="$(date --utc +'%y.%-m%d.%-H%M.%-S')"
 
-# dotnet publish /mnt/wd/_prog/seedysoft/all-my-stuff/Seedysoft.Test.sln -p:PublishDir=/mnt/st/Seedysoft/linux-arm64/ $Configuration -r linux-arm64 -p:BlazorCacheBootResources=false -p:AssemblyVersion=$version --sc ;
+# dotnet publish /mnt/wd/_prog/seedysoft/all-my-stuff/Seedysoft.Test.sln -p:PublishDir=/mnt/st/Seedysoft/linux-arm64/ -c $Configuration -r linux-arm64 -p:BlazorCacheBootResources=false -p:AssemblyVersion=$version --sc ;
 # cd /mnt/st/Seedysoft/linux-arm64 ;
 
-# dotnet publish /mnt/wd/_prog/seedysoft/all-my-stuff/Seedysoft.Test.sln -p:PublishDir=/mnt/st/Seedysoft/win-x64/ $Configuration -r win-x64 -p:BlazorCacheBootResources=false -p:AssemblyVersion=$version --sc ;
+# dotnet publish /mnt/wd/_prog/seedysoft/all-my-stuff/Seedysoft.Test.sln -p:PublishDir=/mnt/st/Seedysoft/win-x64/ -c $Configuration -r win-x64 -p:BlazorCacheBootResources=false -p:AssemblyVersion=$version --sc ;
 
-# Para ver errores podemos a�adir --verbosity
+# Para ver errores podemos añadir --verbosity
 
-#   Explicaci�n de las opciones:
+#   Explicación de las opciones:
 #        -c  | --configuration
 #        -p  | --property
 #        -r  | --runtime

@@ -40,8 +40,9 @@ internal partial class ValhallaRoutingServiceImpl(
         // We need to invert them to [lat, lng] for our application
         return [..
             (IEnumerable<(string NombreRuta, double[,] Coordenadas)>)(body.Routes?.Select((r, i) =>
-            (r.Legs.First().Summary ?? i.ToString(),
-            InvertLongitudeLatitude(Extensions.ArrayExtensions.To2D(r.Geometry?.Coordinates ?? [])))) ?? [])];
+                (r.Legs.First().Summary ?? i.ToString(),
+                InvertLongitudeLatitude(Extensions.ArrayExtensions.To2D(r.Geometry?.Coordinates ?? [])))) ?? [])
+            ];
     }
 
     internal class RequestObject

@@ -7,24 +7,47 @@ https://learn.microsoft.com/en-us/ef/core/cli/dotnet
 # NOTE: On first installation	BEGIN
 #
 # export variables:
-# 
+#
 #   Windows (PS>):
 [Environment]::SetEnvironmentVariable("DOTNET_CLI_TELEMETRY_OPTOUT", 1, [System.EnvironmentVariableTarget]::User)
 [Environment]::SetEnvironmentVariable("DOTNET_PRINT_TELEMETRY_MESSAGE", false, [System.EnvironmentVariableTarget]::User)
 [Environment]::SetEnvironmentVariable("SEEDY_MASTER_KEY", "", [System.EnvironmentVariableTarget]::User)
-# 
-# 
+
+#Cipher Suites
+# TLS 1.2 (suites in server-preferred order)
+Get-TlsCipherSuite;
+$code = {
+	Enable-TlsCipherSuite -Name TLS_RSA_WITH_AES_256_GCM_SHA384 -Position 10;
+	Enable-TlsCipherSuite -Name TLS_RSA_WITH_AES_128_GCM_SHA256 -Position 20;
+	Enable-TlsCipherSuite -Name TLS_RSA_WITH_AES_256_CBC_SHA256 -Position 30;
+	Enable-TlsCipherSuite -Name TLS_RSA_WITH_AES_128_CBC_SHA256 -Position 40;
+	Enable-TlsCipherSuite -Name TLS_RSA_WITH_AES_256_CBC_SHA -Position 50;
+	Enable-TlsCipherSuite -Name TLS_RSA_WITH_AES_128_CBC_SHA -Position 60;
+}
+Start-Process -FilePath powershell.exe -ArgumentList $code -verb RunAs -WorkingDirectory C:;
+Get-TlsCipherSuite;
+
+#
+#
 #   Raspberrypi ($>):
 sudo nano /etc/environment
-# 
+#
 #   then paste this:
 ASPNETCORE_ENVIRONMENT=Production
 DOTNET_CLI_TELEMETRY_OPTOUT=1
 DOTNET_PRINT_TELEMETRY_MESSAGE=false
 SEEDY_MASTER_KEY=""
 
+openssl ciphers -v 'TLS_RSA_WITH_AES_256_GCM_SHA384' ;
+openssl ciphers -v 'TLS_RSA_WITH_AES_128_GCM_SHA256' ;
+openssl ciphers -v 'TLS_RSA_WITH_AES_256_CBC_SHA256' ;
+openssl ciphers -v 'TLS_RSA_WITH_AES_128_CBC_SHA256' ;
+openssl ciphers -v 'TLS_RSA_WITH_AES_256_CBC_SHA' ;
+openssl ciphers -v 'TLS_RSA_WITH_AES_128_CBC_SHA' ;
+
 # Install prerrequisites
 sudo apt-get install -y chromium-chromedriver gpg openssl unzip wget
+
 
 # Create CA root https://benjamin-abt.com/blog/2025/10/13/create-custom-root-certificate-authority/
 # Step 1: Create the Directory Structure
@@ -33,30 +56,30 @@ mkdir ./SeedySoft_Root_CA && cd SeedySoft_Root_CA
 # Step 2: Create the CA Configuration File
 cat > SeedySoft_Root_CA.cnf << EOL
 [ req ]
-default_bits                            = 4096
-default_md                              = sha256
-distinguished_name                      = req_distinguished_name
-prompt                                  = no
-x509_extensions                         = v3_ca
+default_bits            = 4096
+default_md              = sha256
+distinguished_name      = req_dn
+prompt                  = no
+x509_extensions         = v3_ca
 
-[ req_distinguished_name ]
-C                                       = ES                    # countryName
-CN                                      = SeedySoft Root CA     # commonName
-L                                       = Burgos                # localityName
-O                                       = SeedySoft             # organizationName
-OU                                      = IT Crowd              # organizationalUnitName
-ST                                      = Burgos                # stateOrProvinceName
-emailAddress                            = seedysoft@gmail.com
+[ req_dn ]
+C                       = ES                    # countryName
+CN                      = SeedySoft Root CA     # commonName
+L                       = Burgos                # localityName
+O                       = SeedySoft             # organizationName
+OU                      = IT Crowd              # organizationalUnitName
+ST                      = Burgos                # stateOrProvinceName
+emailAddress            = seedysoft@gmail.com
 
 [ v3_ca ]
-basicConstraints                        = critical, CA:true
-keyUsage                                = critical, digitalSignature, cRLSign, keyCertSign
-subjectKeyIdentifier                    = hash
-authorityKeyIdentifier                  = keyid:always,issuer
+basicConstraints        = critical, CA:true
+keyUsage                = critical, digitalSignature, cRLSign, keyCertSign
+subjectKeyIdentifier    = hash
+authorityKeyIdentifier	= keyid:always,issuer
 EOL
 
 # Verify config file is ok
-cat SeedySoft_Root_CA.cnf
+nano SeedySoft_Root_CA.cnf
 
 # Step 3: Generate the Key
 openssl genrsa -aes256 -out SeedySoft_Root_CA.key 4096
@@ -69,11 +92,11 @@ openssl req -x509 -new -nodes -utf8 -sha256 -days 18250 \
   -keyout SeedySoft_Root_CA.key \
   -out SeedySoft_Root_CA.crt
 
-# Step 5: Verify the Root CA Certificate
-openssl x509 -in SeedySoft_Root_CA.crt -noout -text
+## Step 5: Verify the Root CA Certificate
+#openssl x509 -in SeedySoft_Root_CA.crt -noout -text
 
 ## Step 6: Create DER Format (for Some Devices) if neccessary
-# openssl x509 -in ./SeedySoft_Root_CA.crt -outform der -out ./SeedySoft_Root_CA.der
+#openssl x509 -in ./SeedySoft_Root_CA.crt -outform der -out ./SeedySoft_Root_CA.der
 
 # Install
 # RaspberryPi4
@@ -85,46 +108,7 @@ sudo chown root:ssl-cert /etc/ssl/private/SeedySoft_Root_CA.key ; \
 sudo adduser pi ssl-cert && newgrp ssl-cert
 
 # Create raspberrypi4 cert https://aalonso.dev/blog/2025/how-to-create-your-own-certificate-authority-to-provide-certs-for-your-self-hosted-services/
-# Create the Directory Structure
-mkdir raspberrypi4 && cd raspberrypi4
-
-# Generate server private key and csr
-openssl genrsa -out raspberrypi4.key 2048 ; \
-chmod g+r raspberrypi4.key ; \
-openssl req -new -key raspberrypi4.key -out raspberrypi4.csr -subj "/CN=raspberrypi4"
-
-# Create the Server SAN Configuration File
-cat > raspberrypi4.ext << EOL
-basicConstraints                        = CA:false
-keyUsage                                = digitalSignature, nonRepudiation, keyEncipherment, dataEncipherment
-subjectKeyIdentifier                    = hash
-authorityKeyIdentifier                  = keyid,issuer
-extendedKeyUsage                        = serverAuth
-subjectAltName                          = @alt_names
-
-[ alt_names ]
-DNS.1                                   = raspberrypi4
-DNS.2                                   = raspberrypi4.seedy
-IP.1                                    = 192.168.1.33
-IP.2                                    = fe80::a628:2893:c8d:a353
-EOL
-
-# Verify ext file is ok
-cat raspberrypi4.ext
-
-# Sign raspberrypi4.csr with SeedySoft Root CA
-openssl x509 -req -sha256 -days 825 \
-	-CA /etc/ssl/certs/SeedySoft_Root_CA.pem \
-	-CAkey /etc/ssl/private/SeedySoft_Root_CA.key \
-	-in raspberrypi4.csr \
-	-out raspberrypi4.pem \
-	-extfile raspberrypi4.ext
-
-# Install
-sudo cp ./raspberrypi4.pem /etc/ssl/certs/ ; \
-sudo cp ./raspberrypi4.key /etc/ssl/private/ ; \
-sudo chown root:ssl-cert /etc/ssl/private/raspberrypi4.key ; \
-sudo update-ca-certificates
+./makeCert.sh
 
 # localhost cert does not works
 
@@ -146,17 +130,17 @@ sudo mv microsoft.asc.gpg $(cat /etc/apt/sources.list.d/microsoft-prod.list | gr
 
 # Update packages and install .NET
 sudo apt-get update
-REM does not works sudo apt-get install -y aspnetcore-runtime-8.0 
+REM does not works sudo apt-get install -y aspnetcore-runtime-8.0
 sudo apt-get install -y aspnetcore-runtime-10.0
 
 # Help commands:
 dotnet --list-sdks; dotnet --list-runtimes;
 
 #   ONLY WHEN SDK IS INSTALLED
-# 
+#
 # Show installed workloads:
 # dotnet workload --info
-# 
+#
 # Install workloads:
 # NOTE: Must be root (sudo su): root@raspberrypi4:/opt/dotnet#
 # ./dotnet workload search [<SEARCH_STRING>] [-v|--verbosity <LEVEL>]
@@ -165,13 +149,13 @@ dotnet workload install wasm-tools
 dotnet workload update
 # Keep .NET 8:
 # dotnet workload install wasm-tools-net8
-# 
+#
 # Update Entity Framework global tools:
 dotnet tool update -g --all
 dotnet tool update -g dotnet-ef
 # Keep .NET 8:
 dotnet tool install dotnet-ef -g --version 8.* --allow-downgrade
-# 
+#
 #   ONLY WHEN SDK IS INSTALLED
 
 # MudBlazor Templates

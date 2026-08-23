@@ -1,10 +1,4 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
-    <PropertyGroup>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
-        <TargetFramework>net10.0</TargetFramework>
-    </PropertyGroup>
-
     <ItemGroup>
         <Compile Include="..\..\Usings.cs" Link="Usings.cs" />
     </ItemGroup>
