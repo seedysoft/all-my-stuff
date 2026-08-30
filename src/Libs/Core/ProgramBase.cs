@@ -38,5 +38,7 @@ public class ProgramBase
 
         Console.Write("\rStarting ...              ");
         Console.WriteLine(string.Empty);
+
+        // TODO                                     Use string hints for text widths
     }
 }

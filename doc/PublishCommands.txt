@@ -22,6 +22,8 @@ $Runtime="linux-arm64"
 
 $version=(Get-Date).ToUniversalTime().ToString("yy.Mdd.Hmm.ss")
 
+export DOTNET_ENVIRONMENT=Development
+
 $Configuration="Debug"
 $ProjectOrSolution="$env:USERPROFILE\_prog\seedysoft\all-my-stuff\src\Libs\GasStationPrices.ConsoleApp\Seedysoft.Libs.GasStationPrices.ConsoleApp.csproj"
 dotnet publish $ProjectOrSolution -p:PublishDir=$PublishDirectory -c $Configuration -r $Runtime -p:AssemblyVersion=$version --sc ;

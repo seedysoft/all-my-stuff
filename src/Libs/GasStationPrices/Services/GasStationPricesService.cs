@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Seedysoft.Libs.Core.Extensions;
 using Seedysoft.Libs.GasStationPrices.Extensions;
+using System.Net.Http.Json;
 
 namespace Seedysoft.Libs.GasStationPrices.Services;
 
@@ -57,21 +58,16 @@ public sealed class GasStationPricesService
     /// <returns><c>true</c> if MineturResponse is not null or <c>false</c> otherwise.</returns>
     private async Task<bool> LoadGasStationsAsync(CancellationToken cancellationToken)
     {
-        HttpClient httpClient;
-        HttpResponseMessage httpResponseMessage;
-
         if (MineturResponse.Value == null || MineturResponse.Value.Value.DateTimeOffset < DateTimeOffset.Now.AddMinutes(-35))
         {
             try
             {
                 var sw = System.Diagnostics.Stopwatch.StartNew();
 
-                httpClient = httpClientFactory.CreateClient(nameof(GasStationPrices));
-                Uri requestUri = GasStationPricesSettings.Minetur.Urls.GetUri();
-                httpClient.DefaultRequestHeaders.Host = requestUri.Host;
-                httpResponseMessage = await httpClient.GetAsync(requestUri, cancellationToken);
-                if (httpResponseMessage.IsSuccessStatusCode)
-                    MineturResponse.Value = await httpResponseMessage.Content.FromJsonAsync<Models.Minetur.Body>(cancellationToken);
+                //Uri requestUri = GasStationPricesSettings.Minetur.Urls.GetUri();
+
+                using HttpClient httpClient = httpClientFactory.CreateClient(nameof(GasStationPrices));
+                MineturResponse.Value = await httpClient.GetFromJsonAsync<Models.Minetur.Body>(GasStationPricesSettings.Minetur.Urls.EstacionesTerrestresEndPoint, cancellationToken);
 
                 sw.Stop();
                 if (Logger.IsEnabled(LogLevel.Information))

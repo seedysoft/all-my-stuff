@@ -17,11 +17,11 @@ public readonly record struct Urls
 {
     public required string Base { get; init; }
 
-    public required string EstacionesTerrestres { get; init; }
+    public required string EstacionesTerrestresEndPoint { get; init; }
 
-    public Uri GetUri() => new(Base + EstacionesTerrestres);
+    public Uri GetUri() => new(Base + EstacionesTerrestresEndPoint);
 
-    //public required string EstacionesTerrestresFiltroProducto { get; init; }
+    //public required string EstacionesTerrestresFiltroProductoQuery { get; init; }
 
-    //public required string ListadosBase { get; init; }
+    //public required string ListadosBaseEndPoint { get; init; }
 }
