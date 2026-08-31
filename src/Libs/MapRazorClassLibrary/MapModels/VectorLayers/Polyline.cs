@@ -4,14 +4,13 @@
 /// A class for drawing polyline overlays on a map.
 /// Extends <see cref="Path"/>.
 /// </summary>
-public sealed record class Polyline : Path
+internal sealed class Polyline(IReadOnlyList<Basic.LatLng> points) : Path()
 {
-    public Polyline(IReadOnlyList<Basic.LatLng> points) : base() => Points = points;
 
     /// <summary>
     /// Array of geographical points
     /// </summary>
-    [J("points")] public IReadOnlyList<Basic.LatLng> Points { get; set; }
+    [J("points")] public IReadOnlyList<Basic.LatLng> Points { get; set; } = points;
 
     /// <summary>
     /// How much to simplify the polyline on each zoom level.

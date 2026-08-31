@@ -1,21 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <IsPackable>false</IsPackable>
         <IsPublishable>False</IsPublishable>
-        <Nullable>enable</Nullable>
-        <RuntimeIdentifiers>linux-arm64</RuntimeIdentifiers>
-        <TargetFramework>net10.0</TargetFramework>
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="FluentValidation" Version="12.1.1" />
+        <PackageReference Include="Microsoft.Net.Http.Headers" Version="10.0.11" />
         <PackageReference Include="Microsoft.Extensions.Http" Version="10.0.11" />
         <PackageReference Include="Microsoft.Extensions.Http.Polly" Version="10.0.11" />
-        <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
-        <PackageReference Include="RestSharp" Version="114.0.0" />
         <PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" Version="3.0.5" />
     </ItemGroup>
-    
+
     <ItemGroup>
         <Content Include="appsettings.TravelSettings.json">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

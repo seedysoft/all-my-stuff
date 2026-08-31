@@ -1,10 +1,4 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
-    <PropertyGroup>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
-        <TargetFramework>net10.0</TargetFramework>
-    </PropertyGroup>
-
     <ItemGroup>
         <Compile Include="..\..\Usings.cs" Link="Usings.cs" />
     </ItemGroup>
@@ -16,6 +10,7 @@
     <ItemGroup>
         <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="10.0.11" />
         <PackageReference Include="Microsoft.Web.LibraryManager.Build" Version="3.0.114" />
+        <PackageReference Include="MudBlazor" Version="9.9.0" />
         <PackageReference Include="OneOf" Version="3.0.271" />
         <PackageReference Include="OneOf.Serialization.SystemTextJson" Version="1.1.1" />
         <PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" Version="3.0.5" />
@@ -24,10 +19,6 @@
     <ItemGroup>
         <ProjectReference Include="..\Core\Seedysoft.Libs.Core.csproj" />
         <ProjectReference Include="..\GasStationPrices\Seedysoft.Libs.GasStationPrices.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <Folder Include="wwwroot\css\images\" />
     </ItemGroup>
 
     <ItemGroup>

@@ -2,6 +2,7 @@ namespace Seedysoft.Libs.Core.Models.Config;
 
 public class ConsoleOptions
 {
+     // TODO                                    Add Environment command line option
     [CommandLine.Option(shortName: 'd', longName: "delay", HelpText = "Time in seconds that the web application will wait until it starts")]
     public short DelayStart { get; set; }
 

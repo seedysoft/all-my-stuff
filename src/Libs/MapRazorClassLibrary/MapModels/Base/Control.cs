@@ -6,7 +6,7 @@ namespace Seedysoft.Libs.MapRazorClassLibrary.MapModels.Base;
 /// Control is a base class for implementing map controls. Handles positioning.
 /// All other controls extend from this class.
 /// </summary>
-public abstract record class Control
+internal abstract class Control
 {
     /// <summary>
     /// The position of the control (one of the map corners).

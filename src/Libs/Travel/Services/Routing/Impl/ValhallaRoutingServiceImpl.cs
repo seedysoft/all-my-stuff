@@ -1,10 +1,12 @@
 ﻿using Microsoft.Extensions.Logging;
-using RestSharp;
 using Seedysoft.Libs.Core.Extensions;
 
 namespace Seedysoft.Libs.Travel.Services.Routing.Impl;
 
-internal partial class ValhallaRoutingServiceImpl(ValhallaRoutingApi api, ILogger logger) : RoutingServiceImplBase(api)
+internal partial class ValhallaRoutingServiceImpl(
+    IHttpClientFactory httpClientFactory
+    , ValhallaRoutingApi api
+    , ILogger logger) : RoutingServiceImplBase(httpClientFactory, api)
 {
     internal override async Task<IReadOnlyList<(string NombreRuta, double[,] Coordenadas)>> GetRoutesAsync(
         Models.Location orig
@@ -12,16 +14,18 @@ internal partial class ValhallaRoutingServiceImpl(ValhallaRoutingApi api, ILogge
         , CancellationToken cancellationToken)
     {
         RequestObject requestObject = new(orig, dest);
-
-        RestRequest restRequest = new(api.GetUrl(requestObject));
-
-        RestResponse restResponse = await RestClient.GetAsync(restRequest, cancellationToken);
+        HttpResponseMessage httpResponseMessage = await HttpClient.GetAsync(Api.GetUrl(requestObject), cancellationToken);
 
         ResponseObject? body = null;
-        if (restResponse.IsSuccessStatusCode)
-            body = restResponse.Content!.FromJson<ResponseObject>();
+        if (httpResponseMessage.IsSuccessStatusCode)
+        {
+            body = await httpResponseMessage.Content.FromJsonAsync<ResponseObject>(cancellationToken);
+        }
         else
-            _ = logger.LogAndHandle(restResponse.ErrorException, restResponse.Content ?? "ERROR", []);
+        {
+            if (logger.IsEnabled(LogLevel.Warning))
+                logger.LogWarning("ValhallaRoutingServiceImpl: FindPlacesAsync: {StatusCode} {ReasonPhrase}", httpResponseMessage.StatusCode, httpResponseMessage.ReasonPhrase);
+        }
 
         if (body == null)
             return [];
@@ -36,8 +40,9 @@ internal partial class ValhallaRoutingServiceImpl(ValhallaRoutingApi api, ILogge
         // We need to invert them to [lat, lng] for our application
         return [..
             (IEnumerable<(string NombreRuta, double[,] Coordenadas)>)(body.Routes?.Select((r, i) =>
-            (r.Legs.First().Summary ?? i.ToString(),
-            InvertLongitudeLatitude(Extensions.ArrayExtensions.To2D(r.Geometry?.Coordinates ?? [])))) ?? [])];
+                (r.Legs.First().Summary ?? i.ToString(),
+                InvertLongitudeLatitude(Extensions.ArrayExtensions.To2D(r.Geometry?.Coordinates ?? [])))) ?? [])
+            ];
     }
 
     internal class RequestObject

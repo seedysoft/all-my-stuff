@@ -8,7 +8,6 @@ public partial class MapComponent : IAsyncDisposable
     {
         try
         {
-            await DeleteMapAsync();
             ObjRef?.Dispose();
             if (MapModule is not null)
                 await MapModule.DisposeAsync();

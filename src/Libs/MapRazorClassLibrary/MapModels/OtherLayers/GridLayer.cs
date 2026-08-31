@@ -6,7 +6,7 @@
 /// GridLayer can be extended to create a tiled grid of HTML elements like <c>&lt;canvas&gt;</c>, <c>&lt;img&gt;</c> or <c>&lt;div&gt;</c>.
 /// GridLayer will handle creating and animating these DOM elements for you.
 /// </summary>
-public record class GridLayer : Base.Layer
+internal class GridLayer : Base.Layer
 {
     /// <summary>
     /// Width and height of tiles in the grid.

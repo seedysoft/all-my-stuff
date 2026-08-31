@@ -1,0 +1,37 @@
+<Project>
+    <!-- Common to all Seedysoft Projects -->
+    <PropertyGroup>
+        <HotReloadAutoRestart>true</HotReloadAutoRestart>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
+        <IsPackable>false</IsPackable>
+        <Nullable>enable</Nullable>
+        <RuntimeIdentifiers>linux-arm64;win-x64</RuntimeIdentifiers>
+        <TargetFramework>net10.0</TargetFramework>
+        <!-- Specifies whether it's one of our own libraries -->
+        <SeedysoftProject>false</SeedysoftProject>
+        <SeedysoftProject Condition="$(MSBuildProjectName.StartsWith('Seedysoft'))">true</SeedysoftProject>
+    </PropertyGroup>
+
+    <!--
+	Source - https://stackoverflow.com/a/78238645
+	Posted by Jonathan Dodds
+	Retrieved 2025-12-08, License - CC BY-SA 4.0
+	-->
+    <PropertyGroup>
+        <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+        <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+        <Features>strict</Features>
+    </PropertyGroup>
+
+    <!-- Set the Product and Version info for our own projects -->
+    <PropertyGroup Condition="'$(SeedysoftProject)' == 'true'">
+        <PathMap>$(MSBuildProjectDirectory)=./$(MSBuildProjectName)/</PathMap>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+        <AssemblyVersion Condition="'$(AssemblyVersion)' == ''">$([System.DateTime]::UtcNow.ToString(yy.Mdd.Hmm.ss))</AssemblyVersion>
+        <FileVersion>$(AssemblyVersion)</FileVersion>
+        <Version>$(AssemblyVersion)</Version>
+    </PropertyGroup>
+</Project>

@@ -3,11 +3,11 @@
 /// <summary>
 /// Used to display small texts on top of map layers.
 /// </summary>
-public sealed record class Tooltip : DivOverlay
+internal sealed class Tooltip : DivOverlay
 {
     public Tooltip() : base()
     {
-        Pane = Map.Panes.TooltipPane;
+        Pane = Misc.Panes.TooltipPane;
         Offset = Basic.Point.Empty;
     }
 

@@ -4,7 +4,7 @@
 /// Base model for <see cref="Popup"/> and <see cref="Tooltip"/>.
 /// Inherit from it for custom overlays like plugins.
 /// </summary>
-public abstract record class DivOverlay : Base.InteractiveLayer
+internal abstract class DivOverlay : Base.InteractiveLayer
 {
     protected DivOverlay() : base()
     {
