@@ -66,15 +66,25 @@ public sealed class EstacionTerrestre
 
     public string DireccionParsed => $"{Direccion} - {CodigoPostal} <br> {Localidad} {(string.Equals(Localidad, Municipio, StringComparison.OrdinalIgnoreCase) ? string.Empty : Municipio)}".Trim();
 
+    [J("Precio Adblue")] public required string PrecioAdblue { get; init; }
+
+    //[J("Precio Amoniaco")] public required string PrecioAmoniaco { get; init; }
+
     [J("Precio Biodiesel")] public required string PrecioBiodiesel { get; init; }
 
-    [J("Precio Bioetanol")] public required string PrecioBioetanol { get; init; }
+    //[J("Precio Bioetanol")] public required string PrecioBioetanol { get; init; }
 
-    [J("Precio Gas Natural Comprimido")] public required string PrecioGasNaturalComprimido { get; init; }
+    //[J("Precio Biogas Natural Comprimido")] public required string PrecioBiogasNaturalComprimido { get; init; }
 
-    [J("Precio Gas Natural Licuado")] public required string PrecioGasNaturalLicuado { get; init; }
+    //[J("Precio Biogas Natural Licuado")] public required string PrecioBiogasNaturalLicuado { get; init; }
 
-    [J("Precio Gases licuados del petróleo")] public required string PrecioGasesLicuadosDelPetróleo { get; init; }
+    [J("Precio Diésel Renovable")] public required string PrecioDieselRenovable { get; init; }
+
+    //[J("Precio Gas Natural Comprimido")] public required string PrecioGasNaturalComprimido { get; init; }
+
+    //[J("Precio Gas Natural Licuado")] public required string PrecioGasNaturalLicuado { get; init; }
+
+    //[J("Precio Gases licuados del petróleo")] public required string PrecioGasesLicuadosDelPetróleo { get; init; }
 
     [J("Precio Gasoleo A")] public required string PrecioGasoleoA { get; init; }
 
@@ -84,15 +94,23 @@ public sealed class EstacionTerrestre
 
     [J("Precio Gasolina 95 E10")] public required string PrecioGasolina95E10 { get; init; }
 
+    [J("Precio Gasolina 95 E25")] public required string PrecioGasolina95E25 { get; init; }
+
     [J("Precio Gasolina 95 E5")] public required string PrecioGasolina95E5 { get; init; }
 
     [J("Precio Gasolina 95 E5 Premium")] public required string PrecioGasolina95E5Premium { get; init; }
+
+    [J("Precio Gasolina 95 E85")] public required string PrecioGasolina95E85 { get; init; }
 
     [J("Precio Gasolina 98 E10")] public required string PrecioGasolina98E10 { get; init; }
 
     [J("Precio Gasolina 98 E5")] public required string PrecioGasolina98E5 { get; init; }
 
-    //[J("Precio Hidrogeno")] //public required string PrecioHidrogeno { get; init; }
+    [J("Precio Gasolina Renovable")] public required string PrecioGasolinaRenovable { get; init; }
+
+    //[J("Precio Hidrogeno")] public required string PrecioHidrogeno { get; init; }
+
+    //[J("Precio Metanol")] public required string PrecioMetanol { get; init; }
 
     //[J("% BioEtanol")] //public required string BioEtanol { get; init; }
 

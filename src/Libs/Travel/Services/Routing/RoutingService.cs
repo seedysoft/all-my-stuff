@@ -53,7 +53,7 @@ public class RoutingService(
         {
 #pragma warning disable format
             //Settings.RoutingImplName.MapboxDirections           => new Impl.MapboxDirectionsRouter(       api,                                logger),
-        
+
             Settings.RoutingImplName.OpenSourceRoutingMachine    => new Impl.OsrmRoutingServiceImpl(        HttpClientFactory,  new Impl.OsrmRoutingApi(api),       logger),
 
             Settings.RoutingImplName.Valhalla                    => new Impl.ValhallaRoutingServiceImpl(    HttpClientFactory,  new Impl.ValhallaRoutingApi(api),   logger),

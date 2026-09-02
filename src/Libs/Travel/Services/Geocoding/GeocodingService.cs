@@ -16,7 +16,7 @@ public class GeocodingService(
         {
 #pragma warning disable format
             //Settings.GeocodingImplName.MapboxDirections  => new MapboxDirectionsRouter(api, logger),
-        
+
             Settings.GeocodingImplName.Nominatim         => new Impl.NominatimGeocodingServiceImpl( HttpClientFactory, api, logger),
 
             Settings.GeocodingImplName.Photon            => new Impl.PhotonGeocodingServiceImpl(    HttpClientFactory, api, logger),

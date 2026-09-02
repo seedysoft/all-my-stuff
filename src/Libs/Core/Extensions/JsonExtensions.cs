@@ -7,7 +7,7 @@ public static class JsonExtensions
         ?? throw new InvalidOperationException();
 
     public static async Task<T> FromJsonAsync<T>(this HttpContent content, CancellationToken cancellationToken)
-        => System.Text.Json.JsonSerializer.Deserialize<T>(await content.ReadAsStringAsync(cancellationToken), Serialization.DefaultJsonSerializerOptions.DefaultsReadOnly)
+        => await System.Text.Json.JsonSerializer.DeserializeAsync<T>(await content.ReadAsStreamAsync(cancellationToken), Serialization.DefaultJsonSerializerOptions.DefaultsReadOnly, cancellationToken)
         ?? throw new InvalidOperationException();
 
     public static string ToJson<T>(
