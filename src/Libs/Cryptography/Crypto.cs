@@ -4,9 +4,9 @@ namespace Seedysoft.Libs.Cryptography;
 
 public static class Crypto
 {
-    internal static readonly System.Text.Encoding Encoding = System.Text.Encoding.Latin1;
+    private static readonly System.Text.Encoding Encoding = System.Text.Encoding.Latin1;
 
-    public static bool CanEncryptText(string textToEncrypt, string key, CipherMode cipherMode = CipherMode.CBC)
+    private static bool CanEncryptText(string textToEncrypt, string key, CipherMode cipherMode = CipherMode.CBC)
     {
         try
         {
@@ -21,30 +21,28 @@ public static class Crypto
 
         return false;
     }
-    public static string EncryptText(string textToEncrypt, string key, CipherMode cipherMode = CipherMode.CBC)
+    internal static string EncryptText(string textToEncrypt, string key, CipherMode cipherMode = CipherMode.CBC)
     {
         return CanEncryptText(textToEncrypt, key, cipherMode)
             ? Convert.ToBase64String(EncryptBytes(Encoding.GetBytes(textToEncrypt), Convert.FromBase64String(key), cipherMode))
             : throw new InvalidDataException($"Cannot Encrypt {textToEncrypt} with {key} key and mode {cipherMode}");
     }
 
-    public static bool CanDecryptText(string encryptedText, string key, CipherMode cipherMode = CipherMode.CBC)
+    internal static bool CanDecryptText(string encryptedText, string key, CipherMode cipherMode = CipherMode.CBC)
     {
-        if (string.IsNullOrWhiteSpace(encryptedText))
-            return false;
-        if (string.IsNullOrWhiteSpace(key))
-            return false;
-
-        try
+        if (!string.IsNullOrWhiteSpace(encryptedText) && !string.IsNullOrWhiteSpace(key))
         {
-            byte[] encryptedTextBytes = Convert.FromBase64String(encryptedText);
-            byte[] keyBytes = Convert.FromBase64String(key);
-            byte[] decryptedBytes = DecryptBytes(Convert.FromBase64String(encryptedText), Convert.FromBase64String(key), cipherMode);
-            string decryptedText = Encoding.GetString(decryptedBytes);
+            try
+            {
+                byte[] encryptedTextBytes = Convert.FromBase64String(encryptedText);
+                byte[] keyBytes = Convert.FromBase64String(key);
+                byte[] decryptedBytes = DecryptBytes(Convert.FromBase64String(encryptedText), Convert.FromBase64String(key), cipherMode);
+                string decryptedText = Encoding.GetString(decryptedBytes);
 
-            return true;
+                return true;
+            }
+            catch { }
         }
-        catch { }
 
         return false;
     }
