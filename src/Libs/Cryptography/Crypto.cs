@@ -2,74 +2,43 @@
 
 public static class Crypto
 {
-    //internal static bool CanEncryptText(string textToEncrypt, byte[] key)
-    //{
-    //    try
-    //    {
-    //        byte[] textBytes = System.Text.Encoding.Latin1.GetBytes(textToEncrypt);
-    //        byte[] encryptedBytes = EncryptBytes(textBytes, key);
-    //        string encryptedText = Convert.ToBase64String(encryptedBytes);
+    private static readonly System.Text.Encoding Encoding = System.Text.Encoding.Latin1;
 
-    //        return true;
-    //    }
-    //    catch { }
+    private static bool CanEncryptText(string textToEncrypt, string key, CipherMode cipherMode = CipherMode.CBC)
+    {
+        try
+        {
+            byte[] textBytes = Encoding.GetBytes(textToEncrypt);
+            byte[] keyBytes = Convert.FromBase64String(key);
+            byte[] encryptedBytes = EncryptBytes(textBytes, keyBytes, cipherMode);
+            string encryptedText = Convert.ToBase64String(encryptedBytes);
 
     //    return false;
     //}
 
-    //public static string EncryptText(string textToEncrypt, byte[] key)
-    //{
-    //    return CanEncryptText(textToEncrypt, key)
-    //        ? Convert.ToBase64String(EncryptBytes(System.Text.Encoding.Latin1.GetBytes(textToEncrypt), key))
-    //        : throw new InvalidDataException($"Cannot Encrypt '{textToEncrypt}'");
-    //}
-
-    //private static byte[] EncryptBytes(byte[] inputBuffer, byte[] key)
-    //{
-    //    ArgumentNullException.ThrowIfNull(inputBuffer);
-
-    //    byte[] iv;
-    //    byte[] cipherText;
-
-    //    using (System.Security.Cryptography.Aes cipher = BuildCryptographicObject(key))
-    //    {
-    //        using System.Security.Cryptography.ICryptoTransform symmetricEncryptor = cipher.CreateEncryptor();
-    //        iv = cipher.IV;
-
-    //        cipherText = Transform(symmetricEncryptor, inputBuffer, 0, inputBuffer.Length);
-    //    }
-
-    //    int totalLength = iv.Length + cipherText.Length;
-
-    //    byte[] combinedData = new byte[totalLength];
-    //    int outputOffset = 0;
-
-    //    AppendBytes(iv, combinedData, ref outputOffset);
-    //    AppendBytes(cipherText, combinedData, ref outputOffset);
-
-    //    System.Diagnostics.Debug.Assert(outputOffset == combinedData.Length);
-
-    //    return combinedData;
-    //}
-
-    //private static void AppendBytes(byte[] newData, byte[] combinedData, ref int writeOffset)
-    //{
-    //    Buffer.BlockCopy(newData, 0, combinedData, writeOffset, newData.Length);
-    //    writeOffset += newData.Length;
-    //}
-
-    public static bool CanDecryptText(string encryptedText, byte[] key)
+        return false;
+    }
+    internal static string EncryptText(string textToEncrypt, string key, CipherMode cipherMode = CipherMode.CBC)
     {
-        if (string.IsNullOrWhiteSpace(encryptedText))
-            return false;
+        return CanEncryptText(textToEncrypt, key, cipherMode)
+            ? Convert.ToBase64String(EncryptBytes(Encoding.GetBytes(textToEncrypt), Convert.FromBase64String(key), cipherMode))
+            : throw new InvalidDataException($"Cannot Encrypt {textToEncrypt} with {key} key and mode {cipherMode}");
+    }
 
-        try
+    internal static bool CanDecryptText(string encryptedText, string key, CipherMode cipherMode = CipherMode.CBC)
+    {
+        if (!string.IsNullOrWhiteSpace(encryptedText) && !string.IsNullOrWhiteSpace(key))
         {
-            byte[] encryptedTextBytes = Convert.FromBase64String(encryptedText);
-            byte[] decryptedBytes = DecryptBytes(encryptedTextBytes, key);
-            string decryptedText = System.Text.Encoding.Latin1.GetString(decryptedBytes);
+            try
+            {
+                byte[] encryptedTextBytes = Convert.FromBase64String(encryptedText);
+                byte[] keyBytes = Convert.FromBase64String(key);
+                byte[] decryptedBytes = DecryptBytes(Convert.FromBase64String(encryptedText), Convert.FromBase64String(key), cipherMode);
+                string decryptedText = Encoding.GetString(decryptedBytes);
 
-            return true;
+                return true;
+            }
+            catch { }
         }
         catch (Exception) { /* ignored */ }
 
