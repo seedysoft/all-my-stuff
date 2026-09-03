@@ -10,6 +10,6 @@ public record SmtpServiceSettings
     public string Password
     {
         get;
-        init => field = Cryptography.Crypto.DecryptText(value, Core.Helpers.EnvironmentHelper.GetMasterKey());
+        init => field = Cryptography.Crypto.Decrypt(Core.Helpers.EnvironmentHelper.GetMasterKey(), value);
     } = default!;
 }
