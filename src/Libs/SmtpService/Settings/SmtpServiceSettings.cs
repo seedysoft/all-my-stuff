@@ -16,5 +16,5 @@ public record SmtpServiceSettings
     {
         get;
         init => field = Core.Helpers.EnvironmentHelper.Decrypt(value);
-    } = default!;
+    }
 }
