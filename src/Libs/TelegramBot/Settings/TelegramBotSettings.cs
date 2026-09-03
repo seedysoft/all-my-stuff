@@ -19,7 +19,7 @@ public record class TelegramBotUser : TelegramUserBase
     public string Token
     {
         get;
-        init => field = Cryptography.Crypto.DecryptText(value, Core.Helpers.EnvironmentHelper.GetMasterKey());
+        init => field = Cryptography.Crypto.Decrypt(Core.Helpers.EnvironmentHelper.GetMasterKey(), value);
     } = default!;
 
     public Telegram.Bot.Types.User? SenderUser { get; protected set; }
@@ -42,11 +42,11 @@ public abstract record class TelegramUserBase
     public string Id
     {
         get;
-        init => field = Cryptography.Crypto.DecryptText(value, Core.Helpers.EnvironmentHelper.GetMasterKey());
+        init => field = Cryptography.Crypto.Decrypt(Core.Helpers.EnvironmentHelper.GetMasterKey(), value);
     } = default!;
     public string Username
     {
         get;
-        init => field = Cryptography.Crypto.DecryptText(value, Core.Helpers.EnvironmentHelper.GetMasterKey());
+        init => field = Cryptography.Crypto.Decrypt(Core.Helpers.EnvironmentHelper.GetMasterKey(), value);
     } = default!;
 }

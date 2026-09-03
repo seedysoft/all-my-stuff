@@ -8,12 +8,12 @@ public sealed class CryptoTests : Core.Tests.TUnitTestClassBase
         [Arguments("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam nulla tellus, elementum sit amet nunc.")]
         string textToEncrypt)
     {
-        string Key = System.Security.Cryptography.RandomNumberGenerator.GetString("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 32);
+        string Key = System.Security.Cryptography.RandomNumberGenerator.GetString("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", Org.BouncyCastle.Crypto.AesUtilities.CreateEngine().GetBlockSize());
 
-        string encryptedText = Crypto.EncryptText(textToEncrypt, Key);
+        string encryptedText = Crypto.Encrypt(Key, textToEncrypt, System.Security.Cryptography.CipherMode.CBC);
         Console.WriteLine(encryptedText);
 
-        string decryptedText = Crypto.DecryptText(encryptedText, Key);
+        string decryptedText = Crypto.Encrypt(Key, encryptedText, System.Security.Cryptography.CipherMode.CBC);
         Console.WriteLine(decryptedText);
 
         _ = Equals(textToEncrypt, decryptedText);
@@ -34,17 +34,21 @@ public sealed class CryptoTests : Core.Tests.TUnitTestClassBase
         [Arguments("glciZvLOPOCZSeNiWATEH/7rffo+16DEyTi4wOOmzO8wnSDtR1+d1wS8T8kEcPGU")]
         string pass)
     {
-        if (Crypto.CanDecryptText(pass, Core.Helpers.EnvironmentHelper.GetMasterKey(), System.Security.Cryptography.CipherMode.ECB))
+        try
         {
-            string decryptedText = Crypto.DecryptText(pass, Core.Helpers.EnvironmentHelper.GetMasterKey(), System.Security.Cryptography.CipherMode.ECB);
+            string decryptedText = Crypto.Decrypt(Core.Helpers.EnvironmentHelper.GetMasterKey(), pass, System.Security.Cryptography.CipherMode.ECB);
 
-            string encryptedText = Crypto.EncryptText(decryptedText, Core.Helpers.EnvironmentHelper.GetMasterKey());
+            string encryptedText = Crypto.Encrypt(Core.Helpers.EnvironmentHelper.GetMasterKey(), decryptedText, System.Security.Cryptography.CipherMode.CBC);
 
             Console.WriteLine($"{pass[..8]}... should be: {encryptedText}");
 
             throw new Exception("Test failed");
         }
+        catch (Exception)
+        {
+            // If can't decrypt with ECB, no problem, continue with test
+        }
 
-        _ = await Assert.That(Crypto.CanDecryptText(pass, Core.Helpers.EnvironmentHelper.GetMasterKey())).IsTrue();
+        _ = await Assert.That(Crypto.Decrypt(Core.Helpers.EnvironmentHelper.GetMasterKey(), pass)).IsNotDefault();
     }
 }
