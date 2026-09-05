@@ -53,9 +53,11 @@ public sealed class CryptoTests : Libs.Tests.TUnitTestClassBase
     {
         try
         {
-            string decryptedText = Crypto.Decrypt(Core.Helpers.EnvironmentHelper.GetMasterKey(), pass, System.Security.Cryptography.CipherMode.ECB);
+            //string decryptedText = Crypto.Decrypt(Core.Helpers.EnvironmentHelper.GetMasterKey(), pass, System.Security.Cryptography.CipherMode.ECB);
+            string decryptedText = Crypto.DecryptText(pass, Core.Helpers.EnvironmentHelper.GetMasterKey(), System.Security.Cryptography.CipherMode.ECB);
 
-            string encryptedText = Crypto.Encrypt(Core.Helpers.EnvironmentHelper.GetMasterKey(), decryptedText, System.Security.Cryptography.CipherMode.CBC);
+            //string encryptedText = Crypto.Encrypt(Core.Helpers.EnvironmentHelper.GetMasterKey(), decryptedText);
+            string encryptedText = Crypto.EncryptText(decryptedText, Core.Helpers.EnvironmentHelper.GetMasterKey());
 
             Console.WriteLine($"{pass[..8]}... should be: {encryptedText}");
 
@@ -66,7 +68,10 @@ public sealed class CryptoTests : Libs.Tests.TUnitTestClassBase
             // If can't decrypt with ECB, no problem, continue with test
         }
 
-        _ = await Assert.That(Crypto.Decrypt(Core.Helpers.EnvironmentHelper.GetMasterKey(), pass)).IsNotDefault();
+        //string decrypted = Crypto.Decrypt(Core.Helpers.EnvironmentHelper.GetMasterKey(), pass);
+        string decrypted = Crypto.DecryptText(Core.Helpers.EnvironmentHelper.GetMasterKey(), pass);
+
+        _ = await Assert.That(decrypted).IsNotDefault();
     }
     private static ReadOnlySpan<byte> GetKey(int length) => System.Security.Cryptography.RandomNumberGenerator.GetBytes(length);
 }

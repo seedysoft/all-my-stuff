@@ -6,7 +6,7 @@ public record SmtpServiceSettings
     {
         get;
         init => field = Core.Helpers.EnvironmentHelper.Decrypt(value);
-    } = default!;
+    }
 
     public required int Port { get; init; } = default!;
 

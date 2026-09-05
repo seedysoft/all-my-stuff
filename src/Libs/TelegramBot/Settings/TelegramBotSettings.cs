@@ -36,7 +36,7 @@ public abstract record class TelegramUserBase
     {
         get;
         init => field = Core.Helpers.EnvironmentHelper.Decrypt(value);
-    } = default!;
+    }
     public long IdAsLong => long.Parse(Id);
 
     public required string Username
