@@ -10,7 +10,6 @@ public record GasStationsQueryModel
     [System.ComponentModel.DataAnnotations.Length(1, int.MaxValue)]
     public IEnumerable<Constants.ProductoPetroliferoId> PetroleumProductsSelectedIds { get; set; } = [];
 
-#if DEBUG
     public static GasStationsQueryModel CreateDefault()
     {
         return new()
@@ -19,16 +18,6 @@ public record GasStationsQueryModel
             PetroleumProductsSelectedIds = [.. Models.Minetur.ProductoPetrolifero.Gasoline.Select(static x => x.IdProducto)],
         };
     }
-#else
-    public static TravelQueryModel CreateEmpty()
-    {
-        return new()
-        {
-            MaxDistanceInKm = 10,
-            PetroleumProductsSelectedIds = [.. Models.Minetur.ProductoPetrolifero.Gasoline.Select(static x => x.IdProducto)],
-        };
-    }
-#endif
 
     private string GetDebuggerDisplay() => this.ToJson();
 }

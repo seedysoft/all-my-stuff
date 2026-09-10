@@ -63,12 +63,8 @@ public partial class MapComponent
 
     private readonly Travel.ViewModels.TravelQueryModelFluentValidator TravelQueryModelFluentValidator = new();
 
-    private GasStationPrices.ViewModels.GasStationsQueryModel GasStationsQueryModel { get; set; } = GasStationPrices.ViewModels.GasStationsQueryModel.
-#if DEBUG
-        CreateDefault();
-#else
-        CreateEmpty();
-#endif
+    private GasStationPrices.ViewModels.GasStationsQueryModel GasStationsQueryModel { get; set; }
+        = GasStationPrices.ViewModels.GasStationsQueryModel.CreateDefault();
 
     private MapModels.Basic.LatLngBounds CurrentLatLngBounds = MapModels.Basic.LatLngBounds.Empty;
 
