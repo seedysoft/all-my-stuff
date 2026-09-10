@@ -2,50 +2,72 @@
 
 public static class Crypto
 {
-    private static readonly System.Text.Encoding Encoding = System.Text.Encoding.Latin1;
+    //internal static bool CanEncryptText(string textToEncrypt, byte[] key)
+    //{
+    //    try
+    //    {
+    //        byte[] textBytes = System.Text.Encoding.Latin1.GetBytes(textToEncrypt);
+    //        byte[] encryptedBytes = EncryptBytes(textBytes, key);
+    //        string encryptedText = Convert.ToBase64String(encryptedBytes);
 
-    private static bool CanEncryptText(
-        string textToEncrypt,
-        string key,
-        System.Security.Cryptography.CipherMode cipherMode = System.Security.Cryptography.CipherMode.CBC)
+    //        return true;
+    //    }
+    //    catch { }
+
+    //    return false;
+    //}
+
+    //public static string EncryptText(string textToEncrypt, byte[] key)
+    //{
+    //    return CanEncryptText(textToEncrypt, key)
+    //        ? Convert.ToBase64String(EncryptBytes(System.Text.Encoding.Latin1.GetBytes(textToEncrypt), key))
+    //        : throw new InvalidDataException($"Cannot Encrypt '{textToEncrypt}'");
+    //}
+
+    //private static byte[] EncryptBytes(byte[] inputBuffer, byte[] key)
+    //{
+    //    ArgumentNullException.ThrowIfNull(inputBuffer);
+
+    //    byte[] iv;
+    //    byte[] cipherText;
+
+    //    using (System.Security.Cryptography.Aes cipher = BuildCryptographicObject(key))
+    //    {
+    //        using System.Security.Cryptography.ICryptoTransform symmetricEncryptor = cipher.CreateEncryptor();
+    //        iv = cipher.IV;
+
+    //        cipherText = Transform(symmetricEncryptor, inputBuffer, 0, inputBuffer.Length);
+    //    }
+
+    //    int totalLength = iv.Length + cipherText.Length;
+
+    //    byte[] combinedData = new byte[totalLength];
+    //    int outputOffset = 0;
+
+    //    AppendBytes(iv, combinedData, ref outputOffset);
+    //    AppendBytes(cipherText, combinedData, ref outputOffset);
+
+    //    System.Diagnostics.Debug.Assert(outputOffset == combinedData.Length);
+
+    //    return combinedData;
+    //}
+
+    //private static void AppendBytes(byte[] newData, byte[] combinedData, ref int writeOffset)
+    //{
+    //    Buffer.BlockCopy(newData, 0, combinedData, writeOffset, newData.Length);
+    //    writeOffset += newData.Length;
+    //}
+
+    public static bool CanDecryptText(string encryptedText, byte[] key)
     {
-        try
-        {
-            byte[] textBytes = Encoding.GetBytes(textToEncrypt);
-            byte[] keyBytes = Convert.FromBase64String(key);
-            byte[] encryptedBytes = EncryptBytes(textBytes, keyBytes, cipherMode);
-            string encryptedText = Convert.ToBase64String(encryptedBytes);
-
-            return true;
-        }
-        catch { }
-
-        return false;
-    }
-    internal static string EncryptText(
-        string textToEncrypt,
-        string key,
-        System.Security.Cryptography.CipherMode cipherMode = System.Security.Cryptography.CipherMode.CBC)
-    {
-        return CanEncryptText(textToEncrypt, key, cipherMode)
-            ? Convert.ToBase64String(EncryptBytes(Encoding.GetBytes(textToEncrypt), Convert.FromBase64String(key), cipherMode))
-            : throw new InvalidDataException($"Cannot Encrypt {textToEncrypt} with {key} key and mode {cipherMode}");
-    }
-
-    private static bool CanDecryptText(
-        string encryptedText,
-        string key,
-        System.Security.Cryptography.CipherMode cipherMode = System.Security.Cryptography.CipherMode.CBC)
-    {
-        if (string.IsNullOrWhiteSpace(encryptedText) || string.IsNullOrWhiteSpace(key))
+        if (string.IsNullOrWhiteSpace(encryptedText))
             return false;
 
         try
         {
             byte[] encryptedTextBytes = Convert.FromBase64String(encryptedText);
-            byte[] keyBytes = Convert.FromBase64String(key);
-            byte[] decryptedBytes = DecryptBytes(encryptedTextBytes, keyBytes, cipherMode);
-            string decryptedText = Encoding.GetString(decryptedBytes);
+            byte[] decryptedBytes = DecryptBytes(encryptedTextBytes, key);
+            string decryptedText = System.Text.Encoding.Latin1.GetString(decryptedBytes);
 
             return true;
         }
@@ -54,52 +76,18 @@ public static class Crypto
         return false;
     }
 
-    public static string DecryptText(
-        string encryptedText,
-        string key,
-        System.Security.Cryptography.CipherMode cipherMode = System.Security.Cryptography.CipherMode.CBC)
+    public static string DecryptText(string encryptedText, byte[] key)
     {
-        return CanDecryptText(encryptedText, key, cipherMode)
-            ? Encoding.GetString(DecryptBytes(Convert.FromBase64String(encryptedText), Convert.FromBase64String(key), cipherMode))
-            : throw new InvalidDataException($"Cannot Decrypt {encryptedText} with {key} key and mode {cipherMode}");
+        return CanDecryptText(encryptedText, key)
+            ? System.Text.Encoding.Latin1.GetString(DecryptBytes(Convert.FromBase64String(encryptedText), key))
+            : throw new InvalidDataException($"Cannot Decrypt '{encryptedText}'");
     }
 
-    private static byte[] EncryptBytes(byte[] inputBuffer, byte[] key, System.Security.Cryptography.CipherMode cipherMode)
-    {
-        ArgumentNullException.ThrowIfNull(inputBuffer);
-
-        byte[] iv;
-        byte[] cipherText;
-
-        using (System.Security.Cryptography.Aes cipher = BuildCryptographicObject(key, cipherMode))
-        {
-            using System.Security.Cryptography.ICryptoTransform symmetricEncryptor = cipher.CreateEncryptor();
-            iv = cipher.IV;
-
-            cipherText = Transform(symmetricEncryptor, inputBuffer, 0, inputBuffer.Length);
-        }
-
-        int totalLength = iv.Length + cipherText.Length;
-
-        byte[] combinedData = new byte[totalLength];
-        int outputOffset = 0;
-
-        AppendBytes(iv, combinedData, ref outputOffset);
-        AppendBytes(cipherText, combinedData, ref outputOffset);
-
-        System.Diagnostics.Debug.Assert(outputOffset == combinedData.Length);
-
-        return combinedData;
-    }
-
-    private static byte[] DecryptBytes(
-        byte[] encryptedBytes,
-        byte[] key,
-        System.Security.Cryptography.CipherMode cipherMode)
+    private static byte[] DecryptBytes(byte[] encryptedBytes, byte[] key)
     {
         ArgumentNullException.ThrowIfNull(encryptedBytes);
 
-        using System.Security.Cryptography.Aes cipher = BuildCryptographicObject(key, cipherMode);
+        using System.Security.Cryptography.Aes cipher = BuildCryptographicObject(key);
         int cipherTextOffset = cipher.IV.Length;
 
         byte[] iv = new byte[cipherTextOffset];
@@ -109,6 +97,18 @@ public static class Crypto
         using System.Security.Cryptography.ICryptoTransform decryptor = cipher.CreateDecryptor();
 
         return Transform(decryptor, encryptedBytes, cipherTextOffset, encryptedBytes.Length - cipherTextOffset);
+    }
+
+    private static System.Security.Cryptography.Aes BuildCryptographicObject(byte[] key)
+    {
+        ArgumentNullException.ThrowIfNull(key);
+
+        var aes = System.Security.Cryptography.Aes.Create();
+        aes.Key = key; //aes.KeySize = masterKey.Length * 8L;
+        aes.Mode = System.Security.Cryptography.CipherMode.CBC;
+        aes.Padding = System.Security.Cryptography.PaddingMode.ISO10126;
+
+        return aes;
     }
 
     private static byte[] Transform(
@@ -134,96 +134,50 @@ public static class Crypto
         return memoryStream.ToArray();
     }
 
-    private static System.Security.Cryptography.Aes BuildCryptographicObject(
-        byte[] key,
-        System.Security.Cryptography.CipherMode cipherMode)
+    public static string Encrypt(ReadOnlySpan<byte> key, string plainText)
     {
-        ArgumentNullException.ThrowIfNull(key);
+        System.Text.Encoding enc = System.Text.Encoding.UTF8;
 
-        var aes = System.Security.Cryptography.Aes.Create();
-        aes.Key = key; //aes.KeySize = masterKey.Length * 8L;
-        aes.Mode = cipherMode;
-        aes.Padding = System.Security.Cryptography.PaddingMode.ISO10126;
-
-        return aes;
+        return Convert.ToBase64String(
+            EncryptOrDecrypt(
+                isForEncryption: true,
+                key: key,
+                textData: enc.GetBytes(plainText)));
     }
 
-    private static void AppendBytes(byte[] newData, byte[] combinedData, ref int writeOffset)
+    public static string Decrypt(ReadOnlySpan<byte> key, string cipherText)
     {
-        Buffer.BlockCopy(newData, 0, combinedData, writeOffset, newData.Length);
-        writeOffset += newData.Length;
+        System.Text.Encoding enc = System.Text.Encoding.UTF8;
+
+        return enc.GetString(
+            EncryptOrDecrypt(
+                isForEncryption: false,
+                key: key,
+                textData: Convert.FromBase64String(cipherText)));
     }
 
-    // internal static string Encrypt(
-    //     string key,
-    //     string plainText,
-    //     System.Security.Cryptography.CipherMode cipherMode = System.Security.Cryptography.CipherMode.CBC)
-    // {
-    //     Org.BouncyCastle.Crypto.IBlockCipher symmetricBlockCipher = new Org.BouncyCastle.Crypto.Engines.AesEngine();
-    //     Org.BouncyCastle.Crypto.Modes.IBlockCipherMode symmetricBlockMode =
-    //         GetBlockCipherMode(cipherMode, symmetricBlockCipher);
-    //
-    //     Org.BouncyCastle.Crypto.Paddings.PaddedBufferedBlockCipher cipher =
-    //         new(cipherMode: symmetricBlockMode /*, padding: new Org.BouncyCastle.Crypto.Paddings.Pkcs7Padding()*/);
-    //
-    //     cipher.Init(forEncryption: true, parameters: GetCipherParameters(Convert.FromBase64String(key)));
-    //     int blockSize = cipher.GetBlockSize();
-    //     byte[] plainTextData = Encoding.GetBytes(plainText);
-    //     byte[] cipherTextData = new byte[cipher.GetOutputSize(plainTextData.Length)];
-    //     int processLength = cipher.ProcessBytes(plainTextData, 0, plainTextData.Length, cipherTextData, 0);
-    //     int finalLength = cipher.DoFinal(cipherTextData, processLength);
-    //     byte[] finalCipherTextData = new byte[cipherTextData.Length - (blockSize - finalLength)];
-    //     Array.Copy(cipherTextData, 0, finalCipherTextData, 0, finalCipherTextData.Length);
-    //
-    //     return Encoding.GetString(finalCipherTextData);
-    // }
-    //
-    // internal static string Decrypt(
-    //     string key,
-    //     string cipherText,
-    //     System.Security.Cryptography.CipherMode cipherMode = System.Security.Cryptography.CipherMode.CBC)
-    // {
-    //     Org.BouncyCastle.Crypto.IBlockCipher symmetricBlockCipher =
-    //         new Org.BouncyCastle.Crypto.Engines.AesEngine();
-    //     Org.BouncyCastle.Crypto.Modes.IBlockCipherMode symmetricBlockMode =
-    //         GetBlockCipherMode(cipherMode, symmetricBlockCipher);
-    //
-    //     Org.BouncyCastle.Crypto.Paddings.PaddedBufferedBlockCipher cipher =
-    //         new(cipherMode:
-    //             symmetricBlockMode /*, padding: new Org.BouncyCastle.Crypto.Paddings.Pkcs7Padding()*/);
-    //
-    //     cipher.Init(forEncryption: false, parameters: GetCipherParameters(Convert.FromBase64String(key)));
-    //     int blockSize = cipher.GetBlockSize();
-    //     byte[] cipherTextData = Encoding.GetBytes(cipherText);
-    //     byte[] plainTextData = new byte[cipher.GetOutputSize(cipherTextData.Length)];
-    //     int processLength = cipher.ProcessBytes(cipherTextData, 0, cipherTextData.Length, plainTextData, 0);
-    //     int finalLength = cipher.DoFinal(plainTextData, processLength);
-    //     byte[] finalPlainTextData = new byte[plainTextData.Length - (blockSize - finalLength)];
-    //     Array.Copy(plainTextData, 0, finalPlainTextData, 0, finalPlainTextData.Length);
-    //
-    //     return Encoding.GetString(finalPlainTextData);
-    // }
-    //
-    // private static Org.BouncyCastle.Crypto.Modes.IBlockCipherMode GetBlockCipherMode(
-    //     System.Security.Cryptography.CipherMode cipherMode,
-    //     Org.BouncyCastle.Crypto.IBlockCipher symmetricBlockCipher)
-    // {
-    //     return cipherMode switch
-    //     {
-    //         System.Security.Cryptography.CipherMode.CBC => new Org.BouncyCastle.Crypto.Modes.CbcBlockCipher(
-    //             symmetricBlockCipher),
-    //         System.Security.Cryptography.CipherMode.ECB => new Org.BouncyCastle.Crypto.Modes.EcbBlockCipher(
-    //             symmetricBlockCipher),
-    //         _ => throw new ArgumentOutOfRangeException(nameof(cipherMode), cipherMode,
-    //             "Cipher mode {0} not supported"),
-    //     };
-    // }
-    //
-    // private static Org.BouncyCastle.Crypto.ICipherParameters GetCipherParameters(byte[] myKey)
-    // {
-    //     Org.BouncyCastle.Crypto.ICipherParameters keyParam =
-    //         new Org.BouncyCastle.Crypto.Parameters.KeyParameter(myKey);
-    //
-    //     return keyParam;
-    // }
+    private static byte[] EncryptOrDecrypt(bool isForEncryption, ReadOnlySpan<byte> key, byte[] textData)
+    {
+        Org.BouncyCastle.Crypto.IBlockCipher symmetricBlockCipher = new Org.BouncyCastle.Crypto.Engines.AesEngine();
+        Org.BouncyCastle.Crypto.Modes.IBlockCipherMode symmetricBlockCipherMode = new Org.BouncyCastle.Crypto.Modes.CbcBlockCipher(symmetricBlockCipher);
+        Org.BouncyCastle.Crypto.Paddings.IBlockCipherPadding symmetricBlockCipherPadding = new Org.BouncyCastle.Crypto.Paddings.Pkcs7Padding();
+        Org.BouncyCastle.Crypto.Paddings.PaddedBufferedBlockCipher cbcCipher = new(symmetricBlockCipherMode, symmetricBlockCipherPadding);
+
+        int blockSize = cbcCipher.GetBlockSize();
+
+        Org.BouncyCastle.Crypto.ICipherParameters cipherParameters =
+            new Org.BouncyCastle.Crypto.Parameters.ParametersWithIV(
+                parameters: new Org.BouncyCastle.Crypto.Parameters.KeyParameter(key),
+                iv: key.Slice(4, blockSize));
+
+        cbcCipher.Init(forEncryption: isForEncryption, parameters: cipherParameters);
+
+        byte[] outputData = new byte[cbcCipher.GetOutputSize(textData.Length)];
+        int processLength = cbcCipher.ProcessBytes(textData, 0, textData.Length, outputData, 0);
+        int finalLength = cbcCipher.DoFinal(outputData, processLength);
+        byte[] finalTextData = new byte[outputData.Length - (blockSize - finalLength)];
+        Array.Copy(outputData, 0, finalTextData, 0, finalTextData.Length);
+
+        return finalTextData;
+    }
 }

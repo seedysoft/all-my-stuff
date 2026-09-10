@@ -2,15 +2,30 @@
 
 public static class EnvironmentHelper
 {
-    private static Lazy<string?> MasterKey = null!;
-    public static string GetMasterKey()
+    private static readonly SemaphoreSlim semaphoreSlim = new(initialCount: 1, maxCount: 1);
+
+    private static byte[]? MasterKey = null;
+    internal static ReadOnlySpan<byte> GetMasterKey()
     {
         const string MasterKeyEnvironmentVariableName = "SEEDY_MASTER_KEY";
 
-        MasterKey ??= new(Environment.GetEnvironmentVariable(MasterKeyEnvironmentVariableName));
+        semaphoreSlim.Wait();
 
-        return string.IsNullOrWhiteSpace(MasterKey.Value)
-            ? throw new Exception($"Environment variable {MasterKeyEnvironmentVariableName} is not established.")
-            : MasterKey.Value;
+        if (MasterKey == null)
+        {
+            string? MasterKeyEnvironmentVariableValue = Environment.GetEnvironmentVariable(MasterKeyEnvironmentVariableName);
+            System.Diagnostics.Trace.Assert(!string.IsNullOrWhiteSpace(MasterKeyEnvironmentVariableValue));
+
+            MasterKey = Convert.FromBase64String(MasterKeyEnvironmentVariableValue);
+            System.Diagnostics.Trace.Assert(MasterKey != null);
+        }
+
+        _ = semaphoreSlim.Release();
+
+        return MasterKey.AsSpan();
     }
+
+    public static string Decrypt(string text) => Cryptography.Crypto.Decrypt(GetMasterKey(), text);
+
+    internal static string Encrypt(string text) => Cryptography.Crypto.Encrypt(GetMasterKey(), text);
 }
