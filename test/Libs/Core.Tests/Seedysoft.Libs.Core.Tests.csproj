@@ -7,9 +7,9 @@
 
     <ItemGroup>
         <PackageReference Include="CommandLineParser" Version="2.9.1" />
-        <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="10.0.11" />
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.11" />
-        <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="10.0.11" />
-        <PackageReference Include="TUnit" Version="1.65.68" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="10.0.12" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.12" />
+        <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="10.0.12" />
+        <PackageReference Include="TUnit" Version="1.66.27" />
     </ItemGroup>
 </Project>
