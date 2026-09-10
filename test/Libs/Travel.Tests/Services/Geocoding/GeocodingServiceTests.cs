@@ -71,7 +71,8 @@ public sealed class GeocodingServiceTests : Infrastructure.Tests.TestClassBase
         cts.Cancel();
 
         // Act & Assert
-        _ = await Assert.ThrowsAsync<HttpRequestException>(() => geoplacingService.FindPlacesAsync(textToFind, cts.Token));
+        //_ = await Assert.ThrowsAsync<HttpRequestException>(async () => await geoplacingService.FindPlacesAsync(textToFind, cts.Token));
+        _ = await Assert.ThrowsAsync<TaskCanceledException>(async () => await geoplacingService.FindPlacesAsync(textToFind, cts.Token));
     }
 
     [Test]
