@@ -1,6 +1,6 @@
 ﻿namespace Seedysoft.Libs.Core.Tests.Helpers;
 
-public class EnvironmentHelperTests : TUnitTestClassBase
+public class EnvironmentHelperTests : Libs.Tests.TUnitTestClassBase
 {
     [Test]
     [CombinedDataSources]

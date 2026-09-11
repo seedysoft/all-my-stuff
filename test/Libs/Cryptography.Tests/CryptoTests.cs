@@ -1,6 +1,6 @@
 ﻿namespace Seedysoft.Libs.Cryptography.Tests;
 
-public sealed class CryptoTests : Core.Tests.TUnitTestClassBase
+public sealed class CryptoTests : Libs.Tests.TUnitTestClassBase
 {
     //[Test]
     //[CombinedDataSources]
