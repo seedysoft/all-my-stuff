@@ -31,6 +31,9 @@
     <ItemGroup>
         <ProjectReference Include="..\..\..\src\Libs\Core\Seedysoft.Libs.Core.csproj" />
         <ProjectReference Include="..\..\..\src\Libs\Infrastructure\Seedysoft.Libs.Infrastructure.csproj" />
-        <ProjectReference Include="..\Core.Tests\Seedysoft.Libs.Core.Tests.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Compile Include="..\..\TUnitTestClassBase.cs" Link="TUnitTestClassBase.cs" />
     </ItemGroup>
 </Project>

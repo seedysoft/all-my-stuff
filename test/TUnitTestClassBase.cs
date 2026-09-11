@@ -1,4 +1,4 @@
-﻿namespace Seedysoft.Libs.Core.Tests;
+﻿namespace Seedysoft.Libs.Tests;
 
 public abstract class TUnitTestClassBase
 {

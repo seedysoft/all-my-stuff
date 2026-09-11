@@ -4,6 +4,9 @@
         <OutputType>Exe</OutputType>
         <UseTestingPlatform>true</UseTestingPlatform>
     </PropertyGroup>
+    <ItemGroup>
+      <Compile Include="..\..\TUnitTestClassBase.cs" Link="TUnitTestClassBase.cs" />
+    </ItemGroup>
 
     <ItemGroup>
         <PackageReference Include="CommandLineParser" Version="2.9.1" />
