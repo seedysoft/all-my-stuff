@@ -138,8 +138,8 @@ public class Program : Libs.Core.ProgramBase
         //_ = webApplication.UseAuthorization();
 
         _ = webApplication
-            .UseAntiforgery()
-            .UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true);
+            .UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true)
+            .UseAntiforgery();
 
         _ = webApplication.MapStaticAssets();
 

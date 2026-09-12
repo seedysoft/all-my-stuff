@@ -136,27 +136,21 @@ public static class Crypto
 
     public static string Encrypt(ReadOnlySpan<byte> key, string plainText)
     {
-        System.Text.Encoding enc = System.Text.Encoding.UTF8;
+        byte[] plainBytes = System.Text.Encoding.UTF8.GetBytes(plainText);
+        byte[] encryptedBytes = EncryptOrDecrypt(isForEncryption: true, keyBytes: key, bytesToProcess: plainBytes);
 
-        return Convert.ToBase64String(
-            EncryptOrDecrypt(
-                isForEncryption: true,
-                key: key,
-                textData: enc.GetBytes(plainText)));
+        return Convert.ToBase64String(encryptedBytes);
     }
 
     public static string Decrypt(ReadOnlySpan<byte> key, string cipherText)
     {
-        System.Text.Encoding enc = System.Text.Encoding.UTF8;
+        byte[] cipherBytes = Convert.FromBase64String(cipherText);
+        byte[] decryptedBytes = EncryptOrDecrypt(isForEncryption: false, keyBytes: key, bytesToProcess: cipherBytes);
 
-        return enc.GetString(
-            EncryptOrDecrypt(
-                isForEncryption: false,
-                key: key,
-                textData: Convert.FromBase64String(cipherText)));
+        return System.Text.Encoding.UTF8.GetString(decryptedBytes);
     }
 
-    private static byte[] EncryptOrDecrypt(bool isForEncryption, ReadOnlySpan<byte> key, byte[] textData)
+    private static byte[] EncryptOrDecrypt(bool isForEncryption, ReadOnlySpan<byte> keyBytes, byte[] bytesToProcess)
     {
         Org.BouncyCastle.Crypto.IBlockCipher symmetricBlockCipher = new Org.BouncyCastle.Crypto.Engines.AesEngine();
         Org.BouncyCastle.Crypto.Modes.IBlockCipherMode symmetricBlockCipherMode = new Org.BouncyCastle.Crypto.Modes.CbcBlockCipher(symmetricBlockCipher);
@@ -167,13 +161,13 @@ public static class Crypto
 
         Org.BouncyCastle.Crypto.ICipherParameters cipherParameters =
             new Org.BouncyCastle.Crypto.Parameters.ParametersWithIV(
-                parameters: new Org.BouncyCastle.Crypto.Parameters.KeyParameter(key),
-                iv: key.Slice(4, blockSize));
+                parameters: new Org.BouncyCastle.Crypto.Parameters.KeyParameter(keyBytes),
+                iv: keyBytes.Slice(4, blockSize));
 
         cbcCipher.Init(forEncryption: isForEncryption, parameters: cipherParameters);
 
-        byte[] outputData = new byte[cbcCipher.GetOutputSize(textData.Length)];
-        int processLength = cbcCipher.ProcessBytes(textData, 0, textData.Length, outputData, 0);
+        byte[] outputData = new byte[cbcCipher.GetOutputSize(bytesToProcess.Length)];
+        int processLength = cbcCipher.ProcessBytes(bytesToProcess, 0, bytesToProcess.Length, outputData, 0);
         int finalLength = cbcCipher.DoFinal(outputData, processLength);
         byte[] finalTextData = new byte[outputData.Length - (blockSize - finalLength)];
         Array.Copy(outputData, 0, finalTextData, 0, finalTextData.Length);

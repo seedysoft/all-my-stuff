@@ -38,6 +38,8 @@ dotnet publish $ProjectOrSolution -p:PublishDir=$PublishDirectory -c $Configurat
 $ProjectOrSolution="$env:USERPROFILE\_prog\seedysoft\all-my-stuff\src\BlazorWebApp\Server\Seedysoft.BlazorWebApp.Server.csproj"
 dotnet publish $ProjectOrSolution -p:PublishDir=$PublishDirectory -c $Configuration -r $Runtime -p:BlazorCacheBootResources=false -p:PublishReadyToRun -p:PublishReadyToRunShowWarnings=true -p:AssemblyVersion=$version --sc ;
 
+robocopy $PublishDirectory \\raspberrypi4\rp_st\linux-x64 /MIR /MT /NFL /NDL /NJH /NC /NS /NP
+
 # Publish all projects from Raspberrypi4 ($>):
 
 # version="$(date --utc +'%y.%-m%d.%-H%M.%-S')"

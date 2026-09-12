@@ -2,13 +2,17 @@
 
 public record SmtpServiceSettings
 {
-    public required string Host { get; init; }
+    public required string Host
+    {
+        get;
+        init => field = Core.Helpers.EnvironmentHelper.Decrypt(value);
+    } = default!;
 
-    public int Port { get; init; }
+    public required int Port { get; init; } = default!;
 
-    public required string Username { get; init; }
+    public required string Username { get; init; } = default!;
 
-    public string Password
+    public required string Password
     {
         get;
         init => field = Core.Helpers.EnvironmentHelper.Decrypt(value);

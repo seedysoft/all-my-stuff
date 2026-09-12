@@ -34,6 +34,7 @@ sudo nano /etc/environment
 #
 #   then paste this:
 ASPNETCORE_ENVIRONMENT=Production
+DOTNET_ENVIRONMENT=Production
 DOTNET_CLI_TELEMETRY_OPTOUT=1
 DOTNET_PRINT_TELEMETRY_MESSAGE=false
 SEEDY_MASTER_KEY=""
