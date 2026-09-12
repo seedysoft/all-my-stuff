@@ -56,9 +56,11 @@ public sealed class OutboxCronBackgroundService : Libs.BackgroundServices.Cron
                 if (Logger.IsEnabled(LogLevel.Information))
                     Logger.LogInformation("Obtained {AllSubscribers} subscribers", AllSubscribers.Length);
 
-                Libs.TelegramBot.Services.TelegramHostedService telegramHostedService = ServiceProvider.GetRequiredService<Libs.TelegramBot.Services.TelegramHostedService>();
+                Libs.TelegramBot.Services.TelegramHostedService telegramHostedService =
+                    ServiceProvider.GetRequiredService<Libs.TelegramBot.Services.TelegramHostedService>();
 
-                Libs.SmtpService.Services.SmtpService smtpService = ServiceProvider.GetRequiredService<Libs.SmtpService.Services.SmtpService>();
+                Libs.SmtpService.Services.SmtpService smtpService =
+                    ServiceProvider.GetRequiredService<Libs.SmtpService.Services.SmtpService>();
 
                 for (int i = 0; i < PendingMessages.Length; i++)
                 {

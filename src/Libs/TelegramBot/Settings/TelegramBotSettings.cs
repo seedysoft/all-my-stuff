@@ -2,12 +2,12 @@
 
 public record class TelegramBotSettings : BackgroundServices.ScheduleConfig
 {
-    public required Users Users { get; init; }
+    public required TelegramUsers Users { get; init; }
 
     public TelegramBotUser CurrentBot => System.Diagnostics.Debugger.IsAttached ? Users.BotTest : Users.BotProd;
 }
 
-public record class Users
+public record class TelegramUsers
 {
     public required TelegramBotUser BotProd { get; init; }
     public required TelegramBotUser BotTest { get; init; }
@@ -16,11 +16,12 @@ public record class Users
 
 public record class TelegramBotUser : TelegramUserBase
 {
-    public string Token
+    public required string Token
     {
         get;
         init => field = Core.Helpers.EnvironmentHelper.Decrypt(value);
-    } = default!;
+    }
+    public string FullToken => $"{Id}:{Token}";
 
     public Telegram.Bot.Types.User? SenderUser { get; protected set; }
 
@@ -29,25 +30,18 @@ public record class TelegramBotUser : TelegramUserBase
 
 public record class TelegramKnowUser : TelegramUserBase { }
 
-public record class TelegramUser
-{
-    public required TelegramBotUser BotProd { get; init; }
-    public required TelegramBotUser BotTest { get; init; }
-
-    public required TelegramKnowUser UserTest { get; init; }
-}
-
 public abstract record class TelegramUserBase
 {
-    public string Id
+    public required string Id
     {
         get;
         init => field = Core.Helpers.EnvironmentHelper.Decrypt(value);
     } = default!;
+    public long IdAsLong => long.Parse(Id);
 
-    public string Username
+    public required string Username
     {
         get;
         init => field = Core.Helpers.EnvironmentHelper.Decrypt(value);
-    } = default!;
+    }
 }

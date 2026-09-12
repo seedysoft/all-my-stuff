@@ -4,8 +4,7 @@ namespace Seedysoft.Libs.BackgroundServices;
 
 public abstract class Cron(
     IServiceProvider serviceProvider,
-    IHostApplicationLifetime hostApplicationLifetime)
-    : BackgroundService
+    IHostApplicationLifetime hostApplicationLifetime) : BackgroundService
 {
     protected IServiceProvider ServiceProvider { get; init; } = serviceProvider;
     protected ScheduleConfig Config { get; init; } = default!;

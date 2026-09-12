@@ -27,11 +27,7 @@ public sealed class GasStationPricesService
 
         Logger = serviceProvider.GetRequiredService<ILogger<GasStationPricesService>>();
 
-        _ = Task.Run(async () =>
-        {
-            while (!await LoadGasStationsAsync(CancellationToken.None))
-                await Task.Delay(TimeSpan.FromSeconds(10));
-        });
+        _ = Task.Run(async () => { _ = await LoadGasStationsAsync(CancellationToken.None); });
     }
 
     public async Task<ViewModels.GasStationModel?> GetGasStationAsync(

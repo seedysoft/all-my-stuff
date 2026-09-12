@@ -16,6 +16,7 @@
     <Project Path="test/Libs/Cryptography.Tests/Seedysoft.Libs.Cryptography.Tests.csproj" />
     <Project Path="test/Libs/GasStationPrices.Tests/Seedysoft.Libs.GasStationPrices.Tests.csproj" />
     <Project Path="test/Libs/Infrastructure.Tests/Seedysoft.Libs.Infrastructure.Tests.csproj" />
+    <Project Path="test/Libs/TelegramBot.Tests/Seedysoft.Libs.TelegramBot.Tests.csproj" />
     <Project Path="test/Libs/Travel.Tests/Seedysoft.Libs.Travel.Tests.csproj" />
     <Project Path="test/Libs/Update.Tests/Seedysoft.Libs.Update.Tests.csproj" />
   </Folder>
