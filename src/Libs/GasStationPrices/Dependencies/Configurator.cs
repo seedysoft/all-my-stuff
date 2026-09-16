@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Polly;
 
 namespace Seedysoft.Libs.GasStationPrices.Dependencies;
 
@@ -23,6 +24,13 @@ public sealed class Configurator : Core.Dependencies.ConfiguratorBase
         hostApplicationBuilder.Services.TryAddSingleton<Services.GasStationPricesService>();
 
         _ = hostApplicationBuilder.Services.AddHttpClient(name: nameof(GasStationPrices))
+
+            //.AddHttpMessageHandler(() => {
+            //    return new ;
+            //})
+
+            .AddTransientHttpErrorPolicy(static policyBuilder => policyBuilder.WaitAndRetryAsync(3, static retryNumber => TimeSpan.FromMilliseconds(600)))
+
             .ConfigureHttpClient(static (serviceProvider, httpClient) =>
             {
                 Services.GasStationPricesService gasStationPricesService = serviceProvider.GetRequiredService<Services.GasStationPricesService>();

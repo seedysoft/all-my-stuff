@@ -60,8 +60,6 @@ public sealed class GasStationPricesService
             {
                 var sw = System.Diagnostics.Stopwatch.StartNew();
 
-                //Uri requestUri = GasStationPricesSettings.Minetur.Urls.GetUri();
-
                 using HttpClient httpClient = httpClientFactory.CreateClient(nameof(GasStationPrices));
                 MineturResponse.Value = await httpClient.GetFromJsonAsync<Models.Minetur.Body>(GasStationPricesSettings.Minetur.Urls.EstacionesTerrestresEndPoint, cancellationToken);
 
