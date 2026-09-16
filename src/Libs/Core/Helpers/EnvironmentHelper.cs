@@ -4,8 +4,8 @@ public static class EnvironmentHelper
 {
     private static readonly SemaphoreSlim semaphoreSlim = new(initialCount: 1, maxCount: 1);
 
-    private static byte[]? MasterKey = null;
-    internal static ReadOnlySpan<byte> GetMasterKey()
+    private static string? MasterKey = null;
+    public static string GetMasterKey()
     {
         const string MasterKeyEnvironmentVariableName = "SEEDY_MASTER_KEY";
 
@@ -13,19 +13,12 @@ public static class EnvironmentHelper
 
         if (MasterKey == null)
         {
-            string? MasterKeyEnvironmentVariableValue = Environment.GetEnvironmentVariable(MasterKeyEnvironmentVariableName);
-            System.Diagnostics.Trace.Assert(!string.IsNullOrWhiteSpace(MasterKeyEnvironmentVariableValue));
-
-            MasterKey = Convert.FromBase64String(MasterKeyEnvironmentVariableValue);
-            System.Diagnostics.Trace.Assert(MasterKey != null);
+            MasterKey = Environment.GetEnvironmentVariable(MasterKeyEnvironmentVariableName);
+            System.Diagnostics.Trace.Assert(!string.IsNullOrWhiteSpace(MasterKey));
         }
 
         _ = semaphoreSlim.Release();
 
-        return MasterKey.AsSpan();
+        return MasterKey;
     }
-
-    public static string Decrypt(string text) => Cryptography.Crypto.Decrypt(GetMasterKey(), text);
-
-    internal static string Encrypt(string text) => Cryptography.Crypto.Encrypt(GetMasterKey(), text);
 }

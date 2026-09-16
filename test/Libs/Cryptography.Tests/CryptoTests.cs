@@ -2,35 +2,16 @@
 
 public sealed class CryptoTests : Libs.Tests.TUnitTestClassBase
 {
-    //[Test]
-    //[CombinedDataSources]
-    //public async Task EncryptTextThenDecryptTextTest(
-    //    [Arguments("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam nulla tellus, elementum sit amet nunc.")]
-    //    string textToEncrypt)
-    //{
-    //    byte[] bytes = GetKey(32).ToArray();
-
-    //    string encryptedText = Crypto.EncryptText(textToEncrypt, bytes);
-    //    Console.WriteLine(encryptedText);
-
-    //    string decryptedText = Crypto.DecryptText(encryptedText, bytes);
-    //    Console.WriteLine(decryptedText);
-
-    //    _ = await Assert.That(textToEncrypt).IsEqualTo(decryptedText);
-    //}
-
     [Test]
     [CombinedDataSources]
-    public async Task EncryptThenDecryptTest(
+    public async Task EncryptTextThenDecryptTextTest(
         [Arguments("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam nulla tellus, elementum sit amet nunc.")]
         string textToEncrypt)
     {
-        ReadOnlySpan<byte> bytes = GetKey(32);
-
-        string encryptedText = Crypto.Encrypt(bytes, textToEncrypt);
+        string encryptedText = Crypto.EncryptText(textToEncrypt, Core.Helpers.EnvironmentHelper.GetMasterKey());
         Console.WriteLine(encryptedText);
 
-        string decryptedText = Crypto.Decrypt(bytes, encryptedText);
+        string decryptedText = Crypto.DecryptText(encryptedText, Core.Helpers.EnvironmentHelper.GetMasterKey());
         Console.WriteLine(decryptedText);
 
         _ = await Assert.That(textToEncrypt).IsEqualTo(decryptedText);
@@ -53,10 +34,8 @@ public sealed class CryptoTests : Libs.Tests.TUnitTestClassBase
     {
         try
         {
-            //string decryptedText = Crypto.Decrypt(Core.Helpers.EnvironmentHelper.GetMasterKey(), pass, System.Security.Cryptography.CipherMode.ECB);
             string decryptedText = Crypto.DecryptText(pass, Core.Helpers.EnvironmentHelper.GetMasterKey(), System.Security.Cryptography.CipherMode.ECB);
 
-            //string encryptedText = Crypto.Encrypt(Core.Helpers.EnvironmentHelper.GetMasterKey(), decryptedText);
             string encryptedText = Crypto.EncryptText(decryptedText, Core.Helpers.EnvironmentHelper.GetMasterKey());
 
             Console.WriteLine($"{pass[..8]}... should be: {encryptedText}");
@@ -68,10 +47,8 @@ public sealed class CryptoTests : Libs.Tests.TUnitTestClassBase
             // If can't decrypt with ECB, no problem, continue with test
         }
 
-        //string decrypted = Crypto.Decrypt(Core.Helpers.EnvironmentHelper.GetMasterKey(), pass);
-        string decrypted = Crypto.DecryptText(Core.Helpers.EnvironmentHelper.GetMasterKey(), pass);
+        string decrypted = Crypto.DecryptText(pass,Core.Helpers.EnvironmentHelper.GetMasterKey() );
 
         _ = await Assert.That(decrypted).IsNotDefault();
     }
-    private static ReadOnlySpan<byte> GetKey(int length) => System.Security.Cryptography.RandomNumberGenerator.GetBytes(length);
 }

@@ -5,7 +5,7 @@ public record SmtpServiceSettings
     public required string Host
     {
         get;
-        init => field = Core.Helpers.EnvironmentHelper.Decrypt(value);
+        init => field = Cryptography.Crypto.DecryptText(value, Core.Helpers.EnvironmentHelper.GetMasterKey());
     }
 
     public required int Port { get; init; } = default!;
@@ -15,6 +15,6 @@ public record SmtpServiceSettings
     public required string Password
     {
         get;
-        init => field = Core.Helpers.EnvironmentHelper.Decrypt(value);
+        init => field = Cryptography.Crypto.DecryptText(value, Core.Helpers.EnvironmentHelper.GetMasterKey());
     }
 }

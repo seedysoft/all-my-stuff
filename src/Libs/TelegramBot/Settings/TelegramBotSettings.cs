@@ -19,7 +19,7 @@ public record class TelegramBotUser : TelegramUserBase
     public required string Token
     {
         get;
-        init => field = Core.Helpers.EnvironmentHelper.Decrypt(value);
+        init => field = Cryptography.Crypto.DecryptText(value, Core.Helpers.EnvironmentHelper.GetMasterKey());
     }
     public string FullToken => $"{Id}:{Token}";
 
@@ -35,13 +35,13 @@ public abstract record class TelegramUserBase
     public required string Id
     {
         get;
-        init => field = Core.Helpers.EnvironmentHelper.Decrypt(value);
+        init => field = Cryptography.Crypto.DecryptText(value, Core.Helpers.EnvironmentHelper.GetMasterKey());
     }
     public long IdAsLong => long.Parse(Id);
 
     public required string Username
     {
         get;
-        init => field = Core.Helpers.EnvironmentHelper.Decrypt(value);
+        init => field = Cryptography.Crypto.DecryptText(value, Core.Helpers.EnvironmentHelper.GetMasterKey());
     }
 }
