@@ -5,7 +5,7 @@ public sealed class CryptoTests : Libs.Tests.TUnitTestClassBase
     [Test]
     [CombinedDataSources]
     public async Task EncryptTextThenDecryptTextTest(
-        [Arguments("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam nulla tellus, elementum sit amet nunc.")]
+        [Arguments(@"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam nulla tellus, elementum sit amet nunc.")]
         string textToEncrypt)
     {
         string encryptedText = Crypto.EncryptText(textToEncrypt, Core.Helpers.EnvironmentHelper.GetMasterKey());

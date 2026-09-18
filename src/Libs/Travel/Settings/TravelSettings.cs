@@ -21,9 +21,6 @@ public readonly record struct RoutingSettings
     /// </summary>
     public required string CurrentImplName { get; init; }
 
-    /// <summary>
-    /// 
-    /// </summary>
     public required RoutingServiceApi[] RoutingApis { get; init; }
 }
 

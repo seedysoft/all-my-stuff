@@ -200,7 +200,7 @@ public class TelegramHostedService : Core.NonBackgroundServiceBase, IHostedServi
         ParseMode? parseMode,
         CancellationToken cancellationToken)
     {
-        if (System.Diagnostics.Debugger.IsAttached)
+        if (System.Diagnostics.Debugger.IsAttached && to != Settings.Users.UserTest.IdAsLong)
             to = Settings.Users.UserTest.IdAsLong;
 
         text = text[..Math.Min(text.Length, Core.Constants.Telegram.MessageLengthLimit)];
