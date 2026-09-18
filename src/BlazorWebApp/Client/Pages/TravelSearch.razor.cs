@@ -36,7 +36,7 @@ public partial class TravelSearch
         }
         catch (Exception e) when (Logger.LogAndHandle(e, "Unexpected error"))
         {
-            _ = Snackbar.Add(new MarkupString($"<span>{e}</span>"), MudBlazor.Severity.Error);
+            _ = Snackbar.Add(new MarkupString("<span>⛔ An unexpected error happened ❗</span>"), MudBlazor.Severity.Error);
         }
 
         return [];
