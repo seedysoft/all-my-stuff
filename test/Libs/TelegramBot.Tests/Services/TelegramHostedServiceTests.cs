@@ -17,7 +17,7 @@ public sealed class TelegramHostedServiceTests : Infrastructure.Tests.TestClassB
     }
 
     [Test]
-    public async Task MessageSendTextAsyncWithValidPlainTextSendsMessageSuccessfully()
+    public async Task MessageSendTextAsyncWithValidPlainTextSendsMessageSuccessfullyTest()
     {
         // Arrange
         const string text = "Hello, World!";
@@ -36,7 +36,7 @@ public sealed class TelegramHostedServiceTests : Infrastructure.Tests.TestClassB
     }
 
     [Test]
-    public async Task MessageSendTextAsyncWithHtmlContentAutomaticallyDetectsHtmlParseMode()
+    public async Task MessageSendTextAsyncWithHtmlContentAutomaticallyDetectsHtmlParseModeTest()
     {
         // Arrange
         const string text = "Bold Text";
@@ -57,7 +57,7 @@ public sealed class TelegramHostedServiceTests : Infrastructure.Tests.TestClassB
     }
 
     [Test]
-    public async Task MessageSendTextAsyncWithExplicitParseModeUsesProvidedMode()
+    public async Task MessageSendTextAsyncWithExplicitParseModeUsesProvidedModeTest()
     {
         // Arrange
         const string text = "Some text";
@@ -76,7 +76,7 @@ public sealed class TelegramHostedServiceTests : Infrastructure.Tests.TestClassB
     }
 
     [Test]
-    public async Task MessageSendTextAsyncWithTextExceedingLimitTruncatesText()
+    public async Task MessageSendTextAsyncWithTextExceedingLimitTruncatesTextTest()
     {
         // Arrange
         string longText = new('A', Core.Constants.Telegram.MessageLengthLimit + 100);
@@ -95,7 +95,7 @@ public sealed class TelegramHostedServiceTests : Infrastructure.Tests.TestClassB
     }
 
     [Test]
-    public async Task MessageSendTextAsyncWithEmptyTextThrowwApiRequestException()
+    public async Task MessageSendTextAsyncWithEmptyTextThrowsApiRequestExceptionTest()
     {
         // Arrange
         const string text = "";
@@ -111,7 +111,7 @@ public sealed class TelegramHostedServiceTests : Infrastructure.Tests.TestClassB
     }
 
     [Test]
-    public async Task MessageSendTextAsyncWhenCancellationRequestedThrowsOperationCanceledException()
+    public async Task MessageSendTextAsyncWhenCancellationRequestedThrowsOperationCanceledExceptionTest()
     {
         // Arrange
         const string text = "Hello";
@@ -128,11 +128,13 @@ public sealed class TelegramHostedServiceTests : Infrastructure.Tests.TestClassB
     }
 
     [Test]
-    public async Task MessageSendTextAsyncWithVariousHtmlTagsHandlesProperly()
+    public async Task MessageSendTextAsyncWithVariousHtmlTagsHandlesProperlyTest()
     {
         // Arrange
         const string text = "Italic Underline Strikethrough";
-        string htmlText = string.Format("<i>{0}</i> <u>Underline</u> <s>Strikethrough</s>", text.Split(" "));
+#pragma warning disable IDE0043 // Invalid format string
+        string htmlText = string.Format("<i>{0}</i> <u>{1}</u> <s>{2}</s>", text.Split(" "));
+#pragma warning restore IDE0043 // Invalid format string
         CancellationToken cancellationToken = CancellationToken.None;
 
         // Act
@@ -151,7 +153,7 @@ public sealed class TelegramHostedServiceTests : Infrastructure.Tests.TestClassB
     }
 
     [Test]
-    public async Task MessageSendTextAsyncWithPlainTextAndExplicitParseModeUsesExplicitMode()
+    public async Task MessageSendTextAsyncWithPlainTextAndExplicitParseModeUsesExplicitModeTest()
     {
         // Arrange
         const string plainText = "Plain text without HTML";
@@ -170,7 +172,7 @@ public sealed class TelegramHostedServiceTests : Infrastructure.Tests.TestClassB
     }
 
     [Test]
-    public async Task MessageSendTextAsyncWithLongTextAtExactLimitSendsSuccessfully()
+    public async Task MessageSendTextAsyncWithLongTextAtExactLimitSendsSuccessfullyTest()
     {
         // Arrange
         string exactLimitText = new('A', Core.Constants.Telegram.MessageLengthLimit);
@@ -189,7 +191,7 @@ public sealed class TelegramHostedServiceTests : Infrastructure.Tests.TestClassB
     }
 
     [Test]
-    public async Task MessageSendTextAsyncWithSpecialCharactersSendsSuccessfully()
+    public async Task MessageSendTextAsyncWithSpecialCharactersSendsSuccessfullyTest()
     {
         // Arrange
         const string textWithSpecialChars = "Hello! @user #hashtag 😀 \n\r\t";
@@ -207,7 +209,7 @@ public sealed class TelegramHostedServiceTests : Infrastructure.Tests.TestClassB
     }
 
     [Test]
-    public async Task MessageSendTextAsyncWithUnicodeCharactersSendsSuccessfully()
+    public async Task MessageSendTextAsyncWithUnicodeCharactersSendsSuccessfullyTest()
     {
         // Arrange
         const string unicodeText = "Привет мир 你好世界 مرحبا العالم";
@@ -225,7 +227,7 @@ public sealed class TelegramHostedServiceTests : Infrastructure.Tests.TestClassB
     }
 
     [Test]
-    public async Task MessageSendTextAsyncWithParseModeNoneSendsSucessfully()
+    public async Task MessageSendTextAsyncWithParseModeNoneSendsSucessfullyTest()
     {
         // Arrange
         const string text = "Plain text";
@@ -244,7 +246,7 @@ public sealed class TelegramHostedServiceTests : Infrastructure.Tests.TestClassB
     }
 
     [Test]
-    public async Task MessageSendTextAsyncWithMultipleCallsSendsAllSuccessfully()
+    public async Task MessageSendTextAsyncWithMultipleCallsSendsAllSuccessfullyTest()
     {
         // Arrange
         string[] texts = ["First", "Second", "Third"];
@@ -265,7 +267,7 @@ public sealed class TelegramHostedServiceTests : Infrastructure.Tests.TestClassB
     }
 
     [Test]
-    public async Task MessageSendTextAsyncWithDifferentChatIdsSendsToCorrectChat()
+    public async Task MessageSendTextAsyncWithDifferentChatIdsSendsToCorrectChatTest()
     {
         // Arrange
         long[] chatIds = [
@@ -288,5 +290,28 @@ public sealed class TelegramHostedServiceTests : Infrastructure.Tests.TestClassB
             Assert.NotNull(result);
             _ = await Assert.That(result.Chat.Id).IsEqualTo(chatId);
         }
+    }
+
+    [Test]
+    [CombinedDataSources]
+    [Explicit]
+    public async Task SendMessageToSubscribersForBotChangeTest(
+        [Arguments(@"VnibqN/fzFJlwyND57m9kyxOwhdhr1SxklFvKKMsweE=")]
+        string destinationUser)
+    {
+        // Arrange
+        const string text = "Por favor, envía un mensaje a @SeedySoftBot para seguir recibiendo novedades";
+        CancellationToken cancellationToken = CancellationToken.None;
+
+        // Act
+        Telegram.Bot.Types.Message result = await telegramHostedService.MessageSendTextAsync(
+            to: long.Parse(Cryptography.Crypto.DecryptText(destinationUser, Core.Helpers.EnvironmentHelper.GetMasterKey())),
+            text: text,
+            parseMode: null,
+            cancellationToken: cancellationToken);
+
+        // Assert
+        Assert.NotNull(result);
+        _ = await Assert.That(result.Text).IsEqualTo(text);
     }
 }

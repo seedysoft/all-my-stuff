@@ -4,7 +4,7 @@ public static class Crypto
 {
     private static readonly System.Text.Encoding Encoding = System.Text.Encoding.Latin1;
 
-    private static bool CanEncryptText(
+    internal static bool CanEncryptText(
         string textToEncrypt,
         string key,
         System.Security.Cryptography.CipherMode cipherMode = System.Security.Cryptography.CipherMode.CBC)
@@ -32,7 +32,7 @@ public static class Crypto
             : throw new InvalidDataException($"Cannot Encrypt {textToEncrypt} with {key} key and mode {cipherMode}");
     }
 
-    private static bool CanDecryptText(
+    internal static bool CanDecryptText(
         string encryptedText,
         string key,
         System.Security.Cryptography.CipherMode cipherMode = System.Security.Cryptography.CipherMode.CBC)
@@ -53,7 +53,6 @@ public static class Crypto
 
         return false;
     }
-
     public static string DecryptText(
         string encryptedText,
         string key,
@@ -64,7 +63,10 @@ public static class Crypto
             : throw new InvalidDataException($"Cannot Decrypt {encryptedText} with {key} key and mode {cipherMode}");
     }
 
-    private static byte[] EncryptBytes(byte[] inputBuffer, byte[] key, System.Security.Cryptography.CipherMode cipherMode)
+    private static byte[] EncryptBytes(
+        byte[] inputBuffer,
+        byte[] key,
+        System.Security.Cryptography.CipherMode cipherMode)
     {
         ArgumentNullException.ThrowIfNull(inputBuffer);
 
@@ -153,77 +155,4 @@ public static class Crypto
         Buffer.BlockCopy(newData, 0, combinedData, writeOffset, newData.Length);
         writeOffset += newData.Length;
     }
-
-    // internal static string Encrypt(
-    //     string key,
-    //     string plainText,
-    //     System.Security.Cryptography.CipherMode cipherMode = System.Security.Cryptography.CipherMode.CBC)
-    // {
-    //     Org.BouncyCastle.Crypto.IBlockCipher symmetricBlockCipher = new Org.BouncyCastle.Crypto.Engines.AesEngine();
-    //     Org.BouncyCastle.Crypto.Modes.IBlockCipherMode symmetricBlockMode =
-    //         GetBlockCipherMode(cipherMode, symmetricBlockCipher);
-    //
-    //     Org.BouncyCastle.Crypto.Paddings.PaddedBufferedBlockCipher cipher =
-    //         new(cipherMode: symmetricBlockMode /*, padding: new Org.BouncyCastle.Crypto.Paddings.Pkcs7Padding()*/);
-    //
-    //     cipher.Init(forEncryption: true, parameters: GetCipherParameters(Convert.FromBase64String(key)));
-    //     int blockSize = cipher.GetBlockSize();
-    //     byte[] plainTextData = Encoding.GetBytes(plainText);
-    //     byte[] cipherTextData = new byte[cipher.GetOutputSize(plainTextData.Length)];
-    //     int processLength = cipher.ProcessBytes(plainTextData, 0, plainTextData.Length, cipherTextData, 0);
-    //     int finalLength = cipher.DoFinal(cipherTextData, processLength);
-    //     byte[] finalCipherTextData = new byte[cipherTextData.Length - (blockSize - finalLength)];
-    //     Array.Copy(cipherTextData, 0, finalCipherTextData, 0, finalCipherTextData.Length);
-    //
-    //     return Encoding.GetString(finalCipherTextData);
-    // }
-    //
-    // internal static string Decrypt(
-    //     string key,
-    //     string cipherText,
-    //     System.Security.Cryptography.CipherMode cipherMode = System.Security.Cryptography.CipherMode.CBC)
-    // {
-    //     Org.BouncyCastle.Crypto.IBlockCipher symmetricBlockCipher =
-    //         new Org.BouncyCastle.Crypto.Engines.AesEngine();
-    //     Org.BouncyCastle.Crypto.Modes.IBlockCipherMode symmetricBlockMode =
-    //         GetBlockCipherMode(cipherMode, symmetricBlockCipher);
-    //
-    //     Org.BouncyCastle.Crypto.Paddings.PaddedBufferedBlockCipher cipher =
-    //         new(cipherMode:
-    //             symmetricBlockMode /*, padding: new Org.BouncyCastle.Crypto.Paddings.Pkcs7Padding()*/);
-    //
-    //     cipher.Init(forEncryption: false, parameters: GetCipherParameters(Convert.FromBase64String(key)));
-    //     int blockSize = cipher.GetBlockSize();
-    //     byte[] cipherTextData = Encoding.GetBytes(cipherText);
-    //     byte[] plainTextData = new byte[cipher.GetOutputSize(cipherTextData.Length)];
-    //     int processLength = cipher.ProcessBytes(cipherTextData, 0, cipherTextData.Length, plainTextData, 0);
-    //     int finalLength = cipher.DoFinal(plainTextData, processLength);
-    //     byte[] finalPlainTextData = new byte[plainTextData.Length - (blockSize - finalLength)];
-    //     Array.Copy(plainTextData, 0, finalPlainTextData, 0, finalPlainTextData.Length);
-    //
-    //     return Encoding.GetString(finalPlainTextData);
-    // }
-    //
-    // private static Org.BouncyCastle.Crypto.Modes.IBlockCipherMode GetBlockCipherMode(
-    //     System.Security.Cryptography.CipherMode cipherMode,
-    //     Org.BouncyCastle.Crypto.IBlockCipher symmetricBlockCipher)
-    // {
-    //     return cipherMode switch
-    //     {
-    //         System.Security.Cryptography.CipherMode.CBC => new Org.BouncyCastle.Crypto.Modes.CbcBlockCipher(
-    //             symmetricBlockCipher),
-    //         System.Security.Cryptography.CipherMode.ECB => new Org.BouncyCastle.Crypto.Modes.EcbBlockCipher(
-    //             symmetricBlockCipher),
-    //         _ => throw new ArgumentOutOfRangeException(nameof(cipherMode), cipherMode,
-    //             "Cipher mode {0} not supported"),
-    //     };
-    // }
-    //
-    // private static Org.BouncyCastle.Crypto.ICipherParameters GetCipherParameters(byte[] myKey)
-    // {
-    //     Org.BouncyCastle.Crypto.ICipherParameters keyParam =
-    //         new Org.BouncyCastle.Crypto.Parameters.KeyParameter(myKey);
-    //
-    //     return keyParam;
-    // }
 }

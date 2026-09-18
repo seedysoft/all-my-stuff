@@ -1,5 +1,7 @@
 ﻿namespace Seedysoft.Libs.TelegramBot.Settings;
 
+//                  TODO: Use all data: Group users into prod and test using array or enumerable
+
 public record class TelegramBotSettings : BackgroundServices.ScheduleConfig
 {
     public required TelegramUsers Users { get; init; }
