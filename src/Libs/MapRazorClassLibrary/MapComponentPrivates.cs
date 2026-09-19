@@ -69,7 +69,7 @@ public partial class MapComponent
     private MapModels.Basic.LatLngBounds CurrentLatLngBounds = MapModels.Basic.LatLngBounds.Empty;
 
     private GasStationPrices.Models.ProductLimits[] Prices { get; set; } =
-        [.. GasStationPrices.Models.Minetur.ProductoPetrolifero.All.Select(static p => new GasStationPrices.Models.ProductLimits(p.IdProducto))];
+        [.. GasStationPrices.Models.Minetur.ProductoPetrolifero.Available.Select(static p => new GasStationPrices.Models.ProductLimits(p.IdProducto))];
 
     private void SetPetroleumProductsSelectedIds(
         System.Collections.Immutable.ImmutableSortedSet<GasStationPrices.Models.Minetur.ProductoPetrolifero>? fromWhat)
@@ -181,7 +181,7 @@ public partial class MapComponent
 
         // For each product, obtain min, average and max
         GasStationPrices.Models.ProductLimits[] productLimits = [..
-            from p in GasStationPrices.Models.Minetur.ProductoPetrolifero.All
+            from p in GasStationPrices.Models.Minetur.ProductoPetrolifero.Available
             //where model.PetroleumProductsSelectedIds.Contains(p.IdProducto)
             let v = gasStations.Select(x => x.GetProdById(p.IdProducto))//.Where(x => x.HasValue)
             select new GasStationPrices.Models.ProductLimits(
@@ -302,7 +302,7 @@ public partial class MapComponent
             foreach (GasStationPrices.Constants.ProductoPetroliferoId item in GasStationsQueryModel.PetroleumProductsSelectedIds)
             {
                 GasStationPrices.Models.Minetur.ProductoPetrolifero productoPetrolifero =
-                    GasStationPrices.Models.Minetur.ProductoPetrolifero.All.First(x => x.IdProducto == item);
+                    GasStationPrices.Models.Minetur.ProductoPetrolifero.Available.First(x => x.IdProducto == item);
 
                 decimal? GasVal = GasStation.GetProdById(productoPetrolifero.IdProducto);
                 if (!GasVal.HasValue)

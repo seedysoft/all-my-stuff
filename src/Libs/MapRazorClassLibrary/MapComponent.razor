@@ -19,11 +19,11 @@
         <MudButtonGroup Class="gap-4 pa-4" FullWidth Size="@Size.Medium" Variant="@variant">
 
             <MudButton ButtonType="@ButtonType.Button"
-                       IconColor="@(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.All.Count == GasStationsQueryModel.PetroleumProductsSelectedIds?.Count() ? Color.Primary : Color.Secondary)"
+                       IconColor="@(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.Available.Count == GasStationsQueryModel.PetroleumProductsSelectedIds?.Count() ? Color.Primary : Color.Secondary)"
                        EndIcon="@Icons.Material.Filled.SelectAll"
                        IconSize="@Size.Large"
-                       OnClick="@(()=> SetPetroleumProductsSelectedIds(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.All))">
-                @nameof(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.All)
+                       OnClick="@(()=> SetPetroleumProductsSelectedIds(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.Available))">
+                @nameof(Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.Available)
             </MudButton>
 
             <MudButton ButtonType="@ButtonType.Button"
@@ -59,7 +59,7 @@
                         Values="@GasStationsQueryModel.PetroleumProductsSelectedIds"
                         ValuesChanged="OnMudToggleGroupValuesChangedAsync">
             @{
-                @foreach (Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero item in Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.All)
+                @foreach (Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero item in Libs.GasStationPrices.Models.Minetur.ProductoPetrolifero.Available)
                 {
                     Libs.GasStationPrices.Models.ProductLimits Price = Prices.First(x => x.IdP == item.IdProducto);
                     <MudToggleItem Value="@item.IdProducto">

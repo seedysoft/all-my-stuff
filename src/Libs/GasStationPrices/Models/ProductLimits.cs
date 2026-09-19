@@ -22,5 +22,5 @@ public class ProductLimits(Constants.ProductoPetroliferoId idP, decimal? min = n
         val.HasValue ? val.Value.ToString("0.000", Core.Constants.Globalization.NumberFormatInfoInvariant) : "null";
 
     public override string ToString() =>
-        $"Id {$"{Minetur.ProductoPetrolifero.All.First(x => x.IdProducto == IdP).Abreviatura,10}"} ⬇ {MinOrNull} ~ {AvgOrNull} ⬆ {MaxOrNull}";
+        $"Id {$"{Minetur.ProductoPetrolifero.Available.First(x => x.IdProducto == IdP).Abreviatura,10}"} ⬇ {MinOrNull} ~ {AvgOrNull} ⬆ {MaxOrNull}";
 }
