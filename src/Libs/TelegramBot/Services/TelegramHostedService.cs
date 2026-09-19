@@ -165,8 +165,11 @@ public class TelegramHostedService : Core.NonBackgroundServiceBase, IHostedServi
         ReplyMarkup replyMarkup,
         CancellationToken cancellationToken)
     {
-        if (System.Diagnostics.Debugger.IsAttached)
-            to = Settings.Users.UserTest.IdAsLong;
+        if (System.Diagnostics.Debugger.IsAttached && to != Settings.KnownUserForTest.IdAsLong)
+        {
+            System.Diagnostics.Debugger.Break();
+            to = Settings.KnownUserForTest.IdAsLong;
+        }
 
         text = text[..Math.Min(text.Length, Core.Constants.Telegram.MessageLengthLimit)];
         ChatId ToChatId = new(to);
@@ -200,8 +203,11 @@ public class TelegramHostedService : Core.NonBackgroundServiceBase, IHostedServi
         ParseMode? parseMode,
         CancellationToken cancellationToken)
     {
-        if (System.Diagnostics.Debugger.IsAttached && to != Settings.Users.UserTest.IdAsLong)
-            to = Settings.Users.UserTest.IdAsLong;
+        if (System.Diagnostics.Debugger.IsAttached && to != Settings.KnownUserForTest.IdAsLong)
+        {
+            System.Diagnostics.Debugger.Break();
+            to = Settings.KnownUserForTest.IdAsLong;
+        }
 
         text = text[..Math.Min(text.Length, Core.Constants.Telegram.MessageLengthLimit)];
         ChatId ToChatId = new(to);

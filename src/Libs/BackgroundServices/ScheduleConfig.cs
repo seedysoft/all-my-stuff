@@ -1,6 +1,6 @@
 ﻿namespace Seedysoft.Libs.BackgroundServices;
 
-public record class ScheduleConfig
+public record ScheduleConfig
 {
     public required string CronExpression { get; init; }
 

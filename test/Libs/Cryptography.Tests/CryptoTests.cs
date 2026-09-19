@@ -6,6 +6,7 @@ public sealed class CryptoTests : Libs.Tests.TUnitTestClassBase
     [CombinedDataSources]
     public async Task DecryptTextThenEncryptTextTest(
         [Arguments(@"Xdsr1WX0E0YrR5CwtR6N8H875NLyzqaG8eKW8wLZ2ZHGEosmYFsHNVZHhAGCAJGj/vyV1RMWSbx7wXtyYDPDSbkU/0RF5BOkKQTf5u6p7MmFnU7sow62CJcxbELpp40viykbiI5grjR1AiOqm4QpQIATZ1Jssep+qG0GzQ7O6e8=")]
+        [Arguments(@"TbM8Umt/PVYuUtyggh/ctpOdM+xrNX4KzXNEmnsRe6k=")]
         string textToDecrypt)
     {
         string decryptedText = Crypto.DecryptText(textToDecrypt, Core.Helpers.EnvironmentHelper.GetMasterKey());
@@ -14,13 +15,16 @@ public sealed class CryptoTests : Libs.Tests.TUnitTestClassBase
         string encryptedText = Crypto.EncryptText(decryptedText, Core.Helpers.EnvironmentHelper.GetMasterKey());
         Console.WriteLine(encryptedText);
 
-        _ = await Assert.That(decryptedText).IsEqualTo(Crypto.DecryptText(encryptedText, Core.Helpers.EnvironmentHelper.GetMasterKey()));
+        string expected = Crypto.DecryptText(encryptedText, Core.Helpers.EnvironmentHelper.GetMasterKey());
+
+        _ = await Assert.That(decryptedText).IsEqualTo(expected);
     }
 
     [Test]
     [CombinedDataSources]
     public async Task EncryptTextThenDecryptTextTest(
         [Arguments(@"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam nulla tellus, elementum sit amet nunc.")]
+        [Arguments(@"SeedySoft")]
         string textToEncrypt)
     {
         string encryptedText = Crypto.EncryptText(textToEncrypt, Core.Helpers.EnvironmentHelper.GetMasterKey());

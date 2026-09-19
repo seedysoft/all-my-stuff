@@ -1,22 +1,30 @@
 ﻿namespace Seedysoft.Libs.TelegramBot.Settings;
 
-//                  TODO: Use all data: Group users into prod and test using array or enumerable
-
-public record class TelegramBotSettings : BackgroundServices.ScheduleConfig
+public record TelegramBotSettings : BackgroundServices.ScheduleConfig
 {
-    public required TelegramUsers Users { get; init; }
+    public required TelegramBot BotProd { get; init; }
+    public required TelegramBot BotTest { get; init; }
 
-    public TelegramBotUser CurrentBot => System.Diagnostics.Debugger.IsAttached ? Users.BotTest : Users.BotProd;
+    public required TelegramKnowUser KnownUserForTest { get; init; }
+
+    public TelegramBot CurrentBot
+    {
+        get
+        {
+            if (System.Diagnostics.Debugger.IsAttached)
+            {
+                System.Diagnostics.Debugger.Break();
+                return BotTest;
+            }
+            else
+            {
+                return BotProd;
+            }
+        }
+    }
 }
 
-public record class TelegramUsers
-{
-    public required TelegramBotUser BotProd { get; init; }
-    public required TelegramBotUser BotTest { get; init; }
-    public required TelegramKnowUser UserTest { get; init; }
-}
-
-public record class TelegramBotUser : TelegramUserBase
+public record TelegramBot : TelegramAccountBase
 {
     public required string Token
     {
@@ -30,9 +38,9 @@ public record class TelegramBotUser : TelegramUserBase
     public void SetMe(Telegram.Bot.Types.User user) => SenderUser = user;
 }
 
-public record class TelegramKnowUser : TelegramUserBase { }
+public record TelegramKnowUser : TelegramAccountBase { }
 
-public abstract record class TelegramUserBase
+public abstract record TelegramAccountBase
 {
     public required string Id
     {

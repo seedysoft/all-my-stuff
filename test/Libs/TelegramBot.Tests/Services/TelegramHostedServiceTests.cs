@@ -25,7 +25,7 @@ public sealed class TelegramHostedServiceTests : Infrastructure.Tests.TestClassB
 
         // Act
         Telegram.Bot.Types.Message result = await telegramHostedService.MessageSendTextAsync(
-            to: telegramHostedService.Settings.Users.UserTest.IdAsLong,
+            to: telegramHostedService.Settings.KnownUserForTest.IdAsLong,
             text: text,
             parseMode: null,
             cancellationToken: cancellationToken);
@@ -45,7 +45,7 @@ public sealed class TelegramHostedServiceTests : Infrastructure.Tests.TestClassB
 
         // Act
         Telegram.Bot.Types.Message result = await telegramHostedService.MessageSendTextAsync(
-            to: telegramHostedService.Settings.Users.UserTest.IdAsLong,
+            to: telegramHostedService.Settings.KnownUserForTest.IdAsLong,
             text: htmlText,
             parseMode: null,
             cancellationToken: cancellationToken);
@@ -66,7 +66,7 @@ public sealed class TelegramHostedServiceTests : Infrastructure.Tests.TestClassB
 
         // Act
         Telegram.Bot.Types.Message result = await telegramHostedService.MessageSendTextAsync(
-            to: telegramHostedService.Settings.Users.UserTest.IdAsLong,
+            to: telegramHostedService.Settings.KnownUserForTest.IdAsLong,
             text: text,
             parseMode: parseMode,
             cancellationToken: cancellationToken);
@@ -84,7 +84,7 @@ public sealed class TelegramHostedServiceTests : Infrastructure.Tests.TestClassB
 
         // Act
         Telegram.Bot.Types.Message result = await telegramHostedService.MessageSendTextAsync(
-            to: telegramHostedService.Settings.Users.UserTest.IdAsLong,
+            to: telegramHostedService.Settings.KnownUserForTest.IdAsLong,
             text: longText,
             parseMode: null,
             cancellationToken: cancellationToken);
@@ -104,7 +104,7 @@ public sealed class TelegramHostedServiceTests : Infrastructure.Tests.TestClassB
         // Act & Assert (Bad Request: message text is empty)
         _ = await Assert.ThrowsAsync<Telegram.Bot.Exceptions.ApiRequestException>(
             () => telegramHostedService.MessageSendTextAsync(
-                to: telegramHostedService.Settings.Users.UserTest.IdAsLong,
+                to: telegramHostedService.Settings.KnownUserForTest.IdAsLong,
                 text: text,
                 parseMode: null,
                 cancellationToken: cancellationToken));
@@ -121,7 +121,7 @@ public sealed class TelegramHostedServiceTests : Infrastructure.Tests.TestClassB
         // Act & Assert
         _ = await Assert.ThrowsAsync<OperationCanceledException>(
             () => telegramHostedService.MessageSendTextAsync(
-                to: telegramHostedService.Settings.Users.UserTest.IdAsLong,
+                to: telegramHostedService.Settings.KnownUserForTest.IdAsLong,
                 text: text,
                 parseMode: null,
                 cancellationToken: cts.Token));
@@ -139,7 +139,7 @@ public sealed class TelegramHostedServiceTests : Infrastructure.Tests.TestClassB
 
         // Act
         Telegram.Bot.Types.Message result = await telegramHostedService.MessageSendTextAsync(
-            to: telegramHostedService.Settings.Users.UserTest.IdAsLong,
+            to: telegramHostedService.Settings.KnownUserForTest.IdAsLong,
             text: htmlText,
             parseMode: null,
             cancellationToken: cancellationToken);
@@ -162,7 +162,7 @@ public sealed class TelegramHostedServiceTests : Infrastructure.Tests.TestClassB
 
         // Act
         Telegram.Bot.Types.Message result = await telegramHostedService.MessageSendTextAsync(
-            to: telegramHostedService.Settings.Users.UserTest.IdAsLong,
+            to: telegramHostedService.Settings.KnownUserForTest.IdAsLong,
             text: plainText,
             parseMode: parseMode,
             cancellationToken: cancellationToken);
@@ -180,7 +180,7 @@ public sealed class TelegramHostedServiceTests : Infrastructure.Tests.TestClassB
 
         // Act
         Telegram.Bot.Types.Message result = await telegramHostedService.MessageSendTextAsync(
-            to: telegramHostedService.Settings.Users.UserTest.IdAsLong,
+            to: telegramHostedService.Settings.KnownUserForTest.IdAsLong,
             text: exactLimitText,
             parseMode: null,
             cancellationToken: cancellationToken);
@@ -199,7 +199,7 @@ public sealed class TelegramHostedServiceTests : Infrastructure.Tests.TestClassB
 
         // Act
         Telegram.Bot.Types.Message result = await telegramHostedService.MessageSendTextAsync(
-            to: telegramHostedService.Settings.Users.UserTest.IdAsLong,
+            to: telegramHostedService.Settings.KnownUserForTest.IdAsLong,
             text: textWithSpecialChars,
             parseMode: null,
             cancellationToken: cancellationToken);
@@ -217,7 +217,7 @@ public sealed class TelegramHostedServiceTests : Infrastructure.Tests.TestClassB
 
         // Act
         Telegram.Bot.Types.Message result = await telegramHostedService.MessageSendTextAsync(
-            to: telegramHostedService.Settings.Users.UserTest.IdAsLong,
+            to: telegramHostedService.Settings.KnownUserForTest.IdAsLong,
             text: unicodeText,
             parseMode: null,
             cancellationToken: cancellationToken);
@@ -236,7 +236,7 @@ public sealed class TelegramHostedServiceTests : Infrastructure.Tests.TestClassB
 
         // Act
         Telegram.Bot.Types.Message result = await telegramHostedService.MessageSendTextAsync(
-            to: telegramHostedService.Settings.Users.UserTest.IdAsLong,
+            to: telegramHostedService.Settings.KnownUserForTest.IdAsLong,
             text: text,
             parseMode: parseMode,
             cancellationToken: cancellationToken);
@@ -256,7 +256,7 @@ public sealed class TelegramHostedServiceTests : Infrastructure.Tests.TestClassB
         foreach (string? text in texts)
         {
             Telegram.Bot.Types.Message result = await telegramHostedService.MessageSendTextAsync(
-                to: telegramHostedService.Settings.Users.UserTest.IdAsLong,
+                to: telegramHostedService.Settings.KnownUserForTest.IdAsLong,
                 text: text,
                 parseMode: null,
                 cancellationToken: cancellationToken);
@@ -271,7 +271,7 @@ public sealed class TelegramHostedServiceTests : Infrastructure.Tests.TestClassB
     {
         // Arrange
         long[] chatIds = [
-            telegramHostedService.Settings.Users.UserTest.IdAsLong,
+            telegramHostedService.Settings.KnownUserForTest.IdAsLong,
             //Constants.TelegramIds.BotFather,
             // TODO Find more user ids to test
         ];
@@ -290,28 +290,5 @@ public sealed class TelegramHostedServiceTests : Infrastructure.Tests.TestClassB
             Assert.NotNull(result);
             _ = await Assert.That(result.Chat.Id).IsEqualTo(chatId);
         }
-    }
-
-    [Test]
-    [CombinedDataSources]
-    [Explicit]
-    public async Task SendMessageToSubscribersForBotChangeTest(
-        [Arguments(@"VnibqN/fzFJlwyND57m9kyxOwhdhr1SxklFvKKMsweE=")]
-        string destinationUser)
-    {
-        // Arrange
-        const string text = "Por favor, envía un mensaje a @SeedySoftBot para seguir recibiendo novedades";
-        CancellationToken cancellationToken = CancellationToken.None;
-
-        // Act
-        Telegram.Bot.Types.Message result = await telegramHostedService.MessageSendTextAsync(
-            to: long.Parse(Cryptography.Crypto.DecryptText(destinationUser, Core.Helpers.EnvironmentHelper.GetMasterKey())),
-            text: text,
-            parseMode: null,
-            cancellationToken: cancellationToken);
-
-        // Assert
-        Assert.NotNull(result);
-        _ = await Assert.That(result.Text).IsEqualTo(text);
     }
 }
