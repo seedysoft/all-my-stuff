@@ -1,52 +1,57 @@
 ﻿namespace Seedysoft.Libs.TelegramBot.Settings;
 
-public record class TelegramBotSettings : BackgroundServices.ScheduleConfig
+public record TelegramBotSettings : BackgroundServices.ScheduleConfig
 {
-    public required Users Users { get; init; }
+    public required TelegramBot BotProd { get; init; }
+    public required TelegramBot BotTest { get; init; }
 
-    public TelegramBotUser CurrentBot => System.Diagnostics.Debugger.IsAttached ? Users.BotTest : Users.BotProd;
+    public required TelegramKnowUser KnownUserForTest { get; init; }
+
+    public TelegramBot CurrentBot
+    {
+        get
+        {
+            if (System.Diagnostics.Debugger.IsAttached)
+            {
+                System.Diagnostics.Debugger.Break();
+                return BotTest;
+            }
+            else
+            {
+                return BotProd;
+            }
+        }
+    }
 }
 
-public record class Users
+public record TelegramBot : TelegramAccountBase
 {
-    public required TelegramBotUser BotProd { get; init; }
-    public required TelegramBotUser BotTest { get; init; }
-    public required TelegramKnowUser UserTest { get; init; }
-}
-
-public record class TelegramBotUser : TelegramUserBase
-{
-    public string Token
+    public required string Token
     {
         get;
         init => field = Cryptography.Crypto.DecryptText(value, Core.Helpers.EnvironmentHelper.GetMasterKey());
-    } = default!;
+    }
+    public string FullToken => $"{Id}:{Token}";
 
     public Telegram.Bot.Types.User? SenderUser { get; protected set; }
 
     public void SetMe(Telegram.Bot.Types.User user) => SenderUser = user;
 }
 
-public record class TelegramKnowUser : TelegramUserBase { }
+public record TelegramKnowUser : TelegramAccountBase { }
 
-public record class TelegramUser
+public abstract record TelegramAccountBase
 {
-    public required TelegramBotUser BotProd { get; init; }
-    public required TelegramBotUser BotTest { get; init; }
-
-    public required TelegramKnowUser UserTest { get; init; }
-}
-
-public abstract record class TelegramUserBase
-{
-    public string Id
+    public required string Id
     {
         get;
         init => field = Cryptography.Crypto.DecryptText(value, Core.Helpers.EnvironmentHelper.GetMasterKey());
-    } = default!;
-    public string Username
+    }
+    public long IdAsLong => long.Parse(Id);
+
+    public required string Username
     {
         get;
         init => field = Cryptography.Crypto.DecryptText(value, Core.Helpers.EnvironmentHelper.GetMasterKey());
-    } = default!;
+    }
 }

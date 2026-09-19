@@ -2,15 +2,23 @@
 
 public static class EnvironmentHelper
 {
-    private static Lazy<string?> MasterKey = null!;
+    private static readonly SemaphoreSlim semaphoreSlim = new(initialCount: 1, maxCount: 1);
+
+    private static string? MasterKey = null;
     public static string GetMasterKey()
     {
         const string MasterKeyEnvironmentVariableName = "SEEDY_MASTER_KEY";
 
-        MasterKey ??= new(Environment.GetEnvironmentVariable(MasterKeyEnvironmentVariableName));
+        semaphoreSlim.Wait();
 
-        return string.IsNullOrWhiteSpace(MasterKey.Value)
-            ? throw new Exception($"Environment variable {MasterKeyEnvironmentVariableName} is not established.")
-            : MasterKey.Value;
+        if (MasterKey == null)
+        {
+            MasterKey = Environment.GetEnvironmentVariable(MasterKeyEnvironmentVariableName);
+            System.Diagnostics.Trace.Assert(!string.IsNullOrWhiteSpace(MasterKey));
+        }
+
+        _ = semaphoreSlim.Release();
+
+        return MasterKey;
     }
 }

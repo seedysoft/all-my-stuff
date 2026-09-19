@@ -1,12 +1,13 @@
-﻿using System.Security.Cryptography;
-
-namespace Seedysoft.Libs.Cryptography;
+﻿namespace Seedysoft.Libs.Cryptography;
 
 public static class Crypto
 {
-    internal static readonly System.Text.Encoding Encoding = System.Text.Encoding.Latin1;
+    private static readonly System.Text.Encoding Encoding = System.Text.Encoding.Latin1;
 
-    public static bool CanEncryptText(string textToEncrypt, string key, CipherMode cipherMode = CipherMode.CBC)
+    internal static bool CanEncryptText(
+        string textToEncrypt,
+        string key,
+        System.Security.Cryptography.CipherMode cipherMode = System.Security.Cryptography.CipherMode.CBC)
     {
         try
         {
@@ -21,50 +22,60 @@ public static class Crypto
 
         return false;
     }
-    public static string EncryptText(string textToEncrypt, string key, CipherMode cipherMode = CipherMode.CBC)
+    internal static string EncryptText(
+        string textToEncrypt,
+        string key,
+        System.Security.Cryptography.CipherMode cipherMode = System.Security.Cryptography.CipherMode.CBC)
     {
         return CanEncryptText(textToEncrypt, key, cipherMode)
             ? Convert.ToBase64String(EncryptBytes(Encoding.GetBytes(textToEncrypt), Convert.FromBase64String(key), cipherMode))
             : throw new InvalidDataException($"Cannot Encrypt {textToEncrypt} with {key} key and mode {cipherMode}");
     }
 
-    public static bool CanDecryptText(string encryptedText, string key, CipherMode cipherMode = CipherMode.CBC)
+    internal static bool CanDecryptText(
+        string encryptedText,
+        string key,
+        System.Security.Cryptography.CipherMode cipherMode = System.Security.Cryptography.CipherMode.CBC)
     {
-        if (string.IsNullOrWhiteSpace(encryptedText))
-            return false;
-        if (string.IsNullOrWhiteSpace(key))
+        if (string.IsNullOrWhiteSpace(encryptedText) || string.IsNullOrWhiteSpace(key))
             return false;
 
         try
         {
             byte[] encryptedTextBytes = Convert.FromBase64String(encryptedText);
             byte[] keyBytes = Convert.FromBase64String(key);
-            byte[] decryptedBytes = DecryptBytes(Convert.FromBase64String(encryptedText), Convert.FromBase64String(key), cipherMode);
+            byte[] decryptedBytes = DecryptBytes(encryptedTextBytes, keyBytes, cipherMode);
             string decryptedText = Encoding.GetString(decryptedBytes);
 
             return true;
         }
-        catch { }
+        catch (Exception) { /* ignored */ }
 
         return false;
     }
-    public static string DecryptText(string encryptedText, string key, CipherMode cipherMode = CipherMode.CBC)
+    public static string DecryptText(
+        string encryptedText,
+        string key,
+        System.Security.Cryptography.CipherMode cipherMode = System.Security.Cryptography.CipherMode.CBC)
     {
         return CanDecryptText(encryptedText, key, cipherMode)
             ? Encoding.GetString(DecryptBytes(Convert.FromBase64String(encryptedText), Convert.FromBase64String(key), cipherMode))
             : throw new InvalidDataException($"Cannot Decrypt {encryptedText} with {key} key and mode {cipherMode}");
     }
 
-    private static byte[] EncryptBytes(byte[] inputBuffer, byte[] key, CipherMode cipherMode)
+    private static byte[] EncryptBytes(
+        byte[] inputBuffer,
+        byte[] key,
+        System.Security.Cryptography.CipherMode cipherMode)
     {
         ArgumentNullException.ThrowIfNull(inputBuffer);
 
         byte[] iv;
         byte[] cipherText;
 
-        using (Aes cipher = BuildCryptographicObject(key, cipherMode))
+        using (System.Security.Cryptography.Aes cipher = BuildCryptographicObject(key, cipherMode))
         {
-            using ICryptoTransform symmetricEncryptor = cipher.CreateEncryptor();
+            using System.Security.Cryptography.ICryptoTransform symmetricEncryptor = cipher.CreateEncryptor();
             iv = cipher.IV;
 
             cipherText = Transform(symmetricEncryptor, inputBuffer, 0, inputBuffer.Length);
@@ -83,23 +94,30 @@ public static class Crypto
         return combinedData;
     }
 
-    private static byte[] DecryptBytes(byte[] encryptedBytes, byte[] key, CipherMode cipherMode)
+    private static byte[] DecryptBytes(
+        byte[] encryptedBytes,
+        byte[] key,
+        System.Security.Cryptography.CipherMode cipherMode)
     {
         ArgumentNullException.ThrowIfNull(encryptedBytes);
 
-        using Aes cipher = BuildCryptographicObject(key, cipherMode);
+        using System.Security.Cryptography.Aes cipher = BuildCryptographicObject(key, cipherMode);
         int cipherTextOffset = cipher.IV.Length;
 
         byte[] iv = new byte[cipherTextOffset];
         Buffer.BlockCopy(encryptedBytes, 0, iv, 0, iv.Length);
         cipher.IV = iv;
 
-        using ICryptoTransform decryptor = cipher.CreateDecryptor();
+        using System.Security.Cryptography.ICryptoTransform decryptor = cipher.CreateDecryptor();
 
         return Transform(decryptor, encryptedBytes, cipherTextOffset, encryptedBytes.Length - cipherTextOffset);
     }
 
-    private static byte[] Transform(ICryptoTransform cryptoTransform, byte[] inputBuffer, int inputOffset, int inputCount)
+    private static byte[] Transform(
+        System.Security.Cryptography.ICryptoTransform cryptoTransform,
+        byte[] inputBuffer,
+        int inputOffset,
+        int inputCount)
     {
         ArgumentNullException.ThrowIfNull(cryptoTransform);
         ArgumentNullException.ThrowIfNull(inputBuffer);
@@ -110,21 +128,24 @@ public static class Crypto
             return cryptoTransform.TransformFinalBlock(inputBuffer, inputOffset, inputCount);
 
         using MemoryStream memoryStream = new();
-        using CryptoStream cryptoStream = new(memoryStream, cryptoTransform, CryptoStreamMode.Write);
+        using System.Security.Cryptography.CryptoStream cryptoStream =
+            new(memoryStream, cryptoTransform, System.Security.Cryptography.CryptoStreamMode.Write);
         cryptoStream.Write(inputBuffer, inputOffset, inputCount);
         cryptoStream.FlushFinalBlock();
 
         return memoryStream.ToArray();
     }
 
-    private static Aes BuildCryptographicObject(byte[] key, CipherMode cipherMode)
+    private static System.Security.Cryptography.Aes BuildCryptographicObject(
+        byte[] key,
+        System.Security.Cryptography.CipherMode cipherMode)
     {
         ArgumentNullException.ThrowIfNull(key);
 
-        var aes = Aes.Create();
+        var aes = System.Security.Cryptography.Aes.Create();
         aes.Key = key; //aes.KeySize = masterKey.Length * 8L;
         aes.Mode = cipherMode;
-        aes.Padding = PaddingMode.ISO10126;
+        aes.Padding = System.Security.Cryptography.PaddingMode.ISO10126;
 
         return aes;
     }

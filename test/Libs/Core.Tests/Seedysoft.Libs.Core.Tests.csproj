@@ -4,6 +4,9 @@
         <OutputType>Exe</OutputType>
         <UseTestingPlatform>true</UseTestingPlatform>
     </PropertyGroup>
+    <ItemGroup>
+      <Compile Include="..\..\TUnitTestClassBase.cs" Link="TUnitTestClassBase.cs" />
+    </ItemGroup>
 
     <ItemGroup>
         <PackageReference Include="CommandLineParser" Version="2.9.1" />
@@ -11,5 +14,9 @@
         <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.12" />
         <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="10.0.12" />
         <PackageReference Include="TUnit" Version="1.68.4" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\..\src\Libs\Core\Seedysoft.Libs.Core.csproj" />
     </ItemGroup>
 </Project>

@@ -16,6 +16,8 @@ public sealed class PvpcCronBackgroundServiceTests : Libs.Infrastructure.Tests.T
         Settings.PvpcSettings pvpcSettings = new()
         {
             CronExpression = "* * 30 2 *", // At every minute on day-of-month 30 in February.
+            DelayBetweenExecutionsTimeSpan= TimeSpan.FromSeconds(1),
+            TimeZoneInfo = TimeZoneInfo.Local,
             DataUrlTemplate = @"https://apidatos.ree.es/es/datos/mercados/precios-mercados-tiempo-real?start_date={0:yyyy-MM-dd}T00:00&end_date={0:yyyy-MM-dd}T23:59&time_trunc=hour&geo_limit=peninsular",
             PvpcId = "1001",
         };
@@ -47,6 +49,8 @@ public sealed class PvpcCronBackgroundServiceTests : Libs.Infrastructure.Tests.T
         Settings.TuyaManagerSettings tuyaManagerSettings = new()
         {
             CronExpression = Cronos.CronExpression.Hourly.ToString(),
+            DelayBetweenExecutionsTimeSpan = TimeSpan.FromSeconds(1),
+            TimeZoneInfo = TimeZoneInfo.Local,
             AllowChargeWhenKWhPriceInEurosIsBelowThan = decimal.MaxValue,
             ChargingHoursPerDay = 4,
         };
@@ -66,6 +70,8 @@ public sealed class PvpcCronBackgroundServiceTests : Libs.Infrastructure.Tests.T
         Settings.TuyaManagerSettings tuyaManagerSettings = new()
         {
             CronExpression = Cronos.CronExpression.Hourly.ToString(),
+            DelayBetweenExecutionsTimeSpan = TimeSpan.FromSeconds(1),
+            TimeZoneInfo = TimeZoneInfo.Local,
             AllowChargeWhenKWhPriceInEurosIsBelowThan = decimal.MaxValue,
             ChargingHoursPerDay = 4,
         };
@@ -85,6 +91,8 @@ public sealed class PvpcCronBackgroundServiceTests : Libs.Infrastructure.Tests.T
         Settings.TuyaManagerSettings tuyaManagerSettings = new()
         {
             CronExpression = Cronos.CronExpression.Hourly.ToString(),
+            DelayBetweenExecutionsTimeSpan = TimeSpan.FromSeconds(1),
+            TimeZoneInfo = TimeZoneInfo.Local,
             AllowChargeWhenKWhPriceInEurosIsBelowThan = MinPriceAllowed,
             ChargingHoursPerDay = 4,
         };

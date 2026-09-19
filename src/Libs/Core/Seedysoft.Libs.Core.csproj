@@ -13,4 +13,8 @@
     <ItemGroup>
         <InternalsVisibleTo Include="Seedysoft.Libs.Core.Tests" />
     </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Cryptography\Seedysoft.Libs.Cryptography.csproj" />
+    </ItemGroup>
 </Project>

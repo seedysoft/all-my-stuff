@@ -8,8 +8,11 @@ public sealed class Configurator : Libs.Core.Dependencies.ConfiguratorBase
 {
     protected override void AddJsonFiles(IHostApplicationBuilder hostApplicationBuilder)
     {
+        string CurrentEnvironmentName = hostApplicationBuilder.Environment.EnvironmentName;
+
         _ = hostApplicationBuilder.Configuration
-            .AddJsonFile($"appsettings.{nameof(Settings.OutboxSettings)}.json", optional: false, reloadOnChange: true);
+            .AddJsonFile($"appsettings.{nameof(Settings.OutboxSettings)}.json", optional: false, reloadOnChange: true)
+            .AddJsonFile($"appsettings.{nameof(Settings.OutboxSettings)}.{CurrentEnvironmentName}.json", optional: false, reloadOnChange: true);
     }
 
     protected override void AddDbContexts(IHostApplicationBuilder hostApplicationBuilder) { /* No DbContexts */ }

@@ -65,4 +65,8 @@
         <ProjectReference Include="..\Core\Seedysoft.Libs.Core.csproj" />
         <ProjectReference Include="..\Cryptography\Seedysoft.Libs.Cryptography.csproj" />
     </ItemGroup>
+
+    <ItemGroup>
+        <InternalsVisibleTo Include="Seedysoft.Libs.TelegramBot.Tests" />
+    </ItemGroup>
 </Project>

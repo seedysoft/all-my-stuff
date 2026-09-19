@@ -2,7 +2,9 @@
 
 public readonly record struct Body
 {
-    [J("Fecha")] public required string Fecha { get; init; }
+    public Body() => EstacionesTerrestres = [];
+
+    [J("Fecha")] public string? Fecha { get; init; }
     /// <summary>
     /// Sample: 05/02/2025 20:43:02
     /// </summary>
@@ -21,11 +23,11 @@ public readonly record struct Body
         }
     }
 
-    [J("ListaEESSPrecio")] public required EstacionTerrestre[] EstacionesTerrestres { get; init; }
+    [J("ListaEESSPrecio")] public EstacionTerrestre[] EstacionesTerrestres { get; init; }
 
-    [J("Nota")] public required string Nota { get; init; }
+    [J("Nota")] public string? Nota { get; init; }
 
-    [J("ResultadoConsulta")] public required string ResultadoConsulta { get; init; }
+    [J("ResultadoConsulta")] public string? ResultadoConsulta { get; init; }
 }
 
 public sealed class EstacionTerrestre

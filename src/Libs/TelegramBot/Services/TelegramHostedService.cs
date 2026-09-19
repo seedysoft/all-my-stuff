@@ -17,8 +17,9 @@ namespace Seedysoft.Libs.TelegramBot.Services;
 public class TelegramHostedService : Core.NonBackgroundServiceBase, IHostedService
 {
     private readonly ILogger<TelegramHostedService> Logger;
-    private readonly Settings.TelegramBotSettings Settings;
     private readonly TelegramBotClient LocalTelegramBotClient;
+
+    public Settings.TelegramBotSettings Settings { get; private init; }
 
     public TelegramHostedService(IServiceProvider serviceProvider) : base(serviceProvider)
     {
@@ -27,14 +28,12 @@ public class TelegramHostedService : Core.NonBackgroundServiceBase, IHostedServi
         Settings = ServiceProvider.GetRequiredService<IConfiguration>()
             .GetSection(nameof(TelegramBot.Settings.TelegramBotSettings)).Get<Settings.TelegramBotSettings>()!;
 
-        TelegramBotClientOptions telegramBotClientOptions = new(
-            token: $"{Settings.CurrentBot.Id}:{Settings.CurrentBot.Token}");
+        TelegramBotClientOptions telegramBotClientOptions = new(Settings.CurrentBot.FullToken);
 
         LocalTelegramBotClient = new TelegramBotClient(telegramBotClientOptions);
     }
 
-    public async Task StartAsync(
-        CancellationToken cancellationToken)
+    public async Task StartAsync(CancellationToken cancellationToken)
     {
         if (System.Diagnostics.Debugger.IsAttached)
             System.Diagnostics.Debugger.Break();
@@ -48,8 +47,7 @@ public class TelegramHostedService : Core.NonBackgroundServiceBase, IHostedServi
 
         await Task.CompletedTask;
     }
-    public async Task StopAsync(
-        CancellationToken cancellationToken)
+    public async Task StopAsync(CancellationToken cancellationToken)
     {
         if (Logger.IsEnabled(LogLevel.Information))
             Logger.LogInformation("End {ApplicationName}", GetType().FullName);
@@ -167,8 +165,11 @@ public class TelegramHostedService : Core.NonBackgroundServiceBase, IHostedServi
         ReplyMarkup replyMarkup,
         CancellationToken cancellationToken)
     {
-        if (System.Diagnostics.Debugger.IsAttached)
-            to = long.Parse(Settings.Users.UserTest.Id);
+        if (System.Diagnostics.Debugger.IsAttached && to != Settings.KnownUserForTest.IdAsLong)
+        {
+            System.Diagnostics.Debugger.Break();
+            to = Settings.KnownUserForTest.IdAsLong;
+        }
 
         text = text[..Math.Min(text.Length, Core.Constants.Telegram.MessageLengthLimit)];
         ChatId ToChatId = new(to);
@@ -196,14 +197,17 @@ public class TelegramHostedService : Core.NonBackgroundServiceBase, IHostedServi
         }
     }
 
-    private async Task<Message> MessageSendTextAsync(
+    internal async Task<Message> MessageSendTextAsync(
         long to,
         string text,
         ParseMode? parseMode,
         CancellationToken cancellationToken)
     {
-        if (System.Diagnostics.Debugger.IsAttached)
-            to = long.Parse(Settings.Users.UserTest.Id);
+        if (System.Diagnostics.Debugger.IsAttached && to != Settings.KnownUserForTest.IdAsLong)
+        {
+            System.Diagnostics.Debugger.Break();
+            to = Settings.KnownUserForTest.IdAsLong;
+        }
 
         text = text[..Math.Min(text.Length, Core.Constants.Telegram.MessageLengthLimit)];
         ChatId ToChatId = new(to);

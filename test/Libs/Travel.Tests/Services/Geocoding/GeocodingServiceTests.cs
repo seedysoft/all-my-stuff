@@ -19,15 +19,15 @@ public sealed class GeocodingServiceTests : Infrastructure.Tests.TestClassBase
 
     [Test]
     [CombinedDataSources]
-    public async Task FindPlacesAsyncWithValidTextToFindReturnsPlaces(
-        [Arguments("Barcelona")]
-        [Arguments("Soria")]
-        [Arguments("Juan Ramón Jiménez 8 Burgos")]
-        [Arguments("Manciles")]
-        [Arguments("La Iglesia 11 Brazuelo")]
-        [Arguments("Hontalbilla")]
-        [Arguments("Teruel")]
-        [Arguments("abba ordino babot hotel")]
+    public async Task FindPlacesAsyncWithValidTextToFindReturnsPlacesTest(
+        [Arguments(@"Barcelona")]
+        [Arguments(@"Soria")]
+        [Arguments(@"Juan Ramón Jiménez 8 Burgos")]
+        [Arguments(@"Manciles")]
+        [Arguments(@"La Iglesia 11 Brazuelo")]
+        [Arguments(@"Hontalbilla")]
+        [Arguments(@"Teruel")]
+        [Arguments(@"abba ordino babot hotel")]
         string textToFind)
     {
         // Arrange
@@ -47,7 +47,7 @@ public sealed class GeocodingServiceTests : Infrastructure.Tests.TestClassBase
     }
 
     [Test]
-    public async Task FindPlacesAsyncWithEmptyTextToFindReturnsEmptyOrException()
+    public async Task FindPlacesAsyncWithEmptyTextToFindReturnsEmptyOrExceptionTest()
     {
         // Arrange
         string textToFind = string.Empty;
@@ -62,8 +62,8 @@ public sealed class GeocodingServiceTests : Infrastructure.Tests.TestClassBase
 
     [Test]
     [CombinedDataSources]
-    public async Task FindPlacesAsyncWithCancellationTokenRespectsCancellation(
-        [Arguments("Barcelona")]
+    public async Task FindPlacesAsyncWithCancellationTokenRespectsCancellationTest(
+        [Arguments(@"Barcelona")]
         string textToFind)
     {
         // Arrange
@@ -76,8 +76,8 @@ public sealed class GeocodingServiceTests : Infrastructure.Tests.TestClassBase
 
     [Test]
     [CombinedDataSources]
-    public async Task FindPlacesAsyncWithUnsupportedGeocoderImplThrowsInvalidOperationException(
-        [Arguments("Paris")]
+    public async Task FindPlacesAsyncWithUnsupportedGeocoderImplThrowsInvalidOperationExceptionTest(
+        [Arguments(@"Paris")]
         string textToFind)
     {
         // Arrange

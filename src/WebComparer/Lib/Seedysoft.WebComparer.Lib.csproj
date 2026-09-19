@@ -12,6 +12,28 @@
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
     </ItemGroup>
+	
+    <ItemGroup Condition="'$(Configuration)' == 'Debug'">
+        <Content Include="appsettings.WebComparerSettings.Development.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <DependentUpon>appsettings.WebComparerSettings.json</DependentUpon>
+        </Content>
+        <None Include="appsettings.WebComparerSettings.Production.json">
+            <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+            <DependentUpon>appsettings.WebComparerSettings.json</DependentUpon>
+        </None>
+    </ItemGroup>
+
+    <ItemGroup Condition="'$(Configuration)' == 'Release'">
+        <None Include="appsettings.WebComparerSettings.Development.json">
+            <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+            <DependentUpon>appsettings.WebComparerSettings.json</DependentUpon>
+        </None>
+        <Content Include="appsettings.WebComparerSettings.Production.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <DependentUpon>appsettings.WebComparerSettings.json</DependentUpon>
+        </Content>
+    </ItemGroup>
 
     <ItemGroup>
         <PackageReference Include="CommandLineParser" Version="2.9.1" />

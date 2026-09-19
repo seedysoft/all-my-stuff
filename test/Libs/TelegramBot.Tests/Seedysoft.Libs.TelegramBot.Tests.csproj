@@ -10,11 +10,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\..\src\Libs\Core\Seedysoft.Libs.Core.csproj" />
-        <ProjectReference Include="..\..\..\src\Libs\Cryptography\Seedysoft.Libs.Cryptography.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <Compile Include="..\..\TUnitTestClassBase.cs" Link="TUnitTestClassBase.cs" />
+        <ProjectReference Include="..\..\..\src\Libs\TelegramBot\Seedysoft.Libs.TelegramBot.csproj" />
+        <ProjectReference Include="..\Infrastructure.Tests\Seedysoft.Libs.Infrastructure.Tests.csproj" />
     </ItemGroup>
 </Project>
