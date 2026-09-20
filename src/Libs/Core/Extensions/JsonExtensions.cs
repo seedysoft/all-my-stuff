@@ -2,12 +2,17 @@
 
 public static class JsonExtensions
 {
-    public static T FromJson<T>(this string json)
-        => System.Text.Json.JsonSerializer.Deserialize<T>(json, Serialization.DefaultJsonSerializerOptions.DefaultsReadOnly)
+    public static T FromJson<T>(this string text) =>
+        System.Text.Json.JsonSerializer.Deserialize<T>(
+            json: text,
+            options: Serialization.DefaultJsonSerializerOptions.DefaultsReadOnly)
         ?? throw new InvalidOperationException();
 
-    public static async Task<T> FromJsonAsync<T>(this HttpContent content, CancellationToken cancellationToken)
-        => await System.Text.Json.JsonSerializer.DeserializeAsync<T>(await content.ReadAsStreamAsync(cancellationToken), Serialization.DefaultJsonSerializerOptions.DefaultsReadOnly, cancellationToken)
+    public static async Task<T> FromJsonAsync<T>(this HttpContent content, CancellationToken cancellationToken) =>
+        await System.Text.Json.JsonSerializer.DeserializeAsync<T>(
+            utf8Json: await content.ReadAsStreamAsync(cancellationToken),
+            options: Serialization.DefaultJsonSerializerOptions.DefaultsReadOnly,
+            cancellationToken: cancellationToken)
         ?? throw new InvalidOperationException();
 
     public static string ToJson<T>(

@@ -31,7 +31,7 @@ dotnet publish $ProjectOrSolution -p:PublishDir=$PublishDirectory -c $Configurat
 robocopy $PublishDirectory \\raspberrypi4\rp_st\linux-x64 /MIR /MT /NFL /NDL /NJH /NC /NS /NP
 
 export DOTNET_ENVIRONMENT=Development ;
-./Seedysoft.Libs.GasStationPrices.ConsoleApp ;
+/mnt/st/linux-x64/Seedysoft.Libs.GasStationPrices.ConsoleApp ;
 
 $Configuration="Release"
 $ProjectOrSolution="$env:USERPROFILE\_prog\seedysoft\all-my-stuff\src\Outbox\ConsoleApp\Seedysoft.Outbox.ConsoleApp.csproj"

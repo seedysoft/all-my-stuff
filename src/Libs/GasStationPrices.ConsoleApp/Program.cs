@@ -58,7 +58,7 @@ public sealed class Program : Core.ProgramBase
                 //        maxDistanceInKm: 10,
                 //        cancellationToken: CancelTokenSource.Token);
 
-                await Task.Delay(TimeSpan.FromMinutes(1));
+                await Task.Delay(TimeSpan.FromMinutes(3));
             }
 
             if (Logger.IsEnabled(LogLevel.Information))

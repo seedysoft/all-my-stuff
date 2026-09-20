@@ -31,14 +31,16 @@ public sealed class Configurator : Core.Dependencies.ConfiguratorBase
 
                 httpClient.BaseAddress = new Uri(gasStationPricesService.GasStationPricesSettings.Minetur.Urls.Base);
 
-                httpClient.DefaultRequestHeaders.Accept.Clear();
+                //httpClient.DefaultRequestHeaders.Accept.Clear();
                 httpClient.DefaultRequestHeaders.Accept.ParseAdd("*/*");
-                httpClient.DefaultRequestHeaders.AcceptEncoding.Clear();
+                //httpClient.DefaultRequestHeaders.AcceptEncoding.Clear();
                 httpClient.DefaultRequestHeaders.AcceptEncoding.ParseAdd("gzip, deflate, br");
-                httpClient.DefaultRequestHeaders.Connection.Clear();
+                //httpClient.DefaultRequestHeaders.Connection.Clear();
                 httpClient.DefaultRequestHeaders.Connection.ParseAdd("keep-alive");
-                httpClient.DefaultRequestHeaders.UserAgent.Clear();
+                //httpClient.DefaultRequestHeaders.UserAgent.Clear();
                 httpClient.DefaultRequestHeaders.UserAgent.ParseAdd($"{nameof(GasStationPrices)}/1.0 (Windows 10; Contact: seedysoft@gmail.com)");
+
+                httpClient.Timeout = TimeSpan.FromMinutes(2);
 
             }) // ConfigureHttpClient
 
@@ -51,11 +53,11 @@ public sealed class Configurator : Core.Dependencies.ConfiguratorBase
                     ClientCertificateOptions = ClientCertificateOption.Automatic,
                     PreAuthenticate = true,
                     ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator,
-                    SslProtocols = System.Security.Authentication.SslProtocols.None,
+                    SslProtocols = System.Security.Authentication.SslProtocols.Tls12,
                 };
 
                 return handler;
-            })
+            }) // ConfigurePrimaryHttpMessageHandler
         ;
     }
 }
