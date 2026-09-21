@@ -15,7 +15,7 @@ public static class ModelExtensions
                 Lat             =   (double)estacionTerrestre.Lat,
                 Lon             =   (double)estacionTerrestre.Lon,
                 Localizacion    =   estacionTerrestre.DireccionParsed,
-                Rotulo          =   estacionTerrestre.Rotulo,
+                Rotulo          =   string.IsNullOrWhiteSpace(estacionTerrestre.Rotulo) ? "NULL" : estacionTerrestre.Rotulo,
                 Adb             =   estacionTerrestre.PrecioAdblue.ParseWithNumberFormatInfoES(),
                 //Amo             =   estacionTerrestre.PrecioAmoniaco.ParseWithNumberFormatInfoES(),
                 //Bgnc            =   estacionTerrestre.PrecioBiogasNaturalComprimido.ParseWithNumberFormatInfoES(),

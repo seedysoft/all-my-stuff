@@ -80,7 +80,7 @@ public partial class MapComponent
         await ShowLoaderAsync();
 
         IReadOnlyList<GasStationPrices.ViewModels.GasStationModel> gasStations = await
-            GasStationPricesService.GetNearGasStationsAsync(CurrentLatLngBounds.ToBounds(), cancellationToken);
+            GasStationPricesService.GetNearGasStationsAsync(CurrentLatLngBounds.ToBounds());
 
         if (gasStations.Count == 0)
         {
@@ -282,7 +282,7 @@ public partial class MapComponent
         if (MapModule != null)
         {
             GasStationPrices.ViewModels.GasStationModel? GasStation =
-                await GasStationPricesService.GetGasStationAsync(args.ToLocation(), default);
+                await GasStationPricesService.GetGasStationAsync(args.ToLocation());
             if (GasStation != null)
                 await MapModule.InvokeVoidAsync("showGasStationPopup", BuildPopupContent(GasStation), args);
         }
