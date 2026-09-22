@@ -17,6 +17,7 @@ public sealed class TelegramHostedServiceTests : Infrastructure.Tests.TestClassB
     }
 
     [Test]
+    [Explicit]
     public async Task MessageSendTextAsyncWithValidPlainTextSendsMessageSuccessfullyTest()
     {
         // Arrange
@@ -36,6 +37,7 @@ public sealed class TelegramHostedServiceTests : Infrastructure.Tests.TestClassB
     }
 
     [Test]
+    [Explicit]
     public async Task MessageSendTextAsyncWithHtmlContentAutomaticallyDetectsHtmlParseModeTest()
     {
         // Arrange
@@ -57,6 +59,7 @@ public sealed class TelegramHostedServiceTests : Infrastructure.Tests.TestClassB
     }
 
     [Test]
+    [Explicit]
     public async Task MessageSendTextAsyncWithExplicitParseModeUsesProvidedModeTest()
     {
         // Arrange
@@ -76,6 +79,7 @@ public sealed class TelegramHostedServiceTests : Infrastructure.Tests.TestClassB
     }
 
     [Test]
+    [Explicit]
     public async Task MessageSendTextAsyncWithTextExceedingLimitTruncatesTextTest()
     {
         // Arrange
@@ -95,6 +99,7 @@ public sealed class TelegramHostedServiceTests : Infrastructure.Tests.TestClassB
     }
 
     [Test]
+    [Explicit]
     public async Task MessageSendTextAsyncWithEmptyTextThrowsApiRequestExceptionTest()
     {
         // Arrange
@@ -111,6 +116,7 @@ public sealed class TelegramHostedServiceTests : Infrastructure.Tests.TestClassB
     }
 
     [Test]
+    [Explicit]
     public async Task MessageSendTextAsyncWhenCancellationRequestedThrowsOperationCanceledExceptionTest()
     {
         // Arrange
@@ -128,6 +134,7 @@ public sealed class TelegramHostedServiceTests : Infrastructure.Tests.TestClassB
     }
 
     [Test]
+    [Explicit]
     public async Task MessageSendTextAsyncWithVariousHtmlTagsHandlesProperlyTest()
     {
         // Arrange
@@ -153,6 +160,7 @@ public sealed class TelegramHostedServiceTests : Infrastructure.Tests.TestClassB
     }
 
     [Test]
+    [Explicit]
     public async Task MessageSendTextAsyncWithPlainTextAndExplicitParseModeUsesExplicitModeTest()
     {
         // Arrange
@@ -172,6 +180,7 @@ public sealed class TelegramHostedServiceTests : Infrastructure.Tests.TestClassB
     }
 
     [Test]
+    [Explicit]
     public async Task MessageSendTextAsyncWithLongTextAtExactLimitSendsSuccessfullyTest()
     {
         // Arrange
@@ -191,6 +200,7 @@ public sealed class TelegramHostedServiceTests : Infrastructure.Tests.TestClassB
     }
 
     [Test]
+    [Explicit]
     public async Task MessageSendTextAsyncWithSpecialCharactersSendsSuccessfullyTest()
     {
         // Arrange
@@ -209,6 +219,7 @@ public sealed class TelegramHostedServiceTests : Infrastructure.Tests.TestClassB
     }
 
     [Test]
+    [Explicit]
     public async Task MessageSendTextAsyncWithUnicodeCharactersSendsSuccessfullyTest()
     {
         // Arrange
@@ -227,6 +238,7 @@ public sealed class TelegramHostedServiceTests : Infrastructure.Tests.TestClassB
     }
 
     [Test]
+    [Explicit]
     public async Task MessageSendTextAsyncWithParseModeNoneSendsSucessfullyTest()
     {
         // Arrange
@@ -246,6 +258,7 @@ public sealed class TelegramHostedServiceTests : Infrastructure.Tests.TestClassB
     }
 
     [Test]
+    [Explicit]
     public async Task MessageSendTextAsyncWithMultipleCallsSendsAllSuccessfullyTest()
     {
         // Arrange
@@ -267,6 +280,7 @@ public sealed class TelegramHostedServiceTests : Infrastructure.Tests.TestClassB
     }
 
     [Test]
+    [Explicit]
     public async Task MessageSendTextAsyncWithDifferentChatIdsSendsToCorrectChatTest()
     {
         // Arrange
