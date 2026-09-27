@@ -1,6 +1,4 @@
 using Seedysoft.Libs.Infrastructure.Extensions;
-using System.Net.Security;
-using System.Security.Cryptography.X509Certificates;
 
 namespace Seedysoft.BlazorWebApp.Server;
 

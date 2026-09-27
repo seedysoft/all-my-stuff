@@ -3,7 +3,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Seedysoft.Libs.Core.Extensions;
 using Seedysoft.Libs.GasStationPrices.Extensions;
-using System.Net.Http.Json;
 
 namespace Seedysoft.Libs.GasStationPrices.Services;
 

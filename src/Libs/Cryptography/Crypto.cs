@@ -4,7 +4,7 @@ public static class Crypto
 {
     private static readonly System.Text.Encoding Encoding = System.Text.Encoding.Latin1;
 
-    internal static bool CanEncryptText(
+    public static bool CanEncryptText(
         string textToEncrypt,
         string key,
         System.Security.Cryptography.CipherMode cipherMode = System.Security.Cryptography.CipherMode.CBC)
@@ -22,7 +22,7 @@ public static class Crypto
 
         return false;
     }
-    internal static string EncryptText(
+    public static string EncryptText(
         string textToEncrypt,
         string key,
         System.Security.Cryptography.CipherMode cipherMode = System.Security.Cryptography.CipherMode.CBC)
@@ -32,7 +32,7 @@ public static class Crypto
             : throw new InvalidDataException($"Cannot Encrypt {textToEncrypt} with {key} key and mode {cipherMode}");
     }
 
-    internal static bool CanDecryptText(
+    public static bool CanDecryptText(
         string encryptedText,
         string key,
         System.Security.Cryptography.CipherMode cipherMode = System.Security.Cryptography.CipherMode.CBC)
