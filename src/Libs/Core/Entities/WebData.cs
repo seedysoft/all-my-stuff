@@ -19,10 +19,6 @@ public abstract class WebDataBase
     public string CssSelector { get; set; } = default!;
 
     public long TakeAboveBelowLines { get; set; }
-
-    // TODO: Remove in future versions
-    //[Obsolete("UseHttpClient is obsolete and will be removed in future versions.")]
-    public bool UseHttpClient { get; set; }
 }
 
 [System.Diagnostics.DebuggerDisplay("{GetDebuggerDisplay,nq}")]

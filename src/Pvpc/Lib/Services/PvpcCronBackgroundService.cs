@@ -52,6 +52,16 @@ public sealed class PvpcCronBackgroundService : Libs.BackgroundServices.Cron
         if (Logger.IsEnabled(LogLevel.Information))
             Logger.LogInformation("From {UrlString}", UrlString);
 
+        //Libs.Infrastructure.DbContexts.DbCxt dbCtx = ServiceProvider.GetRequiredService<Libs.Infrastructure.DbContexts.DbCxt>();
+        //Libs.Core.Entities.Subscriber[] subscribers = await dbCtx.Subscribers.ToArrayAsync(cancellationToken: stoppingToken);
+        //for (int i = 0; i < subscribers.Length; i++)
+        //{
+        //    Libs.Core.Entities.Subscriber subscriber = subscribers[i];
+        //    _ = dbCtx.Subscribers.Update(subscriber);
+        //}
+
+        //_ = await dbCtx.SaveChangesAsync(stoppingToken);
+
         try
         {
             Rootobject? Response = await httpClient.GetFromJsonAsync<Rootobject>(UrlString, stoppingToken);

@@ -12,10 +12,17 @@ internal sealed class SubscriberEntityTypeConfiguration : IEntityTypeConfigurati
             .ValueGeneratedOnAdd();
 
         _ = builder
-            .Property(static e => e.TelegramUserId);
+            .Property(static s => s.Firstname)
+            .HasConversion(ValueConverters.StringEncrypted.StringEncryptedValueConverter);
 
         _ = builder
-            .Property(static s => s.MailAddress);
+            .Property(static e => e.TelegramUserId)
+            .HasColumnType("TEXT")
+            .HasConversion(ValueConverters.LongEncrypted.NullableStringEncryptedValueConverter);
+
+        _ = builder
+            .Property(static s => s.MailAddress)
+            .HasConversion(ValueConverters.StringEncrypted.NullableStringEncryptedValueConverter);
 
         _ = builder
             .ToTable(nameof(Core.Entities.Subscriber))

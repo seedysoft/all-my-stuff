@@ -5,7 +5,7 @@ public sealed class Subscriber
 {
     public long SubscriberId { get; set; }
 
-    public required string Firstname { get; init; }
+    public required string Firstname { get; set; }
 
     public long? TelegramUserId { get; set; }
 

@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Seedysoft.Libs.Core.Extensions;
 using Seedysoft.Libs.Infrastructure.Extensions;
@@ -35,13 +36,15 @@ public sealed class Program : Core.ProgramBase
             //    Logger.LogDebug($"{item.Key}: {item.Value ?? "<<NULL>>"}");
 
             //// Migrate and seed the database during startup. Must be synchronous.
-            //using AsyncServiceScope Scope = host.Services.CreateAsyncScope();
-            //await Scope.ServiceProvider.GetRequiredService<Infrastructure.DbContexts.DbCxt>().Database.MigrateAsync();
+            using IServiceScope serviceScope = host.Services.CreateScope();
+            {
+                serviceScope.ServiceProvider.GetRequiredService<Infrastructure.DbContexts.DbCxt>().Database.Migrate();
+            }
 
             Console.WriteLine("Awaiting debugger connection...");
 
             while (!System.Diagnostics.Debugger.IsAttached)
-                await Task.Delay(1_000);
+                await Task.Delay(TimeSpan.FromSeconds(1));
 
             Console.WriteLine("...debugger connected!");
 

@@ -7,14 +7,17 @@ namespace Seedysoft.Libs.Update.Services;
 
 public sealed class UpdaterCronBackgroundService : BackgroundServices.Cron
 {
-    private readonly Octokit.GitHubClient gitHubClient;
+    private readonly Octokit.GitHubClient GitHubClient;
+
     private readonly ILogger<UpdaterCronBackgroundService> Logger;
+
     //private Settings.UpdateSettings Settings => (Settings.UpdateSettings)Config;
 
     public UpdaterCronBackgroundService(IServiceProvider serviceProvider, Microsoft.Extensions.Hosting.IHostApplicationLifetime hostApplicationLifetime)
         : base(serviceProvider, hostApplicationLifetime)
     {
-        gitHubClient = ServiceProvider.GetRequiredService<Octokit.GitHubClient>();
+        GitHubClient = ServiceProvider.GetRequiredService<Octokit.GitHubClient>();
+
         Logger = ServiceProvider.GetRequiredService<ILogger<UpdaterCronBackgroundService>>();
 
         Config = ServiceProvider.GetRequiredService<IConfiguration>()
@@ -75,24 +78,25 @@ public sealed class UpdaterCronBackgroundService : BackgroundServices.Cron
         Version CurrentVersion = EntryAssembly.GetName().Version ?? new Version();
         Version NewVersion = new(release.Name);
 
-        if (NewVersion <= CurrentVersion)
+        if (NewVersion > CurrentVersion)
+        {
+            return ExecuteUpdateScript(Path.GetDirectoryName(EntryAssembly.Location)!, releaseAsset.Name)
+                ? Enums.UpdateResults.Ok
+                : Enums.UpdateResults.ErrorExecutingUpdateScript;
+        }
+        else
         {
             if (Logger.IsEnabled(LogLevel.Information))
                 Logger.LogInformation($"Current version is: {CurrentVersion}. Latest version is: {NewVersion}");
             return Enums.UpdateResults.NoNewVersionFound;
         }
-        // Here, NewVersion is greather than CurrentVersion
-
-        return ExecuteUpdateScript(Path.GetDirectoryName(EntryAssembly.Location)!, releaseAsset.Name)
-            ? Enums.UpdateResults.Ok
-            : Enums.UpdateResults.ErrorExecutingUpdateScript;
     }
 
     internal async Task<Octokit.Release?> GetLatestReleaseFromGithubAsync()
     {
         // Retrieve a List of Releases in the Repository, and get latest using [0]-subscript
         IReadOnlyList<Octokit.Release> releases =
-            await gitHubClient.Repository.Release.GetAll(Core.Constants.Github.OwnerName, Core.Constants.Github.RepositoryName);
+            await GitHubClient.Repository.Release.GetAll(Core.Constants.Github.OwnerName, Core.Constants.Github.RepositoryName);
 
         if (Logger.IsEnabled(LogLevel.Information))
             Logger.LogInformation("Obtained {releasesCount} releases", releases.Count);

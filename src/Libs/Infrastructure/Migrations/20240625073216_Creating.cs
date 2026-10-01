@@ -45,7 +45,7 @@ namespace Seedysoft.Libs.Infrastructure.Migrations
                     SubscriberId = table.Column<long>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", value: true),
                     Firstname = table.Column<string>(type: "TEXT", nullable: false),
-                    TelegramUserId = table.Column<long>(type: "INTEGER", nullable: true),
+                    TelegramUserId = table.Column<long>(type: "TEXT", nullable: true),
                     MailAddress = table.Column<string>(type: "TEXT", nullable: true),
                 },
                 constraints: static table =>
@@ -94,7 +94,6 @@ namespace Seedysoft.Libs.Infrastructure.Migrations
                     IgnoreChangeWhen = table.Column<string>(type: "TEXT", nullable: true),
                     CssSelector = table.Column<string>(type: "TEXT", nullable: false, defaultValue: "body"),
                     TakeAboveBelowLines = table.Column<long>(type: "INTEGER", nullable: false, defaultValue: 3L),
-                    UseHttpClient = table.Column<bool>(type: "INTEGER", nullable: false, defaultValue: false),
                 },
                 constraints: static table =>
                 {

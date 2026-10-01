@@ -41,19 +41,3 @@ internal sealed class OutboxEntityTypeConfiguration
             .HasKey(static x => x.OutboxId);
     }
 }
-
-internal sealed class OutboxViewEntityTypeConfiguration
-    : OutboxTableEntityTypeConfigurationT<Core.Entities.OutboxView>, IEntityTypeConfiguration<Core.Entities.OutboxView>
-{
-    public new void Configure(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder<Core.Entities.OutboxView> builder)
-    {
-        base.Configure(builder);
-
-        _ = builder
-            .Property(static x => x.SentAtDateTimeUnix);
-
-        _ = builder
-            .ToView(nameof(Core.Entities.OutboxView))
-            .HasNoKey();
-    }
-}

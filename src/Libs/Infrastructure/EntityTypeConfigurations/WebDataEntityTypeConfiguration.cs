@@ -38,10 +38,6 @@ internal abstract class WebDataEntityTypeConfigurationT<T> : IEntityTypeConfigur
         _ = builder
             .Property(static x => x.TakeAboveBelowLines)
             .HasDefaultValue(3);
-
-        _ = builder
-            .Property(static x => x.UseHttpClient)
-            .HasDefaultValue(false);
     }
 }
 

@@ -249,49 +249,34 @@ public sealed class WebComparerCronBackgroundService : Libs.BackgroundServices.C
     {
         System.Text.StringBuilder ContentStringBuilder = new();
 
-        if (webData.UseHttpClient)
+        try
         {
-            HtmlAgilityPack.HtmlWeb htmlWeb = new()
+            using OpenQA.Selenium.Chrome.ChromeDriver WebDriver = GetWebDriver();
             {
-                UseCookies = true,
-                UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36",
-                UsingCache = false,
-            };
-            HtmlAgilityPack.HtmlDocument htmlDocument = htmlWeb.Load(webData.WebUrl);
+                await WebDriver.Navigate().GoToUrlAsync(webData.WebUrl);
 
-            ContentStringBuilder = ContentStringBuilder.Append(htmlDocument.DocumentNode.SelectSingleNode("//body")?.InnerText ?? default!);
-        }
-        else
-        {
-            try
-            {
-                using OpenQA.Selenium.Chrome.ChromeDriver WebDriver = GetWebDriver();
+                if (webData.Description.StartsWith(Libs.Core.Constants.Strings.TextForNewSubscription))
+                    webData.Description = WebDriver.Title;
+
+                TryToPerformWebDriverActions(WebDriver);
+
+                System.Collections.ObjectModel.ReadOnlyCollection<OpenQA.Selenium.IWebElement> webElements = WebDriver.FindElements(OpenQA.Selenium.By.CssSelector(webData.CssSelector));
+                for (int i = 0; i < webElements.Count; i++)
                 {
-                    await WebDriver.Navigate().GoToUrlAsync(webData.WebUrl);
+                    if (cancellationToken.IsCancellationRequested)
+                        return string.Empty;
 
-                    if (webData.Description.StartsWith(Libs.Core.Constants.Strings.TextForNewSubscription))
-                        webData.Description = WebDriver.Title;
+                    OpenQA.Selenium.IWebElement webElement = webElements[i];
 
-                    TryToPerformWebDriverActions(WebDriver);
-
-                    System.Collections.ObjectModel.ReadOnlyCollection<OpenQA.Selenium.IWebElement> webElements = WebDriver.FindElements(OpenQA.Selenium.By.CssSelector(webData.CssSelector));
-                    for (int i = 0; i < webElements.Count; i++)
-                    {
-                        if (cancellationToken.IsCancellationRequested)
-                            return string.Empty;
-
-                        OpenQA.Selenium.IWebElement webElement = webElements[i];
-
-                        ContentStringBuilder = ContentStringBuilder.Append(webElement.Text);
-                    }
-
-                    WebDriver.Quit();
+                    ContentStringBuilder = ContentStringBuilder.Append(webElement.Text);
                 }
+
+                WebDriver.Quit();
             }
-            catch (Exception e) when (Logger.LogAndHandle(e, "GetContent failed with ChromeDriver for '{WebUrl}'", webData.WebUrl))
-            {
-                ContentStringBuilder = ContentStringBuilder.Clear();
-            }
+        }
+        catch (Exception e) when (Logger.LogAndHandle(e, "GetContent failed with ChromeDriver for '{WebUrl}'", webData.WebUrl))
+        {
+            ContentStringBuilder = ContentStringBuilder.Clear();
         }
 
         return ContentStringBuilder.ToString();

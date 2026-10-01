@@ -25,8 +25,3 @@ public sealed class Outbox : OutboxBase
     private string GetDebuggerDisplay
         => $"{SubscriptionName} {SubscriptionId} {(SentAtDateTimeOffset.HasValue ? "sent on " + SentAtDateTimeOffset.ToString() : "pending")}";
 }
-
-public sealed class OutboxView : OutboxBase
-{
-    public long? SentAtDateTimeUnix { get; set; }
-}
