@@ -1,4 +1,4 @@
-﻿//namespace Seedysoft.Libs.Geocoding;
+﻿//namespace Seedysoft.Libs.Travel;
 
 //public static class Transformation
 //{

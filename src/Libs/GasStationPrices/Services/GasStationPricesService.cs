@@ -10,8 +10,6 @@ public sealed class GasStationPricesService
 {
     public Settings.GasStationPricesSettings GasStationPricesSettings { get; init; }
 
-    private readonly IHttpClientFactory httpClientFactory;
-
     private readonly ILogger<GasStationPricesService> Logger;
 
     private static Models.Minetur.Body MineturResponse = new();
@@ -22,8 +20,6 @@ public sealed class GasStationPricesService
             .GetSection(nameof(Settings.GasStationPricesSettings))
             .Get<Settings.GasStationPricesSettings>()!;
 
-        httpClientFactory = serviceProvider.GetRequiredService<IHttpClientFactory>();
-
         Logger = serviceProvider.GetRequiredService<ILogger<GasStationPricesService>>();
 
         _ = Task.Run(async () => { _ = await LoadGasStationsAsync(); });
@@ -32,7 +28,7 @@ public sealed class GasStationPricesService
     public async Task<ViewModels.GasStationModel?> GetGasStationAsync(Travel.Models.Location latLng)
     {
         return await LoadGasStationsAsync() && MineturResponse.EstacionesTerrestres != null && MineturResponse.EstacionesTerrestres.Length > 0
-            ? MineturResponse.EstacionesTerrestres.FirstOrDefault(x => latLng.Equals(x.LatLng)).ToGasStationModel()
+            ? MineturResponse.EstacionesTerrestres.Nearest(latLng).ToGasStationModel()
             : null;
     }
 
@@ -59,9 +55,10 @@ public sealed class GasStationPricesService
                     {
                         FileName = "curl",
                         Arguments = GasStationPricesSettings.Minetur.Urls.GetUri().AbsoluteUri,
-                        RedirectStandardOutput = true,
-                        UseShellExecute = false,
                         CreateNoWindow = true,
+                        UseShellExecute = false,
+                        RedirectStandardOutput = true,
+                        StandardOutputEncoding = System.Text.Encoding.UTF8,
                     }
                 };
 
