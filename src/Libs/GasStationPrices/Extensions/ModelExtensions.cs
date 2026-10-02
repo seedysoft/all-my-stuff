@@ -42,4 +42,15 @@ public static class ModelExtensions
             }
         };
     }
+
+    public static Models.Minetur.EstacionTerrestre? Nearest(this Models.Minetur.EstacionTerrestre[] estacionesTerrestres, Travel.Models.Location location)
+    {
+        IEnumerable<Models.Minetur.EstacionTerrestre> estaciones =
+            from e in estacionesTerrestres
+            where (int)e.LatLng.Latitude == (int)location.Latitude && (int)e.LatLng.Longitude == (int)location.Longitude
+            orderby Travel.Helpers.CoordinatesCalculatesHelper.CalculateDistanceInMetters(e.LatLng, location)
+            select e;
+
+        return estaciones.FirstOrDefault();
+    }
 }
