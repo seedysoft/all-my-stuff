@@ -73,17 +73,23 @@ export function addOrUpdateMarker(markerOptions, iconOptions, popupContent) {
         marker.bindPopup(DOMPurify.sanitize(popupContent, { USE_PROFILES: { html: true } }));
 }
 
-export function addOrUpdateCircleMarker(circleOptions, popup, tooltip) {
+export function addOrUpdateCircleMarkers(circleMarkers) {
     // debugger
-    const positionKey = parseKey(circleOptions.position);
+    for (var i = 0; i < circleMarkers.length; i++) {
+        addOrUpdateCircleMarker(circleMarkers[i]);
+    }
+}
+export function addOrUpdateCircleMarker(circleMarkerData) {
+    // debugger
+    const positionKey = parseKey(circleMarkerData.circleOptions.position);
     let circleMarker = markersArray.get(positionKey);
     if (circleMarker == undefined) {
-        circleMarker = new CircleMarker(circleOptions.position, circleOptions);
+        circleMarker = new CircleMarker(circleMarkerData.circleOptions.position, circleMarkerData.circleOptions);
         circleMarker.addTo(map);
         markersArray.set(positionKey, circleMarker);
     }
     else {
-        circleMarker.setStyle(circleOptions);
+        circleMarker.setStyle(circleMarkerData.circleOptions);
     }
 
     circleMarker.off();
@@ -93,19 +99,19 @@ export function addOrUpdateCircleMarker(circleOptions, popup, tooltip) {
     });
 
     circleMarker.unbindPopup();
-    if (popup) {
-        if (typeof popup === 'string')
-            circleMarker.bindPopup(DOMPurify.sanitize(popup, { USE_PROFILES: { html: true } }));
-        else if (typeof popup === 'object' && 'content' in popup)
-            circleMarker.bindPopup(DOMPurify.sanitize(popup.content, { USE_PROFILES: { html: true } }), popup);
+    if (circleMarkerData.popup) {
+        if (typeof circleMarkerData.popup === 'string')
+            circleMarker.bindPopup(DOMPurify.sanitize(circleMarkerData.popup, { USE_PROFILES: { html: true } }));
+        else if (typeof circleMarkerData.popup === 'object' && 'content' in circleMarkerData.popup)
+            circleMarker.bindPopup(DOMPurify.sanitize(circleMarkerData.popup.content, { USE_PROFILES: { html: true } }), circleMarkerData.popup);
     }
 
     circleMarker.unbindTooltip();
-    if (tooltip) {
-        if (typeof tooltip === 'string')
-            circleMarker.bindTooltip(DOMPurify.sanitize(tooltip, { USE_PROFILES: { html: true } }));
-        else if (typeof tooltip === 'object' && 'content' in tooltip)
-            circleMarker.bindTooltip(DOMPurify.sanitize(tooltip.content, { USE_PROFILES: { html: true } }), tooltip);
+    if (circleMarkerData.tooltip) {
+        if (typeof circleMarkerData.tooltip === 'string')
+            circleMarker.bindTooltip(DOMPurify.sanitize(circleMarkerData.tooltip, { USE_PROFILES: { html: true } }));
+        else if (typeof circleMarkerData.tooltip === 'object' && 'content' in circleMarkerData.tooltip)
+            circleMarker.bindTooltip(DOMPurify.sanitize(circleMarkerData.tooltip.content, { USE_PROFILES: { html: true } }), circleMarkerData.tooltip);
         circleMarker.openTooltip();
     }
 }

@@ -26,18 +26,4 @@ public class Location
     private string GetDebuggerDisplay() =>
         $"Lat: {Latitude.ToString(Core.Constants.Globalization.NumberFormatInfoInvariant)}; " +
         $"Lon: {Longitude.ToString(Core.Constants.Globalization.NumberFormatInfoInvariant)}";
-
-    //    public readonly Location AddMetters(double angle, double distanceInMetters)
-    //    {
-    //        double latitude = Helpers.CoordinatesCalculatesHelper.GetLatitudeFromDegreesPerMetter(Latitude, angle, distanceInMetters);
-    //        double longitude = Helpers.CoordinatesCalculatesHelper.GetLongitudeFromDegreesPerMetter(Latitude, Longitude, angle, distanceInMetters);
-
-    //        return new Location(latitude, longitude);
-    //    }
-
-    //    public readonly Location AddKm(double angle, double distanceInKm) =>
-    //        AddMetters(angle, distanceInKm * 1_000);
-
-    //    public readonly Location AddCm(double angle, double distanceInKm) =>
-    //        AddMetters(angle, distanceInKm / 100);
 }

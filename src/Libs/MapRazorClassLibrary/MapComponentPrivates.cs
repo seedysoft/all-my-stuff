@@ -75,6 +75,13 @@ public partial class MapComponent
         System.Collections.Immutable.ImmutableSortedSet<GasStationPrices.Models.Minetur.ProductoPetrolifero>? fromWhat)
         => GasStationsQueryModel.PetroleumProductsSelectedIds = [.. fromWhat?.Select(static x => x.IdProducto) ?? []];
 
+    private readonly record struct CircleMarkerWrapper
+    {
+        [J("circleOptions")] public MapModels.VectorLayers.CircleMarker CircleOptions { get; init; }
+        [J("popup")] public MapModels.UILayers.Popup? Popup { get; init; }
+        [J("tooltip")] public MapModels.UILayers.Tooltip? Tooltip { get; init; }
+    }
+
     private async Task<IReadOnlyList<GasStationPrices.ViewModels.GasStationModel>> LoadGasStationsAsync(CancellationToken cancellationToken)
     {
         await ShowLoaderAsync();
@@ -98,64 +105,71 @@ public partial class MapComponent
             IReadOnlyList<GasStationPrices.ViewModels.GasStationModel> gasStations,
             CancellationToken cancellationToken)
         {
-            for (int i = 0; i < gasStations.Count; i++)
+            if (MapModule != null)
             {
-                if (cancellationToken.IsCancellationRequested)
-                    break;
+                List<CircleMarkerWrapper> CircleMarkers = new(gasStations.Count);
 
-                GasStationPrices.ViewModels.GasStationModel GasStation = gasStations[i];
-
-                IReadOnlyList<(GasStationPrices.Constants.ProductoPetroliferoId IdProducto, decimal Value)> GasStationProducts =
-                    GasStation.AllProducts(GasStationsQueryModel.PetroleumProductsSelectedIds);
-
-                // TODO         Use colors, sizes, etc...
-                MapModels.VectorLayers.CircleMarker circleMarker = new(new MapModels.Basic.LatLng(GasStation.Lat, GasStation.Lon))
+                for (int i = 0; i < gasStations.Count; i++)
                 {
-                    Fill = true,
-                    FillOpacity = 1.0,
-                    FillRule = "nonzero",
-                };
+                    if (cancellationToken.IsCancellationRequested)
+                        break;
 
-                string CssClass;
-                if (GasStationProducts.Any(x => x.Value == (Prices.FirstOrDefault(p => p.IdP == x.IdProducto)?.Min ?? decimal.Zero)))
-                {
-                    CssClass = "bgVerde";
-                    circleMarker.Color = circleMarker.FillColor = "#00ff00"; // Green = Min
-                    circleMarker.Radius = 25;
+                    GasStationPrices.ViewModels.GasStationModel GasStation = gasStations[i];
+
+                    IReadOnlyList<(GasStationPrices.Constants.ProductoPetroliferoId IdProducto, decimal Value)> GasStationProducts =
+                        GasStation.AllProducts(GasStationsQueryModel.PetroleumProductsSelectedIds);
+
+                    //                          TODO Use colors, sizes, etc...
+                    MapModels.VectorLayers.CircleMarker circleMarker = new(new MapModels.Basic.LatLng(GasStation.Lat, GasStation.Lon))
+                    {
+                        Fill = true,
+                        FillOpacity = 1.0,
+                        FillRule = "nonzero",
+                    };
+
+                    string CssClass;
+                    if (GasStationProducts.Any(x => x.Value == (Prices.FirstOrDefault(p => p.IdP == x.IdProducto)?.Min ?? decimal.Zero)))
+                    {
+                        CssClass = "bgVerde";
+                        circleMarker.Color = circleMarker.FillColor = "#00ff00"; // Green = Min
+                        circleMarker.Radius = 25;
+                    }
+                    else if (GasStationProducts.Any(x => x.Value == (Prices.FirstOrDefault(p => p.IdP == x.IdProducto)?.Max ?? decimal.Zero)))
+                    {
+                        CssClass = "bgRojo";
+                        circleMarker.Color = circleMarker.FillColor = "#ff0000"; // Red = Max
+                        circleMarker.Radius = 8;
+                    }
+                    else if (GasStationProducts.Any(x => x.Value <= (Prices.FirstOrDefault(p => p.IdP == x.IdProducto)?.Avg ?? decimal.Zero)))
+                    {
+                        CssClass = "bgAmarillo";
+                        circleMarker.Color = circleMarker.FillColor = "#ffff00"; // Yellow <= Avg
+                        circleMarker.Radius = 15;
+                    }
+                    else
+                    {
+                        CssClass = "bgNaranja";
+                        circleMarker.Color = circleMarker.FillColor = "#ffa500"; // Orange > Avg
+                        circleMarker.Radius = 10;
+                    }
+
+                    MapModels.UILayers.Popup? popup = null;
+                    //MapModels.UILayers.Popup popup = new()
+                    //{
+                    //    Content = BuildPopupContent(GasStation, productLimits),
+                    //};
+
+                    MapModels.UILayers.Tooltip tooltip = new()
+                    {
+                        Content = $"<span class='{CssClass}'><b>{GasStation.RotuloTrimed}</b><span>",
+                        Direction = MapModels.UILayers.Tooltip.Directions.Top,
+                        Permanent = true,
+                    };
+
+                    CircleMarkers.Add(new() { CircleOptions = circleMarker, Popup = popup, Tooltip = tooltip });
                 }
-                else if (GasStationProducts.Any(x => x.Value == (Prices.FirstOrDefault(p => p.IdP == x.IdProducto)?.Max ?? decimal.Zero)))
-                {
-                    CssClass = "bgRojo";
-                    circleMarker.Color = circleMarker.FillColor = "#ff0000"; // Red = Max
-                    circleMarker.Radius = 8;
-                }
-                else if (GasStationProducts.Any(x => x.Value <= (Prices.FirstOrDefault(p => p.IdP == x.IdProducto)?.Avg ?? decimal.Zero)))
-                {
-                    CssClass = "bgAmarillo";
-                    circleMarker.Color = circleMarker.FillColor = "#ffff00"; // Yellow <= Avg
-                    circleMarker.Radius = 15;
-                }
-                else
-                {
-                    CssClass = "bgNaranja";
-                    circleMarker.Color = circleMarker.FillColor = "#ffa500"; // Orange > Avg
-                    circleMarker.Radius = 10;
-                }
 
-                //MapModels.UILayers.Popup popup = new()
-                //{
-                //    Content = BuildPopupContent(GasStation, productLimits),
-                //};
-
-                MapModels.UILayers.Tooltip tooltip = new()
-                {
-                    Content = $"<span class='{CssClass}'><b>{GasStation.RotuloTrimed}</b><span>",
-                    Direction = MapModels.UILayers.Tooltip.Directions.Top,
-                    Permanent = true,
-                };
-
-                // TODO                                         Add all markers at same time
-                await AddOrUpdateCircleMarkerAsync(circleMarker, /*popup*/ null, tooltip);
+                await MapModule.InvokeVoidAsync($"addOrUpdateCircleMarkers", CircleMarkers);
             }
         }
     }
@@ -241,15 +255,6 @@ public partial class MapComponent
     //    MapModels.UILayers.Marker? marker = default
     //    , MapModels.Basic.Icon? icon = default
     //    , string? popupContent = default) => await MapModule.InvokeVoidAsync("addOrUpdateMarker", marker, icon, popupContent);
-
-    private async Task AddOrUpdateCircleMarkerAsync(
-        MapModels.VectorLayers.CircleMarker circleMarker,
-        OneOf.OneOf<string, MapModels.UILayers.Popup>? popup,
-        OneOf.OneOf<string, MapModels.UILayers.Tooltip>? tooltip)
-    {
-        if (MapModule != null)
-            await MapModule.InvokeVoidAsync($"addOrUpdateCircleMarker", circleMarker, popup?.Value, tooltip?.Value);
-    }
 
     private async Task RemoveRoutesAsync()
     {
