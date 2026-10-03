@@ -12,7 +12,9 @@ public sealed class Configurator : Core.Dependencies.ConfiguratorBase
 {
     protected override void AddJsonFiles(IHostApplicationBuilder hostApplicationBuilder)
     {
-        string CurrentEnvironmentName = hostApplicationBuilder.Environment.EnvironmentName;
+        string CurrentEnvironmentName = hostApplicationBuilder.Configuration
+            .GetSection(nameof(Core.Models.Config.RuntimeSettings)).Get<Core.Models.Config.RuntimeSettings>()!
+            .EnvironmentCommandLine;
 
         _ = hostApplicationBuilder.Configuration
             .AddJsonFile($"appsettings.dbConnectionString.json", optional: false, reloadOnChange: true)
