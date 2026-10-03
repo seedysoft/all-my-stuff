@@ -11,10 +11,10 @@ public class Program : Libs.Core.ProgramBase
 
         WebApplicationBuilder webApplicationBuilder = WebApplication.CreateBuilder(args);
 
-        _ = webApplicationBuilder.AddAllMyDependencies();
-
         // TODO         Learn how it works
-        _ = webApplicationBuilder.Configuration.AddInMemoryCollection(Libs.Core.Models.Config.RuntimeSettings.GetValues(Settings));
+        _ = webApplicationBuilder.Configuration.AddInMemoryCollection(Libs.Core.Models.Config.RuntimeSettings.GetValues(SettingsRuntime));
+
+        _ = webApplicationBuilder.AddAllMyDependencies();
 
         // Add services to the container.
         _ = webApplicationBuilder.Services.AddRazorComponents()

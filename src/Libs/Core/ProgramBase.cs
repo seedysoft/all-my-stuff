@@ -4,7 +4,7 @@ namespace Seedysoft.Libs.Core;
 
 public class ProgramBase
 {
-    public static Models.Config.RuntimeSettings Settings { get; set; } = default!;
+    public static Models.Config.RuntimeSettings SettingsRuntime { get; set; } = default!;
 
     public static async Task ObtainCommandLineAsync(string[] args)
     {
@@ -26,11 +26,11 @@ public class ProgramBase
             //if (string.IsNullOrEmpty(options.Client))
             //    options.Client = DotNetCoreUtil.IsRunningOnDotNetCore ? "httpclient2" : "httpclient";
 
-            Settings = options.ToRunTimeSettings();
+            SettingsRuntime = options.ToRunTimeSettings();
             consoleOptions = options;
         });
 
-        for (int i = Settings.SecondsToDelayWebApplicationStart; i > 0; --i)
+        for (int i = SettingsRuntime.SecondsToDelayWebApplicationStart; i > 0; --i)
         {
             Console.Write("{0,-30}", $"\rWaiting for {i} seconds");
             await Task.Delay(TimeSpan.FromSeconds(1));

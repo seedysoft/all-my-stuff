@@ -8,7 +8,9 @@ public sealed class Configurator : Libs.Core.Dependencies.ConfiguratorBase
 {
     protected override void AddJsonFiles(IHostApplicationBuilder hostApplicationBuilder)
     {
-        string CurrentEnvironmentName = hostApplicationBuilder.Environment.EnvironmentName;
+        string CurrentEnvironmentName = hostApplicationBuilder.Configuration
+            .GetSection(nameof(Libs.Core.Models.Config.RuntimeSettings)).Get<Libs.Core.Models.Config.RuntimeSettings>()!
+            .EnvironmentCommandLine;
 
         _ = hostApplicationBuilder.Configuration
             .AddJsonFile($"appsettings.{nameof(Settings.WebComparerSettings)}.json", optional: false, reloadOnChange: true)

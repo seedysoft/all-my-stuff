@@ -4,11 +4,17 @@ public record class RuntimeSettings
 {
     public short SecondsToDelayWebApplicationStart { get; init; }
 
-    //public bool TracingEnabled { get; set; }
+    public required string EnvironmentCommandLine { get; init; }
+
+    public static Dictionary<string, string?> GetValues(RuntimeSettings obj)
+    {
+        return obj
+            .GetType()
+            .GetProperties()
+            .ToDictionary(p => "RuntimeSettings:" + p.Name, p => p.GetValue(obj)?.ToString());
+    }
 
     //public bool LogRequests { get; set; }
-
-    //public string? ClientOverride { get; set; }
 
     //public bool? IgnoreSslErrors { get; set; }
 
@@ -22,8 +28,6 @@ public record class RuntimeSettings
 
     //public string? PIDFile { get; set; }
 
-    //public bool NoUpdates { get; set; }
-
     //public string GetDataFolder()
     //{
     //    return string.IsNullOrWhiteSpace(CustomDataFolder)
@@ -32,12 +36,4 @@ public record class RuntimeSettings
     //            : Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData, Environment.SpecialFolderOption.DoNotVerify), "Jackett")
     //        : CustomDataFolder;
     //}
-
-    public static Dictionary<string, string?> GetValues(RuntimeSettings obj)
-    {
-        return obj
-            .GetType()
-            .GetProperties()
-            .ToDictionary(p => "RuntimeSettings:" + p.Name, p => p.GetValue(obj)?.ToString());
-    }
 }
