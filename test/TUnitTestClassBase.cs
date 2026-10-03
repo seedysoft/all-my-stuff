@@ -4,11 +4,11 @@ public abstract class TUnitTestClassBase
 {
     public TUnitTestClassBase()
     {
-        string NewEnvironment =
+        string NewEnvironment = Microsoft.Extensions.Hosting.Environments.
 #if DEBUG
-            "Development"
+            Development
 #else
-            "Production"
+            Production
 #endif
 ;
         Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", NewEnvironment, EnvironmentVariableTarget.Process);
