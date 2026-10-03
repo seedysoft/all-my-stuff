@@ -2,12 +2,71 @@ namespace Seedysoft.Libs.Core.Models.Config;
 
 public class ConsoleOptions
 {
-     // TODO                                    Add Environment command line option
-    [CommandLine.Option(shortName: 'd', longName: "delay", HelpText = "Time in seconds that the web application will wait until it starts")]
+    [CommandLine.Option(
+        shortName: 'd',
+        longName: "delay",
+        HelpText = "Time in seconds that the web application will wait until it starts")]
     public short DelayStart { get; set; }
 
-    //[CommandLine.Option('i', "Install", HelpText = "Install Jackett windows service (Must be admin)")]
-    //public bool Install { get; set; }
+    [CommandLine.Option(
+        shortName: 'e',
+        longName: "environment",
+        HelpText = $"Environment [{nameof(Microsoft.Extensions.Hosting.Environments.Production)}(Default)/{nameof(Microsoft.Extensions.Hosting.Environments.Development)}/{nameof(Microsoft.Extensions.Hosting.Environments.Staging)}]")]
+    public string Environment { get; set; } = Microsoft.Extensions.Hosting.Environments.
+#if DEBUG
+        Development;
+#else
+        Production;
+#endif
+
+    public RuntimeSettings ToRunTimeSettings()
+    {
+        ConsoleOptions options = this;
+        RuntimeSettings runtimeSettings = new()
+        {
+            SecondsToDelayWebApplicationStart = options.DelayStart,
+            EnvironmentCommandLine = options.Environment switch
+            {
+                nameof(Microsoft.Extensions.Hosting.Environments.Development) => Microsoft.Extensions.Hosting.Environments.Development,
+
+                nameof(Microsoft.Extensions.Hosting.Environments.Staging) => Microsoft.Extensions.Hosting.Environments.Staging,
+
+                nameof(Microsoft.Extensions.Hosting.Environments.Production) => Microsoft.Extensions.Hosting.Environments.Production,
+
+                _ => string.IsNullOrEmpty(System.Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT"))
+                    ? string.IsNullOrEmpty(System.Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT"))
+                        ? Microsoft.Extensions.Hosting.Environments.Production
+                        : System.Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT")!
+                    : System.Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")!,
+            },
+        };
+
+        //// Logging
+        //if (options.Logging)
+        //    runtimeSettings.LogRequests = true;
+
+        //if (options.ListenPublic && options.ListenPrivate)
+        //{
+        //    Console.WriteLine("You can only use listen private OR listen publicly.");
+        //    Environment.Exit(1);
+        //}
+
+        //// Use curl
+        //if (options.Client != null)
+        //    runtimeSettings.ClientOverride = options.Client.ToLowerInvariant();
+
+        //// Ignore SSL errors on Curl
+        //runtimeSettings.IgnoreSslErrors = options.IgnoreSslErrors;
+
+        //runtimeSettings.NoRestart = options.NoRestart;
+
+        //if (!string.IsNullOrWhiteSpace(options.DataFolder))
+        //    runtimeSettings.CustomDataFolder = options.DataFolder;
+
+        //runtimeSettings.PIDFile = options.PIDFile;
+
+        return runtimeSettings;
+    }
 
     //[CommandLine.Option('r', "ReserveUrls", HelpText = "(Re)Register windows port reservations (Required for listening on all interfaces).")]
     //public bool ReserveUrls { get; set; }
@@ -17,9 +76,6 @@ public class ConsoleOptions
 
     //[CommandLine.Option('l', "Logging", HelpText = "Log all requests/responses to Jackett")]
     //public bool Logging { get; set; }
-
-    //[CommandLine.Option('t', "Tracing", HelpText = "Enable tracing")]
-    //public bool Tracing { get; set; }
 
     //[CommandLine.Option('c', "UseClient", HelpText = "Override web client selection. [automatic(Default)/httpclient/httpclient2]")]
     //public string Client { get; set; } = "automatic";
@@ -50,47 +106,4 @@ public class ConsoleOptions
 
     //[CommandLine.Option("PIDFile", HelpText = "Specify the location of PID file")]
     //public string? PIDFile { get; set; }
-
-    //[CommandLine.Option("NoUpdates", HelpText = "Disable automatic updates")]
-    //public bool NoUpdates { get; set; }
-
-    public RuntimeSettings ToRunTimeSettings()
-    {
-        ConsoleOptions options = this;
-        RuntimeSettings runtimeSettings = new()
-        {
-            SecondsToDelayWebApplicationStart = options.DelayStart
-        };
-
-        //// Logging
-        //if (options.Logging)
-        //    runtimeSettings.LogRequests = true;
-
-        //// Tracing
-        //if (options.Tracing)
-        //    runtimeSettings.TracingEnabled = true;
-
-        //if (options.ListenPublic && options.ListenPrivate)
-        //{
-        //    Console.WriteLine("You can only use listen private OR listen publicly.");
-        //    Environment.Exit(1);
-        //}
-
-        //// Use curl
-        //if (options.Client != null)
-        //    runtimeSettings.ClientOverride = options.Client.ToLowerInvariant();
-
-        //// Ignore SSL errors on Curl
-        //runtimeSettings.IgnoreSslErrors = options.IgnoreSslErrors;
-
-        //runtimeSettings.NoRestart = options.NoRestart;
-        //runtimeSettings.NoUpdates = options.NoUpdates;
-
-        //if (!string.IsNullOrWhiteSpace(options.DataFolder))
-        //    runtimeSettings.CustomDataFolder = options.DataFolder;
-
-        //runtimeSettings.PIDFile = options.PIDFile;
-
-        return runtimeSettings;
-    }
 }
