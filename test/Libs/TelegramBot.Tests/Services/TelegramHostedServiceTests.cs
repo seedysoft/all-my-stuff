@@ -60,6 +60,28 @@ public sealed class TelegramHostedServiceTests : Infrastructure.Tests.TestClassB
 
     [Test]
     [Explicit]
+    public async Task MessageSendTextAsyncWithBoldMarkdownContentTest()
+    {
+        // Arrange
+        const string text = "Bold Text";
+        const string markdownlText = $"*{text}*";
+        CancellationToken cancellationToken = CancellationToken.None;
+
+        // Act
+        Telegram.Bot.Types.Message result = await telegramHostedService.MessageSendTextAsync(
+            to: telegramHostedService.Settings.KnownUserForTest.IdAsLong,
+            text: markdownlText,
+            parseMode: Telegram.Bot.Types.Enums.ParseMode.Markdown,
+            cancellationToken: cancellationToken);
+
+        // Assert
+        Assert.NotNull(result);
+        _ = await Assert.That(result.Text).IsEqualTo(text);
+        _ = await Assert.That(result.Entities).Any(static x => x.Type == Telegram.Bot.Types.Enums.MessageEntityType.Bold);
+    }
+
+    [Test]
+    [Explicit]
     public async Task MessageSendTextAsyncWithExplicitParseModeUsesProvidedModeTest()
     {
         // Arrange

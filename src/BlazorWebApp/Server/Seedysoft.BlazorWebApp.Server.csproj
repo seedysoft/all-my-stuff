@@ -53,7 +53,7 @@
         <PackageReference Include="DiffPlex" Version="1.9.0" />
         <PackageReference Include="EFCore.BulkExtensions.Sqlite" Version="10.0.1" />
         <PackageReference Include="EfCore.SchemaCompare" Version="10.0.0" />
-        <PackageReference Include="FluentValidation" Version="12.1.1" />
+        <PackageReference Include="FluentValidation" Version="12.2.0" />
         <PackageReference Include="HtmlAgilityPack" Version="1.13.0" />
         <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.12" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="10.0.12" />
