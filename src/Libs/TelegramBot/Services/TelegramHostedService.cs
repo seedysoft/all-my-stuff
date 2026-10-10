@@ -454,8 +454,8 @@ public class TelegramHostedService : Core.NonBackgroundServiceBase, IHostedServi
 
         return await MessageSendTextAsync(
             to: message.Chat.Id,
-            text: MessageGetMarkdownV2TextForPrices(Prices),
-            parseMode: ParseMode.MarkdownV2,
+            text: MessageGetMarkdownTextForPrices(Prices),
+            parseMode: ParseMode.Markdown,
             cancellationToken: cancellationToken);
     }
 
@@ -781,8 +781,8 @@ public class TelegramHostedService : Core.NonBackgroundServiceBase, IHostedServi
         {
             Core.Enums.SubscriptionName.electricidad => await MessageSendTextAsync(
                 to: telegramUserId,
-                text: MessageGetMarkdownV2TextForPrices(pendingMessage.Payload.FromJson<Core.Entities.Pvpc[]>()!),
-                parseMode: ParseMode.MarkdownV2,
+                text: MessageGetMarkdownTextForPrices(pendingMessage.Payload.FromJson<Core.Entities.Pvpc[]>()!),
+                parseMode: ParseMode.Markdown,
                 cancellationToken: stoppingToken),
 
             Core.Enums.SubscriptionName.webComparer => await MessageSendTextAsync(
@@ -800,7 +800,7 @@ public class TelegramHostedService : Core.NonBackgroundServiceBase, IHostedServi
         };
     }
 
-    private static string MessageGetMarkdownV2TextForPrices(
+    private static string MessageGetMarkdownTextForPrices(
         Core.Entities.Pvpc[] prices)
     {
         if (prices == null || prices.Length == 0)
