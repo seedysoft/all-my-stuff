@@ -362,7 +362,8 @@ public class TelegramHostedService : Core.NonBackgroundServiceBase, IHostedServi
     {
         await ChatActionSendAsync(message, ChatAction.Typing, cancellationToken);
 
-        //await ProcesarDocumentoConsumosAsync(message, cancellationToken); // TODO         Manejar todos los tipos de documentos
+        // TODO         Manejar todos los tipos de documentos
+        //await ProcesarDocumentoConsumosAsync(message, cancellationToken);
 
         Task<Message>? handler = message.Caption switch
         {
