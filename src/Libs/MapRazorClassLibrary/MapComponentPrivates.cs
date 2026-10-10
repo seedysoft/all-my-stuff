@@ -108,7 +108,7 @@ public partial class MapComponent
                 IReadOnlyList<(GasStationPrices.Constants.ProductoPetroliferoId IdProducto, decimal Value)> GasStationProducts =
                     GasStation.AllProducts(GasStationsQueryModel.PetroleumProductsSelectedIds);
 
-                //                          TODO Use colors, sizes, etc...
+                // TODO         Use colors, sizes, etc...
                 MapModels.VectorLayers.CircleMarker circleMarker = new(new MapModels.Basic.LatLng(GasStation.Lat, GasStation.Lon))
                 {
                     Fill = true,

@@ -15,8 +15,6 @@ public sealed class WebComparerCronBackgroundService : Libs.BackgroundServices.C
     private readonly ILogger<WebComparerCronBackgroundService> Logger;
     //private Settings.WebComparerSettings Settings => (Settings.WebComparerSettings)Config;
 
-    // TODO: Move to inline methods when private static methods has only one usage
-
     public WebComparerCronBackgroundService(IServiceProvider serviceProvider, Microsoft.Extensions.Hosting.IHostApplicationLifetime hostApplicationLifetime)
         : base(serviceProvider, hostApplicationLifetime)
     {
@@ -324,7 +322,7 @@ public sealed class WebComparerCronBackgroundService : Libs.BackgroundServices.C
                     break;
             }
 
-            // TODO Add TimeoutsTimeSpan setting (best for each website?)
+            // TODO         Add TimeoutsTimeSpan setting (best for each website?)
             var TimeoutsTimeSpan = TimeSpan.FromMinutes(2);
             chromeDriver.Manage().Timeouts().AsynchronousJavaScript = TimeoutsTimeSpan;
             //chromeDriver.Manage().Timeouts().ImplicitWait = TimeoutsTimeSpan;
@@ -340,7 +338,7 @@ public sealed class WebComparerCronBackgroundService : Libs.BackgroundServices.C
 
         do
         {
-            // TODO Personalizar cada web con lo que podemos hacer antes de obtener datos
+            // TODO         Personalizar cada web con lo que podemos hacer antes de obtener datos
             try
             {
                 // SubscriptionId: 3 JCyL Convocatorias

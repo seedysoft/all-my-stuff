@@ -103,6 +103,54 @@ public static class StructConverter
         return obtainedSize == fmtSize
             ? [.. outputBytes]
             : throw new ArgumentException($"Different format sizes. Obtained '{obtainedFormat}({obtainedSize})' expected '{fmt}({fmtSize})'.");
+
+        /// <summary>
+        /// We use this function to provide an easier way to type-agnostically call the GetBytes method of the BitConverter class.
+        /// This means we can have much cleaner code.
+        /// </summary>
+        /// <param name="o"></param>
+        /// <returns><see cref="byte[]"/></returns>
+        /// <exception cref="ArgumentException"></exception>
+        static byte[] TypeAgnosticGetBytes(object o)
+        {
+            return o switch
+            {
+                bool => BitConverter.GetBytes((bool)o),
+                byte or sbyte => [(byte)o],
+                char => BitConverter.GetBytes((char)o),
+                double => BitConverter.GetBytes((double)o),
+                float => BitConverter.GetBytes((float)o),
+                int => BitConverter.GetBytes((int)o),
+                uint => BitConverter.GetBytes((uint)o),
+                long => BitConverter.GetBytes((long)o),
+                ulong => BitConverter.GetBytes((ulong)o),
+                short => BitConverter.GetBytes((short)o),
+                ushort => BitConverter.GetBytes((ushort)o),
+                _ => throw new ArgumentException("Unsupported object type found")
+            };
+        }
+
+        static string GetFormatSpecifierFor(object o)
+        {
+            return o switch
+            {
+                bool => "?",
+                byte => "B",
+                sbyte => "b",
+                byte[] => $"{((byte[])o).Length}s",
+                char => "c",
+                char[] => $"{((char[])o).Length}s",
+                double => "d",
+                float => "f",
+                int => "i",
+                uint => "I",
+                long => "q",
+                ulong => "Q",
+                short => "h",
+                ushort => "H",
+                _ => throw new ArgumentException("Unsupported object type found")
+            };
+        }
     }
 
     /// <summary>
@@ -202,52 +250,6 @@ public static class StructConverter
             'e' or 'h' or 'H' => sizeof(short), // 2
             '?' or 'b' or 'B' or 'c' or 's' or 'x' => sizeof(bool), // 1
             _ => throw new ArgumentException("Invalid character found in format string."),
-        };
-    }
-    private static string GetFormatSpecifierFor(object o)
-    {
-        return o switch
-        {
-            bool => "?",
-            byte => "B",
-            sbyte => "b",
-            byte[] => $"{((byte[])o).Length}s",
-            char => "c",
-            char[] => $"{((char[])o).Length}s",
-            double => "d",
-            float => "f",
-            int => "i",
-            uint => "I",
-            long => "q",
-            ulong => "Q",
-            short => "h",
-            ushort => "H",
-            _ => throw new ArgumentException("Unsupported object type found")
-        };
-    }
-    /// <summary>
-    /// We use this function to provide an easier way to type-agnostically call the GetBytes method of the BitConverter class.
-    /// This means we can have much cleaner code.
-    /// </summary>
-    /// <param name="o"></param>
-    /// <returns><see cref="byte[]"/></returns>
-    /// <exception cref="ArgumentException"></exception>
-    private static byte[] TypeAgnosticGetBytes(object o)
-    {
-        return o switch
-        {
-            bool => BitConverter.GetBytes((bool)o),
-            byte or sbyte => [(byte)o],
-            char => BitConverter.GetBytes((char)o),
-            double => BitConverter.GetBytes((double)o),
-            float => BitConverter.GetBytes((float)o),
-            int => BitConverter.GetBytes((int)o),
-            uint => BitConverter.GetBytes((uint)o),
-            long => BitConverter.GetBytes((long)o),
-            ulong => BitConverter.GetBytes((ulong)o),
-            short => BitConverter.GetBytes((short)o),
-            ushort => BitConverter.GetBytes((ushort)o),
-            _ => throw new ArgumentException("Unsupported object type found")
         };
     }
 }

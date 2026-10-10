@@ -21,7 +21,7 @@ public abstract class WebDataBase
     public long TakeAboveBelowLines { get; set; }
 }
 
-[System.Diagnostics.DebuggerDisplay("{GetDebuggerDisplay,nq}")]
+[System.Diagnostics.DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
 public sealed partial class WebData : WebDataBase
 {
     public WebData(string webUrl, string description) : base()

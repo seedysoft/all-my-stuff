@@ -287,7 +287,7 @@ public sealed class TelegramHostedServiceTests : Infrastructure.Tests.TestClassB
         long[] chatIds = [
             telegramHostedService.Settings.KnownUserForTest.IdAsLong,
             //Constants.TelegramIds.BotFather,
-            // TODO Find more user ids to test
+            // TODO         Find more user ids to test
         ];
         const string text = "Test message";
         CancellationToken cancellationToken = CancellationToken.None;

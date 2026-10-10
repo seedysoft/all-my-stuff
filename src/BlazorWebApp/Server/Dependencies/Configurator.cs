@@ -18,7 +18,7 @@ public sealed class Configurator : Libs.Core.Dependencies.ConfiguratorBase
 
     protected override void AddMyServices(IHostApplicationBuilder hostApplicationBuilder)
     {
-        // Add Todo service for components adopting SSR
+        // Add MovieService service for components adopting SSR
         //_ = hostApplicationBuilder.Services.AddScoped<IMovieService, ServerMovieService>();
 
         //if (System.Diagnostics.Debugger.IsAttached)

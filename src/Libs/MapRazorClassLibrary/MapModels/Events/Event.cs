@@ -1,8 +1,6 @@
-﻿//using System.Diagnostics;
+﻿//namespace Seedysoft.Libs.MapRazorClassLibrary.MapModels.Events;
 
-//namespace Seedysoft.Libs.MapRazorClassLibrary.MapModels.Events;
-
-//[DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
+//[System.Diagnostics.DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
 //public abstract class Event
 //{
 //    /// <summary>

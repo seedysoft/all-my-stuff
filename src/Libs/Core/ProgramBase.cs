@@ -32,13 +32,11 @@ public class ProgramBase
 
         for (int i = Settings.SecondsToDelayWebApplicationStart; i > 0; --i)
         {
-            Console.Write("\rWaiting for {0} seconds   ", i);
+            Console.Write("{0,-30}", $"\rWaiting for {i} seconds");
             await Task.Delay(TimeSpan.FromSeconds(1));
         }
 
-        Console.Write("\rStarting ...              ");
+        Console.Write("{0,-30}", "\rStarting ...");
         Console.WriteLine(string.Empty);
-
-        // TODO                                     Use string hints for text widths
     }
 }

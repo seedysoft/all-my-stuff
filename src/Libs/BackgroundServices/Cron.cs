@@ -36,24 +36,22 @@ public abstract class Cron(
         }
         catch (TaskCanceledException) { }
         finally { await Task.CompletedTask; }
-    }
 
-    private static async Task<bool> WaitForAppStartupAsync(
-        IHostApplicationLifetime lifetime,
-        CancellationToken cancellationToken)
-    {
-        TaskCompletionSource startedSource = new();
-        TaskCompletionSource cancelledSource = new();
+        static async Task<bool> WaitForAppStartupAsync(IHostApplicationLifetime lifetime, CancellationToken cancellationToken)
+        {
+            TaskCompletionSource startedSource = new();
+            TaskCompletionSource cancelledSource = new();
 
-        await using CancellationTokenRegistration reg1 = lifetime.ApplicationStarted.Register(startedSource.SetResult);
-        await using CancellationTokenRegistration reg2 = cancellationToken.Register(cancelledSource.SetResult);
+            await using CancellationTokenRegistration reg1 = lifetime.ApplicationStarted.Register(startedSource.SetResult);
+            await using CancellationTokenRegistration reg2 = cancellationToken.Register(cancelledSource.SetResult);
 
-        Task completedTask = await Task
-            .WhenAny(startedSource.Task, cancelledSource.Task)
-            .ConfigureAwait(false);
+            Task completedTask = await Task
+                .WhenAny(startedSource.Task, cancelledSource.Task)
+                .ConfigureAwait(false);
 
-        // If the completed tasks was the "app started" task, return true, otherwise false
-        return completedTask == startedSource.Task;
+            // If the completed tasks was the "app started" task, return true, otherwise false
+            return completedTask == startedSource.Task;
+        }
     }
 
     public abstract Task DoWorkAsync(CancellationToken cancellationToken);

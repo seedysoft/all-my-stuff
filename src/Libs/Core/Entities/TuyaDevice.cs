@@ -1,6 +1,6 @@
 ﻿namespace Seedysoft.Libs.Core.Entities;
 
-[System.Diagnostics.DebuggerDisplay("{GetDebuggerDisplay,nq}")]
+[System.Diagnostics.DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
 public sealed class TuyaDevice
 {
     public string Id { get; set; } = default!; // bf73f8d9933c68f98az7hb
