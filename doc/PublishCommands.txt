@@ -1,3 +1,6 @@
+# Clear all NuGet caches:
+dotnet nuget locals all --clear
+
 # FIRST UPGRADE NUGET PACKAGES (PS>):
 dotnet package update
 

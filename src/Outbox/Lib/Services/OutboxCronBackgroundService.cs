@@ -116,80 +116,80 @@ public sealed class OutboxCronBackgroundService : Libs.BackgroundServices.Cron
 
         if (Logger.IsEnabled(LogLevel.Information))
             Logger.LogInformation("End {ApplicationName}", AppName);
-    }
 
-    private static string GetHtmlBodyMail(string payload)
-    {
-        IEnumerable<Libs.Core.Entities.Pvpc> entities = payload.FromJson<IEnumerable<Libs.Core.Entities.Pvpc>>()!;
-        if (!entities.Any())
-            return string.Empty;
-
-        System.Text.StringBuilder sb = new(10_000);
-
-        decimal Avg = entities.Average(x => x.KWhPriceInEuros);
-        sb = sb.Append("<!DOCTYPE html><html><body><div>");
-        sb = sb.Append($"<h2>Día: {entities.First().AtDateTimeOffset.Date.ToString("dd-MM-yy (dddd)", Libs.Core.Constants.Globalization.CultureInfoES.DateTimeFormat)}</h2>");
-        sb = sb.Append($"<h3>Precio medio: {Avg:N5} € / Kwh</h3>");
-
-        for (int h = 0; h < 3; h++)
+        static string GetHtmlBodyMail(string payload)
         {
-            sb = sb.Append("<table style='background-color:#000;padding:10px;'>");
+            IEnumerable<Libs.Core.Entities.Pvpc> entities = payload.FromJson<IEnumerable<Libs.Core.Entities.Pvpc>>()!;
+            if (!entities.Any())
+                return string.Empty;
 
-            var RangoMediaPair = entities
-                .Where(x => x.AtDateTimeOffset.Hour < 24 - h)
-                .Select((x, i) => new
-                {
-                    Rango = $"{x.AtDateTimeOffset.Hour:00}+{h + 1:0}",
-                    Media = entities.Skip(i).Take(h + 1).Average(x => x.KWhPriceInEuros),
-                })
-                .OrderBy(x => x.Rango)
-                .ToArray();
+            System.Text.StringBuilder sb = new(10_000);
 
-            const int HowMany = 6;
-            decimal Min = entities.OrderBy(x => x.KWhPriceInEuros).Take(HowMany).Max(x => x.KWhPriceInEuros);
-            decimal Max = entities.OrderByDescending(x => x.KWhPriceInEuros).Take(HowMany).Min(x => x.KWhPriceInEuros);
+            decimal Avg = entities.Average(x => x.KWhPriceInEuros);
+            sb = sb.Append("<!DOCTYPE html><html><body><div>");
+            sb = sb.Append($"<h2>Día: {entities.First().AtDateTimeOffset.Date.ToString("dd-MM-yy (dddd)", Libs.Core.Constants.Globalization.CultureInfoES.DateTimeFormat)}</h2>");
+            sb = sb.Append($"<h3>Precio medio: {Avg:N5} € / Kwh</h3>");
 
-            const int Rows = 6;
-            const int Cols = 4;
-            for (int row = 0; row < Rows; row++)
+            for (int h = 0; h < 3; h++)
             {
-                sb = sb.Append("<tr>");
+                sb = sb.Append("<table style='background-color:#000;padding:10px;'>");
 
-                for (int col = 0; col < Cols; col++)
-                {
-                    int CurrentIndex = (col * Rows) + row;
-                    if (CurrentIndex >= RangoMediaPair.Length)
+                var RangoMediaPair = entities
+                    .Where(x => x.AtDateTimeOffset.Hour < 24 - h)
+                    .Select((x, i) => new
                     {
-                        sb = sb.Append("<td></td>");
-                        continue;
+                        Rango = $"{x.AtDateTimeOffset.Hour:00}+{h + 1:0}",
+                        Media = entities.Skip(i).Take(h + 1).Average(x => x.KWhPriceInEuros),
+                    })
+                    .OrderBy(x => x.Rango)
+                    .ToArray();
+
+                const int HowMany = 6;
+                decimal Min = entities.OrderBy(x => x.KWhPriceInEuros).Take(HowMany).Max(x => x.KWhPriceInEuros);
+                decimal Max = entities.OrderByDescending(x => x.KWhPriceInEuros).Take(HowMany).Min(x => x.KWhPriceInEuros);
+
+                const int Rows = 6;
+                const int Cols = 4;
+                for (int row = 0; row < Rows; row++)
+                {
+                    sb = sb.Append("<tr>");
+
+                    for (int col = 0; col < Cols; col++)
+                    {
+                        int CurrentIndex = (col * Rows) + row;
+                        if (CurrentIndex >= RangoMediaPair.Length)
+                        {
+                            sb = sb.Append("<td></td>");
+                            continue;
+                        }
+
+                        var CurrentPair = RangoMediaPair[CurrentIndex];
+
+                        string CellPriceColor =
+                            CurrentPair.Media >= Max ? "#F00" :
+                            CurrentPair.Media <= Min ? "#0F0" :
+                            CurrentPair.Media <= Avg ? "#FF0" : "#F90";
+
+                        sb = sb.Append($"<td style='color:#FFF;padding:5px 5px 0px {(col == 0 ? "0" : " 20")}px;'>{CurrentPair.Rango}</td>");
+                        sb = sb.Append($"<td style='color:{CellPriceColor};padding:5px 5px 0px 0px;text-align:right;'>{CurrentPair.Media:N5}</td>");
+                        /*
+                         * padding:10px 5px 15px 20px;
+                         *      top padding is 10px
+                         *      right padding is 5px
+                         *      bottom padding is 15px
+                         *      left padding is 20px
+                         */
                     }
 
-                    var CurrentPair = RangoMediaPair[CurrentIndex];
-
-                    string CellPriceColor =
-                        CurrentPair.Media >= Max ? "#F00" :
-                        CurrentPair.Media <= Min ? "#0F0" :
-                        CurrentPair.Media <= Avg ? "#FF0" : "#F90";
-
-                    sb = sb.Append($"<td style='color:#FFF;padding:5px 5px 0px {(col == 0 ? "0" : " 20")}px;'>{CurrentPair.Rango}</td>");
-                    sb = sb.Append($"<td style='color:{CellPriceColor};padding:5px 5px 0px 0px;text-align:right;'>{CurrentPair.Media:N5}</td>");
-                    /*
-                     * padding:10px 5px 15px 20px;
-                     *      top padding is 10px
-                     *      right padding is 5px
-                     *      bottom padding is 15px
-                     *      left padding is 20px
-                     */
+                    sb = sb.Append("</tr>");
                 }
 
-                sb = sb.Append("</tr>");
+                sb = sb.Append("</table>");
             }
 
-            sb = sb.Append("</table>");
+            sb = sb.Append("</div></body></html>");
+
+            return sb.ToString();
         }
-
-        sb = sb.Append("</div></body></html>");
-
-        return sb.ToString();
     }
 }

@@ -1,6 +1,6 @@
 ﻿namespace Seedysoft.Libs.Core.Entities;
 
-[System.Diagnostics.DebuggerDisplay("{GetDebuggerDisplay,nq}")]
+[System.Diagnostics.DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
 public sealed class Subscriber
 {
     public long SubscriberId { get; set; }

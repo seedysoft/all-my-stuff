@@ -46,6 +46,16 @@ public class TelegramHostedService : Core.NonBackgroundServiceBase, IHostedServi
         _ = StartReceivingAsync(Commands, cancellationToken);
 
         await Task.CompletedTask;
+
+        static BotCommand[] GetMyCommands()
+        {
+            return [.. Enum.GetValues<Enums.BotActionName>().
+                Select(static x => new BotCommand()
+                {
+                    Command = x.ToString(),
+                    Description = x.GetEnumDescription(),
+                })];
+        }
     }
     public async Task StopAsync(CancellationToken cancellationToken)
     {
@@ -53,16 +63,6 @@ public class TelegramHostedService : Core.NonBackgroundServiceBase, IHostedServi
             Logger.LogInformation("End {ApplicationName}", GetType().FullName);
 
         await Task.CompletedTask;
-    }
-
-    private static BotCommand[] GetMyCommands()
-    {
-        return [.. Enum.GetValues<Enums.BotActionName>().
-            Select(static x => new BotCommand()
-            {
-                Command = x.ToString(),
-                Description = x.GetEnumDescription(),
-            })];
     }
 
     private async Task StartReceivingAsync(
@@ -99,7 +99,7 @@ public class TelegramHostedService : Core.NonBackgroundServiceBase, IHostedServi
         HandleErrorSource handleErrorSource,
         CancellationToken cancellationToken)
     {
-        // TODO Cuando se cae la conexión, evitar que llene los logs
+        // TODO         Cuando se cae la conexión, evitar que llene los logs
 
         switch (exception)
         {
@@ -254,24 +254,6 @@ public class TelegramHostedService : Core.NonBackgroundServiceBase, IHostedServi
         return SubscriberWithSubscriptions;
     }
 
-    private static async Task<string[]?> SubscriberGetWebUrlsAsync(
-        Infrastructure.DbContexts.DbCxt dbCtx,
-        long telegramUserId,
-        CancellationToken cancellationToken)
-    {
-        Core.Entities.Subscriber? SubscriberWithSubscriptions = await dbCtx.GetSubscriberWithSubscriptionsAsync(telegramUserId, cancellationToken);
-        if (SubscriberWithSubscriptions == null)
-            return null;
-
-        string[]? WebUrls = await dbCtx.WebDatas
-            .Where(x => SubscriberWithSubscriptions.Subscriptions.Select(y => y.SubscriptionId).Contains(x.SubscriptionId))
-            .OrderBy(x => x.SubscriptionId)
-            .Select(x => $"{x.SubscriptionId} ({x.WebUrl})")
-            .ToArrayAsync(cancellationToken);
-
-        return WebUrls;
-    }
-
     // Process Inline Keyboard callback data
     private async Task BotOnCallbackQueryReceivedAsync(
         ITelegramBotClient botClient,
@@ -380,7 +362,8 @@ public class TelegramHostedService : Core.NonBackgroundServiceBase, IHostedServi
     {
         await ChatActionSendAsync(message, ChatAction.Typing, cancellationToken);
 
-        //await ProcesarDocumentoConsumosAsync(message, cancellationToken); // TODO Manejar todos los tipos de documentos
+        // TODO         Manejar todos los tipos de documentos
+        //await ProcesarDocumentoConsumosAsync(message, cancellationToken);
 
         Task<Message>? handler = message.Caption switch
         {
@@ -471,8 +454,8 @@ public class TelegramHostedService : Core.NonBackgroundServiceBase, IHostedServi
 
         return await MessageSendTextAsync(
             to: message.Chat.Id,
-            text: MessageGetMarkdownV2TextForPrices(Prices),
-            parseMode: ParseMode.MarkdownV2,
+            text: MessageGetMarkdownTextForPrices(Prices),
+            parseMode: ParseMode.Markdown,
             cancellationToken: cancellationToken);
     }
 
@@ -495,7 +478,7 @@ public class TelegramHostedService : Core.NonBackgroundServiceBase, IHostedServi
         }
         else
         {
-            // TODO MailSetAsync
+            // TODO         MailSetAsync
             long TelegramUserId = message.From!.Id;
             Core.Entities.Subscriber? SubscriberWithSubscriptions = await dbCtx.GetSubscriberWithSubscriptionsAsync(TelegramUserId, cancellationToken);
             if (SubscriberWithSubscriptions == null)
@@ -673,6 +656,24 @@ public class TelegramHostedService : Core.NonBackgroundServiceBase, IHostedServi
             : "Usted no tiene suscripciones";
 
         return await MessageSendTextAsync(TelegramUserId, TextToSend, null, cancellationToken);
+
+        static async Task<string[]?> SubscriberGetWebUrlsAsync(
+            Infrastructure.DbContexts.DbCxt dbCtx,
+            long telegramUserId,
+            CancellationToken cancellationToken)
+        {
+            Core.Entities.Subscriber? SubscriberWithSubscriptions = await dbCtx.GetSubscriberWithSubscriptionsAsync(telegramUserId, cancellationToken);
+            if (SubscriberWithSubscriptions == null)
+                return null;
+
+            string[]? WebUrls = await dbCtx.WebDatas
+                .Where(x => SubscriberWithSubscriptions.Subscriptions.Select(y => y.SubscriptionId).Contains(x.SubscriptionId))
+                .OrderBy(x => x.SubscriptionId)
+                .Select(x => $"{x.SubscriptionId} ({x.WebUrl})")
+                .ToArrayAsync(cancellationToken);
+
+            return WebUrls;
+        }
     }
 
     private async Task<Message> MessageSendUsageAsync(
@@ -780,8 +781,8 @@ public class TelegramHostedService : Core.NonBackgroundServiceBase, IHostedServi
         {
             Core.Enums.SubscriptionName.electricidad => await MessageSendTextAsync(
                 to: telegramUserId,
-                text: MessageGetMarkdownV2TextForPrices(pendingMessage.Payload.FromJson<Core.Entities.Pvpc[]>()!),
-                parseMode: ParseMode.MarkdownV2,
+                text: MessageGetMarkdownTextForPrices(pendingMessage.Payload.FromJson<Core.Entities.Pvpc[]>()!),
+                parseMode: ParseMode.Markdown,
                 cancellationToken: stoppingToken),
 
             Core.Enums.SubscriptionName.webComparer => await MessageSendTextAsync(
@@ -799,7 +800,7 @@ public class TelegramHostedService : Core.NonBackgroundServiceBase, IHostedServi
         };
     }
 
-    private static string MessageGetMarkdownV2TextForPrices(
+    private static string MessageGetMarkdownTextForPrices(
         Core.Entities.Pvpc[] prices)
     {
         if (prices == null || prices.Length == 0)

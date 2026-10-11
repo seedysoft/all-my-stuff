@@ -16,7 +16,7 @@ public abstract class PvpcBase
 /// <summary>
 /// Precio Voluntario para el Pequeño Consumidor
 /// </summary>
-[System.Diagnostics.DebuggerDisplay("{GetDebuggerDisplay,nq}")]
+[System.Diagnostics.DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
 public sealed class Pvpc : PvpcBase
 {
     public Pvpc(DateTimeOffset atDateTimeOffset, decimal mWhPriceInEuros) : base()

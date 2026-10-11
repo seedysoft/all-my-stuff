@@ -13,7 +13,7 @@ public abstract class OutboxBase
     public DateTimeOffset? SentAtDateTimeOffset { get; set; }
 }
 
-[System.Diagnostics.DebuggerDisplay("{GetDebuggerDisplay,nq}")]
+[System.Diagnostics.DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
 public sealed class Outbox : OutboxBase
 {
     public Outbox(Enums.SubscriptionName subscriptionName, string payload) : base()
