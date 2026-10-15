@@ -17,7 +17,7 @@
       ]
     },
     {
-      "library": "dompurify@3.4.16",
+      "library": "dompurify@3.4.17",
       "provider": "unpkg",
       "destination": "wwwroot/lib/DOMPurify",
       "files": [
