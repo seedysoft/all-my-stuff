@@ -5,7 +5,7 @@ namespace Seedysoft.Pvpc.Lib.Tests.Services;
 
 public sealed class PvpcCronBackgroundServiceTests : Libs.Infrastructure.Tests.TestClassBase, IDisposable
 {
-    private readonly Lib.Services.PvpcCronBackgroundService PvpcService = default!;
+    private readonly Lib.Services.PvpcCronBackgroundService pvpcCronBackgroundService = default!;
     private readonly Libs.Core.Entities.Pvpc[] Prices = default!;
     private readonly DateTimeOffset TimeToQuery = default!;
     private readonly decimal MinPriceAllowed = default!;
@@ -111,7 +111,7 @@ public sealed class PvpcCronBackgroundServiceTests : Libs.Infrastructure.Tests.T
         {
             if (disposing)
                 // dispose managed state (managed objects)
-                PvpcService?.Dispose();
+                pvpcCronBackgroundService?.Dispose();
 
             // free unmanaged resources (unmanaged objects) and override finalizer
             // set large fields to null

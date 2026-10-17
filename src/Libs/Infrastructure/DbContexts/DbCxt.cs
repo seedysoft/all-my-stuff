@@ -52,7 +52,7 @@ public sealed partial class DbCxt : DbContext
 
     public DbSet<Core.Entities.Subscriber> Subscribers { get; set; } = default!;
     public DbSet<Core.Entities.Subscription> Subscriptions { get; set; } = default!;
-    
+
     public DbSet<Core.Entities.TuyaDevice> TuyaDevices { get; set; } = default!;
 
     public DbSet<Core.Entities.WebData> WebDatas { get; set; } = default!;

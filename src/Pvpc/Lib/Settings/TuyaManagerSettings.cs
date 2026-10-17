@@ -11,4 +11,22 @@ public record class TuyaManagerSettings : Libs.BackgroundServices.ScheduleConfig
     /// Cantidad de horas de un día en las que se activarán los dispositivos.
     /// </summary>
     public required int ChargingHoursPerDay { get; init; }
+
+    public static TuyaManagerSettings GetDefault(
+        decimal? allowChargeWhenKWhPriceInEurosIsBelowThan = null,
+        int? chargingHoursPerDay = null,
+        string? cronExpression = null,
+        TimeSpan? delayBetweenExecutionsTimeSpan = null,
+        TimeZoneInfo? timeZoneInfo = null
+        )
+    {
+        return new TuyaManagerSettings()
+        {
+            AllowChargeWhenKWhPriceInEurosIsBelowThan = allowChargeWhenKWhPriceInEurosIsBelowThan ?? decimal.Zero,
+            ChargingHoursPerDay = chargingHoursPerDay ?? 0,
+            CronExpression = cronExpression ?? Cronos.CronExpression.Yearly.ToString(),
+            DelayBetweenExecutionsTimeSpan = delayBetweenExecutionsTimeSpan ?? TimeSpan.MaxValue,
+            TimeZoneInfo = timeZoneInfo ?? TimeZoneInfo.Local,
+        };
+    }
 }

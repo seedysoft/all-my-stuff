@@ -149,6 +149,23 @@ public class Program : Libs.Core.ProgramBase
                 typeof(Client._Imports).Assembly,
             ]);
 
+        ConfigureMaps(webApplication);
+
         await webApplication.RunAsync();
+    }
+
+    private static void ConfigureMaps(WebApplication webApplication)
+    {
+        _ = webApplication
+            .MapGet("/is-time-to-charge", static async (Pvpc.Lib.Services.PvpcCronBackgroundService pvpcCronBackgroundService) =>
+            {
+                return await pvpcCronBackgroundService.IsTimeToChargeAsync(
+                    timeToCheckDateTimeOffset: DateTimeOffset.Now,
+                    tuyaManagerSettings: Pvpc.Lib.Settings.TuyaManagerSettings.GetDefault(chargingHoursPerDay: 4));
+            });
+
+        _ = webApplication.MapGet("/get-pvpc",
+            static async (Pvpc.Lib.Services.PvpcCronBackgroundService pvpcCronBackgroundService) =>
+            await pvpcCronBackgroundService.GetPvpc(DateTimeOffset.Now));
     }
 }

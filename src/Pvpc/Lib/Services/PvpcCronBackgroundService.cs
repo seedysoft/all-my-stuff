@@ -176,6 +176,39 @@ public sealed class PvpcCronBackgroundService : Libs.BackgroundServices.Cron
         return false;
     }
 
+    public async Task<bool> IsTimeToChargeAsync(DateTimeOffset timeToCheckDateTimeOffset, Settings.TuyaManagerSettings tuyaManagerSettings)
+    {
+        DateTimeOffset dateToQueryDateTimeOffset = new(
+            year: timeToCheckDateTimeOffset.Year,
+            month: timeToCheckDateTimeOffset.Month,
+            day: timeToCheckDateTimeOffset.Day,
+            hour: 0,
+            minute: 0,
+            second: 0,
+            offset: timeToCheckDateTimeOffset.Offset);
+
+        Libs.Core.Entities.Pvpc[] Pvpcs = await ServiceProvider.GetRequiredService<Libs.Infrastructure.DbContexts.DbCxt>().Pvpcs.AsNoTracking()
+            .Where(x => x.AtDateTimeOffset >= dateToQueryDateTimeOffset)
+            .Where(x => x.AtDateTimeOffset < dateToQueryDateTimeOffset.AddDays(1))
+            .ToArrayAsync();
+
+        return IsTimeToCharge(Pvpcs, timeToCheckDateTimeOffset, tuyaManagerSettings, Logger);
+    }
+
+    public async Task<string?> GetPvpc(DateTimeOffset timeToCheckDateTimeOffset)
+    {
+        Libs.Core.Entities.Pvpc? pvpc = await ServiceProvider.GetRequiredService<Libs.Infrastructure.DbContexts.DbCxt>().Pvpcs.AsNoTracking()
+            .Where(x => x.AtDateTimeOffset >= timeToCheckDateTimeOffset)
+            .Where(x => x.AtDateTimeOffset < timeToCheckDateTimeOffset.AddHours(1))
+            .FirstOrDefaultAsync();
+
+        const int decimals = 4;
+
+        return pvpc == null
+            ? "----"
+            : Math.Round(pvpc.KWhPriceInEuros, decimals).ToString($"F{decimals}", System.Globalization.CultureInfo.InvariantCulture)[2..];
+    }
+
     public override void Dispose()
     {
         httpClient.Dispose();
