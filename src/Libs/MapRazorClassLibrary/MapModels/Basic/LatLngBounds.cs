@@ -1,6 +1,6 @@
 ﻿namespace Seedysoft.Libs.MapRazorClassLibrary.MapModels.Basic;
 
-[System.Diagnostics.DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
+[System.Diagnostics.DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)},nq}}")]
 public sealed class LatLngBounds(LatLng northEast, LatLng southWest)
 {
     internal static readonly LatLngBounds Empty = new(LatLng.Empty, LatLng.Empty);

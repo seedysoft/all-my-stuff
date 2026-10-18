@@ -1,6 +1,6 @@
 ﻿namespace Seedysoft.Libs.Travel.Models;
 
-[System.Diagnostics.DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
+[System.Diagnostics.DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)},nq}}")]
 /// <summary>
 /// Represents a geographic location using double latitude and longitude in degrees.
 /// </summary>

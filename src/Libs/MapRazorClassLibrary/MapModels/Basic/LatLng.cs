@@ -6,7 +6,7 @@
 /// <param name="lat">Latitude in degrees.</param>
 /// <param name="lng">Longitude in degrees.</param>
 /// <param name="alt" >Altitude in meters (optional).</param>
-[System.Diagnostics.DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
+[System.Diagnostics.DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)},nq}}")]
 public sealed class LatLng(double lat, double lng, double? alt = default)
 {
     internal static readonly LatLng Empty = new(0, 0);

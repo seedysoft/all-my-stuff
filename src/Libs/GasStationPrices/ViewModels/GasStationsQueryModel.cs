@@ -2,7 +2,7 @@
 
 namespace Seedysoft.Libs.GasStationPrices.ViewModels;
 
-[System.Diagnostics.DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
+[System.Diagnostics.DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)},nq}}")]
 public record GasStationsQueryModel
 {
     public required int MaxDistanceInKm { get; set; }

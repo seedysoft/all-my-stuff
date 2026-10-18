@@ -1,6 +1,6 @@
 ﻿namespace Seedysoft.Libs.Travel.Models;
 
-[System.Diagnostics.DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
+[System.Diagnostics.DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)},nq}}")]
 public record Bounds(Location NorthEast, Location SouthWest)
 {
     /// <summary>

@@ -2,7 +2,7 @@
 
 namespace Seedysoft.Libs.Travel.ViewModels;
 
-[System.Diagnostics.DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
+[System.Diagnostics.DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)},nq}}")]
 public record TravelQueryModel
 {
     public required Place Orig { get; set; }

@@ -10,7 +10,7 @@ namespace Seedysoft.Libs.Travel.ViewModels;
 /// </remarks>
 /// <param name="Address">The street address of the location.</param>
 /// <param name="Location">The coordinates for the place as a <see cref="Models.Location"/> (latitude and longitude).</param>
-[System.Diagnostics.DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
+[System.Diagnostics.DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)},nq}}")]
 public readonly record struct Place(string Address, Models.Location Location)
 {
     public static Place Empty => new(string.Empty, Models.Location.Empty);
