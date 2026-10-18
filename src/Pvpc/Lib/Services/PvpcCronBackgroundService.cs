@@ -197,10 +197,14 @@ public sealed class PvpcCronBackgroundService : Libs.BackgroundServices.Cron
 
     public async Task<string?> GetPvpc(DateTimeOffset timeToCheckDateTimeOffset)
     {
-        Libs.Core.Entities.Pvpc? pvpc = await ServiceProvider.GetRequiredService<Libs.Infrastructure.DbContexts.DbCxt>().Pvpcs.AsNoTracking()
-            .Where(x => x.AtDateTimeOffset >= timeToCheckDateTimeOffset)
-            .Where(x => x.AtDateTimeOffset < timeToCheckDateTimeOffset.AddHours(1))
-            .FirstOrDefaultAsync();
+        DateTimeOffset timeToCheckDateTimeOffsetOclock = new(
+            timeToCheckDateTimeOffset.Year, timeToCheckDateTimeOffset.Month, timeToCheckDateTimeOffset.Day,
+            timeToCheckDateTimeOffset.Hour, 0, 0,
+            timeToCheckDateTimeOffset.Offset);
+
+        Libs.Core.Entities.Pvpc? pvpc = await ServiceProvider.GetRequiredService<Libs.Infrastructure.DbContexts.DbCxt>().Pvpcs
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.AtDateTimeOffset == timeToCheckDateTimeOffsetOclock);
 
         const int decimals = 4;
 
