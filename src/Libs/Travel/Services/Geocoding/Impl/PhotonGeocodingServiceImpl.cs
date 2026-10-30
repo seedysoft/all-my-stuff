@@ -16,7 +16,7 @@ internal class PhotonGeocodingServiceImpl(
                 return [];
 
             // photon.komoot.io/api/?q=berlin&limit=1
-            
+
             HttpResponseMessage httpResponseMessage = await HttpClient.GetAsync(Api.GetUrl(Uri.EscapeDataString(textToFind)), cancellationToken);
             if (httpResponseMessage.IsSuccessStatusCode)
             {

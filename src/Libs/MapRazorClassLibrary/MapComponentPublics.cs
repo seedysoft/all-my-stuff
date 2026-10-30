@@ -4,7 +4,7 @@ public partial class MapComponent
 {
     public async Task<string?> LoadRoutesAsync(CancellationToken cancellationToken)
     {
-        FluentValidation.Results.ValidationResult validationResult = await TravelQueryModelFluentValidator.ValidateAsync(TravelQueryModel, cancellationToken);
+        FluentValidation.Results.ValidationResult validationResult = await TravelQueryModelFluentValidator.ValidateAsync(QueryModel, cancellationToken);
         if (!validationResult.IsValid)
             return string.Join(Environment.NewLine, validationResult.Errors.Select(static x => $"{x.ErrorMessage}"));
 
@@ -16,7 +16,7 @@ public partial class MapComponent
         IReadOnlyList<(string NombreRuta, double[,] Coordenadas)> res;
         try
         {
-            res = await RoutingService.GetRoutesAsync(TravelQueryModel.Orig.Location, TravelQueryModel.Dest.Location, cancellationToken);
+            res = await RoutingService.GetRoutesAsync(QueryModel.Orig.Location, QueryModel.Dest.Location, cancellationToken);
         }
         catch (Exception e)
         {

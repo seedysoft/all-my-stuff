@@ -14,7 +14,7 @@ public partial class TravelSearch
 
     private Libs.MapRazorClassLibrary.MapComponent TravelMap { get; set; } = default!;
 
-    private Libs.Travel.ViewModels.TravelQueryModel TravelQueryModel { get; set; }
+    private Libs.Travel.ViewModels.TravelQueryModel TravelSearchQueryModel { get; set; }
         = Libs.Travel.ViewModels.TravelQueryModel.CreateDefault();
 
     protected override async Task OnInitializedAsync()

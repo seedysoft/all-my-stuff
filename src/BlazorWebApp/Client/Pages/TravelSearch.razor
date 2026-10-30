@@ -13,13 +13,13 @@
     <MudGrid Justify="@Justify.SpaceBetween">
 
         <MudItem xs="12" md="6">
-            <MudAutocomplete @bind-Value="@TravelQueryModel.Orig"
+            <MudAutocomplete @bind-Value="@TravelSearchQueryModel.Orig"
                              AdornmentIcon="@Icons.Material.Filled.Search"
                              AutoFocus="@(!System.Diagnostics.Debugger.IsAttached)"
                              Clearable
                              DebounceInterval="450"
                              Dense
-                             For="@(() => TravelQueryModel.Orig)"
+                             For="@(() => TravelSearchQueryModel.Orig)"
                              FullWidth
                              Label="Origin"
                              MaxItems="8"
@@ -38,12 +38,12 @@
         </MudItem>
 
         <MudItem xs="12" md="6">
-            <MudAutocomplete @bind-Value="@TravelQueryModel.Dest"
+            <MudAutocomplete @bind-Value="@TravelSearchQueryModel.Dest"
                              AdornmentIcon="@Icons.Material.Filled.Search"
                              Clearable
                              DebounceInterval="450"
                              Dense
-                             For="@(() => TravelQueryModel.Dest)"
+                             For="@(() => TravelSearchQueryModel.Dest)"
                              FullWidth
                              Label="Destination"
                              MaxItems="8"
@@ -78,6 +78,7 @@
                           Height="calc(50vh)"
                           Width="100%"
                           Center="@(new Libs.MapRazorClassLibrary.MapModels.Basic.LatLng(Libs.Travel.Constants.Earth.Burgos.Latitude, Libs.Travel.Constants.Earth.Burgos.Longitude))"
+                          QueryModel="@TravelSearchQueryModel"
                           Zoom="18">
             </MapComponent>
             @{
@@ -85,8 +86,6 @@
                 // OnMapCreatedAsyncEventCallback="OnMapCreatedAsyncEventCallback"
                 // OnMapMoveEndEventCallback="OnMapMoveEndEventCallback"
                 // OnCircleMarkerClicEventCallback="OnCircleMarkerClicEventCallback"
-                // TravelQueryModel="@TravelQueryModel"
-                // GasStationsQueryModel = "@GasStationsQueryModel"
             }
         </MudItem>
 

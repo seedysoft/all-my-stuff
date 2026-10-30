@@ -21,7 +21,7 @@ public partial class MapComponent
     [Parameter] public required double Zoom { get; set; }
 
     [Parameter]
-    public required Travel.ViewModels.TravelQueryModel TravelQueryModel { get; set; }
+    public required Travel.ViewModels.TravelQueryModel QueryModel { get; set; }
         = Travel.ViewModels.TravelQueryModel.CreateDefault();
 
     [Parameter] public EventCallback<MapComponent> OnMapCreatedAsyncEventCallback { get; set; }
