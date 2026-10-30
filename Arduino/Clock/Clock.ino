@@ -1,10 +1,10 @@
-#define SEEDY_PRINT_LOG true
-
 #include <SeedysoftESP8266WiFi.h>
 #include <SeedysoftArduinoOTA.h>
 #include <SeedysoftTM1637TinyDisplay.h>
 #include <SeedysoftTimezoneNDP.h>
 #include <SeedysoftPvpc.h>
+
+const int LOOP_DELAY = 5000;  // 5 seconds
 
 void setup() {
   pinMode(LED_BUILTIN, OUTPUT);
@@ -12,10 +12,10 @@ void setup() {
   /* switch on led */
   digitalWrite(LED_BUILTIN, LOW);
 
-#if SEEDY_PRINT_LOG
   Serial.begin(115200);
   Serial.println("Booting");
-#endif
+
+  delay(LOOP_DELAY);
 
   setupESP8266WiFi();
 
@@ -31,7 +31,6 @@ void setup() {
   digitalWrite(LED_BUILTIN, HIGH);
 }
 
-const int LOOP_DELAY = 5000;  // 5 seconds
 bool isTimeShow;
 
 void loop() {
