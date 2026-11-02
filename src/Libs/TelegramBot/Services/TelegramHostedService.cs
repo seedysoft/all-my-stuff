@@ -236,7 +236,7 @@ public class TelegramHostedService : Core.NonBackgroundServiceBase, IHostedServi
     }
 
     private static async Task<Core.Entities.Subscriber> SubscriberWithSubscriptionsGetOrCreateAsync(
-        Infrastructure.DbContexts.DbCxt dbCtx,
+        Infrastructure.DbContexts.DbCtx dbCtx,
         User user,
         CancellationToken cancellationToken)
     {
@@ -290,14 +290,14 @@ public class TelegramHostedService : Core.NonBackgroundServiceBase, IHostedServi
 
         async Task<string?> ParseResponseTextAsync(CallbackQuery callbackQuery, CancellationToken cancellationToken)
         {
-            await SubscriberSetEmailAsync(ServiceProvider.GetRequiredService<Infrastructure.DbContexts.DbCxt>(), callbackQuery.Message!, null, cancellationToken);
+            await SubscriberSetEmailAsync(ServiceProvider.GetRequiredService<Infrastructure.DbContexts.DbCtx>(), callbackQuery.Message!, null, cancellationToken);
 
             return "Se ha borrado su correo electrónico";
         }
     }
 
     private static async Task SubscriberSetEmailAsync(
-        Infrastructure.DbContexts.DbCxt dbCtx,
+        Infrastructure.DbContexts.DbCtx dbCtx,
         Message message,
         System.Net.Mail.MailAddress? mailAddress,
         CancellationToken cancellationToken)
@@ -413,11 +413,11 @@ public class TelegramHostedService : Core.NonBackgroundServiceBase, IHostedServi
         if (FirstWordReceived.StartsWith('/') &&
             Enum.TryParse(FirstWordReceived[1..].ToLowerInvariant(), out Enums.BotActionName ReceivedCommand))
         {
-            await ManageCommandReceivedAsync(ServiceProvider.GetRequiredService<Infrastructure.DbContexts.DbCxt>(), message, ReceivedCommand, cancellationToken);
+            await ManageCommandReceivedAsync(ServiceProvider.GetRequiredService<Infrastructure.DbContexts.DbCtx>(), message, ReceivedCommand, cancellationToken);
         }
         else if (FirstWordReceived.StartsWith("http", StringComparison.InvariantCultureIgnoreCase))
         {
-            await ManageNewSubscriptionAsync(ServiceProvider.GetRequiredService<Infrastructure.DbContexts.DbCxt>(), message, FirstWordReceived, cancellationToken);
+            await ManageNewSubscriptionAsync(ServiceProvider.GetRequiredService<Infrastructure.DbContexts.DbCtx>(), message, FirstWordReceived, cancellationToken);
         }
         else
         {
@@ -426,7 +426,7 @@ public class TelegramHostedService : Core.NonBackgroundServiceBase, IHostedServi
     }
 
     private async Task<Message> PvpcGetAsync(
-        Infrastructure.DbContexts.DbCxt dbCtx,
+        Infrastructure.DbContexts.DbCtx dbCtx,
         Message message,
         CancellationToken cancellationToken)
     {
@@ -460,7 +460,7 @@ public class TelegramHostedService : Core.NonBackgroundServiceBase, IHostedServi
     }
 
     private async Task<Message> MailSetAsync(
-        Infrastructure.DbContexts.DbCxt dbCtx,
+        Infrastructure.DbContexts.DbCtx dbCtx,
         Message message,
         CancellationToken cancellationToken)
     {
@@ -503,7 +503,7 @@ public class TelegramHostedService : Core.NonBackgroundServiceBase, IHostedServi
     }
 
     private async Task<Message> MailShowAsync(
-        Infrastructure.DbContexts.DbCxt dbCtx,
+        Infrastructure.DbContexts.DbCtx dbCtx,
         Message message,
         CancellationToken cancellationToken)
     {
@@ -520,7 +520,7 @@ public class TelegramHostedService : Core.NonBackgroundServiceBase, IHostedServi
     }
 
     private async Task ManageCommandReceivedAsync(
-        Infrastructure.DbContexts.DbCxt dbCtx,
+        Infrastructure.DbContexts.DbCtx dbCtx,
         Message message,
         Enums.BotActionName receivedCommand,
         CancellationToken cancellationToken)
@@ -550,7 +550,7 @@ public class TelegramHostedService : Core.NonBackgroundServiceBase, IHostedServi
     }
 
     private Task<Message> AmazFindAsync(
-        Infrastructure.DbContexts.DbCxt dbCtx,
+        Infrastructure.DbContexts.DbCtx dbCtx,
         Message message,
         CancellationToken cancellationToken)
     {
@@ -560,7 +560,7 @@ public class TelegramHostedService : Core.NonBackgroundServiceBase, IHostedServi
     }
 
     private async Task ManageNewSubscriptionAsync(
-        Infrastructure.DbContexts.DbCxt dbCtx,
+        Infrastructure.DbContexts.DbCtx dbCtx,
         Message message,
         string FirstWordReceived,
         CancellationToken cancellationToken)
@@ -625,7 +625,7 @@ public class TelegramHostedService : Core.NonBackgroundServiceBase, IHostedServi
             cancellationToken: cancellationToken);
 
     private async Task<Message> StartAsync(
-        Infrastructure.DbContexts.DbCxt dbCtx,
+        Infrastructure.DbContexts.DbCtx dbCtx,
         Message message,
         CancellationToken cancellationToken)
     {
@@ -641,7 +641,7 @@ public class TelegramHostedService : Core.NonBackgroundServiceBase, IHostedServi
     }
 
     private async Task<Message> SubscriptionsListAsync(
-        Infrastructure.DbContexts.DbCxt dbCtx,
+        Infrastructure.DbContexts.DbCtx dbCtx,
         Message message,
         CancellationToken cancellationToken)
     {
@@ -658,7 +658,7 @@ public class TelegramHostedService : Core.NonBackgroundServiceBase, IHostedServi
         return await MessageSendTextAsync(TelegramUserId, TextToSend, null, cancellationToken);
 
         static async Task<string[]?> SubscriberGetWebUrlsAsync(
-            Infrastructure.DbContexts.DbCxt dbCtx,
+            Infrastructure.DbContexts.DbCtx dbCtx,
             long telegramUserId,
             CancellationToken cancellationToken)
         {
@@ -691,7 +691,7 @@ public class TelegramHostedService : Core.NonBackgroundServiceBase, IHostedServi
     }
 
     private async Task<Message> UnsubscribeAsync(
-        Infrastructure.DbContexts.DbCxt dbCtx,
+        Infrastructure.DbContexts.DbCtx dbCtx,
         Message message,
         CancellationToken cancellationToken)
     {

@@ -2,7 +2,7 @@
 
 namespace Seedysoft.Libs.Infrastructure.DbContexts;
 
-public sealed partial class DbCxt
+public sealed partial class DbCtx
 {
     public async Task<Core.Entities.Subscriber?> GetSubscriberWithSubscriptionsAsync(long telegramUserId, CancellationToken cancellationToken)
     {

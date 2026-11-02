@@ -8,7 +8,7 @@ using Seedysoft.Libs.Infrastructure.DbContexts;
 
 namespace Seedysoft.Libs.Infrastructure.Migrations
 {
-    [DbContext(typeof(DbCxt))]
+    [DbContext(typeof(DbCtx))]
     partial class DbCxtModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)

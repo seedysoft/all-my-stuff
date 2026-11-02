@@ -38,7 +38,7 @@ public sealed class Program : Core.ProgramBase
             //// Migrate and seed the database during startup. Must be synchronous.
             using IServiceScope serviceScope = host.Services.CreateScope();
             {
-                serviceScope.ServiceProvider.GetRequiredService<Infrastructure.DbContexts.DbCxt>().Database.Migrate();
+                serviceScope.ServiceProvider.GetRequiredService<Infrastructure.DbContexts.DbCtx>().Database.Migrate();
             }
 
             Console.WriteLine("Awaiting debugger connection...");

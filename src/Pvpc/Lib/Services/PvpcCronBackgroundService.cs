@@ -92,7 +92,7 @@ public sealed class PvpcCronBackgroundService : Libs.BackgroundServices.Cron
             return null;
         }
 
-        Libs.Infrastructure.DbContexts.DbCxt dbCxt = ServiceProvider.GetRequiredService<Libs.Infrastructure.DbContexts.DbCxt>();
+        Libs.Infrastructure.DbContexts.DbCtx dbCxt = ServiceProvider.GetRequiredService<Libs.Infrastructure.DbContexts.DbCtx>();
 
         DateTimeOffset MinDateTimeOffset = NewEntities.Min(x => x.AtDateTimeOffset);
         DateTimeOffset MaxDateTimeOffset = NewEntities.Max(x => x.AtDateTimeOffset);
@@ -187,7 +187,7 @@ public sealed class PvpcCronBackgroundService : Libs.BackgroundServices.Cron
             second: 0,
             offset: timeToCheckDateTimeOffset.Offset);
 
-        Libs.Core.Entities.Pvpc[] Pvpcs = await ServiceProvider.GetRequiredService<Libs.Infrastructure.DbContexts.DbCxt>().Pvpcs.AsNoTracking()
+        Libs.Core.Entities.Pvpc[] Pvpcs = await ServiceProvider.GetRequiredService<Libs.Infrastructure.DbContexts.DbCtx>().Pvpcs.AsNoTracking()
             .Where(x => x.AtDateTimeOffset >= dateToQueryDateTimeOffset)
             .Where(x => x.AtDateTimeOffset < dateToQueryDateTimeOffset.AddDays(1))
             .ToArrayAsync();
@@ -202,7 +202,7 @@ public sealed class PvpcCronBackgroundService : Libs.BackgroundServices.Cron
             timeToCheckDateTimeOffset.Hour, 0, 0,
             timeToCheckDateTimeOffset.Offset);
 
-        Libs.Core.Entities.Pvpc? pvpc = await ServiceProvider.GetRequiredService<Libs.Infrastructure.DbContexts.DbCxt>().Pvpcs
+        Libs.Core.Entities.Pvpc? pvpc = await ServiceProvider.GetRequiredService<Libs.Infrastructure.DbContexts.DbCtx>().Pvpcs
             .AsNoTracking()
             .FirstOrDefaultAsync(x => x.AtDateTimeOffset == timeToCheckDateTimeOffsetOclock);
 

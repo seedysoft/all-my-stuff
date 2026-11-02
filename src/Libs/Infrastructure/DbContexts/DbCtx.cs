@@ -3,12 +3,12 @@ using Seedysoft.Libs.Infrastructure.Extensions;
 
 namespace Seedysoft.Libs.Infrastructure.DbContexts;
 
-public sealed partial class DbCxt : DbContext
+public sealed partial class DbCtx : DbContext
 {
 #if DEBUG
-    public DbCxt() : base() => ChangeTracker.LazyLoadingEnabled = false;
+    public DbCtx() : base() => ChangeTracker.LazyLoadingEnabled = false;
 #endif
-    public DbCxt(DbContextOptions<DbCxt> options) : base(options) => ChangeTracker.LazyLoadingEnabled = false;
+    public DbCtx(DbContextOptions<DbCtx> options) : base(options) => ChangeTracker.LazyLoadingEnabled = false;
 
 #if DEBUG
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

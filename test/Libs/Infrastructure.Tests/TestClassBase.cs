@@ -11,11 +11,11 @@ public abstract class TestClassBase : Libs.Tests.TUnitTestClassBase
         Microsoft.Data.Sqlite.SqliteConnection connection = new("Filename=:memory:");
         connection.Open();
 
-        using (DbContexts.DbCxt context = new(new DbContextOptionsBuilder<DbContexts.DbCxt>().UseSqlite(connection).Options))
+        using (DbContexts.DbCtx context = new(new DbContextOptionsBuilder<DbContexts.DbCtx>().UseSqlite(connection).Options))
             _ = context.Database.EnsureCreated();
 
         _ = services
-            .AddDbContext<DbContexts.DbCxt>((dbContextOptionsBuilder) =>
+            .AddDbContext<DbContexts.DbCtx>((dbContextOptionsBuilder) =>
             {
                 _ = dbContextOptionsBuilder
                     .UseSqlite(connection)

@@ -45,7 +45,7 @@ public sealed class TuyaManagerCronBackgroundService : Libs.BackgroundServices.C
 
         try
         {
-            Libs.Infrastructure.DbContexts.DbCxt dbCxt = ServiceProvider.GetRequiredService<Libs.Infrastructure.DbContexts.DbCxt>();
+            Libs.Infrastructure.DbContexts.DbCtx dbCxt = ServiceProvider.GetRequiredService<Libs.Infrastructure.DbContexts.DbCtx>();
 
             Libs.Core.Entities.TuyaDevice[] Devices = await dbCxt.TuyaDevices.AsNoTracking().ToArrayAsync(stoppingToken);
 
