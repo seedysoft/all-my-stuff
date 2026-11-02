@@ -28,7 +28,7 @@ public sealed class Configurator : Core.Dependencies.ConfiguratorBase
 #endif
         string FullFilePath = default!;
 
-        _ = hostApplicationBuilder.Services.AddDbContext<DbContexts.DbCxt>(dbContextOptionsBuilder =>
+        _ = hostApplicationBuilder.Services.AddDbContext<DbContexts.DbCtx>(dbContextOptionsBuilder =>
         {
             if (string.IsNullOrEmpty(FullFilePath))
                 FullFilePath = FindDatabaseFullFilePath(hostApplicationBuilder);
@@ -47,7 +47,7 @@ public sealed class Configurator : Core.Dependencies.ConfiguratorBase
                 });
                 Microsoft.Extensions.Logging.ILogger logger = loggerFactory.CreateLogger(nameof(AddDbContexts));
 
-                string ConnectionStringName = nameof(DbContexts.DbCxt);
+                string ConnectionStringName = nameof(DbContexts.DbCtx);
                 string ConnectionString = hostApplicationBuilder.Configuration.GetConnectionString($"{ConnectionStringName}")
                     ?? throw new KeyNotFoundException($"Connection string '{ConnectionStringName}' not found.");
                 string FullFilePath = Path.GetFullPath(ConnectionString);

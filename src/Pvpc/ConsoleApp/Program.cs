@@ -39,7 +39,7 @@ public sealed class Program : Libs.Core.ProgramBase
             // Migrate and seed the database during startup. Must be synchronous.
             using IServiceScope serviceScope = host.Services.CreateScope();
             {
-                serviceScope.ServiceProvider.GetRequiredService<Libs.Infrastructure.DbContexts.DbCxt>().Database.Migrate();
+                serviceScope.ServiceProvider.GetRequiredService<Libs.Infrastructure.DbContexts.DbCtx>().Database.Migrate();
             }
 
             DateTime ForDate = DateTime.MinValue;

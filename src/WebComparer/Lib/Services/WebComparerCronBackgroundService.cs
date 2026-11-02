@@ -41,7 +41,7 @@ public sealed class WebComparerCronBackgroundService : Libs.BackgroundServices.C
     {
         try
         {
-            Libs.Infrastructure.DbContexts.DbCxt dbCtx = ServiceProvider.GetRequiredService<Libs.Infrastructure.DbContexts.DbCxt>();
+            Libs.Infrastructure.DbContexts.DbCtx dbCtx = ServiceProvider.GetRequiredService<Libs.Infrastructure.DbContexts.DbCtx>();
 
             IQueryable<Libs.Core.Entities.WebData> WebDatasWithSubscribers =
                 from w in dbCtx.WebDatas
@@ -78,7 +78,7 @@ public sealed class WebComparerCronBackgroundService : Libs.BackgroundServices.C
         finally { await Task.CompletedTask; }
     }
 
-    private async Task FindDataToSendAsync(Libs.Infrastructure.DbContexts.DbCxt dbCtx, Libs.Core.Entities.WebData webData, CancellationToken cancellationToken)
+    private async Task FindDataToSendAsync(Libs.Infrastructure.DbContexts.DbCtx dbCtx, Libs.Core.Entities.WebData webData, CancellationToken cancellationToken)
     {
         string Content = await GetContentAsync(webData, cancellationToken);
 
