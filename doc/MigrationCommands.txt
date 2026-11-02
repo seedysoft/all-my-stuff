@@ -5,8 +5,8 @@ dotnet tool update --global dotnet-ef
 $PrevMigrationName="Creating"
 $NextMigrationName="Encryption"
 
-$Context="DbCxt"
-$Context="GasStationPricesDbContext"
+$Context="DbCtx"
+$Context="PhotoCtx"
 
 $Project=".\src\Libs\Infrastructure\Seedysoft.Libs.Infrastructure.csproj"
 $Project=".\src\Libs\GasStationPrices\Seedysoft.Libs.GasStationPrices.csproj"

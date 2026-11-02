@@ -10,7 +10,7 @@ using Seedysoft.Libs.Infrastructure.DbContexts;
 
 namespace Seedysoft.Libs.Infrastructure.Migrations
 {
-    [DbContext(typeof(DbCxt))]
+    [DbContext(typeof(DbCtx))]
     [Migration("20240625073216_Creating")]
     partial class Creating
     {

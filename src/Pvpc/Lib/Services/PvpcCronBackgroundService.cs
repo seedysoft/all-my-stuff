@@ -51,7 +51,7 @@ public sealed class PvpcCronBackgroundService : Libs.BackgroundServices.Cron
         if (Logger.IsEnabled(LogLevel.Information))
             Logger.LogInformation("From {UrlString}", UrlString);
 
-        //Libs.Infrastructure.DbContexts.DbCxt dbCtx = ServiceProvider.GetRequiredService<Libs.Infrastructure.DbContexts.DbCxt>();
+        //Libs.Infrastructure.DbContexts.DbCtx dbCtx = ServiceProvider.GetRequiredService<Libs.Infrastructure.DbContexts.DbCtx>();
         //Libs.Core.Entities.Subscriber[] subscribers = await dbCtx.Subscribers.ToArrayAsync(cancellationToken: stoppingToken);
         //for (int i = 0; i < subscribers.Length; i++)
         //{
@@ -91,11 +91,11 @@ public sealed class PvpcCronBackgroundService : Libs.BackgroundServices.Cron
             return null;
         }
 
-        Libs.Infrastructure.DbContexts.DbCxt dbCxt = ServiceProvider.GetRequiredService<Libs.Infrastructure.DbContexts.DbCxt>();
+        Libs.Infrastructure.DbContexts.DbCtx dbCtx = ServiceProvider.GetRequiredService<Libs.Infrastructure.DbContexts.DbCtx>();
 
         DateTimeOffset MinDateTimeOffset = NewEntities.Min(x => x.AtDateTimeOffset);
         DateTimeOffset MaxDateTimeOffset = NewEntities.Max(x => x.AtDateTimeOffset);
-        Libs.Core.Entities.Pvpc[] ExistingPvpcs = await dbCxt.Pvpcs
+        Libs.Core.Entities.Pvpc[] ExistingPvpcs = await dbCtx.Pvpcs
             .Where(p => p.AtDateTimeOffset >= MinDateTimeOffset && p.AtDateTimeOffset <= MaxDateTimeOffset)
             .ToArrayAsync(stoppingToken);
 
@@ -108,25 +108,25 @@ public sealed class PvpcCronBackgroundService : Libs.BackgroundServices.Cron
             if (ExistingEntity == null)
             {
                 Prices.Add(NewEntity);
-                _ = dbCxt.Pvpcs.Add(NewEntity);
+                _ = dbCtx.Pvpcs.Add(NewEntity);
             }
             else
             {
                 Prices.Add(ExistingEntity);
                 ExistingEntity.MWhPriceInEuros = NewEntity.MWhPriceInEuros;
-                if (dbCxt.Entry(ExistingEntity).State == EntityState.Modified)
-                    _ = dbCxt.Update(ExistingEntity);
+                if (dbCtx.Entry(ExistingEntity).State == EntityState.Modified)
+                    _ = dbCtx.Update(ExistingEntity);
             }
         }
 
-        if (dbCxt.ChangeTracker.HasChanges())
+        if (dbCtx.ChangeTracker.HasChanges())
         {
             Libs.Core.Entities.Outbox OutboxMessage = new(
                 Libs.Core.Enums.SubscriptionName.electricidad,
                 Prices.Cast<Libs.Core.Entities.Pvpc>().ToArray().ToJson());
-            _ = await dbCxt.Outbox.AddAsync(OutboxMessage, stoppingToken);
+            _ = await dbCtx.Outbox.AddAsync(OutboxMessage, stoppingToken);
 
-            _ = await dbCxt.SaveChangesAsync(stoppingToken);
+            _ = await dbCtx.SaveChangesAsync(stoppingToken);
 
             if (Logger.IsEnabled(LogLevel.Information))
                 Logger.LogInformation("Obtained {NewEntities} entities", NewEntities.Count);
@@ -186,7 +186,7 @@ public sealed class PvpcCronBackgroundService : Libs.BackgroundServices.Cron
             second: 0,
             offset: timeToCheckDateTimeOffset.Offset);
 
-        Libs.Core.Entities.Pvpc[] Pvpcs = await ServiceProvider.GetRequiredService<Libs.Infrastructure.DbContexts.DbCxt>().Pvpcs.AsNoTracking()
+        Libs.Core.Entities.Pvpc[] Pvpcs = await ServiceProvider.GetRequiredService<Libs.Infrastructure.DbContexts.DbCtx>().Pvpcs.AsNoTracking()
             .Where(x => x.AtDateTimeOffset >= dateToQueryDateTimeOffset)
             .Where(x => x.AtDateTimeOffset < dateToQueryDateTimeOffset.AddDays(1))
             .ToArrayAsync();
@@ -201,7 +201,7 @@ public sealed class PvpcCronBackgroundService : Libs.BackgroundServices.Cron
             timeToCheckDateTimeOffset.Hour, 0, 0,
             timeToCheckDateTimeOffset.Offset);
 
-        Libs.Core.Entities.Pvpc? pvpc = await ServiceProvider.GetRequiredService<Libs.Infrastructure.DbContexts.DbCxt>().Pvpcs
+        Libs.Core.Entities.Pvpc? pvpc = await ServiceProvider.GetRequiredService<Libs.Infrastructure.DbContexts.DbCtx>().Pvpcs
             .AsNoTracking()
             .FirstOrDefaultAsync(x => x.AtDateTimeOffset == timeToCheckDateTimeOffsetOclock);
 
