@@ -9,8 +9,8 @@ internal partial class ValhallaRoutingServiceImpl(
     , ILogger logger) : RoutingServiceImplBase(httpClientFactory, api)
 {
     internal override async Task<IReadOnlyList<(string NombreRuta, double[,] Coordenadas)>> GetRoutesAsync(
-        Models.Location orig
-        , Models.Location dest
+        Core.Models.Location orig
+        , Core.Models.Location dest
         , CancellationToken cancellationToken)
     {
         RequestObject requestObject = new(orig, dest);
@@ -47,7 +47,7 @@ internal partial class ValhallaRoutingServiceImpl(
 
     internal class RequestObject
     {
-        public RequestObject(Models.Location orig, Models.Location dest)
+        public RequestObject(Core.Models.Location orig, Core.Models.Location dest)
         {
             Locations[0] = new Location(orig.Latitude, orig.Longitude);
             Locations[1] = new Location(dest.Latitude, dest.Longitude);

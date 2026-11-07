@@ -3,7 +3,7 @@ using Seedysoft.Libs.Infrastructure.Extensions;
 
 namespace Seedysoft.Libs.TelegramBot.Tests.Services;
 
-public sealed class TelegramHostedServiceTests : Infrastructure.Tests.TestClassBase
+public sealed class TelegramHostedServiceTests : Core.Tests.TestClassBase
 {
     private readonly TelegramBot.Services.TelegramHostedService telegramHostedService = default!;
 

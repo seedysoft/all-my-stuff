@@ -15,8 +15,8 @@ internal abstract class RoutingServiceImplBase(IHttpClientFactory httpClientFact
     /// <param name="cancellationToken">A cancellation token to cancel the asynchronous operation.</param>
     /// <returns>A read-only list of tuples containing route names and their corresponding coordinates.</returns>
     internal abstract Task<IReadOnlyList<(string NombreRuta, double[,] Coordenadas)>> GetRoutesAsync(
-        Models.Location orig
-        , Models.Location dest
+        Core.Models.Location orig
+        , Core.Models.Location dest
         , CancellationToken cancellationToken);
 
     /// <summary>

@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+    </PropertyGroup>
+
+    <ItemGroup Condition="'$(Configuration)' == 'Debug'">
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.14">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.14">
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+            <PrivateAssets>all</PrivateAssets>
+        </PackageReference>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\Libs\Infrastructure\Seedysoft.Libs.Infrastructure.csproj" />
+        <ProjectReference Include="..\Lib\Seedysoft.Photo.Lib.csproj" />
+    </ItemGroup>
+</Project>

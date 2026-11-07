@@ -11,6 +11,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\..\..\src\Libs\TelegramBot\Seedysoft.Libs.TelegramBot.csproj" />
+        <ProjectReference Include="..\Core.Tests\Seedysoft.Libs.Core.Tests.csproj" />
         <ProjectReference Include="..\Infrastructure.Tests\Seedysoft.Libs.Infrastructure.Tests.csproj" />
     </ItemGroup>
 </Project>

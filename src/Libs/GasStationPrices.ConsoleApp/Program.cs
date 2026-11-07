@@ -52,8 +52,8 @@ public sealed class Program : Core.ProgramBase
             {
                 Services.GasStationPricesService gasStationPricesService = host.Services.GetRequiredService<Services.GasStationPricesService>();
                 Travel.Models.Bounds bounds = new(
-                    new Travel.Models.Location(Travel.Constants.Earth.Burgos.Latitude, Travel.Constants.Earth.Burgos.Longitude),
-                    new Travel.Models.Location(Travel.Constants.Earth.Brazuelo.Latitude, Travel.Constants.Earth.Brazuelo.Longitude));
+                    new Core.Models.Location(Travel.Constants.Earth.Burgos.Latitude, Travel.Constants.Earth.Burgos.Longitude),
+                    new Core.Models.Location(Travel.Constants.Earth.Brazuelo.Latitude, Travel.Constants.Earth.Brazuelo.Longitude));
 
                 //IReadOnlyList<ViewModels.GasStationModel> Result =
                 //    await gasStationPricesService.GetNearGasStationsAsync(

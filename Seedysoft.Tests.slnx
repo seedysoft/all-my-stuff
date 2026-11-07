@@ -24,6 +24,11 @@
     <Project Path="src/Outbox/ConsoleApp/Seedysoft.Outbox.ConsoleApp.csproj" />
     <Project Path="src/Outbox/Lib/Seedysoft.Outbox.Lib.csproj" />
   </Folder>
+  <Folder Name="/Photo/">
+    <Project Path="src/Photo/ConsoleApp/Seedysoft.Photo.ConsoleApp.csproj" />
+    <Project Path="src/Photo/Lib/Seedysoft.Photo.Lib.csproj" />
+    <Project Path="test/Photo/Lib.Tests/Seedysoft.Photo.Lib.Tests.csproj" />
+  </Folder>
   <Folder Name="/Pvpc/">
     <Project Path="src/Pvpc/ConsoleApp/Seedysoft.Pvpc.ConsoleApp.csproj" />
     <Project Path="src/Pvpc/Lib/Seedysoft.Pvpc.Lib.csproj" />

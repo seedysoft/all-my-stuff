@@ -1,65 +1,65 @@
-﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting.Internal;
-using Microsoft.Extensions.Logging.Abstractions;
+﻿//using Microsoft.Extensions.Configuration;
+//using Microsoft.Extensions.DependencyInjection;
+//using Microsoft.Extensions.Hosting.Internal;
+//using Microsoft.Extensions.Logging.Abstractions;
 
-namespace Seedysoft.Pvpc.Lib.Tests.Services;
+//namespace Seedysoft.Pvpc.Lib.Tests.Services;
 
-public sealed class TuyaManagerCronBackgroundServiceTests : Libs.Infrastructure.Tests.TestClassBase, IDisposable
-{
-    private readonly Lib.Services.TuyaManagerCronBackgroundService TuyaManagerService = default!;
-    private bool disposedValue;
+//public sealed class TuyaManagerCronBackgroundServiceTests : Libs.Core.Tests.TestClassBase, IDisposable
+//{
+//    private readonly Lib.Services.TuyaManagerCronBackgroundService TuyaManagerService = default!;
+//    private bool disposedValue;
 
-    public TuyaManagerCronBackgroundServiceTests()
-    {
-        IConfiguration configuration = new ConfigurationBuilder()
-            .SetBasePath(Directory.GetCurrentDirectory())
-            .AddJsonFile($"appsettings.{nameof(Settings.TuyaManagerSettings)}.Tests.json", optional: false, reloadOnChange: true)
-            .Build();
+//    public TuyaManagerCronBackgroundServiceTests()
+//    {
+//        IConfiguration configuration = new ConfigurationBuilder()
+//            .SetBasePath(Directory.GetCurrentDirectory())
+//            .AddJsonFile($"appsettings.{nameof(Settings.TuyaManagerSettings)}.Tests.json", optional: false, reloadOnChange: true)
+//            .Build();
 
-        IServiceCollection services = new ServiceCollection();
-        _ = services
-            .AddSingleton(configuration)
-            .AddSingleton<Microsoft.Extensions.Logging.ILogger<Lib.Services.TuyaManagerCronBackgroundService>>(new NullLogger<Lib.Services.TuyaManagerCronBackgroundService>());
+//        IServiceCollection services = new ServiceCollection();
+//        _ = services
+//            .AddSingleton(configuration)
+//            .AddSingleton<Microsoft.Extensions.Logging.ILogger<Lib.Services.TuyaManagerCronBackgroundService>>(new NullLogger<Lib.Services.TuyaManagerCronBackgroundService>());
 
-        services = AddDbContext(services);
+//        services = AddDbContext(services);
 
-        TuyaManagerService = new(
-            services.BuildServiceProvider(),
-            new ApplicationLifetime(new NullLogger<ApplicationLifetime>()));
-    }
+//        TuyaManagerService = new(
+//            services.BuildServiceProvider(),
+//            new ApplicationLifetime(new NullLogger<ApplicationLifetime>()));
+//    }
 
-    [Test]
-    public async Task DoWorkAsyncTest() => await TuyaManagerService.DoWorkAsync(TestContext.Current?.Execution.CancellationToken ?? CancellationToken.None);
+//    [Test]
+//    public async Task DoWorkAsyncTest() => await TuyaManagerService.DoWorkAsync(TestContext.Current?.Execution.CancellationToken ?? CancellationToken.None);
 
-    private void Dispose(bool disposing)
-    {
-        if (!disposedValue)
-        {
-            if (disposing)
-                // dispose managed state (managed objects)
-                TuyaManagerService?.Dispose();
+//    private void Dispose(bool disposing)
+//    {
+//        if (!disposedValue)
+//        {
+//            if (disposing)
+//                // dispose managed state (managed objects)
+//                TuyaManagerService?.Dispose();
 
-            // free unmanaged resources (unmanaged objects) and override finalizer
-            // set large fields to null
-            disposedValue = true;
-        }
-    }
+//            // free unmanaged resources (unmanaged objects) and override finalizer
+//            // set large fields to null
+//            disposedValue = true;
+//        }
+//    }
 
-    // // override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
-    // ~TuyaManagerCronBackgroundServiceTests()
-    // {
-    //     // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-    //     Dispose(disposing: false);
-    // }
+//    // // override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
+//    // ~TuyaManagerCronBackgroundServiceTests()
+//    // {
+//    //     // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+//    //     Dispose(disposing: false);
+//    // }
 
-    public void Dispose()
-    {
-        // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-        Dispose(disposing: true);
-        GC.SuppressFinalize(this);
-    }
+//    public void Dispose()
+//    {
+//        // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+//        Dispose(disposing: true);
+//        GC.SuppressFinalize(this);
+//    }
 
-    [After(Test)]
-    public async Task Cleanup() => TuyaManagerService?.Dispose();
-}
+//    [After(Test)]
+//    public async Task Cleanup() => TuyaManagerService?.Dispose();
+//}

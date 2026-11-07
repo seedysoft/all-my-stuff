@@ -13,8 +13,9 @@
         <ProjectReference Include="..\..\..\src\Libs\Core\Seedysoft.Libs.Core.csproj" />
         <ProjectReference Include="..\..\..\src\Libs\Cryptography\Seedysoft.Libs.Cryptography.csproj" />
     </ItemGroup>
-
-    <ItemGroup>
+    
+        <ItemGroup>
         <Compile Include="..\..\TUnitTestClassBase.cs" Link="TUnitTestClassBase.cs" />
     </ItemGroup>
+
 </Project>

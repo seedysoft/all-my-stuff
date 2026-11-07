@@ -9,7 +9,7 @@ namespace Seedysoft.Libs.Travel.Tests.Services.Routing;
 /// These tests require external service availability and network connectivity.
 /// They are marked as [Explicit] to run only when explicitly requested.
 /// </summary>
-public sealed class RoutingServiceTests : Infrastructure.Tests.TestClassBase
+public sealed class RoutingServiceTests : Core.Tests.TestClassBase
 {
     private readonly Travel.Services.Routing.RoutingService routingService = default!;
 

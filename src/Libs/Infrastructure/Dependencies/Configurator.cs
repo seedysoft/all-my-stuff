@@ -16,6 +16,7 @@ public sealed class Configurator : Core.Dependencies.ConfiguratorBase
 
         _ = hostApplicationBuilder.Configuration
             .AddJsonFile($"appsettings.dbConnectionString.json", optional: false, reloadOnChange: true)
+            .AddJsonFile($"appsettings.photoConnectionString.json", optional: false, reloadOnChange: true)
             .AddJsonFile($"appsettings.{nameof(Serilog)}.json", optional: false, reloadOnChange: true)
             .AddJsonFile($"appsettings.{nameof(Serilog)}.{CurrentEnvironmentName}.json", optional: false, reloadOnChange: true);
     }
@@ -26,15 +27,14 @@ public sealed class Configurator : Core.Dependencies.ConfiguratorBase
         if (System.Diagnostics.Debugger.IsAttached)
             System.Diagnostics.Debugger.Break();
 #endif
-        string FullFilePath = default!;
-
+        string DbCtxFullFilePath = default!;
         _ = hostApplicationBuilder.Services.AddDbContext<DbContexts.DbCtx>(dbContextOptionsBuilder =>
         {
-            if (string.IsNullOrEmpty(FullFilePath))
-                FullFilePath = FindDatabaseFullFilePath(hostApplicationBuilder);
+            if (string.IsNullOrEmpty(DbCtxFullFilePath))
+                DbCtxFullFilePath = FindDatabaseFullFilePath(hostApplicationBuilder);
 
             _ = dbContextOptionsBuilder
-                .UseSqlite($"{Core.Constants.DatabaseStrings.DataSource}{FullFilePath}")
+                .UseSqlite($"{Core.Constants.DatabaseStrings.DataSource}{DbCtxFullFilePath}")
                 .ConfigureDebugOptions();
 
             static string FindDatabaseFullFilePath(IHostApplicationBuilder hostApplicationBuilder)
@@ -48,6 +48,51 @@ public sealed class Configurator : Core.Dependencies.ConfiguratorBase
                 Microsoft.Extensions.Logging.ILogger logger = loggerFactory.CreateLogger(nameof(AddDbContexts));
 
                 string ConnectionStringName = nameof(DbContexts.DbCtx);
+                string ConnectionString = hostApplicationBuilder.Configuration.GetConnectionString($"{ConnectionStringName}")
+                    ?? throw new KeyNotFoundException($"Connection string '{ConnectionStringName}' not found.");
+                string FullFilePath = Path.GetFullPath(ConnectionString);
+
+                while (!File.Exists(FullFilePath))
+                {
+                    if (logger.IsEnabled(LogLevel.Debug))
+                        logger.LogDebug("Database file {FullFilePath} does not exists", FullFilePath);
+
+                    FullFilePath = Path.GetFullPath(ConnectionString = ConnectionString.Insert(0, "../"));
+                }
+
+                if (!File.Exists(FullFilePath))
+                    throw new FileNotFoundException("Database file not found.", FullFilePath);
+
+                if (logger.IsEnabled(LogLevel.Information))
+                    logger.LogInformation("Using database file {FullFilePath}", FullFilePath);
+
+                return FullFilePath;
+            }
+        },
+        ServiceLifetime.Transient,
+        ServiceLifetime.Transient);
+
+        string PhotoCtxFullFilePath = default!;
+        _ = hostApplicationBuilder.Services.AddDbContext<DbContexts.PhotoCtx>(dbContextOptionsBuilder =>
+        {
+            if (string.IsNullOrEmpty(PhotoCtxFullFilePath))
+                PhotoCtxFullFilePath = FindDatabaseFullFilePath(hostApplicationBuilder);
+
+            _ = dbContextOptionsBuilder
+                .UseSqlite($"{Core.Constants.DatabaseStrings.DataSource}{PhotoCtxFullFilePath}")
+                .ConfigureDebugOptions();
+
+            static string FindDatabaseFullFilePath(IHostApplicationBuilder hostApplicationBuilder)
+            {
+                using ILoggerFactory loggerFactory = LoggerFactory.Create(builder =>
+                {
+                    _ = builder
+                        .SetMinimumLevel(LogLevel.Debug)
+                        .AddConsole();
+                });
+                Microsoft.Extensions.Logging.ILogger logger = loggerFactory.CreateLogger(nameof(AddDbContexts));
+
+                string ConnectionStringName = nameof(DbContexts.PhotoCtx);
                 string ConnectionString = hostApplicationBuilder.Configuration.GetConnectionString($"{ConnectionStringName}")
                     ?? throw new KeyNotFoundException($"Connection string '{ConnectionStringName}' not found.");
                 string FullFilePath = Path.GetFullPath(ConnectionString);

@@ -1,41 +1,15 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Seedysoft.Libs.Infrastructure.Extensions;
 
 namespace Seedysoft.Libs.Infrastructure.DbContexts;
 
-public sealed partial class DbCtx : DbContext
+public partial class DbCtx : DbContextBase
 {
-#if DEBUG
-    public DbCtx() : base() => ChangeTracker.LazyLoadingEnabled = false;
-#endif
-    public DbCtx(DbContextOptions<DbCtx> options) : base(options) => ChangeTracker.LazyLoadingEnabled = false;
-
 #if DEBUG
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         base.OnConfiguring(optionsBuilder);
 
-        if (!optionsBuilder.IsConfigured)
-        {
-            string DatabasePath = "../databases/db.sqlite3";
-            string FullFilePath = Path.GetFullPath(DatabasePath);
-
-            if (System.Diagnostics.Debugger.IsAttached)
-                System.Diagnostics.Debugger.Break();
-
-            while (!File.Exists(FullFilePath))
-                FullFilePath = Path.GetFullPath(DatabasePath = DatabasePath.Insert(0, "../"));
-
-            if (!File.Exists(FullFilePath))
-                throw new FileNotFoundException("Database file not found.", FullFilePath);
-
-            string ConnectionString = $"{Core.Constants.DatabaseStrings.DataSource}{FullFilePath}";
-            Console.WriteLine(ConnectionString);
-
-            _ = optionsBuilder
-                .UseSqlite(ConnectionString)
-                .ConfigureDebugOptions();
-        }
+        ConfigureDb(optionsBuilder, "../databases/db.sqlite3");
     }
 #endif
 

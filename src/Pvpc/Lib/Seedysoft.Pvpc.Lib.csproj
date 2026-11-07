@@ -11,8 +11,8 @@
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
     </ItemGroup>
-	
-	    <ItemGroup Condition="'$(Configuration)' == 'Debug'">
+
+    <ItemGroup Condition="'$(Configuration)' == 'Debug'">
         <Content Include="appsettings.PvpcSettings.Development.json">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
             <DependentUpon>appsettings.PvpcSettings.json</DependentUpon>
@@ -60,8 +60,8 @@
         <ProjectReference Include="..\..\Libs\Infrastructure\Seedysoft.Libs.Infrastructure.csproj" />
         <ProjectReference Include="..\..\Libs\TuyaDeviceControl\Seedysoft.Libs.TuyaDeviceControl.csproj" />
     </ItemGroup>
-	
-	    <ItemGroup>
+
+    <ItemGroup>
         <Compile Include="..\..\Usings.cs" Link="Usings.cs" />
     </ItemGroup>
 

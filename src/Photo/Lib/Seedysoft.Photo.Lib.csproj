@@ -1,0 +1,47 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <IsPublishable>False</IsPublishable>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Content Include="appsettings.PhotoSettings.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+    </ItemGroup>
+
+    <ItemGroup Condition="'$(Configuration)' == 'Debug'">
+        <Content Include="appsettings.PhotoSettings.Development.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <DependentUpon>appsettings.PhotoSettings.json</DependentUpon>
+        </Content>
+        <None Include="appsettings.PhotoSettings.Production.json">
+            <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+            <DependentUpon>appsettings.PhotoSettings.json</DependentUpon>
+        </None>
+    </ItemGroup>
+
+    <ItemGroup Condition="'$(Configuration)' == 'Release'">
+        <None Include="appsettings.PhotoSettings.Development.json">
+            <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+            <DependentUpon>appsettings.PhotoSettings.json</DependentUpon>
+        </None>
+        <Content Include="appsettings.PhotoSettings.Production.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <DependentUpon>appsettings.PhotoSettings.json</DependentUpon>
+        </Content>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\Libs\BackgroundServices\Seedysoft.Libs.BackgroundServices.csproj" />
+        <ProjectReference Include="..\..\Libs\Core\Seedysoft.Libs.Core.csproj" />
+        <ProjectReference Include="..\..\Libs\Infrastructure\Seedysoft.Libs.Infrastructure.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Compile Include="..\..\Usings.cs" Link="Usings.cs" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <InternalsVisibleTo Include="Seedysoft.Photo.Lib.Tests" />
+    </ItemGroup>
+</Project>

@@ -9,11 +9,11 @@ namespace Seedysoft.Libs.Travel.ViewModels;
 /// This record includes a debugger display that shows the JSON representation of the place.
 /// </remarks>
 /// <param name="Address">The street address of the location.</param>
-/// <param name="Location">The coordinates for the place as a <see cref="Models.Location"/> (latitude and longitude).</param>
+/// <param name="Location">The coordinates for the place as a <see cref="Core.Models.Location"/> (latitude and longitude).</param>
 [System.Diagnostics.DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)},nq}}")]
-public readonly record struct Place(string Address, Models.Location Location)
+public readonly record struct Place(string Address, Core.Models.Location Location)
 {
-    public static Place Empty => new(string.Empty, Models.Location.Empty);
+    public static Place Empty => new(string.Empty, Core.Models.Location.Empty);
 
     /// <summary>
     /// Gets the JSON representation of this place for debugger display purposes.

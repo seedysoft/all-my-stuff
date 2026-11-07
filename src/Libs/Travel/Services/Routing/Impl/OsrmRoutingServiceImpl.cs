@@ -24,13 +24,13 @@ internal class OsrmRoutingServiceImpl(
     /// Returns an empty list if the API call fails or returns an error.
     /// </returns>
     internal override async Task<IReadOnlyList<(string NombreRuta, double[,] Coordenadas)>> GetRoutesAsync(
-        Models.Location orig
-        , Models.Location dest
+        Core.Models.Location orig
+        , Core.Models.Location dest
         , CancellationToken cancellationToken)
     {
         // {origLng,origLat};{destLng,destLat}
 
-        HttpResponseMessage httpResponseMessage = await HttpClient.GetAsync(Api.GetUrl<Models.Location[]>([orig, dest]), cancellationToken);
+        HttpResponseMessage httpResponseMessage = await HttpClient.GetAsync(Api.GetUrl<Core.Models.Location[]>([orig, dest]), cancellationToken);
 
         OsrmResponse? body = null;
         if (httpResponseMessage.IsSuccessStatusCode)
@@ -215,7 +215,7 @@ internal record OsrmRoutingApi : Settings.RoutingServiceApi
 
     public override string GetUrl<T>(T obj)
     {
-        Models.Location[] locations = obj as Models.Location[] ?? throw new ArgumentException($"You must send an array of {nameof(Models.Location)}");
+        Core.Models.Location[] locations = obj as Core.Models.Location[] ?? throw new ArgumentException($"You must send an array of {nameof(Core.Models.Location)}");
 
         return string.Format(
             UrlFormat,

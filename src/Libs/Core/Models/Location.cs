@@ -1,4 +1,4 @@
-﻿namespace Seedysoft.Libs.Travel.Models;
+﻿namespace Seedysoft.Libs.Core.Models;
 
 [System.Diagnostics.DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)},nq}}")]
 /// <summary>
@@ -24,8 +24,8 @@ public class Location
     /// </summary>
     /// <returns>A culture-invariant string containing the latitude and longitude.</returns>
     private string GetDebuggerDisplay() =>
-        $"Lat: {Latitude.ToString(Core.Constants.Globalization.NumberFormatInfoInvariant)}; " +
-        $"Lon: {Longitude.ToString(Core.Constants.Globalization.NumberFormatInfoInvariant)}";
+        $"Lat: {Latitude.ToString(Constants.Globalization.NumberFormatInfoInvariant)}; " +
+        $"Lon: {Longitude.ToString(Constants.Globalization.NumberFormatInfoInvariant)}";
 
     //    public readonly Location AddMetters(double angle, double distanceInMetters)
     //    {

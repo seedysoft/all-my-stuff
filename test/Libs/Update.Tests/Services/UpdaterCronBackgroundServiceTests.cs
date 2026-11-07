@@ -4,7 +4,7 @@ using Seedysoft.Libs.Infrastructure.Extensions;
 
 namespace Seedysoft.Libs.Update.Tests.Services;
 
-public sealed class UpdaterCronBackgroundServiceTests : Infrastructure.Tests.TestClassBase
+public sealed class UpdaterCronBackgroundServiceTests : Core.Tests.TestClassBase
 {
     private readonly Update.Services.UpdaterCronBackgroundService updaterCronBackgroundService = default!;
 

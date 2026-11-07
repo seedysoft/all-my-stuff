@@ -4,7 +4,7 @@ using Seedysoft.Libs.Infrastructure.Extensions;
 
 namespace Seedysoft.Libs.Travel.Tests.Services.Geocoding;
 
-public sealed class GeocodingServiceTests : Infrastructure.Tests.TestClassBase
+public sealed class GeocodingServiceTests : Core.Tests.TestClassBase
 {
     private readonly Travel.Services.Geocoding.GeocodingService geoplacingService = default!;
 

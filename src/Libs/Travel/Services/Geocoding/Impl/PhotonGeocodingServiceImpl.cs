@@ -16,7 +16,7 @@ internal class PhotonGeocodingServiceImpl(
                 return [];
 
             // photon.komoot.io/api/?q=berlin&limit=1
-            
+
             HttpResponseMessage httpResponseMessage = await HttpClient.GetAsync(Api.GetUrl(Uri.EscapeDataString(textToFind)), cancellationToken);
             if (httpResponseMessage.IsSuccessStatusCode)
             {
@@ -107,6 +107,6 @@ internal class PhotonGeocodingServiceImpl(
         //[J("type")] public string Type { get; init; } = default!;
         [J("coordinates")] public float[] Coordinates { get; init; } = default!;
 
-        [I()] public Models.Location GetLocation => new(latitude: Coordinates[1], longitude: Coordinates[0]);
+        [I()] public Core.Models.Location GetLocation => new(latitude: Coordinates[1], longitude: Coordinates[0]);
     }
 }

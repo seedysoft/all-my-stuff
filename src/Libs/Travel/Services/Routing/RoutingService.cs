@@ -43,8 +43,8 @@ public class RoutingService(
     /// when logging is enabled at the <see cref="LogLevel.Information"/> level.
     /// </remarks>
     public async Task<IReadOnlyList<(string NombreRuta, double[,] Coordenadas)>> GetRoutesAsync(
-        Models.Location orig
-        , Models.Location dest
+        Core.Models.Location orig
+        , Core.Models.Location dest
         , CancellationToken cancellationToken)
     {
         Settings.RoutingServiceApi api = TravelSettings.RoutingSettings.RoutingApis.First(x => x.Name == TravelSettings.RoutingSettings.CurrentImplName);

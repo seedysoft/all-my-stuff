@@ -1,21 +1,21 @@
 ﻿namespace Seedysoft.Libs.Travel.Models;
 
 [System.Diagnostics.DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)},nq}}")]
-public record Bounds(Location NorthEast, Location SouthWest)
+public record Bounds(Core.Models.Location NorthEast, Core.Models.Location SouthWest)
 {
     /// <summary>
     /// The Northest and Eastest point on Earth: <see cref="Location.Northest"/>
     /// </summary>
-    public static Location MaxNorthEast { get; } = new(latitude: Limits.North, longitude: Limits.East);
+    public static Core.Models.Location MaxNorthEast { get; } = new(latitude: Limits.North, longitude: Limits.East);
     /// <summary>
     /// The Sout and Westest point on Earth.
     /// </summary>
-    public static Location MaxSouthWest { get; } = new(latitude: Limits.South, longitude: Limits.West);
+    public static Core.Models.Location MaxSouthWest { get; } = new(latitude: Limits.South, longitude: Limits.West);
 
     public static Bounds Empty => new(NorthEast: MaxNorthEast, SouthWest: MaxSouthWest);
     public static Bounds Inverse => new(NorthEast: MaxSouthWest, SouthWest: MaxNorthEast);
 
-    public bool IsInside(Location location)
+    public bool IsInside(Core.Models.Location location)
     {
         return
             location.Latitude < NorthEast.Latitude &&

@@ -4,7 +4,7 @@ using Seedysoft.Libs.Infrastructure.Extensions;
 
 namespace Seedysoft.Libs.GasStationPrices.Tests.Services;
 
-public sealed class GasStationPricesServiceTests : Infrastructure.Tests.TestClassBase
+public sealed class GasStationPricesServiceTests : Core.Tests.TestClassBase
 {
     private readonly GasStationPrices.Services.GasStationPricesService GasStationPricesService = default!;
 
