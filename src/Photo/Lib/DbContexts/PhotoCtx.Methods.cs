@@ -1,4 +1,4 @@
-﻿namespace Seedysoft.Libs.Infrastructure.DbContexts;
+﻿namespace Seedysoft.Photo.Lib.DbContexts;
 
 public partial class PhotoCtx
 {

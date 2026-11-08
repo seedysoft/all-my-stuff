@@ -1,3 +1,6 @@
 ﻿namespace Seedysoft.Photo.Lib.Settings;
 
-public record class PhotoSettings : Libs.BackgroundServices.ScheduleConfig { }
+public record PhotoSettings : Libs.BackgroundServices.ScheduleConfig
+{
+    public required string PhotoRootPath { get; init; }
+}

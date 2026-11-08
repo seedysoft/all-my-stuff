@@ -4,21 +4,8 @@ namespace Seedysoft.Libs.Infrastructure.DbContexts;
 
 public partial class DbCtx : DbContextBase
 {
-#if DEBUG
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        base.OnConfiguring(optionsBuilder);
-
-        ConfigureDb(optionsBuilder, "../databases/db.sqlite3");
-    }
-#endif
-
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
-    {
-        base.OnModelCreating(modelBuilder);
-
-        _ = modelBuilder.ApplyConfigurationsFromAssembly(GetType().Assembly);
-    }
+    public DbCtx() : base() { }
+    public DbCtx(DbContextOptions options) : base(options) { }
 
     public DbSet<Core.Entities.Outbox> Outbox { get; set; } = default!;
 

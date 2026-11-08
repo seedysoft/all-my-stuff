@@ -21,7 +21,8 @@ public static class IHostApplicationBuilderExtensions
 
         IReadOnlyList<System.Reflection.Assembly> referencedAssemblies = GetAllReferencedAssembliesSorted(entryAssembly);
 
-        Type[] typesToRegister = [.. referencedAssemblies.SelectMany(static (n) => n.GetTypes()).Where(static (t) => t is not null && t.IsSubclassOf(typeof(Core.Dependencies.ConfiguratorBase)))];
+        Type[] typesToRegister =
+            [.. referencedAssemblies.SelectMany(static (n) => n.GetTypes()).Where(static (t) => t is not null && t.IsSubclassOf(typeof(Core.Dependencies.ConfiguratorBase)))];
 
         foreach (Type? type in typesToRegister)
             (Activator.CreateInstance(type) as Core.Dependencies.ConfiguratorBase)?.AddDependencies(hostApplicationBuilder);

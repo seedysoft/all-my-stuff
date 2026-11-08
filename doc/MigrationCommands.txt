@@ -3,48 +3,44 @@ dotnet tool update --global dotnet-ef
 
 # SET VARIABLES (PS>):
 $PrevMigrationName="Creating"
-$NextMigrationName="Encryption"
+$NextMigrationName="Creating"
 
 $Context="DbCtx"
-$Context="PhotoCtx"
-
 $Project=".\src\Libs\Infrastructure\Seedysoft.Libs.Infrastructure.csproj"
-$Project=".\src\Libs\GasStationPrices\Seedysoft.Libs.GasStationPrices.csproj"
+
+$Context="PhotoCtx"
+$Project=".\src\Photo\Lib\Seedysoft.Photo.Lib.csproj"
+
+$StartupProject=".\src\BlazorWebApp\Server\Seedysoft.BlazorWebApp.Server.csproj"
 
 # Add a migration:
-dotnet ef migrations add $NextMigrationName -v -c $Context -o .\Migrations                -p $Project
-dotnet ef migrations add $NextMigrationName -v -c $Context -o .\Infrastructure\Migrations -p $Project
+dotnet ef migrations add $NextMigrationName -v -c $Context -o .\Migrations -p $Project -s $StartupProject
 
-Add-Migration $NextMigrationName -Verbose -Context $Context -OutputDir .\Migrations                -Project Libs\Seedysoft.Libs.Infrastructure   -StartupProject Libs\Seedysoft.Libs.Infrastructure
-Add-Migration $NextMigrationName -Verbose -Context $Context -OutputDir .\Infrastructure\Migrations -Project Libs\Seedysoft.Libs.GasStationPrices -StartupProject Libs\Seedysoft.Libs.GasStationPrices
+Add-Migration $NextMigrationName -Verbose -Context $Context -OutputDir .\Migrations -Project Libs\Seedysoft.Libs.Infrastructure -StartupProject BlazorWebApp\Server\Seedysoft.BlazorWebApp.Server
 ```
 
 # Remove latest migration:
-dotnet ef migrations remove -v -p $Project
+dotnet ef migrations remove -v -c $Context -p $Project
 
-Remove-Migration -Verbose -Context $Context -Project Libs\Seedysoft.Libs.Infrastructure   -StartupProject Libs\Seedysoft.Libs.Infrastructure
-Remove-Migration -Verbose -Context $Context -Project Libs\Seedysoft.Libs.GasStationPrices -StartupProject Libs\Seedysoft.Libs.GasStationPrices
+Remove-Migration -Verbose -Context $Context -Project Libs\Seedysoft.Libs.Infrastructure -StartupProject Libs\Seedysoft.Libs.Infrastructure
 ```
 
 # List all existent migrations:
 dotnet ef migrations list --no-build -v -c $Context -p $Project
 
 Get-Migration -Verbose -Context $Context -Project Libs\Seedysoft.Libs.Infrastructure
-Get-Migration -Verbose -Context $Context -Project GasStationPrices\Seedysoft.Libs.GasStationPrices
 ```
 
 # Execute a migration:
 dotnet ef database update $NextMigrationName --no-build -v -c $Context -p $Project
 
 Update-Database $NextMigrationName -Verbose -Context $Context -Project Libs\Seedysoft.Libs.Infrastructure
-Update-Database $NextMigrationName -Verbose -Context $Context -Project GasStationPrices\Seedysoft.Libs.GasStationPrices
 ```
 
 # Execute a previous migration:
 dotnet ef database update $PrevMigrationName --no-build -v -c $Context -p $Project
 
 Update-Database $PrevMigrationName -Verbose -Context $Context -Project Libs\Seedysoft.Libs.Infrastructure
-Update-Database $PrevMigrationName -Verbose -Context $Context -Project GasStationPrices\Seedysoft.Libs.GasStationPrices
 ```
 
 # Obtain script

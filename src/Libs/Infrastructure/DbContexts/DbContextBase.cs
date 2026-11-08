@@ -5,37 +5,15 @@ namespace Seedysoft.Libs.Infrastructure.DbContexts;
 
 public class DbContextBase : DbContext
 {
-#if DEBUG
     public DbContextBase() : base() => ChangeTracker?.LazyLoadingEnabled = false;
-#endif
-
     public DbContextBase(DbContextOptions options) : base(options) => ChangeTracker?.LazyLoadingEnabled = false;
 
-#if DEBUG
-    protected static void ConfigureDb(DbContextOptionsBuilder optionsBuilder, string databasePath)
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        if (!optionsBuilder.IsConfigured)
-        {
-            string FullFilePath = Path.GetFullPath(databasePath);
+        base.OnModelCreating(modelBuilder);
 
-            if (System.Diagnostics.Debugger.IsAttached)
-                System.Diagnostics.Debugger.Break();
-
-            while (!File.Exists(FullFilePath))
-                FullFilePath = Path.GetFullPath(databasePath = databasePath.Insert(0, "../"));
-
-            if (!File.Exists(FullFilePath))
-                throw new FileNotFoundException("Database file not found.", FullFilePath);
-
-            string ConnectionString = $"{Core.Constants.DatabaseStrings.DataSource}{FullFilePath}";
-            Console.WriteLine(ConnectionString);
-
-            _ = optionsBuilder
-                .UseSqlite(ConnectionString)
-                .ConfigureDebugOptions();
-        }
+        _ = modelBuilder.ApplyConfigurationsFromAssembly(GetType().Assembly);
     }
-#endif
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
@@ -55,4 +33,38 @@ public class DbContextBase : DbContext
 
         return base.SaveChangesAsync(cancellationToken);
     }
+
+#if DEBUG
+    public static DbContextOptionsBuilder<T> ConfigureDb<T>(DbContextOptionsBuilder<T>? optionsBuilder, string databasePath) where T : DbContextBase
+    {
+        optionsBuilder ??= new();
+
+        if (!optionsBuilder.IsConfigured)
+        {
+            string FullFilePath = Path.GetFullPath(databasePath);
+
+            if (System.Diagnostics.Debugger.IsAttached)
+                System.Diagnostics.Debugger.Break();
+
+            while (!File.Exists(FullFilePath))
+            {
+                FullFilePath = Path.GetFullPath(databasePath = databasePath.Insert(0, "../"));
+                Console.Write("{0,-200}", $"\rTry to find '{FullFilePath}'");
+                Thread.Sleep(TimeSpan.FromSeconds(1));
+            }
+
+            if (!File.Exists(FullFilePath))
+                throw new FileNotFoundException("Database file not found.", FullFilePath);
+
+            string ConnectionString = $"{Core.Constants.DatabaseStrings.DataSource}{FullFilePath}";
+            Console.WriteLine(ConnectionString);
+
+            _ = optionsBuilder
+                .UseSqlite(ConnectionString)
+                .ConfigureDebugOptions();
+        }
+
+        return optionsBuilder;
+    }
+#endif
 }

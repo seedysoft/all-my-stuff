@@ -9,7 +9,7 @@ namespace Seedysoft.Photo.Lib.Tests.Services;
 public sealed class PhotoCronBackgroundServiceTests : Libs.Core.Tests.TestClassBase, IDisposable
 {
     private Mock<ILogger<Lib.Services.PhotoCronBackgroundService>> MockLogger = null!;
-    private Mock<Libs.Infrastructure.DbContexts.PhotoCtx> MockPhotoCtx = null!;
+    private Mock<DbContexts.PhotoCtx> MockPhotoCtx = null!;
 
     private Lib.Services.PhotoCronBackgroundService? photoCronBackgroundService;
 
@@ -22,7 +22,7 @@ public sealed class PhotoCronBackgroundServiceTests : Libs.Core.Tests.TestClassB
         base.SetupTest();
 
         MockLogger = new Mock<ILogger<Lib.Services.PhotoCronBackgroundService>>();
-        MockPhotoCtx = new Mock<Libs.Infrastructure.DbContexts.PhotoCtx>();
+        MockPhotoCtx = new Mock<DbContexts.PhotoCtx>();
 
         SetupDefaultMocks();
     }
@@ -47,21 +47,22 @@ public sealed class PhotoCronBackgroundServiceTests : Libs.Core.Tests.TestClassB
             .Returns(true);
 
         // Create a real configuration builder with the test data
-        ConfigurationBuilder configBuilder = new();
-        _ = configBuilder.AddInMemoryCollection(new Dictionary<string, string?>(StringComparer.OrdinalIgnoreCase)
+        ConfigurationBuilder configurationBuilder = new();
+        _ = configurationBuilder.AddInMemoryCollection(new Dictionary<string, string?>(StringComparer.OrdinalIgnoreCase)
         {
             { $"{nameof(Settings.PhotoSettings)}:CronExpression", "* * 30 2 *" },
             { $"{nameof(Settings.PhotoSettings)}:DelayBetweenExecutionsTimeSpan", "00:00:01" },
             { $"{nameof(Settings.PhotoSettings)}:TimeZoneInfo", TimeZoneInfo.Local.Id },
+            { $"{nameof(Settings.PhotoSettings)}:PhotoRootPath", Path.Join( Environment.GetEnvironmentVariable("USERPROFILE")  , @"\\od\\_Syncthing\\Photos") },
         });
 
-        IConfigurationRoot configuration = configBuilder.Build();
-        IConfigurationSection configSection = configuration.GetSection(nameof(Settings.PhotoSettings));
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
+        IConfigurationSection configurationSection = configurationRoot.GetSection(nameof(Settings.PhotoSettings));
 
         // Setup configuration section to return real section
         _ = MockConfiguration
             .Setup(static x => x.GetSection(nameof(Settings.PhotoSettings)))
-            .Returns(configSection);
+            .Returns(configurationSection);
 
         // Setup service provider to return required services
         _ = MockServiceProvider
@@ -73,7 +74,7 @@ public sealed class PhotoCronBackgroundServiceTests : Libs.Core.Tests.TestClassB
             .Returns(MockConfiguration.Object);
 
         _ = MockServiceProvider
-            .Setup(static x => x.GetService(typeof(Libs.Infrastructure.DbContexts.PhotoCtx)))
+            .Setup(static x => x.GetService(typeof(DbContexts.PhotoCtx)))
             .Returns(MockPhotoCtx.Object);
     }
 
@@ -96,7 +97,7 @@ public sealed class PhotoCronBackgroundServiceTests : Libs.Core.Tests.TestClassB
 
         // Assert
         MockServiceProvider.Verify(
-            expression: static x => x.GetService(typeof(Libs.Infrastructure.DbContexts.PhotoCtx)),
+            expression: static x => x.GetService(typeof(DbContexts.PhotoCtx)),
             times: Times.Once);
     }
 
@@ -119,7 +120,7 @@ public sealed class PhotoCronBackgroundServiceTests : Libs.Core.Tests.TestClassB
         CancellationToken cancellationToken = CancellationTokenSource.Token;
 
         _ = MockServiceProvider
-            .Setup(static x => x.GetService(typeof(Libs.Infrastructure.DbContexts.PhotoCtx)))
+            .Setup(static x => x.GetService(typeof(DbContexts.PhotoCtx)))
             .Throws(new InvalidOperationException("Service not found"));
 
         // Act & Assert (Should not throw)

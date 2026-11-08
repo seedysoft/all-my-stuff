@@ -6,9 +6,9 @@ using Seedysoft.Libs.Infrastructure.DbContexts;
 
 #nullable disable
 
-namespace Seedysoft.Libs.Infrastructure.Migrations
+namespace Seedysoft.Libs.Infrastructure.Migrations.DbCtx
 {
-    [DbContext(typeof(DbCtx))]
+    [DbContext(typeof(Seedysoft.Libs.Infrastructure.DbContexts.DbCtx))]
     partial class DbCtxModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)

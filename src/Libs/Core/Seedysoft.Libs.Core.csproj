@@ -8,10 +8,10 @@
     </ItemGroup>
 
     <ItemGroup>
-        <InternalsVisibleTo Include="Seedysoft.Libs.Core.Tests" />
+        <ProjectReference Include="..\Cryptography\Seedysoft.Libs.Cryptography.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Cryptography\Seedysoft.Libs.Cryptography.csproj" />
+        <InternalsVisibleTo Include="Seedysoft.Libs.Core.Tests" />
     </ItemGroup>
 </Project>

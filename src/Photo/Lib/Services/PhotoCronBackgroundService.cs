@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Seedysoft.Libs.Core.Extensions;
@@ -8,7 +9,7 @@ namespace Seedysoft.Photo.Lib.Services;
 public sealed class PhotoCronBackgroundService : Libs.BackgroundServices.Cron
 {
     private readonly ILogger<PhotoCronBackgroundService> Logger;
-    //private Settings.PhotoSettings Settings => (Settings.PhotoSettings)Config;
+    private Settings.PhotoSettings Settings => (Settings.PhotoSettings)Config;
 
     public PhotoCronBackgroundService(
         IServiceProvider serviceProvider,
@@ -18,7 +19,7 @@ public sealed class PhotoCronBackgroundService : Libs.BackgroundServices.Cron
         Logger = ServiceProvider.GetRequiredService<ILogger<PhotoCronBackgroundService>>();
 
         Config = ServiceProvider.GetRequiredService<IConfiguration>()
-            .GetSection(nameof(Settings.PhotoSettings)).Get<Settings.PhotoSettings>()!;
+            .GetSection(nameof(Lib.Settings.PhotoSettings)).Get<Settings.PhotoSettings>()!;
     }
 
     public override async Task DoWorkAsync(CancellationToken stoppingToken)
@@ -33,81 +34,109 @@ public sealed class PhotoCronBackgroundService : Libs.BackgroundServices.Cron
 
         try
         {
-            Libs.Infrastructure.DbContexts.PhotoCtx photoCtx = ServiceProvider.GetRequiredService<Libs.Infrastructure.DbContexts.PhotoCtx>();
+            if (!Directory.Exists(Settings.PhotoRootPath))
+            {
+                if (Logger.IsEnabled(LogLevel.Critical))
+                    Logger.LogCritical("Principal photo directory '{PhotoRootPath}' does not exists", Settings.PhotoRootPath);
+            }
 
-            //Libs.Core.Entities.Outbox[] PendingMessages = await dbCtx.Outbox.Where(x => x.SentAtDateTimeOffset == null).ToArrayAsync(stoppingToken);
+            DbContexts.PhotoCtx photoCtx = ServiceProvider.GetRequiredService<DbContexts.PhotoCtx>();
 
-            //if (PendingMessages.Length == 0)
-            //{
-            //    if (Logger.IsEnabled(LogLevel.Information))
-            //        Logger.LogInformation("NO pending messages");
-            //}
-            //else
-            //{
-            //    if (Logger.IsEnabled(LogLevel.Information))
-            //        Logger.LogInformation("Obtained {PendingMessages} pending messages", PendingMessages.Length);
+            DirectoryInfo directoryInfo = new(Settings.PhotoRootPath);
 
-            //    Libs.Core.Entities.Subscriber[]? AllSubscribers = await dbCtx.Subscribers
-            //        .Include(x => x.Subscriptions)
-            //        .AsNoTracking()
-            //        .ToArrayAsync(stoppingToken);
-            //    if (Logger.IsEnabled(LogLevel.Information))
-            //        Logger.LogInformation("Obtained {AllSubscribers} subscribers", AllSubscribers.Length);
+            //IEnumerable<DirectoryInfo> photoDirectories = directoryInfo.EnumerateDirectories(Settings.PhotoRootPath, new EnumerationOptions() { });
+            DirectoryInfo[] photoDirectories = directoryInfo.GetDirectories();
 
-            //    Libs.TelegramBot.Services.TelegramHostedService telegramHostedService =
-            //        ServiceProvider.GetRequiredService<Libs.TelegramBot.Services.TelegramHostedService>();
+            for (int i = photoDirectories.Length - 1; i > 0; i--)
+            {
+                DirectoryInfo subDirectory = photoDirectories.ElementAt(i);
 
-            //    Libs.SmtpService.Services.SmtpService smtpService =
-            //        ServiceProvider.GetRequiredService<Libs.SmtpService.Services.SmtpService>();
+                if (Logger.IsEnabled(LogLevel.Information))
+                    Logger.LogInformation("Processing directory '{Name}'", subDirectory.Name);
 
-            //    for (int i = 0; i < PendingMessages.Length; i++)
-            //    {
-            //        Libs.Core.Entities.Outbox PendingMessage = PendingMessages[i];
+                if (!int.TryParse(subDirectory.Name.AsSpan(subDirectory.Name.Length - 4), out int photoYear))
+                    continue;
 
-            //        Libs.Core.Entities.Subscriber[] Subscribers = [.. AllSubscribers
-            //            .Where(x => x.Subscriptions.Any(s => s.SubscriptionName == PendingMessage.SubscriptionName))
-            //            .Where(x => PendingMessage.SubscriptionId == null || x.Subscriptions.Any(y => y.SubscriptionId == PendingMessage.SubscriptionId))];
+                await photoCtx.Photos
+                    //.Where(x => x.UpdatedAtDateTimeOffset.HasValue && x.UpdatedAtDateTimeOffset.Value.Year == photoYear)
+                    .Where(x => x.Year == photoYear)
+                    .Include((x) => x.Tags)
+                    .LoadAsync(stoppingToken);
 
-            //        for (int j = 0; j < Subscribers.Length; j++)
-            //        {
-            //            Libs.Core.Entities.Subscriber subscriber = Subscribers[j];
+                //IEnumerable<FileInfo> photos = subDirectory.EnumerateFiles(Settings.PhotoRootPath, new EnumerationOptions() { });
+                FileInfo[] photoFiles = subDirectory.GetFiles("*.*", new EnumerationOptions() { });
 
-            //            if (subscriber.TelegramUserId.HasValue)
-            //                await telegramHostedService.SendMessageToSubscriberAsync(PendingMessage, subscriber.TelegramUserId.Value, stoppingToken);
+                for (int j = 0; j < photoFiles.Length; j++)
+                {
+                    FileInfo photoFile = photoFiles.ElementAt(j);
 
-            //            if (!string.IsNullOrEmpty(subscriber.MailAddress))
-            //            {
-            //                string Message = PendingMessage.SubscriptionName switch
-            //                {
-            //                    Libs.Core.Enums.SubscriptionName.electricidad => GetHtmlBodyMail(PendingMessage.Payload),
+                    Entities.Photo? photoDb = await photoCtx.Photos.FirstOrDefaultAsync(x => x.FilePath == photoFile.FullName, stoppingToken);
+                    if (photoDb == null)
+                    {
+                        photoDb = new Entities.Photo()
+                        {
+                            FilePath = photoFile.FullName,
+                            //UpdatedAtDateTimeOffset = DateTimeOffset.UtcNow,
+                            Year = photoYear,
+                        };
+                        _ = photoCtx.Add(photoDb);
+                    }
 
-            //                    Libs.Core.Enums.SubscriptionName.webComparer => PendingMessage.Payload,
+                    if (photoDb.Latitude.HasValue && photoDb.Longitude.HasValue)
+                        continue;
 
-            //                    //Enums.SubscriptionName.amazon => ,
+                    try
+                    {
+                        IReadOnlyList<MetadataExtractor.Directory> directories = MetadataExtractor.ImageMetadataReader.ReadMetadata(photoFile.FullName);
+                        //for (int d = 0; d < directories.Count; d++)
+                        //{
+                        //    MetadataExtractor.Directory directory = directories[d];
+                        //    Console.WriteLine("Processing directory '{0}'", directory.Name);
+                        //    for (int t = 0; t < directory.Tags.Count; t++)
+                        //    {
+                        //        MetadataExtractor.Tag tag = directory.Tags[t];
+                        //        Console.WriteLine("\tProcessing tag '{0}' of type '{1}' with value '{2}'", tag.Name, tag.Type, tag.Description);
+                        //    }
+                        //}
 
-            //                    _ => throw new ApplicationException($"Unexpected SubscriptionName: '{PendingMessage.SubscriptionName}'"),
-            //                };
+                        MetadataExtractor.Formats.Exif.GpsDirectory? gpsDirectory =
+                            directories.OfType<MetadataExtractor.Formats.Exif.GpsDirectory>().FirstOrDefault();
+                        if (gpsDirectory != null && gpsDirectory.TryGetGeoLocation(out MetadataExtractor.GeoLocation geoLocation))
+                        {
+                            photoDb.Latitude = geoLocation.Latitude;
+                            photoDb.Longitude = geoLocation.Longitude;
+                            //photoDb.UpdatedAtDateTimeOffset = DateTimeOffset.UtcNow;
+                        }
 
-            //                await smtpService.SendMailAsync(
-            //                    to: subscriber.MailAddress,
-            //                    subject: PendingMessage.SubscriptionName.ToString(),
-            //                    body: Message,
-            //                    isBodyHtml: Libs.Core.Enums.SubscriptionName.electricidad == PendingMessage.SubscriptionName || Message.ContainsHtml(),
-            //                    cancellationToken: stoppingToken);
-            //            }
-            //        }
+                        //MetadataExtractor.Formats.FileSystem.FileMetadataDirectory? fileMetadataDirectory =
+                        //    directories.OfType<MetadataExtractor.Formats.FileSystem.FileMetadataDirectory>().FirstOrDefault();
+                        //string? TagFileModifiedDate = fileMetadataDirectory?.GetDescription(MetadataExtractor.Formats.FileSystem.FileMetadataDirectory.TagFileModifiedDate);
+                        //if (!string.IsNullOrWhiteSpace(TagFileModifiedDate) &&
+                        //    DateTimeOffset.TryParse(TagFileModifiedDate, out DateTimeOffset fileModifiedDate))
+                        //{
+                        //    photoDb.Year = fileModifiedDate.Year;
+                        //}
+                        //else
+                        //{
+                        //    MetadataExtractor.Formats.Exif.ExifSubIfdDirectory? exifSubIfdDirectory =
+                        //        directories.OfType<MetadataExtractor.Formats.Exif.ExifSubIfdDirectory>().FirstOrDefault();
+                        //    string? TagDateTime = exifSubIfdDirectory?.GetDescription(MetadataExtractor.Formats.Exif.ExifDirectoryBase.TagDateTime);
+                        //    if (!string.IsNullOrWhiteSpace(TagDateTime) &&
+                        //        DateTime.TryParseExact(TagDateTime, "yyyy:MM:dd HH:mm:ss", System.Globalization.DateTimeFormatInfo.InvariantInfo, System.Globalization.DateTimeStyles.AdjustToUniversal, out DateTime tagDateTime))
+                        //    {
+                        //        photoDb.Year = tagDateTime.Year;
+                        //    }
+                        //}
+                    }
+                    catch (Exception e)
+                    {
+                        if (Logger.IsEnabled(LogLevel.Error))
+                            Logger.LogError(e, "Cannot obtain metadata from '{Name}'", photoFile.Name);
+                    }
+                }
 
-            //        PendingMessage.SentAtDateTimeOffset = DateTimeOffset.Now;
-
-            //        _ = await dbCtx.SaveChangesAsync(stoppingToken);
-            //    }
-            //}
-
-            //const int KeepDays = 20;
-            //DateTimeOffset dateTimeOffset = DateTimeOffset.UtcNow.AddDays(-KeepDays);
-            //await dbCtx.BulkDeleteAsync(dbCtx.Outbox.Where(x => x.SentAtDateTimeOffset < dateTimeOffset), cancellationToken: stoppingToken);
-            //if (Logger.IsEnabled(LogLevel.Debug))
-            //    Logger.LogDebug("Removed {Entities} old entities", await dbCtx.SaveChangesAsync(stoppingToken));
+                _ = await photoCtx.SaveChangesAsync(stoppingToken);
+            }
         }
         catch (Exception e) when (Logger.LogAndHandle(e, "Unexpected error")) { }
         finally { await Task.CompletedTask; }

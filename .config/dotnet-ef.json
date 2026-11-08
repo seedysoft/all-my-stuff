@@ -1,10 +1,10 @@
-{
-  "project": "src/App.Infrastructure",
-  "startupProject": "src/App.Api",
-  "framework": "net11.0",
+﻿{
+  //"project": "src/App.Infrastructure",
+  //"startupProject": "src/App.Api",
+  "framework": "net10.0",
   "configuration": "Debug",
-  "context": "AppDbContext",
-  "runtime": "win-x64",
+  //"context": "AppDbContext",
+  //"runtime": "win-x64",
   "verbose": true,
   "noColor": false,
   "prefixOutput": false

@@ -6,18 +6,16 @@ using Seedysoft.Libs.Infrastructure.Extensions;
 
 namespace Seedysoft.Libs.GasStationPrices.ConsoleApp;
 
-public sealed class Program : Core.ProgramBase
+public sealed class Program : Infrastructure.ProgramBase
 {
     [STAThread]
     public static async Task Main(string[] args)
     {
-        await ObtainCommandLineAsync(args);
+        Microsoft.Extensions.Hosting.HostApplicationBuilder hostBuilder = CreateHostBuilder(args);
 
-        Microsoft.Extensions.Hosting.HostApplicationBuilder hostApplicationBuilder = new(args);
+        _ = hostBuilder.AddAllMyDependencies();
 
-        _ = hostApplicationBuilder.AddAllMyDependencies();
-
-        Microsoft.Extensions.Hosting.IHost host = hostApplicationBuilder.Build();
+        Microsoft.Extensions.Hosting.IHost host = hostBuilder.Build();
 
         ILogger<Program> Logger = host.Services.GetRequiredService<ILogger<Program>>();
 

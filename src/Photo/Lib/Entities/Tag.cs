@@ -1,4 +1,4 @@
-﻿namespace Seedysoft.Libs.Core.Entities;
+﻿namespace Seedysoft.Photo.Lib.Entities;
 
 [System.Diagnostics.DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)},nq}}")]
 public sealed class Tag
