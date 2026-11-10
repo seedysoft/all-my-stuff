@@ -1,6 +1,6 @@
 ﻿namespace Seedysoft.Photo.Lib.Entities;
 
-[System.Diagnostics.DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)},nq}}")]
+[System.Diagnostics.DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
 public sealed class PhotoTag
 {
     public long PhotoId { get; set; }

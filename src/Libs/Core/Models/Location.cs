@@ -1,9 +1,9 @@
 ﻿namespace Seedysoft.Libs.Core.Models;
 
-[System.Diagnostics.DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)},nq}}")]
 /// <summary>
 /// Represents a geographic location using double latitude and longitude in degrees.
 /// </summary>
+[System.Diagnostics.DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
 public class Location
 {
     private Location() { }
@@ -26,6 +26,8 @@ public class Location
     private string GetDebuggerDisplay() =>
         $"Lat: {Latitude.ToString(Constants.Globalization.NumberFormatInfoInvariant)}; " +
         $"Lon: {Longitude.ToString(Constants.Globalization.NumberFormatInfoInvariant)}";
+
+    public override string ToString() => GetDebuggerDisplay();
 
     //    public readonly Location AddMetters(double angle, double distanceInMetters)
     //    {
