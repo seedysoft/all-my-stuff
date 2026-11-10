@@ -11,7 +11,7 @@ public sealed class PhotoCronBackgroundServiceTests : Libs.Core.Tests.TestClassB
     private Mock<ILogger<Lib.Services.PhotoCronBackgroundService>> MockLogger = null!;
     private Mock<DbContexts.PhotoCtx> MockPhotoCtx = null!;
 
-    private Lib.Services.PhotoCronBackgroundService? photoCronBackgroundService;
+    private Lib.Services.PhotoCronBackgroundService photoCronBackgroundService = default!;
 
     //[Before(Test)]
     // TUnit0074
@@ -23,6 +23,7 @@ public sealed class PhotoCronBackgroundServiceTests : Libs.Core.Tests.TestClassB
 
         MockLogger = new Mock<ILogger<Lib.Services.PhotoCronBackgroundService>>();
         MockPhotoCtx = new Mock<DbContexts.PhotoCtx>();
+        photoCronBackgroundService = new Lib.Services.PhotoCronBackgroundService(MockServiceProvider.Object, MockHostApplicationLifetime.Object);
 
         SetupDefaultMocks();
     }
@@ -53,7 +54,7 @@ public sealed class PhotoCronBackgroundServiceTests : Libs.Core.Tests.TestClassB
             { $"{nameof(Settings.PhotoSettings)}:CronExpression", "* * 30 2 *" },
             { $"{nameof(Settings.PhotoSettings)}:DelayBetweenExecutionsTimeSpan", "00:00:01" },
             { $"{nameof(Settings.PhotoSettings)}:TimeZoneInfo", TimeZoneInfo.Local.Id },
-            { $"{nameof(Settings.PhotoSettings)}:PhotoRootPath", Path.Join( Environment.GetEnvironmentVariable("USERPROFILE")  , @"\\od\\_Syncthing\\Photos") },
+            { $"{nameof(Settings.PhotoSettings)}:PhotoRootPath", Path.Join(Environment.GetEnvironmentVariable("USERPROFILE"), @"\od\_Syncthing\Photos") },
         });
 
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
@@ -78,22 +79,14 @@ public sealed class PhotoCronBackgroundServiceTests : Libs.Core.Tests.TestClassB
             .Returns(MockPhotoCtx.Object);
     }
 
-    private void CreateService()
-    {
-        photoCronBackgroundService = new Lib.Services.PhotoCronBackgroundService(
-            MockServiceProvider.Object,
-            MockHostApplicationLifetime.Object);
-    }
-
     [Test]
     public async Task DoWorkAsyncShouldGetPhotoCtxFromPhotoCronBackgroundServiceProvider()
     {
         // Arrange
-        CreateService();
         CancellationToken cancellationToken = CancellationTokenSource.Token;
 
         // Act
-        await photoCronBackgroundService!.DoWorkAsync(cancellationToken);
+        await photoCronBackgroundService.DoWorkAsync(cancellationToken);
 
         // Assert
         MockServiceProvider.Verify(
@@ -105,18 +98,16 @@ public sealed class PhotoCronBackgroundServiceTests : Libs.Core.Tests.TestClassB
     public async Task DoWorkAsyncShouldCompleteSuccessfully()
     {
         // Arrange
-        CreateService();
         CancellationToken cancellationToken = CancellationTokenSource.Token;
 
         // Act & Assert (Should not throw)
-        await photoCronBackgroundService!.DoWorkAsync(cancellationToken);
+        await photoCronBackgroundService.DoWorkAsync(cancellationToken);
     }
 
     [Test]
     public async Task DoWorkAsyncShouldHandleExceptionGracefully()
     {
         // Arrange
-        CreateService();
         CancellationToken cancellationToken = CancellationTokenSource.Token;
 
         _ = MockServiceProvider
@@ -124,7 +115,7 @@ public sealed class PhotoCronBackgroundServiceTests : Libs.Core.Tests.TestClassB
             .Throws(new InvalidOperationException("Service not found"));
 
         // Act & Assert (Should not throw)
-        await photoCronBackgroundService!.DoWorkAsync(cancellationToken);
+        await photoCronBackgroundService.DoWorkAsync(cancellationToken);
 
         // Verify exception was logged
         MockLogger.Verify(
@@ -141,12 +132,26 @@ public sealed class PhotoCronBackgroundServiceTests : Libs.Core.Tests.TestClassB
     public async Task DoWorkAsyncWithCancellationTokenShouldRespectCancellation()
     {
         // Arrange
-        CreateService();
         CancellationTokenSource.Cancel();
         CancellationToken cancellationToken = CancellationTokenSource.Token;
 
         // Act & Assert (Should not throw even with cancelled token)
-        await photoCronBackgroundService!.DoWorkAsync(cancellationToken);
+        await photoCronBackgroundService.DoWorkAsync(cancellationToken);
+    }
+
+    [Test]
+    [CombinedDataSources]
+    public async Task TryToObtainPhotoMetadataTest(
+        [Arguments(@"C:\Users\amt\od\_Syncthing\Fotos\IMG_20261109_144720.jpg") ]
+        string photoFullPath)
+    {
+        if (File.Exists(photoFullPath))
+        {
+            FileInfo photoFile = new(photoFullPath);
+            Entities.Photo photoDb = new() { FilePath = Path.GetRelativePath(photoCronBackgroundService!.Settings.PhotoRootPath, photoFile.FullName) };
+
+            _ = photoCronBackgroundService.TryToObtainPhotoMetadata(photoFile, photoDb);
+        }
     }
 
     public void Dispose() => photoCronBackgroundService?.Dispose();

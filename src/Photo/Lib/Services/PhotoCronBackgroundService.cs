@@ -9,7 +9,7 @@ namespace Seedysoft.Photo.Lib.Services;
 public sealed class PhotoCronBackgroundService : Libs.BackgroundServices.Cron
 {
     private readonly ILogger<PhotoCronBackgroundService> Logger;
-    private Settings.PhotoSettings Settings => (Settings.PhotoSettings)Config;
+    public Settings.PhotoSettings Settings => (Settings.PhotoSettings)Config;
 
     public PhotoCronBackgroundService(
         IServiceProvider serviceProvider,
@@ -75,7 +75,7 @@ public sealed class PhotoCronBackgroundService : Libs.BackgroundServices.Cron
                     {
                         photoDb = new Entities.Photo()
                         {
-                            FilePath = photoFile.FullName,
+                            FilePath = Path.GetRelativePath(Settings.PhotoRootPath, photoFile.FullName),
                             //UpdatedAtDateTimeOffset = DateTimeOffset.UtcNow,
                             Year = photoYear,
                         };
@@ -85,54 +85,7 @@ public sealed class PhotoCronBackgroundService : Libs.BackgroundServices.Cron
                     if (photoDb.Latitude.HasValue && photoDb.Longitude.HasValue)
                         continue;
 
-                    try
-                    {
-                        IReadOnlyList<MetadataExtractor.Directory> directories = MetadataExtractor.ImageMetadataReader.ReadMetadata(photoFile.FullName);
-                        //for (int d = 0; d < directories.Count; d++)
-                        //{
-                        //    MetadataExtractor.Directory directory = directories[d];
-                        //    Console.WriteLine("Processing directory '{0}'", directory.Name);
-                        //    for (int t = 0; t < directory.Tags.Count; t++)
-                        //    {
-                        //        MetadataExtractor.Tag tag = directory.Tags[t];
-                        //        Console.WriteLine("\tProcessing tag '{0}' of type '{1}' with value '{2}'", tag.Name, tag.Type, tag.Description);
-                        //    }
-                        //}
-
-                        MetadataExtractor.Formats.Exif.GpsDirectory? gpsDirectory =
-                            directories.OfType<MetadataExtractor.Formats.Exif.GpsDirectory>().FirstOrDefault();
-                        if (gpsDirectory != null && gpsDirectory.TryGetGeoLocation(out MetadataExtractor.GeoLocation geoLocation))
-                        {
-                            photoDb.Latitude = geoLocation.Latitude;
-                            photoDb.Longitude = geoLocation.Longitude;
-                            //photoDb.UpdatedAtDateTimeOffset = DateTimeOffset.UtcNow;
-                        }
-
-                        //MetadataExtractor.Formats.FileSystem.FileMetadataDirectory? fileMetadataDirectory =
-                        //    directories.OfType<MetadataExtractor.Formats.FileSystem.FileMetadataDirectory>().FirstOrDefault();
-                        //string? TagFileModifiedDate = fileMetadataDirectory?.GetDescription(MetadataExtractor.Formats.FileSystem.FileMetadataDirectory.TagFileModifiedDate);
-                        //if (!string.IsNullOrWhiteSpace(TagFileModifiedDate) &&
-                        //    DateTimeOffset.TryParse(TagFileModifiedDate, out DateTimeOffset fileModifiedDate))
-                        //{
-                        //    photoDb.Year = fileModifiedDate.Year;
-                        //}
-                        //else
-                        //{
-                        //    MetadataExtractor.Formats.Exif.ExifSubIfdDirectory? exifSubIfdDirectory =
-                        //        directories.OfType<MetadataExtractor.Formats.Exif.ExifSubIfdDirectory>().FirstOrDefault();
-                        //    string? TagDateTime = exifSubIfdDirectory?.GetDescription(MetadataExtractor.Formats.Exif.ExifDirectoryBase.TagDateTime);
-                        //    if (!string.IsNullOrWhiteSpace(TagDateTime) &&
-                        //        DateTime.TryParseExact(TagDateTime, "yyyy:MM:dd HH:mm:ss", System.Globalization.DateTimeFormatInfo.InvariantInfo, System.Globalization.DateTimeStyles.AdjustToUniversal, out DateTime tagDateTime))
-                        //    {
-                        //        photoDb.Year = tagDateTime.Year;
-                        //    }
-                        //}
-                    }
-                    catch (Exception e)
-                    {
-                        if (Logger.IsEnabled(LogLevel.Error))
-                            Logger.LogError(e, "Cannot obtain metadata from '{Name}'", photoFile.Name);
-                    }
+                    _ = TryToObtainPhotoMetadata(photoFile, photoDb);
                 }
 
                 _ = await photoCtx.SaveChangesAsync(stoppingToken);
@@ -143,5 +96,61 @@ public sealed class PhotoCronBackgroundService : Libs.BackgroundServices.Cron
 
         if (Logger.IsEnabled(LogLevel.Information))
             Logger.LogInformation("End {ApplicationName}", AppName);
+    }
+
+    internal bool TryToObtainPhotoMetadata(FileInfo photoFile, Entities.Photo photoDb)
+    {
+        try
+        {
+            IReadOnlyList<MetadataExtractor.Directory> directories = MetadataExtractor.ImageMetadataReader.ReadMetadata(photoFile.FullName);
+            //for (int d = 0; d < directories.Count; d++)
+            //{
+            //    MetadataExtractor.Directory directory = directories[d];
+            //    Console.WriteLine("Processing directory '{0}'", directory.Name);
+            //    for (int t = 0; t < directory.Tags.Count; t++)
+            //    {
+            //        MetadataExtractor.Tag tag = directory.Tags[t];
+            //        Console.WriteLine("\tProcessing tag '{0}' of type '{1}' with value '{2}'", tag.Name, tag.Type, tag.Description);
+            //    }
+            //}
+
+            MetadataExtractor.Formats.Exif.GpsDirectory? gpsDirectory =
+                directories.OfType<MetadataExtractor.Formats.Exif.GpsDirectory>().FirstOrDefault();
+            if (gpsDirectory != null && gpsDirectory.TryGetGeoLocation(out MetadataExtractor.GeoLocation geoLocation))
+            {
+                photoDb.Latitude = geoLocation.Latitude;
+                photoDb.Longitude = geoLocation.Longitude;
+                //photoDb.UpdatedAtDateTimeOffset = DateTimeOffset.UtcNow;
+            }
+
+            //MetadataExtractor.Formats.FileSystem.FileMetadataDirectory? fileMetadataDirectory =
+            //    directories.OfType<MetadataExtractor.Formats.FileSystem.FileMetadataDirectory>().FirstOrDefault();
+            //string? TagFileModifiedDate = fileMetadataDirectory?.GetDescription(MetadataExtractor.Formats.FileSystem.FileMetadataDirectory.TagFileModifiedDate);
+            //if (!string.IsNullOrWhiteSpace(TagFileModifiedDate) &&
+            //    DateTimeOffset.TryParse(TagFileModifiedDate, out DateTimeOffset fileModifiedDate))
+            //{
+            //    photoDb.Year = fileModifiedDate.Year;
+            //}
+            //else
+            //{
+            //    MetadataExtractor.Formats.Exif.ExifSubIfdDirectory? exifSubIfdDirectory =
+            //        directories.OfType<MetadataExtractor.Formats.Exif.ExifSubIfdDirectory>().FirstOrDefault();
+            //    string? TagDateTime = exifSubIfdDirectory?.GetDescription(MetadataExtractor.Formats.Exif.ExifDirectoryBase.TagDateTime);
+            //    if (!string.IsNullOrWhiteSpace(TagDateTime) &&
+            //        DateTime.TryParseExact(TagDateTime, "yyyy:MM:dd HH:mm:ss", System.Globalization.DateTimeFormatInfo.InvariantInfo, System.Globalization.DateTimeStyles.AdjustToUniversal, out DateTime tagDateTime))
+            //    {
+            //        photoDb.Year = tagDateTime.Year;
+            //    }
+            //}
+
+            return true;
+        }
+        catch (Exception e)
+        {
+            if (Logger.IsEnabled(LogLevel.Error))
+                Logger.LogError(e, "Cannot obtain metadata from '{Name}'", photoFile.Name);
+        }
+
+        return false;
     }
 }
