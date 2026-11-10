@@ -23,9 +23,10 @@ public sealed class PhotoCronBackgroundServiceTests : Libs.Core.Tests.TestClassB
 
         MockLogger = new Mock<ILogger<Lib.Services.PhotoCronBackgroundService>>();
         MockPhotoCtx = new Mock<DbContexts.PhotoCtx>();
-        photoCronBackgroundService = new Lib.Services.PhotoCronBackgroundService(MockServiceProvider.Object, MockHostApplicationLifetime.Object);
 
         SetupDefaultMocks();
+
+        photoCronBackgroundService = new Lib.Services.PhotoCronBackgroundService(MockServiceProvider.Object, MockHostApplicationLifetime.Object);
     }
 
     //[After(Test)]

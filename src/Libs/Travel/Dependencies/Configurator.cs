@@ -21,6 +21,7 @@ public sealed class Configurator : Core.Dependencies.ConfiguratorBase
     protected override void AddMyServices(Microsoft.Extensions.Hosting.IHostApplicationBuilder hostApplicationBuilder)
     {
         hostApplicationBuilder.Services.TryAddScoped<Services.Geocoding.GeocodingService>();
+        hostApplicationBuilder.Services.TryAddScoped<Services.Reverse.ReverseService>();
         hostApplicationBuilder.Services.TryAddScoped<Services.Routing.RoutingService>();
 
         _ = hostApplicationBuilder.Services.AddHttpClient(name: nameof(Travel))

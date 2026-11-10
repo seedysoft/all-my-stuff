@@ -29,6 +29,18 @@ public class Location
 
     public override string ToString() => GetDebuggerDisplay();
 
+    public static bool IsEmpty(Location location) => location is null || location == Empty;
+
+    public override bool Equals(object? obj) => obj is Location location && Equals(location);
+
+    public bool Equals(Location? other) => other is not null && Latitude.Equals(other.Latitude) && Longitude.Equals(other.Longitude);
+
+    public override int GetHashCode() => HashCode.Combine(Latitude, Longitude);
+
+    public static bool operator ==(Location? left, Location? right) => left is null ? right is null : left.Equals(right);
+
+    public static bool operator !=(Location? left, Location? right) => !(left == right);
+
     //    public readonly Location AddMetters(double angle, double distanceInMetters)
     //    {
     //        double latitude = Helpers.CoordinatesCalculatesHelper.GetLatitudeFromDegreesPerMetter(Latitude, angle, distanceInMetters);
