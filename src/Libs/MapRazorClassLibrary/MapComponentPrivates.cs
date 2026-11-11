@@ -233,7 +233,13 @@ public partial class MapComponent
                 Weight = 10,
             };
 
-            await MapModule.InvokeVoidAsync("addPolyline", polyline);
+            try
+            {
+                await MapModule.InvokeVoidAsync("addPolyline", polyline);
+            }
+            catch (Exception)
+            {
+            }
         }
     }
 
@@ -248,13 +254,29 @@ public partial class MapComponent
         OneOf.OneOf<string, MapModels.UILayers.Tooltip>? tooltip)
     {
         if (MapModule != null)
-            await MapModule.InvokeVoidAsync($"addOrUpdateCircleMarker", circleMarker, popup?.Value, tooltip?.Value);
+        {
+            try
+            {
+                await MapModule.InvokeVoidAsync($"addOrUpdateCircleMarker", circleMarker, popup?.Value, tooltip?.Value);
+            }
+            catch (Exception)
+            {
+            }
+        }
     }
 
     private async Task RemoveRoutesAsync()
     {
         if (MapModule != null)
-            await MapModule.InvokeVoidAsync("removeRoutes");
+        {
+            try
+            {
+                await MapModule.InvokeVoidAsync("removeRoutes");
+            }
+            catch (Exception)
+            {
+            }
+        }
     }
 
     // Unused. Uncomment if neccessary
@@ -269,12 +291,28 @@ public partial class MapComponent
     private async Task ShowLoaderAsync()
     {
         if (MapModule != null)
-            await MapModule.InvokeVoidAsync("showLoader");
+        {
+            try
+            {
+                await MapModule.InvokeVoidAsync("showLoader");
+            }
+            catch (Exception)
+            {
+            }
+        }
     }
     private async Task HideLoaderAsync()
     {
         if (MapModule != null)
-            await MapModule.InvokeVoidAsync("hideLoader");
+        {
+            try
+            {
+                await MapModule.InvokeVoidAsync("hideLoader");
+            }
+            catch (Exception)
+            {
+            }
+        }
     }
 
     private async Task ShowGasStationPopupAsync(MapModels.Basic.LatLng args)
@@ -284,7 +322,15 @@ public partial class MapComponent
             GasStationPrices.ViewModels.GasStationModel? GasStation =
                 await GasStationPricesService.GetGasStationAsync(args.ToLocation());
             if (GasStation != null)
-                await MapModule.InvokeVoidAsync("showGasStationPopup", BuildPopupContent(GasStation), args);
+            {
+                try
+                {
+                    await MapModule.InvokeVoidAsync("showGasStationPopup", BuildPopupContent(GasStation), args);
+                }
+                catch (Exception)
+                {
+                }
+            }
         }
 
         string BuildPopupContent(GasStationPrices.ViewModels.GasStationModel GasStation)

@@ -96,9 +96,15 @@ public partial class MapComponent
 
         if (MapModule == null)
         {
-            MapModule = await JsRuntime.InvokeAsync<IJSObjectReference>(
+            try
+            {
+                MapModule = await JsRuntime.InvokeAsync<IJSObjectReference>(
                 identifier: "import",
                 args: $"./{Assets["_content/Seedysoft.Libs.MapRazorClassLibrary/js/MapComponent.js"]}");
+            }
+            catch (Exception)
+            {
+            }
 
             await CreateMapAsync();
         }

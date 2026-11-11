@@ -185,7 +185,7 @@ public sealed class WebComparerCronBackgroundService : Libs.BackgroundServices.C
             /// </summary>
             static Dictionary<int, string> GetDataForMail(Libs.Core.Entities.WebData webData, DiffPlex.DiffBuilder.Model.DiffPaneModel DiffModel)
             {
-                Dictionary<int, string> DataForMail = new(DiffModel.Lines.Count);
+                Dictionary<int, string> DataForMail = [with(DiffModel.Lines.Count)];
                 for (int RealLineIndex = 0; RealLineIndex < DiffModel.Lines.Count; RealLineIndex++)
                 {
                     DiffPlex.DiffBuilder.Model.DiffPiece CurrentLine = DiffModel.Lines[RealLineIndex];

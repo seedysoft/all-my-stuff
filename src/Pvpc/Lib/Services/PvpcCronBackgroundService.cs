@@ -100,7 +100,7 @@ public sealed class PvpcCronBackgroundService : Libs.BackgroundServices.Cron
             .Where(p => p.AtDateTimeOffset >= MinDateTimeOffset && p.AtDateTimeOffset <= MaxDateTimeOffset)
             .ToArrayAsync(stoppingToken);
 
-        List<Libs.Core.Entities.PvpcBase> Prices = new(24);
+        List<Libs.Core.Entities.PvpcBase> Prices = [with(24)];
         foreach ((Libs.Core.Entities.Pvpc NewEntity, Libs.Core.Entities.Pvpc ExistingEntity) in
             from Libs.Core.Entities.Pvpc NewEntity in NewEntities
             let ExistingEntity = ExistingPvpcs.FirstOrDefault(x => x.AtDateTimeOffset == NewEntity.AtDateTimeOffset)

@@ -121,9 +121,7 @@ public class Program : Libs.Core.ProgramBase
         WebApplication webApplication = webApplicationBuilder.Build();
 
         // Configure the HTTP request pipeline.
-        if (webApplication.Environment.IsDevelopment())
-            webApplication.UseWebAssemblyDebugging();
-        else
+        if (!webApplication.Environment.IsDevelopment())
             _ = webApplication.UseExceptionHandler("/Error");
 
         // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/servers/kestrel/security-considerations?view=aspnetcore-10.0#security-checklist
