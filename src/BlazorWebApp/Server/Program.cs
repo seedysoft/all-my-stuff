@@ -124,7 +124,7 @@ public class Program : Libs.Core.ProgramBase
         if (!webApplication.Environment.IsDevelopment())
             _ = webApplication.UseExceptionHandler("/Error");
 
-        // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/servers/kestrel/security-considerations?view=aspnetcore-10.0#security-checklist
+        // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/servers/kestrel/security-considerations?view=aspnetcore-11.0#security-checklist
         _ = webApplication.UseHostFiltering();      // Validate Host header
         _ = webApplication.UseHttpsRedirection();   // Redirect HTTP -> HTTPS
         _ = webApplication.UseHsts();               // Add Strict-Transport-Security

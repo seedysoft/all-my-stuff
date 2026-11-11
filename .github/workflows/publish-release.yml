@@ -39,7 +39,7 @@ jobs:
         uses: actions/setup-dotnet@main
         with:
           dotnet-version: |
-            10
+            11
           workloads: wasm-tools
       - name: Make publish folder "./${{ matrix.runtime.name }}/"
         run: mkdir -p "./${{ matrix.runtime.name }}/"

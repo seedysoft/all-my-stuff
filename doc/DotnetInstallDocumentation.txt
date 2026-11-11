@@ -132,7 +132,7 @@ sudo mv microsoft.asc.gpg $(cat /etc/apt/sources.list.d/microsoft-prod.list | gr
 # Update packages and install .NET
 sudo apt-get update
 REM does not works sudo apt-get install -y aspnetcore-runtime-8.0
-sudo apt-get install -y aspnetcore-runtime-10.0
+sudo apt-get install -y aspnetcore-runtime-11.0
 
 # Help commands:
 dotnet --list-sdks; dotnet --list-runtimes;
