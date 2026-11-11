@@ -40,7 +40,7 @@ public sealed class SmtpService(IServiceProvider serviceProvider, IConfiguration
                 Message.Bcc.Add(m);
         }
 
-        if (!Message.Bcc.Any())
+        if (Message.Bcc.Count == 0)
             Message.To.Add(Message.From);
 
         await SendAsync(Message, cancellationToken);

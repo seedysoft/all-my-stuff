@@ -39,6 +39,6 @@ public sealed class RoutingServiceTests : Infrastructure.Tests.TestClassBase
 
         // Assert
         _ = await Assert.That(result).IsNotNull();
-        _ = await Assert.That(result.Any()).IsTrue();
+        _ = await Assert.That(result.Count != 0).IsTrue();
     }
 }

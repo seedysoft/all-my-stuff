@@ -101,7 +101,7 @@ public sealed class UpdaterCronBackgroundService : BackgroundServices.Cron
         if (Logger.IsEnabled(LogLevel.Information))
             Logger.LogInformation("Obtained {releasesCount} releases", releases.Count);
 
-        return releases.Any() ? releases[0] : null;
+        return releases.Count != 0 ? releases[0] : null;
     }
 
     internal bool ExecuteUpdateScript(string asssemblyLocation, string assetName)
