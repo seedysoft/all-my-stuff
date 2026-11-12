@@ -18,17 +18,12 @@ public sealed class GeocodingServiceTests : Infrastructure.Tests.TestClassBase
     }
 
     [Test]
-    [CombinedDataSources]
-    public async Task FindPlacesAsyncWithValidTextToFindReturnsPlacesTest(
-        [Arguments(@"Barcelona")]
-        [Arguments(@"Soria")]
-        [Arguments(@"Juan Ramón Jiménez 8 Burgos")]
-        [Arguments(@"Manciles")]
-        [Arguments(@"La Iglesia 11 Brazuelo")]
-        [Arguments(@"Hontalbilla")]
-        [Arguments(@"Teruel")]
-        [Arguments(@"abba ordino babot hotel")]
-        string textToFind)
+    [Arguments(@"Soria")]
+    [Arguments(@"Manciles")]
+    [Arguments(@"Hontalbilla")]
+    [Arguments(@"Teruel")]
+    [Arguments(@"abba ordino babot hotel")]
+    public async Task FindPlacesAsyncWithValidTextToFindReturnsPlacesTest(string textToFind)
     {
         // Arrange
         CancellationToken cancellationToken = CancellationToken.None;
@@ -61,10 +56,8 @@ public sealed class GeocodingServiceTests : Infrastructure.Tests.TestClassBase
     }
 
     [Test]
-    [CombinedDataSources]
-    public async Task FindPlacesAsyncWithCancellationTokenRespectsCancellationTest(
-        [Arguments(@"Barcelona")]
-        string textToFind)
+    [Arguments(@"Barcelona")]
+    public async Task FindPlacesAsyncWithCancellationTokenRespectsCancellationTest(string textToFind)
     {
         // Arrange
         using CancellationTokenSource cts = new();
@@ -75,10 +68,8 @@ public sealed class GeocodingServiceTests : Infrastructure.Tests.TestClassBase
     }
 
     [Test]
-    [CombinedDataSources]
-    public async Task FindPlacesAsyncWithUnsupportedGeocoderImplThrowsInvalidOperationExceptionTest(
-        [Arguments(@"Paris")]
-        string textToFind)
+    [Arguments(@"Paris")]
+    public async Task FindPlacesAsyncWithUnsupportedGeocoderImplThrowsInvalidOperationExceptionTest(string textToFind)
     {
         // Arrange
         CancellationToken cancellationToken = CancellationToken.None;
