@@ -7,11 +7,11 @@ public class Program
     [STAThread]
     public static async Task Main(string[] args)
     {
-        WebApplication webApplication = CreateHostBuilder(args);
+        WebApplicationBuilder webApplicationBuilder = CreateHostBuilder(args);
 
-           _ = webApplicationBuilder.AddAllMyDependencies();
+        _ = webApplicationBuilder.AddAllMyDependencies();
 
-     WebApplication webApplication = webApplicationBuilder.Build();
+        WebApplication webApplication = webApplicationBuilder.Build();
 
         // Configure the HTTP request pipeline.
         if (!webApplication.Environment.IsDevelopment())
@@ -43,21 +43,6 @@ public class Program
         ConfigureMaps(webApplication);
 
         await webApplication.RunAsync();
-    }
-
-    private static void ConfigureMaps(WebApplication webApplication)
-    {
-        _ = webApplication
-            .MapGet("/is-time-to-charge", static async (Pvpc.Lib.Services.PvpcCronBackgroundService pvpcCronBackgroundService) =>
-            {
-                return await pvpcCronBackgroundService.IsTimeToChargeAsync(
-                    timeToCheckDateTimeOffset: DateTimeOffset.Now,
-                    tuyaManagerSettings: Pvpc.Lib.Settings.TuyaManagerSettings.GetDefault(chargingHoursPerDay: 4));
-            });
-
-        _ = webApplication.MapGet("/get-pvpc",
-            static async (Pvpc.Lib.Services.PvpcCronBackgroundService pvpcCronBackgroundService) =>
-            await pvpcCronBackgroundService.GetPvpc(DateTimeOffset.Now));
     }
 
     private static WebApplicationBuilder CreateHostBuilder(string[] args)
@@ -172,6 +157,9 @@ public class Program
             //	}, null);
             //});
         });
+
+        return webApplicationBuilder;
+    }
 
     private static void ConfigureMaps(WebApplication webApplication)
     {
