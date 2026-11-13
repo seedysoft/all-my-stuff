@@ -105,11 +105,19 @@ public sealed class OutboxCronBackgroundService : Libs.BackgroundServices.Cron
                 }
             }
 
-            const int KeepDays = 20;
-            DateTimeOffset dateTimeOffset = DateTimeOffset.UtcNow.AddDays(-KeepDays);
-            await dbCtx.BulkDeleteAsync(dbCtx.Outbox.Where(x => x.SentAtDateTimeOffset < dateTimeOffset), cancellationToken: stoppingToken);
-            if (Logger.IsEnabled(LogLevel.Debug))
-                Logger.LogDebug("Removed {Entities} old entities", await dbCtx.SaveChangesAsync(stoppingToken));
+            try
+            {
+                const int KeepDays = 20;
+                DateTimeOffset dateTimeOffset = DateTimeOffset.UtcNow.AddDays(-KeepDays);
+                await dbCtx.BulkDeleteAsync(dbCtx.Outbox.Where(x => x.SentAtDateTimeOffset < dateTimeOffset), cancellationToken: stoppingToken);
+                if (Logger.IsEnabled(LogLevel.Debug))
+                    Logger.LogDebug("Removed {Entities} old entities", await dbCtx.SaveChangesAsync(stoppingToken));
+            }
+            catch (Exception BulkDeleteAsyncException)
+            {
+                if (Logger.IsEnabled(LogLevel.Error))
+                    Logger.LogError(BulkDeleteAsyncException , "Error deleting old outbox messages");
+            }
         }
         catch (Exception e) when (Logger.LogAndHandle(e, "Unexpected error")) { }
         finally { await Task.CompletedTask; }
