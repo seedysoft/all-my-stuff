@@ -1,11 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
 namespace Seedysoft.Photo.Lib.Migrations;
 
 /// <inheritdoc />
-public partial class Creating : Migration
+public partial class _20261112094411_Creating : Migration
 {
     /// <inheritdoc />
     protected override void Up(MigrationBuilder migrationBuilder)
@@ -19,7 +19,8 @@ public partial class Creating : Migration
                 FilePath = table.Column<string>(type: "TEXT", nullable: false),
                 Latitude = table.Column<double>(type: "REAL", nullable: true),
                 Longitude = table.Column<double>(type: "REAL", nullable: true),
-                Year = table.Column<int>(type: "INTEGER", nullable: false)
+                Year = table.Column<int>(type: "INTEGER", nullable: false),
+                PhotoGuid = table.Column<byte[]>(type: "BLOB", fixedLength: true, nullable: false)
             },
             constraints: static table => _ = table.PrimaryKey("PK_Photo", static x => x.PhotoId));
 
@@ -29,7 +30,8 @@ public partial class Creating : Migration
             {
                 TagId = table.Column<long>(type: "INTEGER", nullable: false)
                     .Annotation("Sqlite:Autoincrement", true),
-                Text = table.Column<string>(type: "TEXT", nullable: false)
+                Text = table.Column<string>(type: "TEXT", nullable: false),
+                TagGuid = table.Column<byte[]>(type: "BLOB", fixedLength: true, nullable: false)
             },
             constraints: static table => _ = table.PrimaryKey("PK_Tag", static x => x.TagId));
 

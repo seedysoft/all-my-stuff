@@ -16,6 +16,12 @@ internal sealed class TagEntityTypeConfiguration : IEntityTypeConfiguration<Enti
             .IsRequired();
 
         _ = builder
+            .Property(static x => x.TagGuid)
+            .HasColumnType("BLOB")
+            .HasConversion(Libs.Infrastructure.ValueConverters.GuidBytes.GuidBytesValueConverter)
+            .IsFixedLength();
+
+        _ = builder
             .ToTable(nameof(Entities.Tag))
             .HasKey(static x => x.TagId);
 

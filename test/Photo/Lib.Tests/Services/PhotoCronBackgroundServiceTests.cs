@@ -149,7 +149,11 @@ public sealed class PhotoCronBackgroundServiceTests : Libs.Core.Tests.TestClassB
         if (File.Exists(photoFullPath))
         {
             FileInfo photoFile = new(photoFullPath);
-            Entities.Photo photoDb = new() { FilePath = Path.GetRelativePath(photoCronBackgroundService!.Settings.PhotoRootPath, photoFile.FullName) };
+            Entities.Photo photoDb = new()
+            {
+                FilePath = Path.GetRelativePath(photoCronBackgroundService!.Settings.PhotoRootPath, photoFile.FullName),
+                PhotoGuid = Guid.NewGuid()
+            };
 
             _ = photoCronBackgroundService.TryToObtainPhotoMetadata(photoFile, photoDb);
         }

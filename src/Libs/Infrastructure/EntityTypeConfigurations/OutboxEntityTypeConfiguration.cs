@@ -25,7 +25,7 @@ internal abstract class OutboxTableEntityTypeConfigurationT<T> : IEntityTypeConf
 
         _ = builder
             .Property(static x => x.SentAtDateTimeOffset)
-            .HasConversion(ValueConverters.DateTimeOffsetString.NullableDateTimeOffsetStringValueConverter);
+            .HasConversion(ValueConverters.DatetimeoffsetString.NullableDatetimeoffsetStringValueConverter);
     }
 }
 

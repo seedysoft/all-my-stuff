@@ -1,11 +1,9 @@
 ﻿{
-  //"project": "src/App.Infrastructure",
-  //"startupProject": "src/App.Api",
-  "framework": "net10.0",
   "configuration": "Debug",
-  //"context": "AppDbContext",
-  //"runtime": "win-x64",
-  "verbose": true,
+  "context": "PhotoCtx",
+  "framework": "net11.0",
   "noColor": false,
-  "prefixOutput": false
+  "prefixOutput": false,
+  "startupProject": "src/BlazorWebApp/Server/Seedysoft.BlazorWebApp.Server",
+  "verbose": true
 }

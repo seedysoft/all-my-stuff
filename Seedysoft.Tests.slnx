@@ -47,6 +47,19 @@
     <File Path="nuget.config" />
     <File Path="Directory.Build.props" />
   </Folder>
+  <Folder Name="/_SolutionItems/.config/">
+    <File Path=".config/dotnet-ef.json" />
+    <File Path=".config/dotnet-ef.txt" />
+  </Folder>
+  <Folder Name="/_SolutionItems/.github/">
+    <File Path=".github/dependabot.yml" />
+  </Folder>
+  <Folder Name="/_SolutionItems/.github/workflows/">
+    <File Path=".github/workflows/analize-with-codeql.yml" />
+    <File Path=".github/workflows/continuous-integration.yml" />
+    <File Path=".github/workflows/delete-old-runs.yml" />
+    <File Path=".github/workflows/publish-release.yml" />
+  </Folder>
   <Folder Name="/_SolutionItems/doc/">
     <File Path="doc/DotnetInstallDocumentation.txt" />
     <File Path="doc/KnownErrors.txt" />

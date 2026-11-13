@@ -22,11 +22,11 @@ internal abstract class WebDataEntityTypeConfigurationT<T> : IEntityTypeConfigur
 
         _ = builder
             .Property(static x => x.SeenAtDateTimeOffset)
-            .HasConversion(ValueConverters.DateTimeOffsetString.NullableDateTimeOffsetStringValueConverter);
+            .HasConversion(ValueConverters.DatetimeoffsetString.NullableDatetimeoffsetStringValueConverter);
 
         _ = builder
             .Property(static x => x.UpdatedAtDateTimeOffset)
-            .HasConversion(ValueConverters.DateTimeOffsetString.NullableDateTimeOffsetStringValueConverter);
+            .HasConversion(ValueConverters.DatetimeoffsetString.NullableDatetimeoffsetStringValueConverter);
 
         _ = builder
             .Property(static x => x.IgnoreChangeWhen);

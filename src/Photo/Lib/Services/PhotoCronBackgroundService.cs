@@ -38,6 +38,8 @@ public sealed class PhotoCronBackgroundService : Libs.BackgroundServices.Cron
             {
                 if (Logger.IsEnabled(LogLevel.Critical))
                     Logger.LogCritical("Principal photo directory '{PhotoRootPath}' does not exists", Settings.PhotoRootPath);
+
+                return;
             }
 
             DbContexts.PhotoCtx photoCtx = ServiceProvider.GetRequiredService<DbContexts.PhotoCtx>();
@@ -58,9 +60,10 @@ public sealed class PhotoCronBackgroundService : Libs.BackgroundServices.Cron
                     continue;
 
                 await photoCtx.Photos
+                    .Include((x) => x.Tags)
                     //.Where(x => x.UpdatedAtDateTimeOffset.HasValue && x.UpdatedAtDateTimeOffset.Value.Year == photoYear)
                     .Where(x => x.Year == photoYear)
-                    .Include((x) => x.Tags)
+                    .Where(x => !x.Tags.Any() || (x.Tags.Count == 1 && x.Tags.First().TagGuid == Entities.Tag.NoGeoLocation.TagGuid))
                     .LoadAsync(stoppingToken);
 
                 //IEnumerable<FileInfo> photos = subDirectory.EnumerateFiles(Settings.PhotoRootPath, new EnumerationOptions() { });
@@ -70,12 +73,15 @@ public sealed class PhotoCronBackgroundService : Libs.BackgroundServices.Cron
                 {
                     FileInfo photoFile = photoFiles.ElementAt(j);
 
-                    Entities.Photo? photoDb = await photoCtx.Photos.FirstOrDefaultAsync(x => x.FilePath == photoFile.FullName, stoppingToken);
+                    string photoRelativePath = Path.GetRelativePath(Settings.PhotoRootPath, photoFile.FullName);
+
+                    Entities.Photo? photoDb = await photoCtx.Photos.FirstOrDefaultAsync(x => x.FilePath == photoRelativePath, stoppingToken);
                     if (photoDb == null)
                     {
                         photoDb = new Entities.Photo()
                         {
-                            FilePath = Path.GetRelativePath(Settings.PhotoRootPath, photoFile.FullName),
+                            FilePath = photoRelativePath,
+                            PhotoGuid = Guid.NewGuid(),
                             //UpdatedAtDateTimeOffset = DateTimeOffset.UtcNow,
                             Year = photoYear,
                         };
@@ -121,6 +127,10 @@ public sealed class PhotoCronBackgroundService : Libs.BackgroundServices.Cron
                 photoDb.Latitude = geoLocation.Latitude;
                 photoDb.Longitude = geoLocation.Longitude;
                 //photoDb.UpdatedAtDateTimeOffset = DateTimeOffset.UtcNow;
+            }
+            else
+            {
+                photoDb.Tags.Add(Entities.Tag.NoGeoLocation);
             }
 
             //MetadataExtractor.Formats.FileSystem.FileMetadataDirectory? fileMetadataDirectory =

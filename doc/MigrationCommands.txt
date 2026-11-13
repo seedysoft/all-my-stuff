@@ -11,33 +11,36 @@ $Project=".\src\Libs\Infrastructure\Seedysoft.Libs.Infrastructure.csproj"
 $Context="PhotoCtx"
 $Project=".\src\Photo\Lib\Seedysoft.Photo.Lib.csproj"
 
-$StartupProject=".\src\BlazorWebApp\Server\Seedysoft.BlazorWebApp.Server.csproj"
-
 # Add a migration:
-dotnet ef migrations add $NextMigrationName -v -c $Context -o .\Migrations -p $Project -s $StartupProject
+dotnet ef migrations add $NextMigrationName -v -o .\Migrations -p $Project
+dotnet ef migrations add $NextMigrationName -v -c $Context -o .\Migrations -p $Project
 
 Add-Migration $NextMigrationName -Verbose -Context $Context -OutputDir .\Migrations -Project Libs\Seedysoft.Libs.Infrastructure -StartupProject BlazorWebApp\Server\Seedysoft.BlazorWebApp.Server
 ```
 
 # Remove latest migration:
+dotnet ef migrations remove -v -p $Project
 dotnet ef migrations remove -v -c $Context -p $Project
 
 Remove-Migration -Verbose -Context $Context -Project Libs\Seedysoft.Libs.Infrastructure -StartupProject Libs\Seedysoft.Libs.Infrastructure
 ```
 
 # List all existent migrations:
+dotnet ef migrations list --no-build -v -p $Project
 dotnet ef migrations list --no-build -v -c $Context -p $Project
 
 Get-Migration -Verbose -Context $Context -Project Libs\Seedysoft.Libs.Infrastructure
 ```
 
 # Execute a migration:
+dotnet ef database update $NextMigrationName --no-build -v -p $Project
 dotnet ef database update $NextMigrationName --no-build -v -c $Context -p $Project
 
 Update-Database $NextMigrationName -Verbose -Context $Context -Project Libs\Seedysoft.Libs.Infrastructure
 ```
 
 # Execute a previous migration:
+dotnet ef database update $PrevMigrationName --no-build -v -p $Project
 dotnet ef database update $PrevMigrationName --no-build -v -c $Context -p $Project
 
 Update-Database $PrevMigrationName -Verbose -Context $Context -Project Libs\Seedysoft.Libs.Infrastructure
@@ -45,10 +48,15 @@ Update-Database $PrevMigrationName -Verbose -Context $Context -Project Libs\Seed
 
 # Obtain script
 # From no migrations use: $PrevMigrationName=0
+dotnet ef migrations script $PrevMigrationName $NextMigrationName -v -p $Project
+dotnet ef migrations script $NextMigrationName $PrevMigrationName -v -p $Project
 dotnet ef migrations script $PrevMigrationName $NextMigrationName -v -c $Context -p $Project
 dotnet ef migrations script $NextMigrationName $PrevMigrationName -v -c $Context -p $Project
 ```
 
+$ConnectionString="Data Source=.\src\databases\photo.sqlite3"
+$ConnectionString="Data Source=.\src\databases\photo.sqlite3"
 # Scaffold
-dotnet ef dbcontext scaffold "Data Source=.\src\databases\db.sqlite3" Microsoft.EntityFrameworkCore.Sqlite -c $Context -p $Project --no-pluralize --use-database-names -v
+dotnet ef dbcontext scaffold $ConnectionString Microsoft.EntityFrameworkCore.Sqlite -p $Project --no-pluralize --use-database-names -v
+dotnet ef dbcontext scaffold $ConnectionString Microsoft.EntityFrameworkCore.Sqlite -c $Context -p $Project --no-pluralize --use-database-names -v
 ```
