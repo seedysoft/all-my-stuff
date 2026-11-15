@@ -22,6 +22,9 @@ internal sealed class PhotoEntityTypeConfiguration : IEntityTypeConfiguration<En
             .Property(static x => x.Longitude);
 
         _ = builder
+            .Ignore(static x => x.Location);
+
+        _ = builder
             .Property(static x => x.Year);
 
         _ = builder

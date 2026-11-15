@@ -88,10 +88,7 @@ public sealed class PhotoCronBackgroundService : Libs.BackgroundServices.Cron
                         _ = photoCtx.Add(photoDb);
                     }
 
-                    if (photoDb.Latitude.HasValue && photoDb.Longitude.HasValue)
-                        continue;
-
-                    _ = TryToObtainPhotoMetadata(photoFile, photoDb);
+                    _ = TryToSyncPhotoMetadata(photoFile, photoDb);
                 }
 
                 _ = await photoCtx.SaveChangesAsync(stoppingToken);
@@ -104,28 +101,16 @@ public sealed class PhotoCronBackgroundService : Libs.BackgroundServices.Cron
             Logger.LogInformation("End {ApplicationName}", AppName);
     }
 
-    internal bool TryToObtainPhotoMetadata(FileInfo photoFile, Entities.Photo photoDb)
+    internal bool TryToSyncPhotoMetadata(FileInfo photoFile, Entities.Photo photoDb)
     {
+        bool IsSuccess = false;
+
         try
         {
-            IReadOnlyList<MetadataExtractor.Directory> directories = MetadataExtractor.ImageMetadataReader.ReadMetadata(photoFile.FullName);
-            //for (int d = 0; d < directories.Count; d++)
-            //{
-            //    MetadataExtractor.Directory directory = directories[d];
-            //    Console.WriteLine("Processing directory '{0}'", directory.Name);
-            //    for (int t = 0; t < directory.Tags.Count; t++)
-            //    {
-            //        MetadataExtractor.Tag tag = directory.Tags[t];
-            //        Console.WriteLine("\tProcessing tag '{0}' of type '{1}' with value '{2}'", tag.Name, tag.Type, tag.Description);
-            //    }
-            //}
-
-            MetadataExtractor.Formats.Exif.GpsDirectory? gpsDirectory =
-                directories.OfType<MetadataExtractor.Formats.Exif.GpsDirectory>().FirstOrDefault();
-            if (gpsDirectory != null && gpsDirectory.TryGetGeoLocation(out MetadataExtractor.GeoLocation geoLocation))
+            Exif.ExifService exifService = new(photoFile.FullName);
+            if (exifService.GetGpsLocation(out Libs.Core.Models.Location location))
             {
-                photoDb.Latitude = geoLocation.Latitude;
-                photoDb.Longitude = geoLocation.Longitude;
+                photoDb.Location = location;
                 //photoDb.UpdatedAtDateTimeOffset = DateTimeOffset.UtcNow;
             }
             else
@@ -133,34 +118,35 @@ public sealed class PhotoCronBackgroundService : Libs.BackgroundServices.Cron
                 photoDb.Tags.Add(Entities.Tag.NoGeoLocation);
             }
 
-            //MetadataExtractor.Formats.FileSystem.FileMetadataDirectory? fileMetadataDirectory =
-            //    directories.OfType<MetadataExtractor.Formats.FileSystem.FileMetadataDirectory>().FirstOrDefault();
-            //string? TagFileModifiedDate = fileMetadataDirectory?.GetDescription(MetadataExtractor.Formats.FileSystem.FileMetadataDirectory.TagFileModifiedDate);
-            //if (!string.IsNullOrWhiteSpace(TagFileModifiedDate) &&
-            //    DateTimeOffset.TryParse(TagFileModifiedDate, out DateTimeOffset fileModifiedDate))
-            //{
-            //    photoDb.Year = fileModifiedDate.Year;
-            //}
-            //else
-            //{
-            //    MetadataExtractor.Formats.Exif.ExifSubIfdDirectory? exifSubIfdDirectory =
-            //        directories.OfType<MetadataExtractor.Formats.Exif.ExifSubIfdDirectory>().FirstOrDefault();
-            //    string? TagDateTime = exifSubIfdDirectory?.GetDescription(MetadataExtractor.Formats.Exif.ExifDirectoryBase.TagDateTime);
-            //    if (!string.IsNullOrWhiteSpace(TagDateTime) &&
-            //        DateTime.TryParseExact(TagDateTime, "yyyy:MM:dd HH:mm:ss", System.Globalization.DateTimeFormatInfo.InvariantInfo, System.Globalization.DateTimeStyles.AdjustToUniversal, out DateTime tagDateTime))
-            //    {
-            //        photoDb.Year = tagDateTime.Year;
-            //    }
-            //}
+            if (exifService.GetTagRawData(
+                tagSpec: Exif.ExifTag.ImageUniqueId,
+                tagType: out Exif.ExifTagType exifTagType,
+                valueCount: out int valueCount,
+                rawData: out byte[] rawValue))
+            {
+                photoDb.PhotoGuid = new Guid(rawValue);
 
-            return true;
+                IsSuccess = true;
+            }
+            else
+            {
+                byte[] myGuid = photoDb.PhotoGuid.ToByteArray();
+                if (exifService.SetTagRawData(Exif.ExifTag.ImageUniqueId, Exif.ExifTagType.Byte, myGuid.Length, myGuid))
+                {
+                    exifService.Save();
+
+                    IsSuccess = true;
+                }
+            }
         }
         catch (Exception e)
         {
             if (Logger.IsEnabled(LogLevel.Error))
                 Logger.LogError(e, "Cannot obtain metadata from '{Name}'", photoFile.Name);
+
+            IsSuccess = false;
         }
 
-        return false;
+        return IsSuccess;
     }
 }

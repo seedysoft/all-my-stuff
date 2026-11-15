@@ -1,6 +1,5 @@
 ﻿using CommandLine;
 using Microsoft.Extensions.Configuration;
-using Seedysoft.Libs.Infrastructure.Extensions;
 
 namespace Seedysoft.Libs.Infrastructure;
 

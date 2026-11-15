@@ -141,10 +141,8 @@ public sealed class PhotoCronBackgroundServiceTests : Libs.Core.Tests.TestClassB
     }
 
     [Test]
-    [CombinedDataSources]
-    public async Task TryToObtainPhotoMetadataTest(
-        [Arguments(@"C:\Users\amt\od\_Syncthing\Fotos\IMG_20261109_144720.jpg") ]
-        string photoFullPath)
+    [Arguments(@"C:\Users\amt\od\_Syncthing\Fotos\IMG_20261109_144720.jpg")]
+    public async Task TryToSyncPhotoMetadataTest(string photoFullPath)
     {
         if (File.Exists(photoFullPath))
         {
@@ -155,7 +153,7 @@ public sealed class PhotoCronBackgroundServiceTests : Libs.Core.Tests.TestClassB
                 PhotoGuid = Guid.NewGuid()
             };
 
-            _ = photoCronBackgroundService.TryToObtainPhotoMetadata(photoFile, photoDb);
+            _ = photoCronBackgroundService.TryToSyncPhotoMetadata(photoFile, photoDb);
         }
     }
 

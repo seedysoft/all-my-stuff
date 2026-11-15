@@ -9,7 +9,20 @@ public sealed class Photo
 
     public double? Latitude { get; set; }
     public double? Longitude { get; set; }
-    public Libs.Core.Models.Location? Location => Latitude.HasValue && Longitude.HasValue ? new(Latitude.Value, Longitude.Value) : null;
+    public Libs.Core.Models.Location? Location
+    {
+        get
+        {
+            return Latitude.HasValue && Longitude.HasValue
+                ? new(Latitude.Value, Longitude.Value)
+                : null;
+        }
+        set
+        {
+            Latitude = value?.Latitude;
+            Longitude = value?.Longitude;
+        }
+    }
 
     public int Year { get; set; }
 
@@ -19,5 +32,5 @@ public sealed class Photo
 
     public ICollection<Tag> Tags { get; set; } = [];
 
-    private string GetDebuggerDisplay() => throw new NotImplementedException();
+    private string GetDebuggerDisplay() => $"{FilePath}";
 }

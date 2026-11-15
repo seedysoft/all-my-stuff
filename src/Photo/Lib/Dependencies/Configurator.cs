@@ -26,7 +26,6 @@ public sealed class Configurator : Libs.Core.Dependencies.ConfiguratorBase
         if (System.Diagnostics.Debugger.IsAttached)
             System.Diagnostics.Debugger.Break();
 #endif
-
         string PhotoCtxFullFilePath = default!;
         _ = hostApplicationBuilder.Services.AddDbContext<DbContexts.PhotoCtx>(dbContextOptionsBuilder =>
         {

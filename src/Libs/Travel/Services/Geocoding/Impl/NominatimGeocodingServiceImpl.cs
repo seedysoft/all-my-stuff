@@ -9,7 +9,7 @@ internal class NominatimGeocodingServiceImpl(
     , ILogger logger) : GeocodingServiceImplBase(httpClientFactory, api)
 {
     // https://nominatim.openstreetmap.org/search?q={0}&format=json&limit=8
-    internal async override Task<IReadOnlyList<ViewModels.Place>> FindPlacesAsync(string textToFind, CancellationToken cancellationToken)
+    internal override async Task<IReadOnlyList<ViewModels.Place>> FindPlacesAsync(string textToFind, CancellationToken cancellationToken)
     {
         try
         {
