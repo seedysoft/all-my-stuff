@@ -34,10 +34,8 @@ public sealed class Program : Infrastructure.ProgramBase
             //    Logger.LogDebug($"{item.Key}: {item.Value ?? "<<NULL>>"}");
 
             //// Migrate and seed the database during startup. Must be synchronous.
-            using IServiceScope serviceScope = host.Services.CreateScope();
-            {
+            using (IServiceScope serviceScope = host.Services.CreateScope())
                 serviceScope.ServiceProvider.GetRequiredService<Infrastructure.DbContexts.DbCtx>().Database.Migrate();
-            }
 
             Console.WriteLine("Awaiting debugger connection...");
 

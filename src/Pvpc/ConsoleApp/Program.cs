@@ -34,10 +34,9 @@ public sealed class Program : Libs.Infrastructure.ProgramBase
             //    Logger.LogDebug($"{item.Key}: {item.Value ?? "<<NULL>>"}");
 
             // Migrate and seed the database during startup. Must be synchronous.
-            using IServiceScope serviceScope = host.Services.CreateScope();
-            {
+            using (IServiceScope serviceScope = host.Services.CreateScope())
                 serviceScope.ServiceProvider.GetRequiredService<Libs.Infrastructure.DbContexts.DbCtx>().Database.Migrate();
-            }
+
             // var host = CreateHostBuilder(args).Build();
             //   using (var scope = host.Services.CreateScope()) {
             //     var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();

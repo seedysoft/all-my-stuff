@@ -34,10 +34,8 @@ public sealed class Program : Libs.Infrastructure.ProgramBase
             //    Logger.LogDebug($"{item.Key}: {item.Value ?? "<<NULL>>"}");
 
             // Migrate and seed the database during startup. Must be synchronous.
-            using IServiceScope serviceScope = host.Services.CreateScope();
-            {
+            using (IServiceScope serviceScope = host.Services.CreateScope())
                 serviceScope.ServiceProvider.GetRequiredService<Lib.DbContexts.PhotoCtx>().Database.Migrate();
-            }
 
             using CancellationTokenSource CancelTokenSource = new();
 
