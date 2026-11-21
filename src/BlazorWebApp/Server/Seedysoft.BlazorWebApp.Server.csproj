@@ -63,11 +63,11 @@
         <PackageReference Include="Microsoft.Extensions.DependencyModel" Version="11.0.0" />
         <PackageReference Include="Microsoft.Extensions.Hosting.Systemd" Version="11.0.0" />
         <PackageReference Include="Microsoft.Web.LibraryManager.Build" Version="3.0.114" />
-        <PackageReference Include="MudBlazor" Version="9.12.0" />
+        <PackageReference Include="MudBlazor" Version="9.14.0" />
         <PackageReference Include="Octokit" Version="14.0.0" />
         <PackageReference Include="Serilog" Version="4.4.0" />
-        <PackageReference Include="Serilog.Extensions.Logging" Version="10.0.0" />
-        <PackageReference Include="Serilog.Settings.Configuration" Version="10.0.1" />
+        <PackageReference Include="Serilog.Extensions.Logging" Version="11.0.0" />
+        <PackageReference Include="Serilog.Settings.Configuration" Version="11.0.0" />
         <PackageReference Include="Serilog.Sinks.Console" Version="6.1.1" />
         <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
         <PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" Version="3.0.5" />
