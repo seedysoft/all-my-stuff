@@ -18,16 +18,16 @@ internal partial class ExifService
     ///  •The access to the file is denied.
     ///  •The file is not a valid JPEG, TIFF or PNG file.
     /// </summary>
-    /// <param name="FileNameWithPath">File name of the image file.</param>
-    /// <param name="Options">Load options.</param>
-    public ExifService(string FileNameWithPath, ExifLoadOptions Options = 0) : this()
+    /// <param name="fileNameWithPath">File name of the image file.</param>
+    /// <param name="options">Load options.</param>
+    public ExifService(string fileNameWithPath, ExifLoadOptions options = 0) : this()
     {
-        _FileNameWithPath = Path.GetFullPath(FileNameWithPath);
+        _FileNameWithPath = Path.GetFullPath(fileNameWithPath);
         using FileStream ImageFile = File.OpenRead(_FileNameWithPath);
-        ReadFromStream(ImageFile, Options);
+        ReadFromStream(ImageFile, options);
     }
-    public ExifService(Stream ImageStream, ExifLoadOptions Options = 0) : this() =>
-        ReadFromStream(ImageStream, Options);
+    public ExifService(Stream imageStream, ExifLoadOptions options = 0) : this() =>
+        ReadFromStream(imageStream, options);
 
     public static ExifService Empty()
     {
@@ -94,19 +94,18 @@ internal partial class ExifService
             throw;
         }
     }
-
-    public void Save(Stream SourceStream, Stream DestStream/*, ExifSaveOptions SaveOptions = 0*/)
+    public void Save(Stream sourceStream, Stream destStream/*, ExifSaveOptions SaveOptions = 0*/)
     {
-        ImageType SourceImageType = CheckStreamTypeAndCompatibility(SourceStream);
+        ImageType SourceImageType = CheckStreamTypeAndCompatibility(sourceStream);
         if (SourceImageType != ImageType)
             throw new ExifException(ExifErrCode.ImageTypesDoNotMatch);
 
         if (SourceImageType == ImageType.Jpeg)
-            SaveJpeg(SourceStream, DestStream);
+            SaveJpeg(sourceStream, destStream);
         else if (SourceImageType == ImageType.Tiff)
-            SaveTiff(SourceStream, DestStream);
+            SaveTiff(sourceStream, destStream);
         else if (SourceImageType == ImageType.Png)
-            SavePng(SourceStream, DestStream);
+            SavePng(sourceStream, destStream);
     }
 
     /// <summary>
@@ -161,31 +160,30 @@ internal partial class ExifService
 
         return Success;
     }
-
     /// <summary>
     /// Write a string to a tag.
     /// </summary>
-    /// <param name="TagSpec">Tag specification, consisting of the IFD in which the tag is stored and the tag ID.</param>
-    /// <param name="Value">String to be written.</param>
-    /// <param name="Coding">Tag type and code page in which the string should be coded.</param>
+    /// <param name="tagSpec">Tag specification, consisting of the IFD in which the tag is stored and the tag ID.</param>
+    /// <param name="value">String to be written.</param>
+    /// <param name="coding">Tag type and code page in which the string should be coded.</param>
     /// <returns>true = The tag was successfully written. false = Error. Tag ID is not allowed to be written or IFD is illegal.</returns>
-    public bool SetTagValue(ExifTag TagSpec, string Value, StrCoding Coding)
+    public bool SetTagValue(ExifTag tagSpec, string value, StrCoding coding)
     {
         bool Success = false;
-        var StringTagFormat = (StrCodingFormat)((uint)Coding & 0xFFFF0000);
-        ushort CodePage = (ushort)Coding;
+        var StringTagFormat = (StrCodingFormat)((uint)coding & 0xFFFF0000);
+        ushort CodePage = (ushort)coding;
         if (StringTagFormat == StrCodingFormat.TypeUndefinedWithIdCode)
         {
-            Success = SetTagValueWithIdCode(TagSpec, Value, CodePage);
+            Success = SetTagValueWithIdCode(tagSpec, value, CodePage);
         }
         else
         {
-            ExifTagType TagType = StringTagFormat == StrCodingFormat.TypeUndefined
+            ExifTagType tagType = StringTagFormat == StrCodingFormat.TypeUndefined
                 ? ExifTagType.Undefined
                 : StringTagFormat == StrCodingFormat.TypeByte ? ExifTagType.Byte : ExifTagType.Ascii;
 
             int NullTermBytes = 0;
-            if (TagType != ExifTagType.Undefined)
+            if (tagType != ExifTagType.Undefined)
             {
                 if (CodePage is 1200 or 1201) // UTF16LE or UTF16BE
                     NullTermBytes = 2; // Write null terminating character with 2 zero-bytes
@@ -195,10 +193,10 @@ internal partial class ExifService
 
             if (CodePage != 0)
             {
-                byte[] StringAsByteArray = Encoding.GetEncoding(CodePage).GetBytes(Value);
+                byte[] StringAsByteArray = Encoding.GetEncoding(CodePage).GetBytes(value);
                 int StrByteLen = StringAsByteArray.Length;
                 int TotalByteCount = StrByteLen + NullTermBytes;
-                TagItem? t = PrepareTagForCompleteWriting(TagSpec, TagType, TotalByteCount);
+                TagItem? t = PrepareTagForCompleteWriting(tagSpec, tagType, TotalByteCount);
                 if (t != null)
                 {
                     Array.Copy(StringAsByteArray, 0, t.ValueData, t.ValueIndex, StrByteLen);
@@ -218,53 +216,52 @@ internal partial class ExifService
     /// Read a 32 bit signed integer number from a tag. The tag type must be one of the following values:
     ///  ExifTagType.Byte, ExifTagType.UShort, ExifTagType.ULong, ExifTagType.SLong.
     /// </summary>
-    /// <param name="TagSpec">Tag specification, consisting of the IFD in which the tag is stored and the tag ID.</param>
-    /// <param name="Value">Out: 32 bit integer number with sign. If the tag type is "ExifTagType.ULong" and
+    /// <param name="tagSpec">Tag specification, consisting of the IFD in which the tag is stored and the tag ID.</param>
+    /// <param name="value">Out: 32 bit integer number with sign. If the tag type is "ExifTagType.ULong" and
     ///  the tag contains a number from 0x80000000 to 0xFFFFFFFF, it is treated as an error.</param>
-    /// <param name="Index">Array index of the value to be read.</param>
+    /// <param name="index">Array index of the value to be read.</param>
     /// <returns>true = The tag was successfully read. false = The tag was not found, is of wrong type
     /// or is out of range. In this case "Value" is 0.</returns>
-    public bool GetTagValue(ExifTag TagSpec, out int Value, int Index = 0)
+    public bool GetTagValue(ExifTag tagSpec, out int value, int index = 0)
     {
         bool Success = false;
         uint TempValue = 0;
-        if (GetTagItem(TagSpec, out TagItem? t) && ReadUintElement(t, Index, out TempValue))
+        if (GetTagItem(tagSpec, out TagItem? t) && ReadUintElement(t, index, out TempValue))
         {
             Success = (t.TagType != ExifTagType.ULong) || ((int)TempValue >= 0);
             if (!Success)
                 TempValue = 0;
         }
 
-        Value = (int)TempValue;
+        value = (int)TempValue;
 
         return Success;
     }
-
     /// <summary>
     /// Write a 32 bit signed integer number to a tag.
     /// </summary>
-    /// <param name="TagSpec">Tag specification, consisting of the IFD in which the tag is stored and the tag ID.</param>
-    /// <param name="Value">32 bit integer number with sign.</param>
-    /// <param name="TagType">Tag type to be written: ExifTagType.Byte, ExifTagType.UShort, ExifTagType.ULong
+    /// <param name="tagSpec">Tag specification, consisting of the IFD in which the tag is stored and the tag ID.</param>
+    /// <param name="value">32 bit integer number with sign.</param>
+    /// <param name="tagType">Tag type to be written: ExifTagType.Byte, ExifTagType.UShort, ExifTagType.ULong
     /// or ExifTagType.SLong</param>
-    /// <param name="Index">Array index of the value to be written.</param>
+    /// <param name="index">Array index of the value to be written.</param>
     /// <returns>true = The tag was successfully written. false = The tag specification is illegal or
     /// "Value" is out of range.</returns>
-    public bool SetTagValue(ExifTag TagSpec, int Value, ExifTagType TagType, int Index = 0)
+    public bool SetTagValue(ExifTag tagSpec, int value, ExifTagType tagType, int index = 0)
     {
         bool Success = false;
-        switch (TagType)
+        switch (tagType)
         {
             case ExifTagType.Byte:
-                if (Value is >= 0 and <= 255)
+                if (value is >= 0 and <= 255)
                     Success = true;
                 break;
             case ExifTagType.UShort:
-                if (Value is >= 0 and <= 65535)
+                if (value is >= 0 and <= 65535)
                     Success = true;
                 break;
             case ExifTagType.ULong:
-                if (Value >= 0)
+                if (value >= 0)
                     Success = true;
                 break;
             case ExifTagType.SLong:
@@ -274,55 +271,54 @@ internal partial class ExifService
 
         if (Success)
         {
-            TagItem? t = PrepareTagForArrayItemWriting(TagSpec, TagType, Index);
-            Success = WriteUintElement(t, Index, (uint)Value);
+            TagItem? t = PrepareTagForArrayItemWriting(tagSpec, tagType, index);
+            Success = WriteUintElement(t, index, (uint)value);
         }
 
         return Success;
     }
 
-    public bool GetTagValue(ExifTag TagSpec, out uint Value, int Index = 0)
+    public bool GetTagValue(ExifTag tagSpec, out uint value, int index = 0)
     {
         bool Success = false;
         uint TempValue = 0;
-        if (GetTagItem(TagSpec, out TagItem? t) && ReadUintElement(t, Index, out TempValue))
+        if (GetTagItem(tagSpec, out TagItem? t) && ReadUintElement(t, index, out TempValue))
         {
             Success = (t.TagType != ExifTagType.SLong) || ((int)TempValue >= 0);
             if (!Success)
                 TempValue = 0;
         }
 
-        Value = TempValue;
+        value = TempValue;
 
         return Success;
     }
-
-    public bool SetTagValue(ExifTag TagSpec, uint Value, ExifTagType TagType, int Index = 0)
+    public bool SetTagValue(ExifTag tagSpec, uint value, ExifTagType tagType, int index = 0)
     {
         bool Success = false;
-        switch (TagType)
+        switch (tagType)
         {
             case ExifTagType.Byte:
-                if (Value is >= 0 and <= 255)
+                if (value is >= 0 and <= 255)
                     Success = true;
                 break;
             case ExifTagType.UShort:
-                if (Value is >= 0 and <= 65535)
+                if (value is >= 0 and <= 65535)
                     Success = true;
                 break;
             case ExifTagType.ULong:
                 Success = true;
                 break;
             case ExifTagType.SLong:
-                if ((int)Value >= 0)
+                if ((int)value >= 0)
                     Success = true;
                 break;
         }
 
         if (Success)
         {
-            TagItem? t = PrepareTagForArrayItemWriting(TagSpec, TagType, Index);
-            Success = WriteUintElement(t, Index, Value);
+            TagItem? t = PrepareTagForArrayItemWriting(tagSpec, tagType, index);
+            Success = WriteUintElement(t, index, value);
         }
 
         return Success;
@@ -345,7 +341,6 @@ internal partial class ExifService
 
         return Success;
     }
-
     public bool SetTagValue(ExifTag tagSpec, ExifRational value, ExifTagType tagType, int index = 0)
     {
         bool Success = false;
@@ -385,15 +380,15 @@ internal partial class ExifService
     /// a null terminated string with 19 characters in the format "yyyy:MM:dd HH:mm:ss" or with 10 characters
     /// in the format "yyyy:MM:dd".
     /// </summary>
-    /// <param name="TagSpec">Tag specification, consisting of the IFD in which the tag is stored and the tag ID.</param>
-    /// <param name="Value">Out: Date time stamp. In case of an error, the value "DateTime.MinValue" is returned.</param>
-    /// <param name="Format">Selection between time stamp format with 19 or 10 characters.</param>
+    /// <param name="tagSpec">Tag specification, consisting of the IFD in which the tag is stored and the tag ID.</param>
+    /// <param name="value">Out: Date time stamp. In case of an error, the value "DateTime.MinValue" is returned.</param>
+    /// <param name="format">Selection between time stamp format with 19 or 10 characters.</param>
     /// <returns>true = The tag was successfully read. false = The tag was not found, is of wrong type or wrong format.</returns>
-    public bool GetTagValue(ExifTag TagSpec, out DateTime Value, ExifDateFormat Format = ExifDateFormat.DateAndTime)
+    public bool GetTagValue(ExifTag tagSpec, out DateTime value, ExifDateFormat format = ExifDateFormat.DateAndTime)
     {
         bool Success = false;
-        Value = DateTime.MinValue;
-        if (GetTagItem(TagSpec, out TagItem? t) && (t.TagType == ExifTagType.Ascii))
+        value = DateTime.MinValue;
+        if (GetTagItem(tagSpec, out TagItem? t) && (t.TagType == ExifTagType.Ascii))
         {
             try
             {
@@ -403,7 +398,7 @@ internal partial class ExifService
                     int Year = (CalculateTwoDigitDecNumber(t.ValueData, i) * 100) + CalculateTwoDigitDecNumber(t.ValueData, i + 2);
                     int Month = CalculateTwoDigitDecNumber(t.ValueData, i + 5);
                     int Day = CalculateTwoDigitDecNumber(t.ValueData, i + 8);
-                    if ((Format == ExifDateFormat.DateAndTime) &&
+                    if ((format == ExifDateFormat.DateAndTime) &&
                         (t.ValueCount == 19 + 1) &&
                         (t.ValueData[i + 10] == (byte)' ') &&
                         (t.ValueData[i + 13] == (byte)':') &&
@@ -413,12 +408,12 @@ internal partial class ExifService
                         int Hour = CalculateTwoDigitDecNumber(t.ValueData, i + 11);
                         int Minute = CalculateTwoDigitDecNumber(t.ValueData, i + 14);
                         int Second = CalculateTwoDigitDecNumber(t.ValueData, i + 17);
-                        Value = new DateTime(Year, Month, Day, Hour, Minute, Second);
+                        value = new DateTime(Year, Month, Day, Hour, Minute, Second);
                         Success = true;
                     }
-                    else if ((Format == ExifDateFormat.DateOnly) && (t.ValueCount == 10 + 1) && (t.ValueData[i + 10] == 0))
+                    else if ((format == ExifDateFormat.DateOnly) && (t.ValueCount == 10 + 1) && (t.ValueData[i + 10] == 0))
                     {
-                        Value = new DateTime(Year, Month, Day);
+                        value = new DateTime(Year, Month, Day);
                         Success = true;
                     }
                 }
@@ -431,50 +426,49 @@ internal partial class ExifService
 
         return Success;
     }
-
     /// <summary>
     /// Write a time stamp to a tag. The tag type is set to "ExifTagType.Ascii" and the time stamp
     /// is written in the format "yyyy:MM:dd HH:mm:ss" or "yyyy:MM:dd".
     /// </summary>
-    /// <param name="TagSpec">Tag specification, consisting of the IFD in which the tag is stored and the tag ID.</param>
-    /// <param name="Value">Date time stamp.</param>
-    /// <param name="Format">Selection between time stamp format with 19 or 10 characters.</param>
+    /// <param name="tagSpec">Tag specification, consisting of the IFD in which the tag is stored and the tag ID.</param>
+    /// <param name="value">Date time stamp.</param>
+    /// <param name="format">Selection between time stamp format with 19 or 10 characters.</param>
     /// <returns>true: The tag was successfully written. false: Error occurred.</returns>
-    public bool SetTagValue(ExifTag TagSpec, DateTime Value, ExifDateFormat Format = ExifDateFormat.DateAndTime)
+    public bool SetTagValue(ExifTag tagSpec, DateTime value, ExifDateFormat format = ExifDateFormat.DateAndTime)
     {
         bool Success = false;
         int sByteCount = 0;
-        if (Format == ExifDateFormat.DateAndTime)
+        if (format == ExifDateFormat.DateAndTime)
             sByteCount = 19 + 1; // "+ 1" because a null character has to be written
-        else if (Format == ExifDateFormat.DateOnly)
+        else if (format == ExifDateFormat.DateOnly)
             sByteCount = 10 + 1;
 
         if (sByteCount != 0)
         {
-            TagItem? t = PrepareTagForCompleteWriting(TagSpec, ExifTagType.Ascii, sByteCount);
+            TagItem? t = PrepareTagForCompleteWriting(tagSpec, ExifTagType.Ascii, sByteCount);
             if (t != null)
             {
                 int i = t.ValueIndex;
-                int Year = Value.Year;
+                int Year = value.Year;
                 ConvertTwoDigitNumberToByteArr(t.ValueData, ref i, Year / 100);
                 ConvertTwoDigitNumberToByteArr(t.ValueData, ref i, Year % 100);
                 t.ValueData[i] = (byte)':';
                 i++;
-                ConvertTwoDigitNumberToByteArr(t.ValueData, ref i, Value.Month);
+                ConvertTwoDigitNumberToByteArr(t.ValueData, ref i, value.Month);
                 t.ValueData[i] = (byte)':';
                 i++;
-                ConvertTwoDigitNumberToByteArr(t.ValueData, ref i, Value.Day);
-                if (Format == ExifDateFormat.DateAndTime)
+                ConvertTwoDigitNumberToByteArr(t.ValueData, ref i, value.Day);
+                if (format == ExifDateFormat.DateAndTime)
                 {
                     t.ValueData[i] = (byte)' ';
                     i++;
-                    ConvertTwoDigitNumberToByteArr(t.ValueData, ref i, Value.Hour);
+                    ConvertTwoDigitNumberToByteArr(t.ValueData, ref i, value.Hour);
                     t.ValueData[i] = (byte)':';
                     i++;
-                    ConvertTwoDigitNumberToByteArr(t.ValueData, ref i, Value.Minute);
+                    ConvertTwoDigitNumberToByteArr(t.ValueData, ref i, value.Minute);
                     t.ValueData[i] = (byte)':';
                     i++;
-                    ConvertTwoDigitNumberToByteArr(t.ValueData, ref i, Value.Second);
+                    ConvertTwoDigitNumberToByteArr(t.ValueData, ref i, value.Second);
                 }
 
                 t.ValueData[i] = 0;
@@ -489,9 +483,9 @@ internal partial class ExifService
     /// <summary>
     /// Read the tag data as raw data without copying the raw data.
     /// </summary>
-    /// <param name="TagSpec">Tag specification, consisting of the IFD in which the tag is stored and the tag ID.</param>
-    /// <param name="TagType">Out: Type of the tag.</param>
-    /// <param name="ValueCount">Out: Number of values which are stored in the tag.</param>
+    /// <param name="tagSpec">Tag specification, consisting of the IFD in which the tag is stored and the tag ID.</param>
+    /// <param name="tagType">Out: Type of the tag.</param>
+    /// <param name="valueCount">Out: Number of values which are stored in the tag.</param>
     /// <param name="RawData">Out: Array with the tag data, but there may also be other data stored in this array.
     ///                      There are the following restrictions:
     ///                      •The data returned in the array "RawData" must not be changed by the caller of this method.
@@ -500,30 +494,29 @@ internal partial class ExifService
     ///                      •If the tag does not exist, "RawData" is an empty array.</param>
     /// <param name="RawDataIndex">Out: Array index at which the tag data starts. The first data byte is stored in
     ///                      "RawData[RawDataIndex]" and the last data byte is stored in
-    ///                      "RawData[RawDataIndex + GetTagByteCount(TagType, ValueCount) - 1]"</param>
+    ///                      "RawData[RawDataIndex + GetTagByteCount(tagType, valueCount) - 1]"</param>
     /// <returns>true: The tag was successfully read. false: The tag was not found.</returns>
-    public bool GetTagRawData(ExifTag TagSpec, out ExifTagType TagType, out int ValueCount, out byte[] RawData, out int RawDataIndex)
+    public bool GetTagRawData(ExifTag tagSpec, out ExifTagType tagType, out int valueCount, out byte[] RawData, out int RawDataIndex)
     {
         bool Success = false;
-        if (GetTagItem(TagSpec, out TagItem? t))
+        if (GetTagItem(tagSpec, out TagItem? t))
         {
-            TagType = t.TagType;
-            ValueCount = t.ValueCount;
+            tagType = t.TagType;
+            valueCount = t.ValueCount;
             RawData = t.ValueData;
             RawDataIndex = t.ValueIndex;
             Success = true;
         }
         else
         {
-            TagType = 0;
-            ValueCount = 0;
+            tagType = 0;
+            valueCount = 0;
             RawData = [];
             RawDataIndex = 0;
         }
 
         return Success;
     }
-
     /// <summary>
     /// Read the tag data as raw data with copying the raw data.
     /// </summary>
@@ -553,38 +546,37 @@ internal partial class ExifService
 
         return Success;
     }
-
     /// <summary>
     /// Write the tag data as raw data.
     /// </summary>
-    /// <param name="TagSpec">Tag specification, consisting of the IFD in which the tag is stored and the tag ID.</param>
-    /// <param name="TagType">Type of the tag.</param>
-    /// <param name="ValueCount">Number of values which are stored in the tag. This is not the number of raw data bytes!
-    /// The number of raw data bytes is automatically calculated by the parameters "TagType" and "ValueCount".</param>
+    /// <param name="tagSpec">Tag specification, consisting of the IFD in which the tag is stored and the tag ID.</param>
+    /// <param name="tagType">Type of the tag.</param>
+    /// <param name="valueCount">Number of values which are stored in the tag. This is not the number of raw data bytes!
+    /// The number of raw data bytes is automatically calculated by the parameters "tagType" and "valueCount".</param>
     /// <param name="RawData">rray with the tag data. The tag data is not copied by this method, therefore
     /// the array content must not be changed after the call of this method.</param>
     /// <param name="RawDataIndex">Array index at which the data starts. Set this parameter to 0, if the data starts with
     /// the first element of the array "RawData".</param>
     /// <returns>true: The tag was successfully set. false: Error occurred.</returns>
-    public bool SetTagRawData(ExifTag TagSpec, ExifTagType TagType, int ValueCount, byte[] RawData, int RawDataIndex = 0)
+    public bool SetTagRawData(ExifTag tagSpec, ExifTagType tagType, int valueCount, byte[] RawData, int RawDataIndex = 0)
     {
         bool Success = false;
-        ExifIfd Ifd = ExtractIfd(TagSpec);
+        ExifIfd Ifd = ExtractIfd(tagSpec);
         if ((uint)Ifd < ExifIfdCount)
         {
-            int RawDataByteCount = GetTagByteCount(TagType, ValueCount);
+            int RawDataByteCount = GetTagByteCount(tagType, valueCount);
             Dictionary<ExifTagId, TagItem> IfdTagTable = TagTable[(uint)Ifd];
-            if (IfdTagTable.TryGetValue(ExtractTagId(TagSpec), out TagItem? t))
+            if (IfdTagTable.TryGetValue(ExtractTagId(tagSpec), out TagItem? t))
             {
-                t.TagType = TagType;
-                t.ValueCount = ValueCount;
+                t.TagType = tagType;
+                t.ValueCount = valueCount;
                 t.ValueData = RawData;
                 t.ValueIndex = RawDataIndex;
                 t.AllocatedByteCount = RawDataByteCount;
             }
             else
             {
-                t = new TagItem(ExtractTagId(TagSpec), TagType, ValueCount, RawData, RawDataIndex, RawDataByteCount);
+                t = new TagItem(ExtractTagId(tagSpec), tagType, valueCount, RawData, RawDataIndex, RawDataByteCount);
                 IfdTagTable.Add(t.TagId, t);
             }
 
@@ -594,107 +586,105 @@ internal partial class ExifService
         return Success;
     }
 
-    public bool GetTagValueCount(ExifTag TagSpec, out int ValueCount)
+    public bool GetTagValueCount(ExifTag tagSpec, out int valueCount)
     {
-        if (GetTagItem(TagSpec, out TagItem? t))
+        if (GetTagItem(tagSpec, out TagItem? t))
         {
-            ValueCount = t.ValueCount;
+            valueCount = t.ValueCount;
             return true;
         }
         else
         {
-            ValueCount = 0;
+            valueCount = 0;
             return false;
         }
     }
-
-    public bool SetTagValueCount(ExifTag TagSpec, int ValueCount)
+    public bool SetTagValueCount(ExifTag tagSpec, int valueCount)
     {
-        if (!GetTagItem(TagSpec, out TagItem? t) || (uint)ValueCount > MaxTagValueCount)
+        if (!GetTagItem(tagSpec, out TagItem? t) || (uint)valueCount > MaxTagValueCount)
             return false;
 
-        t.SetTagTypeAndValueCount(t.TagType, ValueCount, true);
+        t.SetTagTypeAndValueCount(t.TagType, valueCount, true);
         return true;
     }
-
-    public bool SetTagValueCount(ExifTag TagSpec, int ValueCount, ExifTagType TagType)
+    public bool SetTagValueCount(ExifTag tagSpec, int valueCount, ExifTagType tagType)
     {
-        TagItem? t = PrepareTagForArrayItemWriting(TagSpec, TagType, ValueCount - 1);
+        TagItem? t = PrepareTagForArrayItemWriting(tagSpec, tagType, valueCount - 1);
 
         return t != null;
     }
 
-    public bool GetTagType(ExifTag TagSpec, out ExifTagType TagType)
+    public bool GetTagType(ExifTag tagSpec, out ExifTagType tagType)
     {
-        if (GetTagItem(TagSpec, out TagItem? t))
+        if (GetTagItem(tagSpec, out TagItem? t))
         {
-            TagType = t.TagType;
+            tagType = t.TagType;
             return true;
         }
         else
         {
-            TagType = 0;
+            tagType = 0;
             return false;
         }
     }
 
-    public bool TagExists(ExifTag TagSpec)
+    public bool TagExists(ExifTag tagSpec)
     {
-        ExifIfd Ifd = ExtractIfd(TagSpec);
+        ExifIfd Ifd = ExtractIfd(tagSpec);
         if ((uint)Ifd >= ExifIfdCount)
             return false;
 
         Dictionary<ExifTagId, TagItem> IfdTagTable = TagTable[(uint)Ifd];
 
-        return IfdTagTable.ContainsKey(ExtractTagId(TagSpec));
+        return IfdTagTable.ContainsKey(ExtractTagId(tagSpec));
     }
 
-    public bool IfdExists(ExifIfd Ifd)
+    public bool IfdExists(ExifIfd ifd)
     {
-        if ((uint)Ifd >= ExifIfdCount)
+        if ((uint)ifd >= ExifIfdCount)
             return false;
 
-        Dictionary<ExifTagId, TagItem> IfdTagTable = TagTable[(uint)Ifd];
+        Dictionary<ExifTagId, TagItem> IfdTagTable = TagTable[(uint)ifd];
 
         return IfdTagTable.Count > 0;
     }
 
-    public bool ImageFileBlockExists(ImageFileBlock BlockType) => ImageFileBlockInfo[(int)BlockType] == ImageFileBlockState.Existent;
+    public bool ImageFileBlockExists(ImageFileBlock blockType) => ImageFileBlockInfo[(int)blockType] == ImageFileBlockState.Existent;
 
     /// <summary>
     /// Remove a single tag.
     /// </summary>
-    /// <param name="TagSpec">Tag specification, consisting of the IFD in which the tag is stored and the tag ID.</param>
+    /// <param name="tagSpec">Tag specification, consisting of the IFD in which the tag is stored and the tag ID.</param>
     /// <returns>true: Tag was successfully removed. false: Tag was not removed, because it doesn't exist.</returns>
-    public bool RemoveTag(ExifTag TagSpec)
+    public bool RemoveTag(ExifTag tagSpec)
     {
-        ExifIfd Ifd = ExtractIfd(TagSpec);
+        ExifIfd Ifd = ExtractIfd(tagSpec);
         if ((uint)Ifd >= ExifIfdCount)
             return false;
 
         Dictionary<ExifTagId, TagItem> IfdTagTable = TagTable[(uint)Ifd];
 
-        return IfdTagTable.Remove(ExtractTagId(TagSpec));
+        return IfdTagTable.Remove(ExtractTagId(tagSpec));
     }
 
     /// <summary>
     /// Remove all tags from a specific IFD.
     /// </summary>
-    /// <param name="Ifd">IFD from which all tags are to be removed. If the IFD "ThumbnailData" is
+    /// <param name="ifd">IFD from which all tags are to be removed. If the IFD "ThumbnailData" is
     /// removed, the thumbnail image is removed, too.</param>
     /// <returns>true: IFD was successfully removed. false: IFD was not removed, because it doesn't exist.</returns>
-    public bool RemoveAllTagsFromIfd(ExifIfd Ifd)
+    public bool RemoveAllTagsFromIfd(ExifIfd ifd)
     {
         bool Removed = false;
-        if (Ifd == ExifIfd.PrimaryData)
+        if (ifd == ExifIfd.PrimaryData)
         {
             RemoveAllTagsFromIfdPrimaryData();
             Removed = true;
         }
-        else if ((uint)Ifd < ExifIfdCount)
+        else if ((uint)ifd < ExifIfdCount)
         {
-            ClearIfd_Unchecked(Ifd);
-            if (Ifd == ExifIfd.ThumbnailData)
+            ClearIfd_Unchecked(ifd);
+            if (ifd == ExifIfd.ThumbnailData)
                 RemoveThumbnailImage(false);
 
             Removed = true;
@@ -716,38 +706,38 @@ internal partial class ExifService
         ImageFileBlockInfo[(int)ImageFileBlock.Exif] = ImageFileBlockState.Removed;
     }
 
-    public void RemoveImageFileBlock(ImageFileBlock BlockType)
+    public void RemoveImageFileBlock(ImageFileBlock blockType)
     {
-        if (BlockType == ImageFileBlock.Exif)
+        if (blockType == ImageFileBlock.Exif)
         {
             RemoveAllTags();
         }
-        else if (BlockType != ImageFileBlock.Unknown)
+        else if (blockType != ImageFileBlock.Unknown)
         {
             if (ImageType == ImageType.Tiff)
             {
-                if (BlockType == ImageFileBlock.Xmp)
+                if (blockType == ImageFileBlock.Xmp)
                     _ = RemoveTag(ExifTag.XmpMetadata);
-                else if (BlockType == ImageFileBlock.Iptc)
+                else if (blockType == ImageFileBlock.Iptc)
                     _ = RemoveTag(ExifTag.IptcMetadata);
             }
 
-            ImageFileBlockInfo[(int)BlockType] = ImageFileBlockState.Removed;
+            ImageFileBlockInfo[(int)blockType] = ImageFileBlockState.Removed;
         }
     }
 
     /// <summary>
     /// Replace all EXIF tags and the thumbnail image by the EXIF data of another image file.
     /// </summary>
-    /// <param name="SourceExifData">EXIF data of another image, that will be copied to the EXIF data of
+    /// <param name="sourceExifData">EXIF data of another image, that will be copied to the EXIF data of
     /// the current object. A deep copy is done.</param>
-    public void ReplaceAllTagsBy(ExifService SourceExifData)
+    public void ReplaceAllTagsBy(ExifService sourceExifData)
     {
         // Byte order handling
         bool SwapByteOrder = false;
         if (ImageType == ImageType.Tiff)
         {
-            if (ByteOrder != SourceExifData.ByteOrder)
+            if (ByteOrder != sourceExifData.ByteOrder)
             {
                 // In TIFF images the EXIF block cannot be completely replaced by another EXIF block because
                 // it contains internal tags which must not be changed. If the byte order of the two EXIF blocks
@@ -757,16 +747,16 @@ internal partial class ExifService
         }
         else
         {
-            ByteOrder = SourceExifData.ByteOrder; // Complete EXIF block is copied, therefore the byte order is also copied.
+            ByteOrder = sourceExifData.ByteOrder; // Complete EXIF block is copied, therefore the byte order is also copied.
         }
 
         // Remove all tags. But in TIFF images the TIFF internal tags, the XMP tag and the IPTC tag are not removed.
         RemoveAllTags();
 
         // Copy IFD Primary data.
-        Dictionary<ExifTagId, TagItem> SourceIfdTagList = SourceExifData.TagTable[(uint)ExifIfd.PrimaryData];
+        Dictionary<ExifTagId, TagItem> SourceIfdTagList = sourceExifData.TagTable[(uint)ExifIfd.PrimaryData];
         Dictionary<ExifTagId, TagItem> DestIfdTagList = TagTable[(uint)ExifIfd.PrimaryData];
-        bool IsTiffImagePresent = (ImageType == ImageType.Tiff) || (SourceExifData.ImageType == ImageType.Tiff);
+        bool IsTiffImagePresent = (ImageType == ImageType.Tiff) || (sourceExifData.ImageType == ImageType.Tiff);
         bool CopyTag = true;
         foreach (TagItem SourceTag in SourceIfdTagList.Values)
         {
@@ -784,7 +774,7 @@ internal partial class ExifService
         ExifIfd[] TempIfds = [ExifIfd.PrivateData, ExifIfd.GpsInfoData, ExifIfd.Interoperability];
         foreach (ExifIfd Ifd in TempIfds)
         {
-            SourceIfdTagList = SourceExifData.TagTable[(uint)Ifd];
+            SourceIfdTagList = sourceExifData.TagTable[(uint)Ifd];
             DestIfdTagList = TagTable[(uint)Ifd];
             foreach (TagItem SourceTag in SourceIfdTagList.Values)
             {
@@ -796,7 +786,7 @@ internal partial class ExifService
         // Copy IFD ThumbnailData
         if (ImageType == ImageType.Jpeg)
         {
-            SourceIfdTagList = SourceExifData.TagTable[(uint)ExifIfd.ThumbnailData];
+            SourceIfdTagList = sourceExifData.TagTable[(uint)ExifIfd.ThumbnailData];
             DestIfdTagList = TagTable[(uint)ExifIfd.ThumbnailData];
             foreach (TagItem SourceTag in SourceIfdTagList.Values)
             {
@@ -804,12 +794,12 @@ internal partial class ExifService
                 _ = AddIfNotExists(DestIfdTagList, DestTag);
             }
 
-            if (SourceExifData.ThumbnailImageExists())
+            if (sourceExifData.ThumbnailImageExists())
             {
                 ThumbnailStartIndex = 0;
-                ThumbnailByteCount = SourceExifData.ThumbnailByteCount;
+                ThumbnailByteCount = sourceExifData.ThumbnailByteCount;
                 ThumbnailImage = new byte[ThumbnailByteCount];
-                Array.Copy(SourceExifData.ThumbnailImage!, SourceExifData.ThumbnailStartIndex, ThumbnailImage, 0, ThumbnailByteCount);
+                Array.Copy(sourceExifData.ThumbnailImage!, sourceExifData.ThumbnailStartIndex, ThumbnailImage, 0, ThumbnailByteCount);
             }
             else
             {
@@ -821,7 +811,7 @@ internal partial class ExifService
         UpdateImageFileBlockInfo();
 
         // Copy MakerNote index
-        MakerNoteOriginalOffset = SourceExifData.MakerNoteOriginalOffset;
+        MakerNoteOriginalOffset = sourceExifData.MakerNoteOriginalOffset;
     }
 
     public bool ThumbnailImageExists() => ThumbnailImage != null;
@@ -829,16 +819,16 @@ internal partial class ExifService
     /// <summary>
     /// Read the thumbnail image data.
     /// </summary>
-    /// <param name="ThumbnailData">Out: Array with the thumbnail image beginning with the JPEG marker 0xFF 0xD8.
+    /// <param name="thumbnailData">Out: Array with the thumbnail image beginning with the JPEG marker 0xFF 0xD8.
     /// If no thumbnail image is defined, "null" is returned.</param>
-    /// <param name="ThumbnailIndex">Out: Index of the first data byte of the thumbnail image.</param>
-    /// <param name="ThumbnailByteCount">Out: Number of bytes of the thumbnail image.</param>
+    /// <param name="thumbnailIndex">Out: Index of the first data byte of the thumbnail image.</param>
+    /// <param name="thumbnailByteCount">Out: Number of bytes of the thumbnail image.</param>
     /// <returns>true: Thumbnail image is given back. false: Thumbnail image does not exist.</returns>
-    public bool GetThumbnailImage(out byte[]? ThumbnailData, out int ThumbnailIndex, out int ThumbnailByteCount)
+    public bool GetThumbnailImage(out byte[]? thumbnailData, out int thumbnailIndex, out int thumbnailByteCount)
     {
-        ThumbnailData = ThumbnailImage;
-        ThumbnailIndex = ThumbnailStartIndex;
-        ThumbnailByteCount = this.ThumbnailByteCount;
+        thumbnailData = ThumbnailImage;
+        thumbnailIndex = ThumbnailStartIndex;
+        thumbnailByteCount = ThumbnailByteCount;
         bool Success = ThumbnailImageExists();
 
         return Success;
@@ -847,23 +837,23 @@ internal partial class ExifService
     /// <summary>
     /// Write the thumbnail image data.
     /// </summary>
-    /// <param name="ThumbnailData"> Array which contains the thumbnail image beginning with the
+    /// <param name="thumbnailData"> Array which contains the thumbnail image beginning with the
     /// JPEG marker 0xFF 0xD8. The array is not copied by this method so it should not be changed
     /// after calling this method.</param>
-    /// <param name="ThumbnailIndex">Index of the first byte of the thumbnail image.</param>
-    /// <param name="ThumbnailByteCount">Number of bytes of the thumbnail image. -1: All bytes
+    /// <param name="thumbnailIndex">Index of the first byte of the thumbnail image.</param>
+    /// <param name="thumbnailByteCount">Number of bytes of the thumbnail image. -1: All bytes
     /// until the end of the array are used.</param>
     /// <returns>true: Thumbnail image was successfully set. false: Error occurred.</returns>
-    public bool SetThumbnailImage(byte[] ThumbnailData, int ThumbnailIndex = 0, int ThumbnailByteCount = -1)
+    public bool SetThumbnailImage(byte[] thumbnailData, int thumbnailIndex = 0, int thumbnailByteCount = -1)
     {
         bool Success = false;
-        if (ThumbnailData != null)
+        if (thumbnailData != null)
         {
-            ThumbnailImage = ThumbnailData;
-            ThumbnailStartIndex = ThumbnailIndex;
-            this.ThumbnailByteCount = ThumbnailByteCount < 0 ? ThumbnailData.Length - ThumbnailIndex : ThumbnailByteCount;
+            ThumbnailImage = thumbnailData;
+            ThumbnailStartIndex = thumbnailIndex;
+            ThumbnailByteCount = thumbnailByteCount < 0 ? thumbnailData.Length - thumbnailIndex : thumbnailByteCount;
             _ = SetTagValue(ExifTag.JpegInterchangeFormat, 0, ExifTagType.ULong); // "0" is a dummy value
-            _ = SetTagValue(ExifTag.JpegInterchangeFormatLength, this.ThumbnailByteCount, ExifTagType.ULong);
+            _ = SetTagValue(ExifTag.JpegInterchangeFormatLength, ThumbnailByteCount, ExifTagType.ULong);
             Success = true;
         }
 
@@ -873,12 +863,12 @@ internal partial class ExifService
     /// <summary>
     /// Remove the thumbnail image data.
     /// </summary>
-    /// <param name="RemoveAlsoThumbnailTags">false: Remove the thumbnail image, the thumbnail pointer
+    /// <param name="removeAlsoThumbnailTags">false: Remove the thumbnail image, the thumbnail pointer
     /// tag and the thumbnail size tag. true: Remove also all other tags in the IFD "thumbnail data".</param>
-    public void RemoveThumbnailImage(bool RemoveAlsoThumbnailTags)
+    public void RemoveThumbnailImage(bool removeAlsoThumbnailTags)
     {
         RemoveThumbnailImage_Internal();
-        if (RemoveAlsoThumbnailTags)
+        if (removeAlsoThumbnailTags)
         {
             ClearIfd_Unchecked(ExifIfd.ThumbnailData);
         }
@@ -897,122 +887,121 @@ internal partial class ExifService
     /// <summary>
     /// Extract the IFD of a tag specification.
     /// </summary>
-    /// <param name="TagSpec">Tag specification, consisting of an IFD and a tag ID.</param>
-    /// <returns>IFD that is coded in parameter "TagSpec".</returns>
-    public static ExifIfd ExtractIfd(ExifTag TagSpec) => (ExifIfd)((uint)TagSpec >> IfdShift);
+    /// <param name="tagSpec">Tag specification, consisting of an IFD and a tag ID.</param>
+    /// <returns>IFD that is coded in parameter "tagSpec".</returns>
+    public static ExifIfd ExtractIfd(ExifTag tagSpec) => (ExifIfd)((uint)tagSpec >> IfdShift);
 
     /// <summary>
     /// Extract the tag ID of a tag specification.
     /// </summary>
-    /// <param name="TagSpec">Tag specification, consisting of an IFD and a tag ID.</param>
-    /// <returns>Tag ID that is coded in parameter "TagSpec".</returns>
-    public static ExifTagId ExtractTagId(ExifTag TagSpec) => (ExifTagId)(ushort)TagSpec;
+    /// <param name="tagSpec">Tag specification, consisting of an IFD and a tag ID.</param>
+    /// <returns>Tag ID that is coded in parameter "tagSpec".</returns>
+    public static ExifTagId ExtractTagId(ExifTag tagSpec) => (ExifTagId)(ushort)tagSpec;
 
     /// <summary>
     /// Compose IFD and tag ID to a tag specification.
     /// </summary>
-    /// <param name="Ifd">IFD.</param>
-    /// <param name="TagId">Tag ID.</param>
+    /// <param name="ifd">IFD.</param>
+    /// <param name="tagId">Tag ID.</param>
     /// <returns>Tag specification, consisting of an IFD and a tag ID.</returns>
-    public static ExifTag ComposeTagSpec(ExifIfd Ifd, ExifTagId TagId) =>
-        (ExifTag)(((uint)Ifd << IfdShift) | (uint)TagId);
+    public static ExifTag ComposeTagSpec(ExifIfd ifd, ExifTagId tagId) =>
+        (ExifTag)(((uint)ifd << IfdShift) | (uint)tagId);
 
     /// <summary>
     /// Get the number of bytes that a tag with the specified type and value count has.
     /// </summary>
-    /// <param name="TagType">Tag type.</param>
-    /// <param name="ValueCount">Number of values within the tag.</param>
+    /// <param name="tagType">Tag type.</param>
+    /// <param name="valueCount">Number of values within the tag.</param>
     /// <returns>Number of bytes that are needed to store the tag. In case of an illegal tag type
     /// 0 is returned.</returns>
-    public static int GetTagByteCount(ExifTagType TagType, int ValueCount) =>
-        (uint)TagType < TypeByteCount.Length ? TypeByteCount[(uint)TagType] * ValueCount : 0;
+    public static int GetTagByteCount(ExifTagType tagType, int valueCount) =>
+        (uint)tagType < TypeByteCount.Length ? TypeByteCount[(uint)tagType] * valueCount : 0;
 
-    public ushort ExifReadUInt16(byte[] Data, int StartIndex)
+    public ushort ExifReadUInt16(byte[] data, int startIndex)
     {
         return ByteOrder == ExifByteOrder.BigEndian
-            ? (ushort)(((uint)Data[StartIndex] << 8) | Data[StartIndex + 1])
-            : (ushort)(((uint)Data[StartIndex + 1] << 8) | Data[StartIndex]);
+            ? (ushort)(((uint)data[startIndex] << 8) | data[startIndex + 1])
+            : (ushort)(((uint)data[startIndex + 1] << 8) | data[startIndex]);
     }
-    public void ExifWriteUInt16(byte[] Data, int StartIndex, ushort Value)
+    public void ExifWriteUInt16(byte[] data, int startIndex, ushort value)
     {
         if (ByteOrder == ExifByteOrder.BigEndian)
         {
-            Data[StartIndex] = (byte)(Value >> 8);
-            Data[StartIndex + 1] = (byte)Value;
+            data[startIndex] = (byte)(value >> 8);
+            data[startIndex + 1] = (byte)value;
         }
         else
         {
-            Data[StartIndex + 1] = (byte)(Value >> 8);
-            Data[StartIndex] = (byte)Value;
+            data[startIndex + 1] = (byte)(value >> 8);
+            data[startIndex] = (byte)value;
         }
     }
 
-    public uint ExifReadUInt32(byte[] Data, int StartIndex)
+    public uint ExifReadUInt32(byte[] data, int startIndex)
     {
         return ByteOrder == ExifByteOrder.BigEndian
-            ? ((uint)Data[StartIndex] << 24) |
-                ((uint)Data[StartIndex + 1] << 16) |
-                ((uint)Data[StartIndex + 2] << 8) |
-                Data[StartIndex + 3]
-            : ((uint)Data[StartIndex + 3] << 24) |
-               ((uint)Data[StartIndex + 2] << 16) |
-               ((uint)Data[StartIndex + 1] << 8) |
-               Data[StartIndex];
+            ? ((uint)data[startIndex] << 24) |
+                ((uint)data[startIndex + 1] << 16) |
+                ((uint)data[startIndex + 2] << 8) |
+                data[startIndex + 3]
+            : ((uint)data[startIndex + 3] << 24) |
+               ((uint)data[startIndex + 2] << 16) |
+               ((uint)data[startIndex + 1] << 8) |
+               data[startIndex];
     }
-    public void ExifWriteUInt32(byte[] Data, int StartIndex, uint Value)
+    public void ExifWriteUInt32(byte[] data, int startIndex, uint value)
     {
         if (ByteOrder == ExifByteOrder.BigEndian)
         {
-            Data[StartIndex] = (byte)(Value >> 24);
-            Data[StartIndex + 1] = (byte)(Value >> 16);
-            Data[StartIndex + 2] = (byte)(Value >> 8);
-            Data[StartIndex + 3] = (byte)Value;
+            data[startIndex] = (byte)(value >> 24);
+            data[startIndex + 1] = (byte)(value >> 16);
+            data[startIndex + 2] = (byte)(value >> 8);
+            data[startIndex + 3] = (byte)value;
         }
         else
         {
-            Data[StartIndex + 3] = (byte)(Value >> 24);
-            Data[StartIndex + 2] = (byte)(Value >> 16);
-            Data[StartIndex + 1] = (byte)(Value >> 8);
-            Data[StartIndex] = (byte)Value;
+            data[startIndex + 3] = (byte)(value >> 24);
+            data[startIndex + 2] = (byte)(value >> 16);
+            data[startIndex + 1] = (byte)(value >> 8);
+            data[startIndex] = (byte)value;
         }
     }
 
-    private static ushort ReadUInt16BE(byte[] Data, int StartIndex) =>
-        (ushort)(((uint)Data[StartIndex] << 8) | Data[StartIndex + 1]);
-    private static void WriteUInt16BE(byte[] Data, int StartIndex, ushort Value)
+    private static ushort ReadUInt16BE(byte[] data, int startIndex) =>
+        (ushort)(((uint)data[startIndex] << 8) | data[startIndex + 1]);
+    private static void WriteUInt16BE(byte[] data, int startIndex, ushort value)
     {
-        Data[StartIndex] = (byte)(Value >> 8);
-        Data[StartIndex + 1] = (byte)Value;
+        data[startIndex] = (byte)(value >> 8);
+        data[startIndex + 1] = (byte)value;
     }
 
-    private static uint ReadUInt32BE(byte[] Data, int StartIndex)
+    private static uint ReadUInt32BE(byte[] data, int startIndex)
     {
         return
-            ((uint)Data[StartIndex] << 24) |
-            ((uint)Data[StartIndex + 1] << 16) |
-            ((uint)Data[StartIndex + 2] << 8) |
-            Data[StartIndex + 3];
+            ((uint)data[startIndex] << 24) |
+            ((uint)data[startIndex + 1] << 16) |
+            ((uint)data[startIndex + 2] << 8) |
+            data[startIndex + 3];
     }
-
-    private static void WriteUInt32BE(byte[] Data, int StartIndex, uint Value)
+    private static void WriteUInt32BE(byte[] data, int startIndex, uint value)
     {
-        Data[StartIndex] = (byte)(Value >> 24);
-        Data[StartIndex + 1] = (byte)(Value >> 16);
-        Data[StartIndex + 2] = (byte)(Value >> 8);
-        Data[StartIndex + 3] = (byte)Value;
+        data[startIndex] = (byte)(value >> 24);
+        data[startIndex + 1] = (byte)(value >> 16);
+        data[startIndex + 2] = (byte)(value >> 8);
+        data[startIndex + 3] = (byte)value;
     }
 
     /// <summary>
     /// Initialize enumeration for all tags of a specific IFD.
     /// </summary>
-    /// <param name="Ifd">IFD to be enumerated.</param>
+    /// <param name="ifd">IFD to be enumerated.</param>
     /// <returns>true: Initialization was successful. false: Eror occurred.</returns>
-    public bool InitTagEnumeration(ExifIfd Ifd)
+    public bool InitTagEnumeration(ExifIfd ifd)
     {
-        if ((uint)Ifd < ExifIfdCount)
+        if ((uint)ifd < ExifIfdCount)
         {
-            ExifIfdForTagEnumeration = Ifd;
-            TagEnumerator = TagTable[(uint)Ifd].Keys.GetEnumerator();
+            ExifIfdForTagEnumeration = ifd;
+            TagEnumerator = TagTable[(uint)ifd].Keys.GetEnumerator();
             return true;
         }
         else
@@ -1025,20 +1014,20 @@ internal partial class ExifService
     /// <summary>
     /// Get the next tag of the IFD, that was defined by a previous call to the method "InitTagEnumeration".
     /// </summary>
-    /// <param name="TagSpec"></param>
+    /// <param name="tagSpec"></param>
     /// <returns>true: Next tag was successfully read. false: There is no further tag available.</returns>
-    public bool EnumerateNextTag(out ExifTag TagSpec)
+    public bool EnumerateNextTag(out ExifTag tagSpec)
     {
         bool Success = false;
         if (TagEnumerator.MoveNext())
         {
             ExifTagId TagId = TagEnumerator.Current;
-            TagSpec = ComposeTagSpec(ExifIfdForTagEnumeration, TagId);
+            tagSpec = ComposeTagSpec(ExifIfdForTagEnumeration, TagId);
             Success = true;
         }
         else
         {
-            TagSpec = 0;
+            tagSpec = 0;
         }
 
         return Success;
@@ -1050,30 +1039,30 @@ internal partial class ExifService
 
     #region Date Helpers
 
-    public bool GetDateTaken(out DateTime Value) =>
-        GetDateAndTimeWithMillisecHelper(out Value, ExifTag.DateTimeOriginal, ExifTag.SubsecTimeOriginal);
-    public bool SetDateTaken(DateTime Value) =>
-        SetDateAndTimeWithMillisecHelper(Value, ExifTag.DateTimeOriginal, ExifTag.SubsecTimeOriginal);
+    public bool GetDateTaken(out DateTime value) =>
+        GetDateAndTimeWithMillisecHelper(out value, ExifTag.DateTimeOriginal, ExifTag.SubsecTimeOriginal);
+    public bool SetDateTaken(DateTime value) =>
+        SetDateAndTimeWithMillisecHelper(value, ExifTag.DateTimeOriginal, ExifTag.SubsecTimeOriginal);
     public void RemoveDateTaken()
     {
         _ = RemoveTag(ExifTag.DateTimeOriginal);
         _ = RemoveTag(ExifTag.SubsecTimeOriginal);
     }
 
-    public bool GetDateDigitized(out DateTime Value) =>
-        GetDateAndTimeWithMillisecHelper(out Value, ExifTag.DateTimeDigitized, ExifTag.SubsecTimeDigitized);
-    public bool SetDateDigitized(DateTime Value) =>
-        SetDateAndTimeWithMillisecHelper(Value, ExifTag.DateTimeDigitized, ExifTag.SubsecTimeDigitized);
+    public bool GetDateDigitized(out DateTime value) =>
+        GetDateAndTimeWithMillisecHelper(out value, ExifTag.DateTimeDigitized, ExifTag.SubsecTimeDigitized);
+    public bool SetDateDigitized(DateTime value) =>
+        SetDateAndTimeWithMillisecHelper(value, ExifTag.DateTimeDigitized, ExifTag.SubsecTimeDigitized);
     public void RemoveDateDigitized()
     {
         _ = RemoveTag(ExifTag.DateTimeDigitized);
         _ = RemoveTag(ExifTag.SubsecTimeDigitized);
     }
 
-    public bool GetDateChanged(out DateTime Value) =>
-        GetDateAndTimeWithMillisecHelper(out Value, ExifTag.DateTime, ExifTag.SubsecTime);
-    public bool SetDateChanged(DateTime Value) =>
-        SetDateAndTimeWithMillisecHelper(Value, ExifTag.DateTime, ExifTag.SubsecTime);
+    public bool GetDateChanged(out DateTime value) =>
+        GetDateAndTimeWithMillisecHelper(out value, ExifTag.DateTime, ExifTag.SubsecTime);
+    public bool SetDateChanged(DateTime value) =>
+        SetDateAndTimeWithMillisecHelper(value, ExifTag.DateTime, ExifTag.SubsecTime);
     public void RemoveDateChanged()
     {
         _ = RemoveTag(ExifTag.DateTime);
@@ -1546,48 +1535,48 @@ internal partial class ExifService
     /// <summary>
     /// Read block length and chunk type of an PNG image stream.
     /// </summary>
-    /// <param name="ImageStream">PNG image stream.</param>
-    /// <param name="TempData">In: Allocated array with a length of 8 bytes. Out: Block length and
+    /// <param name="imageStream">PNG image stream.</param>
+    /// <param name="tempData">In: Allocated array with a length of 8 bytes. Out: Block length and
     /// chunk type as raw data.</param>
-    /// <param name="BlockLength">Out: Block length as 32 bit number.</param>
-    /// <param name="ChunkType">Out: Chunk typeas 32 bit number.</param>
+    /// <param name="blockLength">Out: Block length as 32 bit number.</param>
+    /// <param name="chunkType">Out: Chunk typeas 32 bit number.</param>
     /// <exception cref="ExifException"></exception>
-    private static void ReadPngBlockHeader(Stream ImageStream, byte[] TempData, out int BlockLength, out uint ChunkType)
+    private static void ReadPngBlockHeader(Stream imageStream, byte[] tempData, out int blockLength, out uint chunkType)
     {
-        if (ImageStream.Read(TempData, 0, 8) < 8)
+        if (imageStream.Read(tempData, 0, 8) < 8)
             throw new ExifException(ExifErrCode.InternalImageStructureIsWrong);
 
-        BlockLength = (int)ReadUInt32BE(TempData, 0);
-        if (BlockLength < 0)
+        blockLength = (int)ReadUInt32BE(tempData, 0);
+        if (blockLength < 0)
             throw new ExifException(ExifErrCode.InternalImageStructureIsWrong);
 
-        ChunkType = ReadUInt32BE(TempData, 4);
+        chunkType = ReadUInt32BE(tempData, 4);
     }
 
-    private static int DetectPngImageBlock(Stream ImageStream, byte[] SignatureData, uint ChunkType, out ImageFileBlock BlockType)
+    private static int DetectPngImageBlock(Stream imageStream, byte[] signatureData, uint chunkType, out ImageFileBlock blockType)
     {
         int BytesRead = 0;
-        BlockType = ImageFileBlock.Unknown;
-        if (ChunkType == PngExifChunk)
+        blockType = ImageFileBlock.Unknown;
+        if (chunkType == PngExifChunk)
         {
-            BlockType = ImageFileBlock.Exif;
+            blockType = ImageFileBlock.Exif;
         }
-        else if (ChunkType == PngItxtChunk)
+        else if (chunkType == PngItxtChunk)
         {
             int BytesToRead = PngIptcSignature.Length;
-            BytesRead = ImageStream.Read(SignatureData, 0, BytesToRead);
-            if (ArrayStartsWith(SignatureData, BytesRead, PngXmpSignature))
-                BlockType = ImageFileBlock.Xmp;
-            else if (ArrayStartsWith(SignatureData, BytesRead, PngIptcSignature))
-                BlockType = ImageFileBlock.Iptc;
+            BytesRead = imageStream.Read(signatureData, 0, BytesToRead);
+            if (ArrayStartsWith(signatureData, BytesRead, PngXmpSignature))
+                blockType = ImageFileBlock.Xmp;
+            else if (ArrayStartsWith(signatureData, BytesRead, PngIptcSignature))
+                blockType = ImageFileBlock.Iptc;
         }
-        else if (ChunkType == PngTextChunk)
+        else if (chunkType == PngTextChunk)
         {
-            BlockType = ImageFileBlock.PngMetaData;
+            blockType = ImageFileBlock.PngMetaData;
         }
-        else if (ChunkType == PngTimeChunk)
+        else if (chunkType == PngTimeChunk)
         {
-            BlockType = ImageFileBlock.PngDateChanged;
+            blockType = ImageFileBlock.PngDateChanged;
         }
 
         return BytesRead;
@@ -1621,17 +1610,17 @@ internal partial class ExifService
       0xA9BCAE53, 0xDEBB9EC5, 0x47B2CF7F, 0x30B5FFE9, 0xBDBDF21C, 0xCABAC28A, 0x53B39330, 0x24B4A3A6, 0xBAD03605, 0xCDD70693,
       0x54DE5729, 0x23D967BF, 0xB3667A2E, 0xC4614AB8, 0x5D681B02, 0x2A6F2B94, 0xB40BBE37, 0xC30C8EA1, 0x5A05DF1B, 0x2D02EF8D ];
 
-    private static uint CalculateCrc32(byte[] Data, int StartIndex, int Length, bool Finalize = true, uint StartCrc = 0xFFFFFFFF)
+    private static uint CalculateCrc32(byte[] data, int startIndex, int length, bool finalize = true, uint startCrc = 0xFFFFFFFF)
     {
-        uint result = StartCrc;
-        int EndIndexPlus1 = StartIndex + Length;
-        for (int i = StartIndex; i < EndIndexPlus1; i++)
+        uint result = startCrc;
+        int EndIndexPlus1 = startIndex + length;
+        for (int i = startIndex; i < EndIndexPlus1; i++)
         {
-            byte value = Data[i];
+            byte value = data[i];
             result = Crc32ChecksumTable[((byte)result) ^ value] ^ (result >> 8);
         }
 
-        if (Finalize)
+        if (finalize)
             result = ~result;
 
         return result;
@@ -1686,30 +1675,30 @@ internal partial class ExifService
         }
     }
 
-    private static void ReadJpegBlockMarker(Stream ImageStream, out ushort BlockMarker, out int BlockContentSize)
+    private static void ReadJpegBlockMarker(Stream imageStream, out ushort blockMarker, out int blockContentSize)
     {
         byte[] TempBuffer = new byte[2];
-        if (ImageStream.Read(TempBuffer, 0, 2) != 2)
+        if (imageStream.Read(TempBuffer, 0, 2) != 2)
             throw new ExifException(ExifErrCode.InternalImageStructureIsWrong);
 
-        BlockMarker = ReadUInt16BE(TempBuffer, 0);
-        if (BlockMarker is 0xFF01 or (>= 0xFFD0 and <= 0xFFDA))
+        blockMarker = ReadUInt16BE(TempBuffer, 0);
+        if (blockMarker is 0xFF01 or (>= 0xFFD0 and <= 0xFFDA))
         {
             // JPEG block does not have a size specification
-            BlockContentSize = 0;
+            blockContentSize = 0;
         }
-        else if (BlockMarker == 0xFFFF)
+        else if (blockMarker == 0xFFFF)
         {
             throw new ExifException(ExifErrCode.InternalImageStructureIsWrong);
         }
         else
         {
-            if (ImageStream.Read(TempBuffer, 0, 2) != 2)
+            if (imageStream.Read(TempBuffer, 0, 2) != 2)
                 throw new ExifException(ExifErrCode.InternalImageStructureIsWrong);
 
-            BlockContentSize = ReadUInt16BE(TempBuffer, 0) - 2;
+            blockContentSize = ReadUInt16BE(TempBuffer, 0) - 2;
 
-            if (BlockContentSize < 0)
+            if (blockContentSize < 0)
                 throw new ExifException(ExifErrCode.InternalImageStructureIsWrong);
         }
     }
@@ -1781,18 +1770,17 @@ internal partial class ExifService
     /// <summary>
     /// Read the first 4 bytes from an image stream and identify the image type .
     /// </summary>
-    /// <param name="StreamToBeChecked">Image stream to be read.</param>
+    /// <param name="streamToBeChecked">Image stream to be read.</param>
     /// <returns>Image type of the stream.</returns>
     /// <exception cref="ExifException"></exception>
-    private static ImageType CheckStreamTypeAndCompatibility(Stream StreamToBeChecked)
+    private static ImageType CheckStreamTypeAndCompatibility(Stream streamToBeChecked)
     {
-        ImageType StreamImageType;
         byte[] TempBuffer = new byte[4];
-        if (StreamToBeChecked.Read(TempBuffer, 0, 4) != 4)
+        if (streamToBeChecked.Read(TempBuffer, 0, 4) != 4)
             throw new ExifException(ExifErrCode.ImageTypeIsNotSupported);
 
         uint ImageSignature = ReadUInt32BE(TempBuffer, 0);
-        StreamImageType = (ImageSignature >> 16) switch
+        ImageType StreamImageType = (ImageSignature >> 16) switch
         {
             JpegSoiMarker => ImageType.Jpeg,
             _ => ImageSignature is TiffHeaderSignatureLE or TiffHeaderSignatureBE
@@ -1803,68 +1791,68 @@ internal partial class ExifService
         };
 
         // Check stream size
-        if (StreamToBeChecked.Length > int.MaxValue)
+        if (streamToBeChecked.Length > int.MaxValue)
             throw new ExifException(ExifErrCode.ImageHasUnsupportedFeatures);
 
         // Check if stream is seekable
         const long CheckOffset = -2;
-        long i = StreamToBeChecked.Position;
-        StreamToBeChecked.Position += CheckOffset;
-        if (StreamToBeChecked.Position != (i + CheckOffset))
+        long i = streamToBeChecked.Position;
+        streamToBeChecked.Position += CheckOffset;
+        if (streamToBeChecked.Position != (i + CheckOffset))
             // The stream for reading the image data must support the property "Position"
             throw new ExifException(ExifErrCode.ImageHasUnsupportedFeatures);
 
-        StreamToBeChecked.Position = i;
+        streamToBeChecked.Position = i;
 
         return StreamImageType;
     }
 
-    private void EvaluateTiffHeader(byte[] TiffHeader, int TiffHeaderBytesRead, out int IfdPrimaryDataOffset)
+    private void EvaluateTiffHeader(byte[] tiffHeader, int tiffHeaderBytesRead, out int ifdPrimaryDataOffset)
     {
-        if (TiffHeaderBytesRead < TiffHeaderLen)
+        if (tiffHeaderBytesRead < TiffHeaderLen)
             throw new ExifException(ErrCodeForIllegalExifBlock);
 
-        uint TiffHeaderSignature = ReadUInt32BE(TiffHeader, 0);
+        uint TiffHeaderSignature = ReadUInt32BE(tiffHeader, 0);
         ByteOrder = TiffHeaderSignature == TiffHeaderSignatureLE
             ? ExifByteOrder.LittleEndian
             : TiffHeaderSignature == TiffHeaderSignatureBE ? ExifByteOrder.BigEndian : throw new ExifException(ErrCodeForIllegalExifBlock);
 
-        IfdPrimaryDataOffset = (int)ExifReadUInt32(TiffHeader, 4);
-        if (IfdPrimaryDataOffset < TiffHeaderLen)
+        ifdPrimaryDataOffset = (int)ExifReadUInt32(tiffHeader, 4);
+        if (ifdPrimaryDataOffset < TiffHeaderLen)
             throw new ExifException(ErrCodeForIllegalExifBlock);
     }
 
-    private void SaveJpeg(Stream SourceStream, Stream DestStream)
+    private void SaveJpeg(Stream sourceStream, Stream destStream)
     {
         const long FirstBlockStartPosition = 2;
         ushort BlockMarker;
         byte[] BlockContent = new byte[65536];
         byte[] TempBuffer = new byte[4];
 
-        SourceStream.Position = FirstBlockStartPosition;
+        sourceStream.Position = FirstBlockStartPosition;
         WriteUInt16BE(TempBuffer, 0, JpegSoiMarker);
-        DestStream.Write(TempBuffer, 0, 2);
+        destStream.Write(TempBuffer, 0, 2);
 
         // Copy all APP0 blocks of the source file. These blocks should be the JFIF blocks.
         do
         {
-            ReadJpegBlockMarker(SourceStream, out BlockMarker, out int BlockContentSize);
+            ReadJpegBlockMarker(sourceStream, out BlockMarker, out int BlockContentSize);
             if (BlockMarker == JpegSosMarker)
                 break; // Start of JPEG image matrix reached
 
-            long NextBlockStartPosition = SourceStream.Position + BlockContentSize;
+            long NextBlockStartPosition = sourceStream.Position + BlockContentSize;
             if (BlockMarker == JpegApp0Marker)
             {
                 WriteUInt16BE(TempBuffer, 0, BlockMarker);
                 WriteUInt16BE(TempBuffer, 2, (ushort)(BlockContentSize + 2));
-                DestStream.Write(TempBuffer, 0, 4);
-                if (SourceStream.Read(BlockContent, 0, BlockContentSize) != BlockContentSize)
+                destStream.Write(TempBuffer, 0, 4);
+                if (sourceStream.Read(BlockContent, 0, BlockContentSize) != BlockContentSize)
                     throw new ExifException(ExifErrCode.InternalImageStructureIsWrong);
 
-                DestStream.Write(BlockContent, 0, BlockContentSize);
+                destStream.Write(BlockContent, 0, BlockContentSize);
             }
 
-            SourceStream.Position = NextBlockStartPosition;
+            sourceStream.Position = NextBlockStartPosition;
         }
         while (true);
 
@@ -1878,29 +1866,29 @@ internal partial class ExifService
         {
             WriteUInt16BE(TempBuffer, 0, JpegApp1Marker);
             WriteUInt16BE(TempBuffer, 2, (ushort)(2 + 6 + TiffHeaderLen + NewExifBlockLen));
-            DestStream.Write(TempBuffer, 0, 4);
-            DestStream.Write(JpegExifSignature, 0, JpegExifSignature.Length);
+            destStream.Write(TempBuffer, 0, 4);
+            destStream.Write(JpegExifSignature, 0, JpegExifSignature.Length);
             CreateTiffHeader(out byte[] TiffHeader, TiffHeaderLen);
-            DestStream.Write(TiffHeader, 0, TiffHeader.Length);
-            DestStream.Write(NewExifBlock.Buffer, 0, NewExifBlockLen);
+            destStream.Write(TiffHeader, 0, TiffHeader.Length);
+            destStream.Write(NewExifBlock.Buffer, 0, NewExifBlockLen);
         }
 
         // Return to the first block of the image
-        SourceStream.Position = FirstBlockStartPosition;
+        sourceStream.Position = FirstBlockStartPosition;
         do
         {
-            ReadJpegBlock(SourceStream, BlockContent, out int BlockContentSize, out BlockMarker, out ImageFileBlock BlockType, out _);
+            ReadJpegBlock(sourceStream, BlockContent, out int BlockContentSize, out BlockMarker, out ImageFileBlock BlockType, out _);
             if (BlockMarker == JpegSosMarker)
             {
                 // Start of JPEG image matrix reached. Copy all remaining data from source stream to destination stream
                 // without further interpretation.
                 WriteUInt16BE(TempBuffer, 0, BlockMarker);
-                DestStream.Write(TempBuffer, 0, 2);
+                destStream.Write(TempBuffer, 0, 2);
                 int k;
                 do
                 {
-                    k = SourceStream.Read(BlockContent, 0, BlockContent.Length);
-                    DestStream.Write(BlockContent, 0, k);
+                    k = sourceStream.Read(BlockContent, 0, BlockContent.Length);
+                    destStream.Write(BlockContent, 0, k);
                 }
                 while (k == BlockContent.Length);
                 break; // Destination stream was completely written
@@ -1922,18 +1910,18 @@ internal partial class ExifService
             {
                 WriteUInt16BE(TempBuffer, 0, BlockMarker);
                 WriteUInt16BE(TempBuffer, 2, (ushort)(BlockContentSize + 2));
-                DestStream.Write(TempBuffer, 0, 4);
-                DestStream.Write(BlockContent, 0, BlockContentSize);
+                destStream.Write(TempBuffer, 0, 4);
+                destStream.Write(BlockContent, 0, BlockContentSize);
             }
         }
         while (true);
     }
 
-    private void SaveTiff(Stream SourceStream, Stream DestStream)
+    private void SaveTiff(Stream sourceStream, Stream destStream)
     {
-        SourceStream.Position = 0;
+        sourceStream.Position = 0;
         byte[] TiffHeader = new byte[TiffHeaderLen];
-        if (SourceStream.Read(TiffHeader, 0, TiffHeaderLen) != TiffHeaderLen)
+        if (sourceStream.Read(TiffHeader, 0, TiffHeaderLen) != TiffHeaderLen)
             throw new ExifException(ExifErrCode.InternalImageStructureIsWrong);
 
         ExifByteOrder SourceStreamByteOrder = ExifByteOrder.LittleEndian;
@@ -1968,13 +1956,13 @@ internal partial class ExifService
         do
         {
             ExifService CurrentImageExif = CreateSubExifData(
-                TiffStream: SourceStream,
-                ExifBlockOffset: ref SourceStreamExifBlockOffset,
-                ByteOrder: SourceStreamByteOrder,
-                SegmentOffsetTable: out uint[] SegmentOffsetTable,
-                SegmentByteCountTable: out uint[] SegmentByteCountTable,
-                SegmentOffsetsTag: out ExifTag SegmentOffsetsTag,
-                SegmentByteCountsTag: out ExifTag SegmentByteCountsTag);
+                tiffStream: sourceStream,
+                exifBlockOffset: ref SourceStreamExifBlockOffset,
+                byteOrder: SourceStreamByteOrder,
+                segmentOffsetTable: out uint[] SegmentOffsetTable,
+                segmentByteCountTable: out uint[] SegmentByteCountTable,
+                segmentOffsetsTag: out ExifTag SegmentOffsetsTag,
+                segmentByteCountsTag: out ExifTag SegmentByteCountsTag);
 
             if (ImageNumber == 0)
                 CurrentImageExif = this; // Discard the EXIF block returned by "CreateSubExifData"
@@ -2011,14 +1999,14 @@ internal partial class ExifService
             {
                 // Write TIFF header to destination stream
                 CurrentImageExif.ExifWriteUInt32(TiffHeader, 4, CurrentDestStreamOffset);
-                DestStream.Write(TiffHeader, 0, TiffHeaderLen);
+                destStream.Write(TiffHeader, 0, TiffHeaderLen);
             }
             else
             {
                 // Insert the the pointer to the EXIF block of the current image into the binary data of the EXIF block of
                 // the previous image. Then write the previous EXIF block to destination stream.
                 CurrentImageExif.ExifWriteUInt32(ExifBlockAsBinaryData!.Buffer, NextExifBlockPointerIndex, CurrentDestStreamOffset);
-                DestStream.Write(ExifBlockAsBinaryData.Buffer, 0, ExifBlockAsBinaryData.Length);
+                destStream.Write(ExifBlockAsBinaryData.Buffer, 0, ExifBlockAsBinaryData.Length);
             }
 
             // Write image matrix: copy image segments from source to destination stream
@@ -2026,22 +2014,22 @@ internal partial class ExifService
             {
                 int RemainingByteCount = (int)SegmentByteCountTable[k];
                 int BytesToRead = TempBuffer.Length;
-                SourceStream.Position = SegmentOffsetTable[k];
+                sourceStream.Position = SegmentOffsetTable[k];
                 do
                 {
                     if (BytesToRead > RemainingByteCount)
                         BytesToRead = RemainingByteCount;
-                    if (SourceStream.Read(TempBuffer, 0, BytesToRead) != BytesToRead)
+                    if (sourceStream.Read(TempBuffer, 0, BytesToRead) != BytesToRead)
                         throw new ExifException(ExifErrCode.InternalImageStructureIsWrong);
 
-                    DestStream.Write(TempBuffer, 0, BytesToRead);
+                    destStream.Write(TempBuffer, 0, BytesToRead);
                     RemainingByteCount -= BytesToRead;
                 }
                 while (RemainingByteCount > 0);
             }
 
             if (HasImageMatrixFillByte)
-                DestStream.WriteByte(0);
+                destStream.WriteByte(0);
 
             NextExifBlockPointerIndex = CurrentImageExif.CreateExifBlock(out ExifBlockAsBinaryData, (int)CurrentDestStreamOffset);
             CurrentDestStreamOffset += (uint)ExifBlockAsBinaryData.Length;
@@ -2052,81 +2040,81 @@ internal partial class ExifService
         }
         while (SourceStreamExifBlockOffset != 0);
 
-        DestStream.Write(ExifBlockAsBinaryData.Buffer, 0, ExifBlockAsBinaryData.Length);
+        destStream.Write(ExifBlockAsBinaryData.Buffer, 0, ExifBlockAsBinaryData.Length);
     }
 
     private static ExifService CreateSubExifData(
-        Stream TiffStream,
-        ref int ExifBlockOffset,
-        ExifByteOrder ByteOrder,
-        out uint[] SegmentOffsetTable,
-        out uint[] SegmentByteCountTable,
-        out ExifTag SegmentOffsetsTag,
-        out ExifTag SegmentByteCountsTag)
+        Stream tiffStream,
+        ref int exifBlockOffset,
+        ExifByteOrder byteOrder,
+        out uint[] segmentOffsetTable,
+        out uint[] segmentByteCountTable,
+        out ExifTag segmentOffsetsTag,
+        out ExifTag segmentByteCountsTag)
     {
         ExifService SubExifBlock = new()
         {
-            ByteOrder = ByteOrder,
+            ByteOrder = byteOrder,
             ImageType = ImageType.Tiff,
             SourceExifBlock = null,
-            SourceExifStream = TiffStream
+            SourceExifStream = tiffStream
         };
 
-        ExifBlockOffset = SubExifBlock.EvaluateExifBlock(ExifBlockOffset);
+        exifBlockOffset = SubExifBlock.EvaluateExifBlock(exifBlockOffset);
         if (SubExifBlock.GetTagItem(ExifTag.StripOffsets, out TagItem? SegmentOffsetsTagItem) &&
             SubExifBlock.GetTagItem(ExifTag.StripByteCounts, out TagItem? SegmentByteCountsTagItem))
         {
-            SegmentOffsetsTag = ExifTag.StripOffsets;
-            SegmentByteCountsTag = ExifTag.StripByteCounts;
+            segmentOffsetsTag = ExifTag.StripOffsets;
+            segmentByteCountsTag = ExifTag.StripByteCounts;
         }
         else if (SubExifBlock.GetTagItem(ExifTag.TileOffsets, out SegmentOffsetsTagItem) &&
                  SubExifBlock.GetTagItem(ExifTag.TileByteCounts, out SegmentByteCountsTagItem))
         {
-            SegmentOffsetsTag = ExifTag.TileOffsets;
-            SegmentByteCountsTag = ExifTag.TileByteCounts;
+            segmentOffsetsTag = ExifTag.TileOffsets;
+            segmentByteCountsTag = ExifTag.TileByteCounts;
         }
         else
         {
             throw new ExifException(ExifErrCode.InternalImageStructureIsWrong);
         }
 
-        int ValueCount = SegmentOffsetsTagItem.ValueCount;
-        SegmentOffsetTable = new uint[ValueCount];
-        SegmentByteCountTable = new uint[ValueCount];
+        int valueCount = SegmentOffsetsTagItem.ValueCount;
+        segmentOffsetTable = new uint[valueCount];
+        segmentByteCountTable = new uint[valueCount];
         bool IsOffsetTable16Bit = SegmentOffsetsTagItem.TagType == ExifTagType.UShort;
         bool ByteCountTable16Bit = SegmentByteCountsTagItem.TagType == ExifTagType.UShort;
         uint v;
-        for (int i = 0; i < ValueCount; i++)
+        for (int i = 0; i < valueCount; i++)
         {
             v = IsOffsetTable16Bit
                 ? SubExifBlock.ExifReadUInt16(SegmentOffsetsTagItem.ValueData, SegmentOffsetsTagItem.ValueIndex + (i << 1))
                 : SubExifBlock.ExifReadUInt32(SegmentOffsetsTagItem.ValueData, SegmentOffsetsTagItem.ValueIndex + (i << 2));
-            SegmentOffsetTable[i] = v;
+            segmentOffsetTable[i] = v;
             v = ByteCountTable16Bit
                 ? SubExifBlock.ExifReadUInt16(SegmentByteCountsTagItem.ValueData, SegmentByteCountsTagItem.ValueIndex + (i << 1))
                 : SubExifBlock.ExifReadUInt32(SegmentByteCountsTagItem.ValueData, SegmentByteCountsTagItem.ValueIndex + (i << 2));
-            SegmentByteCountTable[i] = v;
+            segmentByteCountTable[i] = v;
         }
 
         return SubExifBlock;
     }
 
-    private void SavePng(Stream SourceStream, Stream DestStream)
+    private void SavePng(Stream sourceStream, Stream destStream)
     {
         uint ChunkType;
         byte[] TempData = new byte[65536];
         byte[] BlockContent = new byte[30]; // Used for signature data at the beginning of the block
 
-        SourceStream.Position = 8;
+        sourceStream.Position = 8;
         WriteUInt32BE(TempData, 0, PngHeaderPart1);
         WriteUInt32BE(TempData, 4, PngHeaderPart2);
-        DestStream.Write(TempData, 0, 8);
+        destStream.Write(TempData, 0, 8);
         do
         {
             bool CopyBlockFromSourceStream = true;
-            long BlockStartStreamPos = SourceStream.Position;
-            ReadPngBlockHeader(SourceStream, TempData, out int DataLength, out ChunkType);
-            _ = DetectPngImageBlock(SourceStream, BlockContent, ChunkType, out ImageFileBlock BlockType);
+            long BlockStartStreamPos = sourceStream.Position;
+            ReadPngBlockHeader(sourceStream, TempData, out int DataLength, out ChunkType);
+            _ = DetectPngImageBlock(sourceStream, BlockContent, ChunkType, out ImageFileBlock BlockType);
             if (BlockType != ImageFileBlock.Unknown)
             {
                 if ((BlockType == ImageFileBlock.Exif) || (ImageFileBlockInfo[(int)BlockType] == ImageFileBlockState.Removed))
@@ -2138,16 +2126,16 @@ internal partial class ExifService
             if (CopyBlockFromSourceStream)
             {
                 // Copy current block from source to destination stream
-                SourceStream.Position = BlockStartStreamPos;
+                sourceStream.Position = BlockStartStreamPos;
                 int RemainingByteCount = DataLength + 12;
                 int BytesToRead = TempData.Length;
                 do
                 {
                     if (BytesToRead > RemainingByteCount)
                         BytesToRead = RemainingByteCount;
-                    if (SourceStream.Read(TempData, 0, BytesToRead) == BytesToRead)
+                    if (sourceStream.Read(TempData, 0, BytesToRead) == BytesToRead)
                     {
-                        DestStream.Write(TempData, 0, BytesToRead);
+                        destStream.Write(TempData, 0, BytesToRead);
                         RemainingByteCount -= BytesToRead;
                     }
                     else
@@ -2159,7 +2147,7 @@ internal partial class ExifService
             }
             else
             {
-                SourceStream.Position = BlockStartStreamPos + DataLength + 12;
+                sourceStream.Position = BlockStartStreamPos + DataLength + 12;
             }
 
             if (ChunkType == PngIhdrChunk)
@@ -2173,15 +2161,15 @@ internal partial class ExifService
                     uint BlockLength = TiffHeaderLen + (uint)NewExifBlockLen;
                     WriteUInt32BE(TempData, 0, BlockLength);
                     WriteUInt32BE(TempData, 4, PngExifChunk);
-                    DestStream.Write(TempData, 0, 8);
-                    DestStream.Write(TiffHeader, 0, TiffHeaderLen);
-                    DestStream.Write(NewExifBlock.Buffer, 0, NewExifBlockLen);
+                    destStream.Write(TempData, 0, 8);
+                    destStream.Write(TiffHeader, 0, TiffHeaderLen);
+                    destStream.Write(NewExifBlock.Buffer, 0, NewExifBlockLen);
 
                     uint Crc32 = CalculateCrc32(TempData, 4, 4, false); // Checksum over chunk type
                     Crc32 = CalculateCrc32(TiffHeader, 0, TiffHeaderLen, false, Crc32);
                     Crc32 = CalculateCrc32(NewExifBlock.Buffer, 0, NewExifBlockLen, true, Crc32);
                     WriteUInt32BE(TempData, 0, Crc32);
-                    DestStream.Write(TempData, 0, 4);
+                    destStream.Write(TempData, 0, 4);
                 }
             }
         }
@@ -2198,43 +2186,43 @@ internal partial class ExifService
         _ = EvaluateExifBlock(TiffHeaderLen);
     }
 
-    private void WriteTagToFlexArray(TagItem TempTagData, FlexArray WriteData, ref int TagDataIndex, int ExifBlockOffset)
+    private void WriteTagToFlexArray(TagItem tempTagData, FlexArray writeData, ref int tagDataIndex, int exifBlockOffset)
     {
-        int i = TagDataIndex;
-        TagDataIndex += 12;
-        ExifWriteUInt16(WriteData.Buffer, i, (ushort)TempTagData.TagId);
-        ExifWriteUInt16(WriteData.Buffer, i + 2, (ushort)TempTagData.TagType);
-        ExifWriteUInt32(WriteData.Buffer, i + 4, (uint)TempTagData.ValueCount);
-        int ByteCount = GetTagByteCount(TempTagData.TagType, TempTagData.ValueCount);
+        int i = tagDataIndex;
+        tagDataIndex += 12;
+        ExifWriteUInt16(writeData.Buffer, i, (ushort)tempTagData.TagId);
+        ExifWriteUInt16(writeData.Buffer, i + 2, (ushort)tempTagData.TagType);
+        ExifWriteUInt32(writeData.Buffer, i + 4, (uint)tempTagData.ValueCount);
+        int ByteCount = GetTagByteCount(tempTagData.TagType, tempTagData.ValueCount);
         if (ByteCount <= 4)
         {
             // The tag does not have outsourced data. In this case exactly 4 bytes have to be written.
-            WriteData.Buffer[i + 8] = TempTagData.ValueData[TempTagData.ValueIndex];
+            writeData.Buffer[i + 8] = tempTagData.ValueData[tempTagData.ValueIndex];
             byte v = 0;
             if (ByteCount >= 2)
-                v = TempTagData.ValueData[TempTagData.ValueIndex + 1];
-            WriteData.Buffer[i + 9] = v;
+                v = tempTagData.ValueData[tempTagData.ValueIndex + 1];
+            writeData.Buffer[i + 9] = v;
             v = 0;
             if (ByteCount >= 3)
-                v = TempTagData.ValueData[TempTagData.ValueIndex + 2];
-            WriteData.Buffer[i + 10] = v;
+                v = tempTagData.ValueData[tempTagData.ValueIndex + 2];
+            writeData.Buffer[i + 10] = v;
             v = 0;
             if (ByteCount >= 4)
-                v = TempTagData.ValueData[TempTagData.ValueIndex + 3];
-            WriteData.Buffer[i + 11] = v;
+                v = tempTagData.ValueData[tempTagData.ValueIndex + 3];
+            writeData.Buffer[i + 11] = v;
         }
         else
         {
             // The tag has outsourced data. The outsourced data is added at the end of array "WriteData".
-            int OutsourcedDataIndex = WriteData.Length;
-            ExifWriteUInt32(WriteData.Buffer, i + 8, (uint)(ExifBlockOffset + OutsourcedDataIndex));
-            WriteData.Length += ByteCount; // Allocate memory in array "WriteData"
-            Array.Copy(TempTagData.ValueData, TempTagData.ValueIndex, WriteData.Buffer, OutsourcedDataIndex, ByteCount);
+            int OutsourcedDataIndex = writeData.Length;
+            ExifWriteUInt32(writeData.Buffer, i + 8, (uint)(exifBlockOffset + OutsourcedDataIndex));
+            writeData.Length += ByteCount; // Allocate memory in array "WriteData"
+            Array.Copy(tempTagData.ValueData, tempTagData.ValueIndex, writeData.Buffer, OutsourcedDataIndex, ByteCount);
             if ((ByteCount & 0x1) != 0)
             {
                 // The EXIF block must have a 16 bit alignment. "ByteCount" is odd, therefore add a fill byte.
-                WriteData.Length++; // Allocate 1 byte in array "WriteData"
-                WriteData.Buffer[WriteData.Length - 1] = 0;
+                writeData.Length++; // Allocate 1 byte in array "WriteData"
+                writeData.Buffer[writeData.Length - 1] = 0;
             }
         }
     }
@@ -2243,104 +2231,104 @@ internal partial class ExifService
     {
         int TiffNextExifBlockPointerIndex = 0;
 
-        FlexArray WriteExifBlock = new(JpegMaxExifBlockLen);
-        newExifBlock = WriteExifBlock;
-        int WriteIndex = 0;
+        FlexArray writeExifBlock = new(JpegMaxExifBlockLen);
+        newExifBlock = writeExifBlock;
+        int writeIndex = 0;
 
         UpdateIfdPointerTags(
-            PrivateDataPointerTag: out TagItem? PrivateDataPointerTag,
-            GpsInfoDataPointerTag: out TagItem? GpsInfoDataPointerTag,
-            InteroperabilityPointerTag: out TagItem? InteroperabilityPointerTag);
+            privateDataPointerTag: out TagItem? PrivateDataPointerTag,
+            gpsInfoDataPointerTag: out TagItem? GpsInfoDataPointerTag,
+            interoperabilityPointerTag: out TagItem? InteroperabilityPointerTag);
 
         CreateIfdPrimaryData(
-            WriteExifBlock: WriteExifBlock,
-            WriteIndex: ref WriteIndex,
-            ExifBlockOffset: currentExifBlockOffset,
-            PrivateDataIfdPointerIndex: out int PrivateDataIfdPointerIndex,
-            GpsInfoDataIfdPointerIndex: out int GpsInfoDataIfdPointerIndex,
-            ThumbnailDataIfdPointerIndex: out int ThumbnailDataIfdPointerIndex);
+            writeExifBlock: writeExifBlock,
+            writeIndex: ref writeIndex,
+            exifBlockOffset: currentExifBlockOffset,
+            privateDataIfdPointerIndex: out int PrivateDataIfdPointerIndex,
+            gpsInfoDataIfdPointerIndex: out int GpsInfoDataIfdPointerIndex,
+            thumbnailDataIfdPointerIndex: out int ThumbnailDataIfdPointerIndex);
 
         CreateIfdPrivateData(
-            WriteExifBlock: WriteExifBlock,
-            WriteIndex: ref WriteIndex,
-            ExifBlockOffset: currentExifBlockOffset,
-            PrivateDataIfdPointerIndex: PrivateDataIfdPointerIndex,
-            PrivateDataPointerTag: PrivateDataPointerTag,
-            InteroperabilityIfdPointerIndex: out int InteroperabilityIfdPointerIndex);
+            writeExifBlock: writeExifBlock,
+            writeIndex: ref writeIndex,
+            exifBlockOffset: currentExifBlockOffset,
+            privateDataIfdPointerIndex: PrivateDataIfdPointerIndex,
+            privateDataPointerTag: PrivateDataPointerTag,
+            interoperabilityIfdPointerIndex: out int interoperabilityIfdPointerIndex);
 
         CreateIfdGpsInfoData(
-            WriteExifBlock: WriteExifBlock,
-            WriteIndex: ref WriteIndex,
-            ExifBlockOffset: currentExifBlockOffset,
-            GpsInfoDataIfdPointerIndex: GpsInfoDataIfdPointerIndex,
-            GpsInfoDataPointerTag: GpsInfoDataPointerTag);
+            writeExifBlock: writeExifBlock,
+            writeIndex: ref writeIndex,
+            exifBlockOffset: currentExifBlockOffset,
+            gpsInfoDataIfdPointerIndex: GpsInfoDataIfdPointerIndex,
+            gpsInfoDataPointerTag: GpsInfoDataPointerTag);
 
         CreateIfdInteroperability(
-            WriteExifBlock: WriteExifBlock,
-            WriteIndex: ref WriteIndex,
-            ExifBlockOffset: currentExifBlockOffset,
-            InteroperabilityIfdPointerIndex: InteroperabilityIfdPointerIndex,
-            InteroperabilityPointerTag: InteroperabilityPointerTag);
+            writeExifBlock: writeExifBlock,
+            writeIndex: ref writeIndex,
+            exifBlockOffset: currentExifBlockOffset,
+            interoperabilityIfdPointerIndex: interoperabilityIfdPointerIndex,
+            interoperabilityPointerTag: InteroperabilityPointerTag);
 
         if (ImageType == ImageType.Tiff)
         {
             // TIFF files don't have a thumbnail image, but they may have multiple images
             TiffNextExifBlockPointerIndex = ThumbnailDataIfdPointerIndex;
-            ExifWriteUInt32(WriteExifBlock.Buffer, TiffNextExifBlockPointerIndex, 0); // Set pointer to next image provisorily to 0
+            ExifWriteUInt32(writeExifBlock.Buffer, TiffNextExifBlockPointerIndex, 0); // Set pointer to next image provisorily to 0
         }
         else
         {
-            CreateIfdThumbnailData(WriteExifBlock, ref WriteIndex, currentExifBlockOffset, ThumbnailDataIfdPointerIndex);
+            CreateIfdThumbnailData(writeExifBlock, ref writeIndex, currentExifBlockOffset, ThumbnailDataIfdPointerIndex);
         }
 
         // Check if new EXIF block is empty. Empty EXIF blocks should not be written instead the EXIF block should be removed.
-        if (WriteExifBlock.Length <= MinExifBlockLen)
+        if (writeExifBlock.Length <= MinExifBlockLen)
         {
-            WriteExifBlock.Length = 0;
+            writeExifBlock.Length = 0;
         }
 
         return TiffNextExifBlockPointerIndex;
     }
 
-    private void CreateTiffHeader(out byte[] TiffHeader, int ExifBlockOffset)
+    private void CreateTiffHeader(out byte[] tiffHeader, int exifBlockOffset)
     {
-        TiffHeader = new byte[TiffHeaderLen];
+        tiffHeader = new byte[TiffHeaderLen];
         if (ByteOrder == ExifByteOrder.BigEndian)
         {
-            WriteUInt32BE(TiffHeader, 0, TiffHeaderSignatureBE);
+            WriteUInt32BE(tiffHeader, 0, TiffHeaderSignatureBE);
         }
         else if (ByteOrder == ExifByteOrder.LittleEndian)
         {
-            WriteUInt32BE(TiffHeader, 0, TiffHeaderSignatureLE);
+            WriteUInt32BE(tiffHeader, 0, TiffHeaderSignatureLE);
         }
         else
         {
             throw new ExifException(ExifErrCode.InternalError);
         }
 
-        ExifWriteUInt32(TiffHeader, 4, (uint)ExifBlockOffset);
+        ExifWriteUInt32(tiffHeader, 4, (uint)exifBlockOffset);
     }
 
     private void UpdateIfdPointerTags(
-        out TagItem? PrivateDataPointerTag,
-        out TagItem? GpsInfoDataPointerTag,
-        out TagItem? InteroperabilityPointerTag)
+        out TagItem? privateDataPointerTag,
+        out TagItem? gpsInfoDataPointerTag,
+        out TagItem? interoperabilityPointerTag)
     {
         Dictionary<ExifTagId, TagItem> PrivateDataIfdTable = TagTable[(uint)ExifIfd.PrivateData];
         Dictionary<ExifTagId, TagItem> InteroperabilityIfdTable = TagTable[(uint)ExifIfd.Interoperability];
-        _ = PrivateDataIfdTable.TryGetValue(ExifTagId.InteroperabilityIfdPointer, out InteroperabilityPointerTag);
+        _ = PrivateDataIfdTable.TryGetValue(ExifTagId.InteroperabilityIfdPointer, out interoperabilityPointerTag);
         int InteroperabilityTagCount = InteroperabilityIfdTable.Count;
         if (InteroperabilityTagCount > 0)
         {
-            if (InteroperabilityPointerTag == null)
+            if (interoperabilityPointerTag == null)
             {
-                InteroperabilityPointerTag = new TagItem(ExifTag.InteroperabilityIfdPointer, ExifTagType.ULong, 1);
-                PrivateDataIfdTable.Add(ExifTagId.InteroperabilityIfdPointer, InteroperabilityPointerTag);
+                interoperabilityPointerTag = new TagItem(ExifTag.InteroperabilityIfdPointer, ExifTagType.ULong, 1);
+                PrivateDataIfdTable.Add(ExifTagId.InteroperabilityIfdPointer, interoperabilityPointerTag);
             }
         }
         else
         {
-            if (InteroperabilityPointerTag != null)
+            if (interoperabilityPointerTag != null)
             {
                 _ = PrivateDataIfdTable.Remove(ExifTagId.InteroperabilityIfdPointer);
             }
@@ -2348,36 +2336,36 @@ internal partial class ExifService
 
         Dictionary<ExifTagId, TagItem> PrimaryDataIfdTable = TagTable[(uint)ExifIfd.PrimaryData];
         Dictionary<ExifTagId, TagItem> GpsInfoDataIfdTable = TagTable[(uint)ExifIfd.GpsInfoData];
-        _ = PrimaryDataIfdTable.TryGetValue(ExifTagId.GpsInfoIfdPointer, out GpsInfoDataPointerTag);
+        _ = PrimaryDataIfdTable.TryGetValue(ExifTagId.GpsInfoIfdPointer, out gpsInfoDataPointerTag);
         int GpsInfoDataTagCount = GpsInfoDataIfdTable.Count;
         if (GpsInfoDataTagCount > 0)
         {
-            if (GpsInfoDataPointerTag == null)
+            if (gpsInfoDataPointerTag == null)
             {
-                GpsInfoDataPointerTag = new TagItem(ExifTag.GpsInfoIfdPointer, ExifTagType.ULong, 1);
-                PrimaryDataIfdTable.Add(ExifTagId.GpsInfoIfdPointer, GpsInfoDataPointerTag);
+                gpsInfoDataPointerTag = new TagItem(ExifTag.GpsInfoIfdPointer, ExifTagType.ULong, 1);
+                PrimaryDataIfdTable.Add(ExifTagId.GpsInfoIfdPointer, gpsInfoDataPointerTag);
             }
         }
         else
         {
-            if (GpsInfoDataPointerTag != null)
+            if (gpsInfoDataPointerTag != null)
             {
                 _ = PrimaryDataIfdTable.Remove(ExifTagId.GpsInfoIfdPointer);
             }
         }
 
-        _ = PrimaryDataIfdTable.TryGetValue(ExifTagId.ExifIfdPointer, out PrivateDataPointerTag);
+        _ = PrimaryDataIfdTable.TryGetValue(ExifTagId.ExifIfdPointer, out privateDataPointerTag);
         if (PrivateDataIfdTable.Count > 0)
         {
-            if (PrivateDataPointerTag == null)
+            if (privateDataPointerTag == null)
             {
-                PrivateDataPointerTag = new TagItem(ExifTag.ExifIfdPointer, ExifTagType.ULong, 1);
-                PrimaryDataIfdTable.Add(ExifTagId.ExifIfdPointer, PrivateDataPointerTag);
+                privateDataPointerTag = new TagItem(ExifTag.ExifIfdPointer, ExifTagType.ULong, 1);
+                PrimaryDataIfdTable.Add(ExifTagId.ExifIfdPointer, privateDataPointerTag);
             }
         }
         else
         {
-            if (PrivateDataPointerTag != null)
+            if (privateDataPointerTag != null)
             {
                 _ = PrimaryDataIfdTable.Remove(ExifTagId.ExifIfdPointer);
             }
@@ -2385,108 +2373,108 @@ internal partial class ExifService
     }
 
     private void CreateIfdPrimaryData(
-        FlexArray WriteExifBlock,
-        ref int WriteIndex,
-        int ExifBlockOffset,
-        out int PrivateDataIfdPointerIndex,
-        out int GpsInfoDataIfdPointerIndex,
-        out int ThumbnailDataIfdPointerIndex)
+        FlexArray writeExifBlock,
+        ref int writeIndex,
+        int exifBlockOffset,
+        out int privateDataIfdPointerIndex,
+        out int gpsInfoDataIfdPointerIndex,
+        out int thumbnailDataIfdPointerIndex)
     {
         Dictionary<ExifTagId, TagItem> PrimaryDataIfdTable = TagTable[(uint)ExifIfd.PrimaryData];
         int PrimaryDataTagCount = PrimaryDataIfdTable.Count;
-        PrivateDataIfdPointerIndex = -1;
-        GpsInfoDataIfdPointerIndex = -1;
+        privateDataIfdPointerIndex = -1;
+        gpsInfoDataIfdPointerIndex = -1;
         int IfdFixedSize = 2 + (PrimaryDataTagCount * 12) + 4; // "+ 4" for thumbnail data pointer
-        WriteExifBlock.Length += IfdFixedSize; // Allocate memory in array "WriteExifBlock"
-        ExifWriteUInt16(WriteExifBlock.Buffer, WriteIndex, (ushort)PrimaryDataTagCount);
-        WriteIndex += 2;
+        writeExifBlock.Length += IfdFixedSize; // Allocate memory in array "writeExifBlock"
+        ExifWriteUInt16(writeExifBlock.Buffer, writeIndex, (ushort)PrimaryDataTagCount);
+        writeIndex += 2;
         foreach (TagItem t in PrimaryDataIfdTable.Values)
         {
             if (t.TagId == ExifTagId.ExifIfdPointer)
             {
                 t.TagType = ExifTagType.ULong;
-                PrivateDataIfdPointerIndex = WriteIndex + 8;  // The "Private Data IFD" pointer is unknown at this time and a dummy
+                privateDataIfdPointerIndex = writeIndex + 8;  // The "Private Data IFD" pointer is unknown at this time and a dummy
                                                               // value is written for it. The index is stored, at which the actual pointer can be written later.
             }
             else if (t.TagId == ExifTagId.GpsInfoIfdPointer)
             {
                 t.TagType = ExifTagType.ULong;
-                GpsInfoDataIfdPointerIndex = WriteIndex + 8; // The "GPS Info Data IFD" pointer is unknown at this time and a dummy
+                gpsInfoDataIfdPointerIndex = writeIndex + 8; // The "GPS Info Data IFD" pointer is unknown at this time and a dummy
                                                              // value is written for it. The index is stored, at which the actual pointer can be written later.
             }
 
-            WriteTagToFlexArray(t, WriteExifBlock, ref WriteIndex, ExifBlockOffset);
+            WriteTagToFlexArray(t, writeExifBlock, ref writeIndex, exifBlockOffset);
         }
 
         // Now the thumbnail data pointer should be written. Because it is unknown at this time the index is stored.
-        ThumbnailDataIfdPointerIndex = WriteIndex;
-        WriteIndex = WriteExifBlock.Length; // Write the next IFD behind the outsourced data of the IFD Primary Data
+        thumbnailDataIfdPointerIndex = writeIndex;
+        writeIndex = writeExifBlock.Length; // Write the next IFD behind the outsourced data of the IFD Primary Data
     }
 
     private void CreateIfdPrivateData(
-        FlexArray WriteExifBlock,
-        ref int WriteIndex,
-        int ExifBlockOffset,
-        int PrivateDataIfdPointerIndex,
-        TagItem? PrivateDataPointerTag,
-        out int InteroperabilityIfdPointerIndex)
+        FlexArray writeExifBlock,
+        ref int writeIndex,
+        int exifBlockOffset,
+        int privateDataIfdPointerIndex,
+        TagItem? privateDataPointerTag,
+        out int interoperabilityIfdPointerIndex)
     {
         Dictionary<ExifTagId, TagItem> PrivateDataIfdTable = TagTable[(uint)ExifIfd.PrivateData];
         int PrivateDataTagCount = PrivateDataIfdTable.Count;
-        InteroperabilityIfdPointerIndex = -1;
-        if ((PrivateDataPointerTag != null) && (PrivateDataTagCount > 0))
+        interoperabilityIfdPointerIndex = -1;
+        if ((privateDataPointerTag != null) && (PrivateDataTagCount > 0))
         {
-            int iPrivateDataStart = WriteIndex;
+            int iPrivateDataStart = writeIndex;
             int MakerNoteDataPointerIndex, OffsetSchemaValueIndex;
             bool AddOffsetSchemaTag;
-            ExifWriteUInt32(PrivateDataPointerTag.ValueData, PrivateDataPointerTag.ValueIndex, (uint)(ExifBlockOffset + WriteIndex));
-            ExifWriteUInt32(WriteExifBlock.Buffer, PrivateDataIfdPointerIndex, (uint)(ExifBlockOffset + WriteIndex));
+            ExifWriteUInt32(privateDataPointerTag.ValueData, privateDataPointerTag.ValueIndex, (uint)(exifBlockOffset + writeIndex));
+            ExifWriteUInt32(writeExifBlock.Buffer, privateDataIfdPointerIndex, (uint)(exifBlockOffset + writeIndex));
             do
             {
                 MakerNoteDataPointerIndex = 0;
                 OffsetSchemaValueIndex = 0;
                 TagItem? OffsetSchemaTag = null;
                 int IfdFixedSize = 2 + (PrivateDataTagCount * 12) + 4; // "+ 4" for null pointer at the end
-                WriteExifBlock.Length += IfdFixedSize; // Allocate memory in array "WriteExifBlock"
-                ExifWriteUInt16(WriteExifBlock.Buffer, WriteIndex, (ushort)PrivateDataTagCount);
-                WriteIndex += 2;
+                writeExifBlock.Length += IfdFixedSize; // Allocate memory in array "writeExifBlock"
+                ExifWriteUInt16(writeExifBlock.Buffer, writeIndex, (ushort)PrivateDataTagCount);
+                writeIndex += 2;
                 foreach (TagItem t in PrivateDataIfdTable.Values)
                 {
                     if (t.TagId == ExifTagId.InteroperabilityIfdPointer)
                     {
                         t.TagType = ExifTagType.ULong;
-                        InteroperabilityIfdPointerIndex = WriteIndex + 8; // The "Interoperability IFD" pointer is unknown at this time and a dummy
+                        interoperabilityIfdPointerIndex = writeIndex + 8; // The "Interoperability IFD" pointer is unknown at this time and a dummy
                                                                           // value is written for it. The index is stored, at which the actual pointer can be written later.
                     }
                     else if (t.TagId == ExifTagId.MakerNote)
                     {
-                        MakerNoteDataPointerIndex = WriteIndex + 8;
+                        MakerNoteDataPointerIndex = writeIndex + 8;
                     }
                     else if (t.TagId == ExifTagId.OffsetSchema)
                     {
                         t.TagType = ExifTagType.SLong;
-                        OffsetSchemaValueIndex = WriteIndex + 8;
+                        OffsetSchemaValueIndex = writeIndex + 8;
                         OffsetSchemaTag = t;
                     }
 
-                    WriteTagToFlexArray(t, WriteExifBlock, ref WriteIndex, ExifBlockOffset);
+                    WriteTagToFlexArray(t, writeExifBlock, ref writeIndex, exifBlockOffset);
                 }
 
-                ExifWriteUInt32(WriteExifBlock.Buffer, WriteIndex, 0); // Write null pointer at the end of the tag list
-                WriteIndex = WriteExifBlock.Length; // Write the next IFD behind the outsourced data of the IFD Private Data
+                ExifWriteUInt32(writeExifBlock.Buffer, writeIndex, 0); // Write null pointer at the end of the tag list
+                writeIndex = writeExifBlock.Length; // Write the next IFD behind the outsourced data of the IFD Private Data
                 AddOffsetSchemaTag = CheckIfMakerNoteTagHasMoved(
-                    DataBlock: WriteExifBlock.Buffer,
-                    MakerNoteDataPointerIndex: MakerNoteDataPointerIndex,
-                    OffsetSchemaValueIndex: OffsetSchemaValueIndex,
-                    OffsetSchemaTag: OffsetSchemaTag);
+                    dataBlock: writeExifBlock.Buffer,
+                    makerNoteDataPointerIndex: MakerNoteDataPointerIndex,
+                    offsetSchemaValueIndex: OffsetSchemaValueIndex,
+                    offsetSchemaTag: OffsetSchemaTag);
 
                 if (AddOffsetSchemaTag)
                 {
                     TagItem t = new(ExifTag.OffsetSchema, ExifTagType.SLong, 1);
                     PrivateDataIfdTable.Add(ExifTagId.OffsetSchema, t);
                     PrivateDataTagCount++;
-                    WriteExifBlock.Length = iPrivateDataStart; // Free all memory that was allocated for IFD Private Data
-                    WriteIndex = iPrivateDataStart;
+                    writeExifBlock.Length = iPrivateDataStart; // Free all memory that was allocated for IFD Private Data
+                    writeIndex = iPrivateDataStart;
                 }
             }
             while (AddOffsetSchemaTag);
@@ -2494,72 +2482,76 @@ internal partial class ExifService
     }
 
     private void CreateIfdGpsInfoData(
-        FlexArray WriteExifBlock,
-        ref int WriteIndex,
-        int ExifBlockOffset,
-        int GpsInfoDataIfdPointerIndex,
-        TagItem? GpsInfoDataPointerTag)
+        FlexArray writeExifBlock,
+        ref int writeIndex,
+        int exifBlockOffset,
+        int gpsInfoDataIfdPointerIndex,
+        TagItem? gpsInfoDataPointerTag)
     {
         Dictionary<ExifTagId, TagItem> GpsInfoDataIfdTable = TagTable[(uint)ExifIfd.GpsInfoData];
         int GpsInfoDataTagCount = GpsInfoDataIfdTable.Count;
-        if ((GpsInfoDataPointerTag != null) && (GpsInfoDataTagCount > 0))
+        if ((gpsInfoDataPointerTag != null) && (GpsInfoDataTagCount > 0))
         {
-            uint GpsInfoDataOffset = (uint)(ExifBlockOffset + WriteIndex);
-            ExifWriteUInt32(GpsInfoDataPointerTag.ValueData, GpsInfoDataPointerTag.ValueIndex, GpsInfoDataOffset);
-            ExifWriteUInt32(WriteExifBlock.Buffer, GpsInfoDataIfdPointerIndex, GpsInfoDataOffset);
+            uint GpsInfoDataOffset = (uint)(exifBlockOffset + writeIndex);
+            ExifWriteUInt32(gpsInfoDataPointerTag.ValueData, gpsInfoDataPointerTag.ValueIndex, GpsInfoDataOffset);
+            ExifWriteUInt32(writeExifBlock.Buffer, gpsInfoDataIfdPointerIndex, GpsInfoDataOffset);
             int IfdFixedSize = 2 + (GpsInfoDataTagCount * 12) + 4;
-            WriteExifBlock.Length += IfdFixedSize;
-            ExifWriteUInt16(WriteExifBlock.Buffer, WriteIndex, (ushort)GpsInfoDataTagCount);
-            WriteIndex += 2;
+            writeExifBlock.Length += IfdFixedSize;
+            ExifWriteUInt16(writeExifBlock.Buffer, writeIndex, (ushort)GpsInfoDataTagCount);
+            writeIndex += 2;
             foreach (TagItem t in GpsInfoDataIfdTable.Values)
             {
-                WriteTagToFlexArray(t, WriteExifBlock, ref WriteIndex, ExifBlockOffset);
+                WriteTagToFlexArray(t, writeExifBlock, ref writeIndex, exifBlockOffset);
             }
 
-            ExifWriteUInt32(WriteExifBlock.Buffer, WriteIndex, 0); // Write null pointer at the end of the tag list
-            WriteIndex = WriteExifBlock.Length; // Write the next IFD behind the outsourced data of the IFD GPS Info Data
+            ExifWriteUInt32(writeExifBlock.Buffer, writeIndex, 0); // Write null pointer at the end of the tag list
+            writeIndex = writeExifBlock.Length; // Write the next IFD behind the outsourced data of the IFD GPS Info Data
         }
     }
 
     private void CreateIfdInteroperability(
-        FlexArray WriteExifBlock,
-        ref int WriteIndex,
-        int ExifBlockOffset,
-        int InteroperabilityIfdPointerIndex,
-        TagItem? InteroperabilityPointerTag)
+        FlexArray writeExifBlock,
+        ref int writeIndex,
+        int exifBlockOffset,
+        int interoperabilityIfdPointerIndex,
+        TagItem? interoperabilityPointerTag)
     {
         Dictionary<ExifTagId, TagItem> InteroperabilityIfdTable = TagTable[(uint)ExifIfd.Interoperability];
         int InteroperabilityTagCount = InteroperabilityIfdTable.Count;
-        if ((InteroperabilityPointerTag != null) && (InteroperabilityTagCount > 0))
+        if ((interoperabilityPointerTag != null) && (InteroperabilityTagCount > 0))
         {
-            uint InteroperabilityOffset = (uint)(ExifBlockOffset + WriteIndex);
-            ExifWriteUInt32(InteroperabilityPointerTag.ValueData, InteroperabilityPointerTag.ValueIndex, InteroperabilityOffset);
-            ExifWriteUInt32(WriteExifBlock.Buffer, InteroperabilityIfdPointerIndex, InteroperabilityOffset);
+            uint InteroperabilityOffset = (uint)(exifBlockOffset + writeIndex);
+            ExifWriteUInt32(interoperabilityPointerTag.ValueData, interoperabilityPointerTag.ValueIndex, InteroperabilityOffset);
+            ExifWriteUInt32(writeExifBlock.Buffer, interoperabilityIfdPointerIndex, InteroperabilityOffset);
             int IfdFixedSize = 2 + (InteroperabilityTagCount * 12) + 4;
-            WriteExifBlock.Length += IfdFixedSize;
-            ExifWriteUInt16(WriteExifBlock.Buffer, WriteIndex, (ushort)InteroperabilityTagCount);
-            WriteIndex += 2;
+            writeExifBlock.Length += IfdFixedSize;
+            ExifWriteUInt16(writeExifBlock.Buffer, writeIndex, (ushort)InteroperabilityTagCount);
+            writeIndex += 2;
             foreach (TagItem t in InteroperabilityIfdTable.Values)
             {
-                WriteTagToFlexArray(t, WriteExifBlock, ref WriteIndex, ExifBlockOffset);
+                WriteTagToFlexArray(t, writeExifBlock, ref writeIndex, exifBlockOffset);
             }
 
-            ExifWriteUInt32(WriteExifBlock.Buffer, WriteIndex, 0); // Write null pointer at the end of the tag list
-            WriteIndex = WriteExifBlock.Length; // Write the next IFD behind the outsourced data of the IFD Interoperability
+            ExifWriteUInt32(writeExifBlock.Buffer, writeIndex, 0); // Write null pointer at the end of the tag list
+            writeIndex = writeExifBlock.Length; // Write the next IFD behind the outsourced data of the IFD Interoperability
         }
     }
 
-    private void CreateIfdThumbnailData(FlexArray WriteExifBlock, ref int WriteIndex, int ExifBlockOffset, int ThumbnailDataIfdPointerIndex)
+    private void CreateIfdThumbnailData(
+        FlexArray writeExifBlock,
+        ref int writeIndex,
+        int exifBlockOffset,
+        int thumbnailDataIfdPointerIndex)
     {
         Dictionary<ExifTagId, TagItem> ThumbnailDataIfdTable = TagTable[(uint)ExifIfd.ThumbnailData];
         int ThumbnailDataTagCount = ThumbnailDataIfdTable.Count;
         if ((ThumbnailDataTagCount > 0) || ThumbnailImageExists())
         {
-            ExifWriteUInt32(WriteExifBlock.Buffer, ThumbnailDataIfdPointerIndex, (uint)(ExifBlockOffset + WriteIndex));
+            ExifWriteUInt32(writeExifBlock.Buffer, thumbnailDataIfdPointerIndex, (uint)(exifBlockOffset + writeIndex));
             int IfdFixedSize = 2 + (ThumbnailDataTagCount * 12) + 4;
-            WriteExifBlock.Length += IfdFixedSize;
-            ExifWriteUInt16(WriteExifBlock.Buffer, WriteIndex, (ushort)ThumbnailDataTagCount);
-            WriteIndex += 2;
+            writeExifBlock.Length += IfdFixedSize;
+            ExifWriteUInt16(writeExifBlock.Buffer, writeIndex, (ushort)ThumbnailDataTagCount);
+            writeIndex += 2;
             int ThumbnailImagePointerIndex = -1;
             TagItem? ThumbnailImagePointerTag = null;
             bool ThumbnailImageSizeTagExists = false;
@@ -2571,7 +2563,7 @@ internal partial class ExifService
                     // The pointer is not known at this time, so the index, where the pointer has to be written, is stored.
                     t.TagType = ExifTagType.ULong;
                     ThumbnailImagePointerTag = t;
-                    ThumbnailImagePointerIndex = WriteIndex + 8;
+                    ThumbnailImagePointerIndex = writeIndex + 8;
                 }
                 else if (t.TagId == ExifTagId.JpegInterchangeFormatLength)
                 {
@@ -2580,7 +2572,7 @@ internal partial class ExifService
                     ThumbnailImageSizeTagExists = true;
                 }
 
-                WriteTagToFlexArray(t, WriteExifBlock, ref WriteIndex, ExifBlockOffset);
+                WriteTagToFlexArray(t, writeExifBlock, ref writeIndex, exifBlockOffset);
             }
 
             if (ThumbnailImage != null)
@@ -2589,16 +2581,16 @@ internal partial class ExifService
                 if ((ThumbnailImagePointerIndex < 0) || (!ThumbnailImageSizeTagExists) || (ThumbnailImagePointerTag == null))
                     throw new ExifException(ExifErrCode.InternalError);
 
-                int ThumbnailImageIndex = WriteExifBlock.Length;
-                uint ThumbnailImageOffset = (uint)(ExifBlockOffset + ThumbnailImageIndex);
+                int ThumbnailImageIndex = writeExifBlock.Length;
+                uint ThumbnailImageOffset = (uint)(exifBlockOffset + ThumbnailImageIndex);
                 ExifWriteUInt32(ThumbnailImagePointerTag.ValueData, ThumbnailImagePointerTag.ValueIndex, ThumbnailImageOffset);
-                ExifWriteUInt32(WriteExifBlock.Buffer, ThumbnailImagePointerIndex, ThumbnailImageOffset);
-                WriteExifBlock.Length += ThumbnailByteCount;
-                Array.Copy(ThumbnailImage, ThumbnailStartIndex, WriteExifBlock.Buffer, ThumbnailImageIndex, ThumbnailByteCount);
-                if ((WriteExifBlock.Length & 0x1) != 0)
+                ExifWriteUInt32(writeExifBlock.Buffer, ThumbnailImagePointerIndex, ThumbnailImageOffset);
+                writeExifBlock.Length += ThumbnailByteCount;
+                Array.Copy(ThumbnailImage, ThumbnailStartIndex, writeExifBlock.Buffer, ThumbnailImageIndex, ThumbnailByteCount);
+                if ((writeExifBlock.Length & 0x1) != 0)
                 {
-                    WriteExifBlock.Length++;
-                    WriteExifBlock[^1] = 0; // Insert fill byte
+                    writeExifBlock.Length++;
+                    writeExifBlock[^1] = 0; // Insert fill byte
                 }
             }
             else
@@ -2608,33 +2600,33 @@ internal partial class ExifService
                     throw new ExifException(ExifErrCode.InternalError);
             }
 
-            ExifWriteUInt32(WriteExifBlock.Buffer, WriteIndex, 0); // Write null pointer at the end of the tag table
+            ExifWriteUInt32(writeExifBlock.Buffer, writeIndex, 0); // Write null pointer at the end of the tag table
         }
         else
         {
-            ExifWriteUInt32(WriteExifBlock.Buffer, ThumbnailDataIfdPointerIndex, 0);
+            ExifWriteUInt32(writeExifBlock.Buffer, thumbnailDataIfdPointerIndex, 0);
         }
     }
 
     private bool CheckIfMakerNoteTagHasMoved(
-        byte[] DataBlock,
-        int MakerNoteDataPointerIndex,
-        int OffsetSchemaValueIndex,
-        TagItem? OffsetSchemaTag)
+        byte[] dataBlock,
+        int makerNoteDataPointerIndex,
+        int offsetSchemaValueIndex,
+        TagItem? offsetSchemaTag)
     {
         bool MakerNoteHasMovedAndOffsetSchemaTagRequired = false;
-        if ((MakerNoteOriginalOffset > 0) && (MakerNoteDataPointerIndex > 0))
+        if ((MakerNoteOriginalOffset > 0) && (makerNoteDataPointerIndex > 0))
         {
             // "MakerNote" has existed and is now existing
-            int MakerNoteCurrentOffset = (int)ExifReadUInt32(DataBlock, MakerNoteDataPointerIndex);
+            int MakerNoteCurrentOffset = (int)ExifReadUInt32(dataBlock, makerNoteDataPointerIndex);
             if (MakerNoteOriginalOffset != MakerNoteCurrentOffset)
             {
                 // "MakerNote" has moved
-                if ((OffsetSchemaValueIndex > 0) && (OffsetSchemaTag != null))
+                if ((offsetSchemaValueIndex > 0) && (offsetSchemaTag != null))
                 {
                     int NewOffsetDifference = MakerNoteCurrentOffset - MakerNoteOriginalOffset;
-                    ExifWriteUInt32(DataBlock, OffsetSchemaValueIndex, (uint)NewOffsetDifference);
-                    ExifWriteUInt32(OffsetSchemaTag.ValueData, OffsetSchemaTag.ValueIndex, (uint)NewOffsetDifference);
+                    ExifWriteUInt32(dataBlock, offsetSchemaValueIndex, (uint)NewOffsetDifference);
+                    ExifWriteUInt32(offsetSchemaTag.ValueData, offsetSchemaTag.ValueIndex, (uint)NewOffsetDifference);
                 }
                 else
                 {
@@ -2644,19 +2636,19 @@ internal partial class ExifService
             else
             {
                 // "MakerNote" has not moved
-                if ((OffsetSchemaValueIndex > 0) && (OffsetSchemaTag != null))
+                if ((offsetSchemaValueIndex > 0) && (offsetSchemaTag != null))
                 {
-                    ExifWriteUInt32(DataBlock, OffsetSchemaValueIndex, 0); // Set move offset to 0
-                    ExifWriteUInt32(OffsetSchemaTag.ValueData, OffsetSchemaTag.ValueIndex, 0);
+                    ExifWriteUInt32(dataBlock, offsetSchemaValueIndex, 0); // Set move offset to 0
+                    ExifWriteUInt32(offsetSchemaTag.ValueData, offsetSchemaTag.ValueIndex, 0);
                 }
             }
         }
         else
         {
-            if ((OffsetSchemaValueIndex > 0) && (OffsetSchemaTag != null))
+            if ((offsetSchemaValueIndex > 0) && (offsetSchemaTag != null))
             {
-                ExifWriteUInt32(DataBlock, OffsetSchemaValueIndex, 0); // Set move offset to 0
-                ExifWriteUInt32(OffsetSchemaTag.ValueData, OffsetSchemaTag.ValueIndex, 0);
+                ExifWriteUInt32(dataBlock, offsetSchemaValueIndex, 0); // Set move offset to 0
+                ExifWriteUInt32(offsetSchemaTag.ValueData, offsetSchemaTag.ValueIndex, 0);
             }
         }
 
@@ -2666,169 +2658,169 @@ internal partial class ExifService
     /// <summary>
     /// Create an EXIF tag and initialize it with raw data.
     /// </summary>
-    /// <param name="IfdRawData">Raw data for the tag. The raw data are not copied, instead a reference
+    /// <param name="ifdRawData">Raw data for the tag. The raw data are not copied, instead a reference
     /// to "IfdRawData" is assigned.</param>
-    /// <param name="IfdRawDataIndex">Index of the first raw data byte, i. e. "IfdRawData[IfdRawDataIndex]"
+    /// <param name="ifdRawDataIndex">Index of the first raw data byte, i. e. "IfdRawData[IfdRawDataIndex]"
     /// is the first raw data byte.</param>
     /// <returns>EXIF tag as "TagItem" object.</returns>
     /// <exception cref="ExifException"></exception>
-    private TagItem CreateTagWithReferenceToIfdRawData(byte[] IfdRawData, int IfdRawDataIndex)
+    private TagItem CreateTagWithReferenceToIfdRawData(byte[] ifdRawData, int ifdRawDataIndex)
     {
-        uint ValueCount = ExifReadUInt32(IfdRawData, IfdRawDataIndex + 4);
-        if (ValueCount > MaxTagValueCount)
+        uint valueCount = ExifReadUInt32(ifdRawData, ifdRawDataIndex + 4);
+        if (valueCount > MaxTagValueCount)
             throw new ExifException(ErrCodeForIllegalExifBlock);
 
-        var TagId = (ExifTagId)ExifReadUInt16(IfdRawData, IfdRawDataIndex);
-        var TagType = (ExifTagType)ExifReadUInt16(IfdRawData, IfdRawDataIndex + 2);
-        int ValueByteCount = GetTagByteCount(TagType, (int)ValueCount);
+        var TagId = (ExifTagId)ExifReadUInt16(ifdRawData, ifdRawDataIndex);
+        var tagType = (ExifTagType)ExifReadUInt16(ifdRawData, ifdRawDataIndex + 2);
+        int ValueByteCount = GetTagByteCount(tagType, (int)valueCount);
         int ValueIndex, AllocatedByteCount, OriginalOffset;
         byte[] TagData;
 
         if (ValueByteCount <= 4)
         {
             // The tag doesn't have outsourced data. In this case a memory space with a size of 4 bytes is available for the data.
-            ValueIndex = IfdRawDataIndex + 8;
-            TagData = IfdRawData;
+            ValueIndex = ifdRawDataIndex + 8;
+            TagData = ifdRawData;
             AllocatedByteCount = 4;
             OriginalOffset = 0;
         }
         else
         {
             // The tag has outsourced data.
-            OriginalOffset = (int)ExifReadUInt32(IfdRawData, IfdRawDataIndex + 8);
+            OriginalOffset = (int)ExifReadUInt32(ifdRawData, ifdRawDataIndex + 8);
             AllocatedByteCount = ValueByteCount;
             GetOutsourcedData(OriginalOffset, AllocatedByteCount, out TagData, out ValueIndex);
         }
 
-        TagItem TempTagItem = new(TagId, TagType, (int)ValueCount, TagData, ValueIndex, AllocatedByteCount, OriginalOffset);
+        TagItem TempTagItem = new(TagId, tagType, (int)valueCount, TagData, ValueIndex, AllocatedByteCount, OriginalOffset);
 
         return TempTagItem;
     }
 
-    private void GetOutsourcedData(int DataOffset, int DataLen, out byte[] TagData, out int TagDataIndex)
+    private void GetOutsourcedData(int dataOffset, int dataLen, out byte[] tagData, out int tagDataIndex)
     {
         if (SourceExifBlock != null)
         {
-            if ((uint)(DataOffset + DataLen) > (uint)SourceExifBlock.Length)
+            if ((uint)(dataOffset + dataLen) > (uint)SourceExifBlock.Length)
                 throw new ExifException(ErrCodeForIllegalExifBlock);
 
-            TagData = SourceExifBlock;
-            TagDataIndex = DataOffset;
+            tagData = SourceExifBlock;
+            tagDataIndex = dataOffset;
         }
         else
         {
-            TagData = new byte[DataLen];
-            SourceExifStream.Position = DataOffset; // + ExifBlockFilePosition;
-            if (SourceExifStream.Read(TagData, 0, DataLen) != DataLen)
+            tagData = new byte[dataLen];
+            SourceExifStream.Position = dataOffset; // + ExifBlockFilePosition;
+            if (SourceExifStream.Read(tagData, 0, dataLen) != dataLen)
                 throw new ExifException(ErrCodeForIllegalExifBlock);
 
-            TagDataIndex = 0;
+            tagDataIndex = 0;
         }
     }
 
-    private void InitIfdPrimaryData(byte[] IfdRawData, int IfdRawDataIndex, out int PrivateDataOffset, out int GpsInfoDataOffset, out int NextImageOffset)
+    private void InitIfdPrimaryData(byte[] ifdRawData, int ifdRawDataIndex, out int privateDataOffset, out int gpsInfoDataOffset, out int nextImageOffset)
     {
-        PrivateDataOffset = 0;
-        GpsInfoDataOffset = 0;
-        int TagCount = ExifReadUInt16(IfdRawData, IfdRawDataIndex);
-        IfdRawDataIndex += 2;
+        privateDataOffset = 0;
+        gpsInfoDataOffset = 0;
+        int TagCount = ExifReadUInt16(ifdRawData, ifdRawDataIndex);
+        ifdRawDataIndex += 2;
         var PrimaryDataIfdTable = new Dictionary<ExifTagId, TagItem>(TagCount);
         TagTable[(uint)ExifIfd.PrimaryData] = PrimaryDataIfdTable;
         int j = 0;
 
         while (j < TagCount)
         {
-            TagItem TempTagData = CreateTagWithReferenceToIfdRawData(IfdRawData, IfdRawDataIndex);
+            TagItem TempTagData = CreateTagWithReferenceToIfdRawData(ifdRawData, ifdRawDataIndex);
             if (AddIfNotExists(PrimaryDataIfdTable, TempTagData))
             {
                 if (TempTagData.TagId == ExifTagId.ExifIfdPointer)
-                    PrivateDataOffset = (int)ExifReadUInt32(TempTagData.ValueData, TempTagData.ValueIndex);
+                    privateDataOffset = (int)ExifReadUInt32(TempTagData.ValueData, TempTagData.ValueIndex);
                 else if (TempTagData.TagId == ExifTagId.GpsInfoIfdPointer)
-                    GpsInfoDataOffset = (int)ExifReadUInt32(TempTagData.ValueData, TempTagData.ValueIndex);
+                    gpsInfoDataOffset = (int)ExifReadUInt32(TempTagData.ValueData, TempTagData.ValueIndex);
             }
 
-            IfdRawDataIndex += 12;
+            ifdRawDataIndex += 12;
             j++;
         }
 
-        NextImageOffset = (int)ExifReadUInt32(IfdRawData, IfdRawDataIndex);
+        nextImageOffset = (int)ExifReadUInt32(ifdRawData, ifdRawDataIndex);
     }
 
-    private void InitIfdPrivateData(byte[] IfdRawData, int IfdRawDataIndex, out int InteroperabilityOffset)
+    private void InitIfdPrivateData(byte[] ifdRawData, int ifdRawDataIndex, out int interoperabilityOffset)
     {
-        InteroperabilityOffset = 0;
+        interoperabilityOffset = 0;
         int MakerNoteOffset = 0;
         int OffsetSchemaValue = 0;
-        int TagCount = ExifReadUInt16(IfdRawData, IfdRawDataIndex);
-        IfdRawDataIndex += 2;
+        int TagCount = ExifReadUInt16(ifdRawData, ifdRawDataIndex);
+        ifdRawDataIndex += 2;
         var PrivateDataIfdTable = new Dictionary<ExifTagId, TagItem>(TagCount);
         TagTable[(uint)ExifIfd.PrivateData] = PrivateDataIfdTable;
         int j = 0;
         while (j < TagCount)
         {
-            TagItem TempTagData = CreateTagWithReferenceToIfdRawData(IfdRawData, IfdRawDataIndex);
+            TagItem TempTagData = CreateTagWithReferenceToIfdRawData(ifdRawData, ifdRawDataIndex);
             if (AddIfNotExists(PrivateDataIfdTable, TempTagData))
             {
                 if (TempTagData.TagId == ExifTagId.InteroperabilityIfdPointer)
-                    InteroperabilityOffset = (int)ExifReadUInt32(TempTagData.ValueData, TempTagData.ValueIndex);
+                    interoperabilityOffset = (int)ExifReadUInt32(TempTagData.ValueData, TempTagData.ValueIndex);
                 else if (TempTagData.TagId == ExifTagId.MakerNote)
                     MakerNoteOffset = TempTagData.OriginalDataOffset;
                 else if (TempTagData.TagId == ExifTagId.OffsetSchema)
                     OffsetSchemaValue = (int)ExifReadUInt32(TempTagData.ValueData, TempTagData.ValueIndex);
             }
 
-            IfdRawDataIndex += 12;
+            ifdRawDataIndex += 12;
             j++;
         }
 
         MakerNoteOriginalOffset = MakerNoteOffset > 0 ? MakerNoteOffset - OffsetSchemaValue : 0;
     }
 
-    private void InitIfdGpsInfoData(byte[] IfdRawData, int IfdRawDataIndex)
+    private void InitIfdGpsInfoData(byte[] ifdRawData, int ifdRawDataIndex)
     {
-        int TagCount = ExifReadUInt16(IfdRawData, IfdRawDataIndex);
-        IfdRawDataIndex += 2;
+        int TagCount = ExifReadUInt16(ifdRawData, ifdRawDataIndex);
+        ifdRawDataIndex += 2;
         var GpsInfoDataIfdTable = new Dictionary<ExifTagId, TagItem>(TagCount);
         TagTable[(uint)ExifIfd.GpsInfoData] = GpsInfoDataIfdTable;
         int j = 0;
         while (j < TagCount)
         {
-            TagItem TempTagData = CreateTagWithReferenceToIfdRawData(IfdRawData, IfdRawDataIndex);
+            TagItem TempTagData = CreateTagWithReferenceToIfdRawData(ifdRawData, ifdRawDataIndex);
             _ = AddIfNotExists(GpsInfoDataIfdTable, TempTagData);
-            IfdRawDataIndex += 12;
+            ifdRawDataIndex += 12;
             j++;
         }
     }
 
-    private void InitIfdInteroperability(byte[] IfdRawData, int IfdRawDataIndex)
+    private void InitIfdInteroperability(byte[] ifdRawData, int ifdRawDataIndex)
     {
-        int TagCount = ExifReadUInt16(IfdRawData, IfdRawDataIndex);
-        IfdRawDataIndex += 2;
+        int TagCount = ExifReadUInt16(ifdRawData, ifdRawDataIndex);
+        ifdRawDataIndex += 2;
         var InteroperabilityIfdTable = new Dictionary<ExifTagId, TagItem>(TagCount);
         TagTable[(uint)ExifIfd.Interoperability] = InteroperabilityIfdTable;
         int j = 0;
         while (j < TagCount)
         {
-            TagItem TempTagData = CreateTagWithReferenceToIfdRawData(IfdRawData, IfdRawDataIndex);
+            TagItem TempTagData = CreateTagWithReferenceToIfdRawData(ifdRawData, ifdRawDataIndex);
             _ = AddIfNotExists(InteroperabilityIfdTable, TempTagData);
-            IfdRawDataIndex += 12;
+            ifdRawDataIndex += 12;
             j++;
         }
     }
 
-    private void InitIfdThumbnailData(byte[] IfdRawData, int IfdRawDataIndex)
+    private void InitIfdThumbnailData(byte[] ifdRawData, int ifdRawDataIndex)
     {
         int ThumbnailImageDataOffset = 0;
         ThumbnailByteCount = 0;
         ThumbnailImage = null;
-        int TagCount = ExifReadUInt16(IfdRawData, IfdRawDataIndex);
-        IfdRawDataIndex += 2;
+        int TagCount = ExifReadUInt16(ifdRawData, ifdRawDataIndex);
+        ifdRawDataIndex += 2;
         var ThumbnailDataIfdTable = new Dictionary<ExifTagId, TagItem>(TagCount);
         TagTable[(uint)ExifIfd.ThumbnailData] = ThumbnailDataIfdTable;
         int j = 0;
         while (j < TagCount)
         {
-            TagItem TempTagData = CreateTagWithReferenceToIfdRawData(IfdRawData, IfdRawDataIndex);
+            TagItem TempTagData = CreateTagWithReferenceToIfdRawData(ifdRawData, ifdRawDataIndex);
             if (AddIfNotExists(ThumbnailDataIfdTable, TempTagData))
             {
                 if (TempTagData.TagId == ExifTagId.JpegInterchangeFormat)
@@ -2837,7 +2829,7 @@ internal partial class ExifService
                     ThumbnailByteCount = (int)ExifReadUInt32(TempTagData.ValueData, TempTagData.ValueIndex);
             }
 
-            IfdRawDataIndex += 12;
+            ifdRawDataIndex += 12;
             j++;
         }
 
@@ -2845,33 +2837,33 @@ internal partial class ExifService
             GetOutsourcedData(ThumbnailImageDataOffset, ThumbnailByteCount, out ThumbnailImage, out ThumbnailStartIndex);
     }
 
-    private void GetNextIfd(int IfdOffset, out byte[] IfdRawData, out int IfdRawDataIndex)
+    private void GetNextIfd(int ifdOffset, out byte[] ifdRawData, out int ifdRawDataIndex)
     {
-        if (IfdOffset == 0)
+        if (ifdOffset == 0)
         {
             // IFD does not exist. Create a dummy IFD table.
-            IfdRawData = new byte[2];
-            IfdRawDataIndex = 0;
+            ifdRawData = new byte[2];
+            ifdRawDataIndex = 0;
         }
         else if (SourceExifBlock != null)
         {
-            IfdRawData = SourceExifBlock;
-            IfdRawDataIndex = IfdOffset;
+            ifdRawData = SourceExifBlock;
+            ifdRawDataIndex = ifdOffset;
         }
         else
         {
-            SourceExifStream.Position = IfdOffset; // + ExifBlockFilePosition;
-            IfdRawDataIndex = 0;
+            SourceExifStream.Position = ifdOffset; // + ExifBlockFilePosition;
+            ifdRawDataIndex = 0;
             byte[] TagCountArray = new byte[2];
             if (SourceExifStream.Read(TagCountArray, 0, 2) != 2)
                 throw new ExifException(ErrCodeForIllegalExifBlock);
 
             int IfdTagCount = ExifReadUInt16(TagCountArray, 0);
             int IfdSize = 2 + (IfdTagCount * 12) + 4;
-            IfdRawData = new byte[IfdSize];
-            IfdRawData[0] = TagCountArray[0];
-            IfdRawData[1] = TagCountArray[1];
-            if (SourceExifStream.Read(IfdRawData, 2, IfdSize - 2) != (IfdSize - 2))
+            ifdRawData = new byte[IfdSize];
+            ifdRawData[0] = TagCountArray[0];
+            ifdRawData[1] = TagCountArray[1];
+            if (SourceExifStream.Read(ifdRawData, 2, IfdSize - 2) != (IfdSize - 2))
                 throw new ExifException(ErrCodeForIllegalExifBlock);
         }
     }
@@ -2883,13 +2875,13 @@ internal partial class ExifService
     ///  TIFF: Stream "SourceStream" is used to read the EXIF data successively. "SourceExifBlock" is
     ///        "null" in this case.
     /// </summary>
-    /// <param name="PrimaryDataOffset">Start index of the IFD "Primary data".</param>
+    /// <param name="primaryDataOffset">Start index of the IFD "Primary data".</param>
     /// <returns>Offset of the next EXIF block in TIFF images or 0 otherwise.</returns>
-    private int EvaluateExifBlock(int PrimaryDataOffset)
+    private int EvaluateExifBlock(int primaryDataOffset)
     {
         TagTable = new Dictionary<ExifTagId, TagItem>[ExifIfdCount];
 
-        GetNextIfd(PrimaryDataOffset, out byte[] IfdTable, out int IfdIndex);
+        GetNextIfd(primaryDataOffset, out byte[] IfdTable, out int IfdIndex);
 
         InitIfdPrimaryData(IfdTable, IfdIndex, out int PrivateDataOffset, out int GpsInfoDataOffset, out int ThumbnailDataOffset);
 
@@ -2923,11 +2915,11 @@ internal partial class ExifService
         return TiffNextExifBlockOffset;
     }
 
-    private static bool AddIfNotExists(Dictionary<ExifTagId, TagItem> Dict, TagItem TagData)
+    private static bool AddIfNotExists(Dictionary<ExifTagId, TagItem> dict, TagItem tagData)
     {
         try
         {
-            Dict.Add(TagData.TagId, TagData);
+            dict.Add(tagData.TagId, tagData);
             return true;
         }
         catch
@@ -2969,20 +2961,20 @@ internal partial class ExifService
     /// Compare "Array1" from index 0 to index "Array2.Length - 1" with "Array2".
     /// If "Array1" is smaller than "Array2", "false" is returned.
     /// </summary>
-    /// <param name="Array1">First array to be compared.</param>
-    /// <param name="Array1Length">Length of "Array1" to be compared.</param>
-    /// <param name="Array2">Second array to be compared.</param>
+    /// <param name="array1">First array to be compared.</param>
+    /// <param name="array1Length">Length of "Array1" to be compared.</param>
+    /// <param name="array2">Second array to be compared.</param>
     /// <returns>true: Arrays are equal. false: otherwise.</returns>
-    private static bool ArrayStartsWith(byte[] Array1, int Array1Length, byte[] Array2)
+    private static bool ArrayStartsWith(byte[] array1, int array1Length, byte[] array2)
     {
-        if (Array1Length < Array2.Length)
+        if (array1Length < array2.Length)
             return false;
 
         bool IsEqual = true;
         int i = 0;
-        foreach (byte b in Array2)
+        foreach (byte b in array2)
         {
-            if (Array1[i] != b)
+            if (array1[i] != b)
             {
                 IsEqual = false;
                 break;
@@ -2994,52 +2986,52 @@ internal partial class ExifService
         return IsEqual;
     }
 
-    private bool ReadUintElement(TagItem t, int ElementIndex, out uint Value)
+    private bool ReadUintElement(TagItem t, int elementIndex, out uint value)
     {
         bool Success = false;
-        if ((ElementIndex >= 0) && (ElementIndex < t.ValueCount))
+        if ((elementIndex >= 0) && (elementIndex < t.ValueCount))
         {
             switch (t.TagType)
             {
                 case ExifTagType.Byte:
-                    Value = t.ValueData[t.ValueIndex + ElementIndex];
+                    value = t.ValueData[t.ValueIndex + elementIndex];
                     Success = true;
                     break;
 
                 case ExifTagType.UShort:
-                    Value = ExifReadUInt16(t.ValueData, t.ValueIndex + (ElementIndex << 1));
+                    value = ExifReadUInt16(t.ValueData, t.ValueIndex + (elementIndex << 1));
                     Success = true;
                     break;
 
                 case ExifTagType.ULong:
                 case ExifTagType.SLong:
-                    Value = ExifReadUInt32(t.ValueData, t.ValueIndex + (ElementIndex << 2));
+                    value = ExifReadUInt32(t.ValueData, t.ValueIndex + (elementIndex << 2));
                     Success = true;
                     break;
 
                 default:
-                    Value = 0;
+                    value = 0;
                     break;
             }
         }
         else
         {
-            Value = 0;
+            value = 0;
         }
 
         return Success;
     }
-    private bool WriteUintElement(TagItem? t, int ElementIndex, uint Value)
+    private bool WriteUintElement(TagItem? t, int elementIndex, uint value)
     {
         bool Success = false;
         if (t != null)
         {
             if (t.TagType == ExifTagType.Byte)
-                t.ValueData[t.ValueIndex + ElementIndex] = (byte)Value;
+                t.ValueData[t.ValueIndex + elementIndex] = (byte)value;
             else if (t.TagType == ExifTagType.UShort)
-                ExifWriteUInt16(t.ValueData, t.ValueIndex + (ElementIndex << 1), (ushort)Value);
+                ExifWriteUInt16(t.ValueData, t.ValueIndex + (elementIndex << 1), (ushort)value);
             else
-                ExifWriteUInt32(t.ValueData, t.ValueIndex + (ElementIndex << 2), Value);
+                ExifWriteUInt32(t.ValueData, t.ValueIndex + (elementIndex << 2), value);
 
             Success = true;
         }
@@ -3091,23 +3083,22 @@ internal partial class ExifService
 
         return Success;
     }
-
-    private bool SetTagValueWithIdCode(ExifTag TagSpec, string Value, ushort CodePage)
+    private bool SetTagValueWithIdCode(ExifTag tagSpec, string value, ushort codePage)
     {
         bool Success = false;
-        if ((CodePage == 1200) && (ByteOrder == ExifByteOrder.BigEndian))
-            CodePage = 1201; // Set code page to UTF16BE
+        if ((codePage == 1200) && (ByteOrder == ExifByteOrder.BigEndian))
+            codePage = 1201; // Set code page to UTF16BE
 
-        if ((CodePage == 1201) && (ByteOrder == ExifByteOrder.LittleEndian))
-            CodePage = 1200; // Set code page to UTF16LE
+        if ((codePage == 1201) && (ByteOrder == ExifByteOrder.LittleEndian))
+            codePage = 1200; // Set code page to UTF16LE
 
-        byte[] StringAsByteArray = Encoding.GetEncoding(CodePage).GetBytes(Value);
+        byte[] StringAsByteArray = Encoding.GetEncoding(codePage).GetBytes(value);
         int StrByteLen = StringAsByteArray.Length;
         int TotalByteCount = IdCodeLength + StrByteLen; // The ID code is a 8 byte header
-        TagItem? t = PrepareTagForCompleteWriting(TagSpec, ExifTagType.Undefined, TotalByteCount);
+        TagItem? t = PrepareTagForCompleteWriting(tagSpec, ExifTagType.Undefined, TotalByteCount);
         if (t != null)
         {
-            byte[] RequiredIdCode = CodePage is 1200 or 1201 ? IdCodeUtf16 : IdCodeAscii;
+            byte[] RequiredIdCode = codePage is 1200 or 1201 ? IdCodeUtf16 : IdCodeAscii;
             Array.Copy(RequiredIdCode, 0, t.ValueData, t.ValueIndex, IdCodeLength);
             Array.Copy(StringAsByteArray, 0, t.ValueData, t.ValueIndex + IdCodeLength, StrByteLen);
             Success = true;
@@ -3121,7 +3112,7 @@ internal partial class ExifService
         bool Success = false;
         exifRational = new();
 
-        //t.TagType == ExifTagType.URational ? new ExifRational(Numer, Denom) : new ExifRational((int)Numer, (int)Denom);
+        //t.tagType == ExifTagType.URational ? new ExifRational(Numer, Denom) : new ExifRational((int)Numer, (int)Denom);
 
         if ((elementIndex >= 0) &&
             (elementIndex < t.ValueCount) &&
@@ -3170,32 +3161,32 @@ internal partial class ExifService
     /// <summary>
     /// Prepare tag for writing a single array item. If the tag does not exist it is created.
     /// </summary>
-    /// <param name="TagSpec">IFD and tag ID of the value to be prepared for writing.</param>
-    /// <param name="TagType">Tag type.</param>
-    /// <param name="ArrayIndex">Zero-based array index of the value to be written. If the array index
+    /// <param name="tagSpec">IFD and tag ID of the value to be prepared for writing.</param>
+    /// <param name="tagType">Tag type.</param>
+    /// <param name="arrayIndex">Zero-based array index of the value to be written. If the array index
     /// is outside the current tag data, the tag data is automatically enlarged. If it is necessary
     /// to reallocate the tag memory, the old content is copied to the new memory.</param>
     /// <returns>Tag item, that is prepared for writing to the specified array index.
     /// In case of an error "null" is returned.</returns>
-    private TagItem? PrepareTagForArrayItemWriting(ExifTag TagSpec, ExifTagType TagType, int ArrayIndex)
+    private TagItem? PrepareTagForArrayItemWriting(ExifTag tagSpec, ExifTagType tagType, int arrayIndex)
     {
         TagItem? t = null;
-        ExifIfd Ifd = ExtractIfd(TagSpec);
-        if (((uint)Ifd < ExifIfdCount) && ((uint)ArrayIndex < MaxTagValueCount))
+        ExifIfd Ifd = ExtractIfd(tagSpec);
+        if (((uint)Ifd < ExifIfdCount) && ((uint)arrayIndex < MaxTagValueCount))
         {
             Dictionary<ExifTagId, TagItem> IfdTagTable = TagTable[(uint)Ifd];
-            if (IfdTagTable.TryGetValue(ExtractTagId(TagSpec), out t))
+            if (IfdTagTable.TryGetValue(ExtractTagId(tagSpec), out t))
             {
-                int ValueCount = t.ValueCount;
-                if (ArrayIndex >= ValueCount)
-                    ValueCount = ArrayIndex + 1;
+                int valueCount = t.ValueCount;
+                if (arrayIndex >= valueCount)
+                    valueCount = arrayIndex + 1;
 
-                t.SetTagTypeAndValueCount(TagType, ValueCount, true);
+                t.SetTagTypeAndValueCount(tagType, valueCount, true);
             }
             else
             {
-                int ValueCount = ArrayIndex + 1;
-                t = new TagItem(TagSpec, TagType, ValueCount);
+                int valueCount = arrayIndex + 1;
+                t = new TagItem(tagSpec, tagType, valueCount);
                 IfdTagTable.Add(t.TagId, t);
             }
         }
@@ -3206,26 +3197,26 @@ internal partial class ExifService
     /// <summary>
     /// Prepare tag for a complete writing of the tag content. The tag content is undefined after calling this method.
     /// </summary>
-    /// <param name="TagSpec">IFD and tag ID of the value to be prepared for writing.</param>
-    /// <param name="TagType">New tag type. The tag type must be valid, because it is not checked in this method!</param>
-    /// <param name="ValueCount">New number of array elements that the tag should contain. Must be equal
+    /// <param name="tagSpec">IFD and tag ID of the value to be prepared for writing.</param>
+    /// <param name="tagType">New tag type. The tag type must be valid, because it is not checked in this method!</param>
+    /// <param name="valueCount">New number of array elements that the tag should contain. Must be equal
     /// or greater than 1. If it is necessary to reallocate the tag memory, the old content is not copied.</param>
     /// <returns>Tag item, that is prepared for writing of the specified number of array elements.
     /// In case of an error "null" is returned.</returns>
-    private TagItem? PrepareTagForCompleteWriting(ExifTag TagSpec, ExifTagType TagType, int ValueCount)
+    private TagItem? PrepareTagForCompleteWriting(ExifTag tagSpec, ExifTagType tagType, int valueCount)
     {
         TagItem? t = null;
-        ExifIfd Ifd = ExtractIfd(TagSpec);
-        if (((uint)Ifd < ExifIfdCount) && ((uint)ValueCount <= MaxTagValueCount))
+        ExifIfd Ifd = ExtractIfd(tagSpec);
+        if (((uint)Ifd < ExifIfdCount) && ((uint)valueCount <= MaxTagValueCount))
         {
             Dictionary<ExifTagId, TagItem> IfdTagTable = TagTable[(uint)Ifd];
-            if (IfdTagTable.TryGetValue(ExtractTagId(TagSpec), out t))
+            if (IfdTagTable.TryGetValue(ExtractTagId(tagSpec), out t))
             {
-                t.SetTagTypeAndValueCount(TagType, ValueCount, false);
+                t.SetTagTypeAndValueCount(tagType, valueCount, false);
             }
             else
             {
-                t = new TagItem(TagSpec, TagType, ValueCount);
+                t = new TagItem(tagSpec, tagType, valueCount);
                 IfdTagTable.Add(t.TagId, t);
             }
 #if DEBUG
@@ -3238,11 +3229,11 @@ internal partial class ExifService
         return t;
     }
 
-    private static int CalculateTwoDigitDecNumber(byte[] ByteArr, int Index)
+    private static int CalculateTwoDigitDecNumber(byte[] byteArr, int index)
     {
         int Value = -1;
-        int d1 = ByteArr[Index];
-        int d2 = ByteArr[Index + 1];
+        int d1 = byteArr[index];
+        int d2 = byteArr[index + 1];
         if ((d1 >= '0') && (d1 <= '9') && (d2 >= '0') && (d2 <= '9'))
             Value = ((d1 - 0x30) * 10) + (d2 - 0x30);
 
@@ -3252,19 +3243,19 @@ internal partial class ExifService
     /// <summary>
     /// Convert a number to exactly two decimal digits and store them in a byte array.
     /// </summary>
-    /// <param name="ByteArr">Out: Two decimal digits.</param>
-    /// <param name="Index">In: Index in "ByteArr", to which the digits should be written.
+    /// <param name="byteArr">Out: Two decimal digits.</param>
+    /// <param name="index">In: Index in "ByteArr", to which the digits should be written.
     /// Out: New index after writing the two digits.</param>
-    /// <param name="Value">Number from 0 to 99 to be converted.</param>
-    private static void ConvertTwoDigitNumberToByteArr(byte[] ByteArr, ref int Index, int Value)
+    /// <param name="value">Number from 0 to 99 to be converted.</param>
+    private static void ConvertTwoDigitNumberToByteArr(byte[] byteArr, ref int index, int value)
     {
-        ByteArr[Index] = (byte)((Value / 10) + 0x30);
-        Index++;
-        ByteArr[Index] = (byte)((Value % 10) + 0x30);
-        Index++;
+        byteArr[index] = (byte)((value / 10) + 0x30);
+        index++;
+        byteArr[index] = (byte)((value % 10) + 0x30);
+        index++;
     }
 
-    private void ClearIfd_Unchecked(ExifIfd Ifd) => TagTable[(uint)Ifd].Clear();
+    private void ClearIfd_Unchecked(ExifIfd ifd) => TagTable[(uint)ifd].Clear();
 
     private void RemoveAllTagsFromIfdPrimaryData()
     {
@@ -3298,13 +3289,13 @@ internal partial class ExifService
         ThumbnailByteCount = 0;
     }
 
-    private bool GetDateAndTimeWithMillisecHelper(out DateTime Value, ExifTag DateAndTimeTag, ExifTag MillisecTag)
+    private bool GetDateAndTimeWithMillisecHelper(out DateTime Value, ExifTag dateAndTimeTag, ExifTag millisecTag)
     {
         bool Success = false;
-        if (GetTagValue(DateAndTimeTag, out Value))
+        if (GetTagValue(dateAndTimeTag, out Value))
         {
             Success = true;
-            if (GetTagValue(MillisecTag, out string? SubSec, StrCoding.Utf8))
+            if (GetTagValue(millisecTag, out string? SubSec, StrCoding.Utf8))
             {
                 string? s = SubSec;
                 int len = s.Length;
@@ -3324,18 +3315,17 @@ internal partial class ExifService
 
         return Success;
     }
-
-    private bool SetDateAndTimeWithMillisecHelper(DateTime Value, ExifTag DateAndTimeTag, ExifTag MillisecTag)
+    private bool SetDateAndTimeWithMillisecHelper(DateTime value, ExifTag dateAndTimeTag, ExifTag millisecTag)
     {
         bool Success = false;
-        if (SetTagValue(DateAndTimeTag, Value))
+        if (SetTagValue(dateAndTimeTag, value))
         {
             Success = true;
-            int MilliSec = Value.Millisecond;
-            if ((MilliSec != 0) || TagExists(MillisecTag))
+            int MilliSec = value.Millisecond;
+            if ((MilliSec != 0) || TagExists(millisecTag))
             {
                 string s = MilliSec.ToString("000"); // Write exactly 3 decimal digits
-                Success = Success && SetTagValue(MillisecTag, s, StrCoding.Utf8);
+                Success = Success && SetTagValue(millisecTag, s, StrCoding.Utf8);
             }
         }
 
@@ -3392,8 +3382,9 @@ internal partial class ExifService
         (ExifTagId)0x0206,
         (ExifTagId)0x0207,
         (ExifTagId)0x0208,
-        (ExifTagId)0x0209
-      ];
+        (ExifTagId)0x0209,
+    ];
+
     private static System.Collections.BitArray? InternalTiffTagsBitArray;
 
     private static void InitInternalTiffTags()
@@ -3418,14 +3409,14 @@ internal partial class ExifService
     /// <summary>
     /// Checks, if a tag is an internal tag of a TIFF image. Method can be used only for TIFF images.
     /// </summary>
-    /// <param name="TagId">Tag ID of the tag be checked.</param>
+    /// <param name="tagId">Tag ID of the tag be checked.</param>
     /// <returns>true: "TagId" is an internal tag ID. false: Otherwise.</returns>
-    private static bool IsInternalTiffTag(ExifTagId TagId)
+    private static bool IsInternalTiffTag(ExifTagId tagId)
     {
         if (InternalTiffTagsBitArray == null)
             InitInternalTiffTags();
 
-        int TagIdInt = (int)TagId;
+        int TagIdInt = (int)tagId;
 
         return TagIdInt < InternalTiffTagsBitArray!.Length && InternalTiffTagsBitArray.Get(TagIdInt);
     }
@@ -3433,20 +3424,20 @@ internal partial class ExifService
     /// <summary>
     /// Checks, if a tag is meta data tag of a TIFF image. Method can be used only for TIFF images.
     /// </summary>
-    /// <param name="TagId">Tag ID of the tag be checked.</param>
+    /// <param name="tagId">Tag ID of the tag be checked.</param>
     /// <returns>true: "TagId" is a meta data tag ID. false: Otherwise.</returns>
-    private static bool IsMetaDataTiffTag(ExifTagId TagId) => TagId is ExifTagId.XmpMetadata or ExifTagId.IptcMetadata;
+    private static bool IsMetaDataTiffTag(ExifTagId tagId) => tagId is ExifTagId.XmpMetadata or ExifTagId.IptcMetadata;
 
-    private static void SwapByteOrderOfTagData(ExifIfd Ifd, TagItem t)
+    private static void SwapByteOrderOfTagData(ExifIfd ifd, TagItem t)
     {
         // Special tag IDs
-        if (Ifd == ExifIfd.PrimaryData)
+        if (ifd == ExifIfd.PrimaryData)
         {
             // There are meta data tags where the byte order must not be changed. These tags are only used in TIFF files.
             if (IsMetaDataTiffTag(t.TagId))
                 return;
         }
-        else if (Ifd == ExifIfd.PrivateData)
+        else if (ifd == ExifIfd.PrivateData)
         {
             if ((t.TagId == ExifTagId.UserComment) && (t.TagType == ExifTagType.Undefined))
             {
@@ -3521,12 +3512,12 @@ internal partial class ExifService
         (b[i + 2], b[i + 1]) = (b[i + 1], b[i + 2]);
     }
 
-    private static TagItem CopyTagItemDeeply(ExifIfd Ifd, TagItem TagItemToBeCopied, bool SwapByteOrder)
+    private static TagItem CopyTagItemDeeply(ExifIfd ifd, TagItem tagItemToBeCopied, bool swapByteOrder)
     {
-        TagItem NewTag = new(TagItemToBeCopied.TagId, TagItemToBeCopied.TagType, TagItemToBeCopied.ValueCount);
-        Array.Copy(TagItemToBeCopied.ValueData, TagItemToBeCopied.ValueIndex, NewTag.ValueData, 0, NewTag.ByteCount);
-        if (SwapByteOrder)
-            SwapByteOrderOfTagData(Ifd, NewTag);
+        TagItem NewTag = new(tagItemToBeCopied.TagId, tagItemToBeCopied.TagType, tagItemToBeCopied.ValueCount);
+        Array.Copy(tagItemToBeCopied.ValueData, tagItemToBeCopied.ValueIndex, NewTag.ValueData, 0, NewTag.ByteCount);
+        if (swapByteOrder)
+            SwapByteOrderOfTagData(ifd, NewTag);
 
         return NewTag;
     }
@@ -3576,25 +3567,22 @@ internal partial class ExifService
             OriginalDataOffset = originalDataOffset;
         }
 
-        public static byte[] AllocTagMemory(int RequiredByteCount)
+        public static byte[] AllocTagMemory(int requiredByteCount)
         {
             const int MinByteCount = 32;
-            int NewByteCount = RequiredByteCount;
-            if (NewByteCount < MinByteCount)
-                NewByteCount = MinByteCount;
 
-            return new byte[NewByteCount];
+            return new byte[Math.Max(requiredByteCount, MinByteCount)];
         }
 
         /// <summary>
         /// Set tag type and value count and reallocate the tag memory if required.
         /// </summary>
-        /// <param name="_TagType">New tag type.</param>
-        /// <param name="_ValueCount">New value count.</param>
-        /// <param name="KeepExistingData">true: Keep existing data. false: Discard existing data.</param>
-        public void SetTagTypeAndValueCount(ExifTagType _TagType, int _ValueCount, bool KeepExistingData)
+        /// <param name="tagType">New tag type.</param>
+        /// <param name="valueCount">New value count.</param>
+        /// <param name="keepExistingData">true: Keep existing data. false: Discard existing data.</param>
+        public void SetTagTypeAndValueCount(ExifTagType tagType, int valueCount, bool keepExistingData)
         {
-            int RequiredByteCount = GetTagByteCount(_TagType, _ValueCount);
+            int RequiredByteCount = GetTagByteCount(tagType, valueCount);
             if (AllocatedByteCount < RequiredByteCount)
             {
                 uint NewByteCount = (uint)AllocatedByteCount << 1; // Double the allocated byte count
@@ -3604,7 +3592,7 @@ internal partial class ExifService
                     NewByteCount = (uint)RequiredByteCount;
 
                 byte[] NewTagData = AllocTagMemory((int)NewByteCount);
-                if (KeepExistingData)
+                if (keepExistingData)
                     Array.Copy(ValueData, ValueIndex, NewTagData, 0, AllocatedByteCount);
 
                 AllocatedByteCount = NewTagData.Length;
@@ -3612,8 +3600,8 @@ internal partial class ExifService
                 ValueIndex = 0;
             }
 
-            TagType = _TagType;
-            ValueCount = _ValueCount;
+            TagType = tagType;
+            ValueCount = valueCount;
         }
     }
 

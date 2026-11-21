@@ -81,14 +81,14 @@ public sealed class PhotoCronBackgroundService : Libs.BackgroundServices.Cron
                         photoDb = new Entities.Photo()
                         {
                             FilePath = photoRelativePath,
-                            PhotoGuid = Guid.NewGuid(),
+                            //PhotoGuid = Guid.NewGuid(),
                             //UpdatedAtDateTimeOffset = DateTimeOffset.UtcNow,
                             Year = photoYear,
                         };
                         _ = photoCtx.Add(photoDb);
                     }
 
-                    _ = TryToSyncPhotoMetadata(photoFile, photoDb);
+                    _ = TryToSyncPhotoMetadata(photoFile, photoDb, photoCtx.Tags.First(x => x.TagGuid == Entities.Tag.NoGeoLocation.TagGuid));
                 }
 
                 _ = await photoCtx.SaveChangesAsync(stoppingToken);
@@ -101,7 +101,7 @@ public sealed class PhotoCronBackgroundService : Libs.BackgroundServices.Cron
             Logger.LogInformation("End {ApplicationName}", AppName);
     }
 
-    internal bool TryToSyncPhotoMetadata(FileInfo photoFile, Entities.Photo photoDb)
+    internal bool TryToSyncPhotoMetadata(FileInfo photoFile, Entities.Photo photoDb, Entities.Tag noGeoLocationTag)
     {
         bool IsSuccess = false;
 
@@ -115,29 +115,29 @@ public sealed class PhotoCronBackgroundService : Libs.BackgroundServices.Cron
             }
             else
             {
-                photoDb.Tags.Add(Entities.Tag.NoGeoLocation);
+                photoDb.Tags.Add(noGeoLocationTag);
             }
 
-            if (exifService.GetTagRawData(
-                tagSpec: Exif.ExifTag.ImageUniqueId,
-                tagType: out Exif.ExifTagType exifTagType,
-                valueCount: out int valueCount,
-                rawData: out byte[] rawValue))
-            {
-                photoDb.PhotoGuid = new Guid(rawValue);
+            //if (exifService.GetTagRawData(
+            //    tagSpec: Exif.ExifTag.ImageUniqueId,
+            //    tagType: out Exif.ExifTagType exifTagType,
+            //    valueCount: out int valueCount,
+            //    rawData: out byte[] rawValue))
+            //{
+            //    photoDb.PhotoGuid = new Guid(rawValue);
 
-                IsSuccess = true;
-            }
-            else
-            {
-                byte[] myGuid = photoDb.PhotoGuid.ToByteArray();
-                if (exifService.SetTagRawData(Exif.ExifTag.ImageUniqueId, Exif.ExifTagType.Byte, myGuid.Length, myGuid))
-                {
-                    exifService.Save();
+            //    IsSuccess = true;
+            //}
+            //else
+            //{
+            //    byte[] myGuid = photoDb.PhotoGuid.ToByteArray();
+            //    if (exifService.SetTagRawData(Exif.ExifTag.ImageUniqueId, Exif.ExifTagType.Byte, myGuid.Length, myGuid))
+            //    {
+            //        exifService.Save();
 
-                    IsSuccess = true;
-                }
-            }
+            //        IsSuccess = true;
+            //    }
+            //}
         }
         catch (Exception e)
         {

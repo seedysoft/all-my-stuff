@@ -33,8 +33,26 @@ public sealed class Configurator : Libs.Core.Dependencies.ConfiguratorBase
                 PhotoCtxFullFilePath = FindDatabaseFullFilePath(hostApplicationBuilder);
 
             _ = dbContextOptionsBuilder
+                .ConfigureDebugOptions()
                 .UseSqlite($"{Libs.Core.Constants.DatabaseStrings.DataSource}{PhotoCtxFullFilePath}")
-                .ConfigureDebugOptions();
+                .UseSeeding((context, _) =>
+                {
+                    Entities.Tag? NoGeoLocationTag = context.Set<Entities.Tag>().FirstOrDefault(x => x.TagGuid == Entities.Tag.NoGeoLocation.TagGuid);
+                    if (NoGeoLocationTag == null)
+                    {
+                        context.Set<Entities.Tag>().Add(Entities.Tag.NoGeoLocation);
+                        context.SaveChanges();
+                    }
+                })
+                .UseAsyncSeeding(async (context, _, cancellationToken) =>
+                {
+                    Entities.Tag? NoGeoLocationTag = context.Set<Entities.Tag>().FirstOrDefault(x => x.TagGuid == Entities.Tag.NoGeoLocation.TagGuid);
+                    if (NoGeoLocationTag == null)
+                    {
+                        context.Set<Entities.Tag>().Add(Entities.Tag.NoGeoLocation);
+                        await context.SaveChangesAsync(cancellationToken);
+                    }
+                });
 
             static string FindDatabaseFullFilePath(IHostApplicationBuilder hostApplicationBuilder)
             {
@@ -44,7 +62,7 @@ public sealed class Configurator : Libs.Core.Dependencies.ConfiguratorBase
                         .SetMinimumLevel(LogLevel.Debug)
                         .AddConsole();
                 });
-                Microsoft.Extensions.Logging.ILogger logger = loggerFactory.CreateLogger(nameof(AddDbContexts));
+                ILogger logger = loggerFactory.CreateLogger(nameof(AddDbContexts));
 
                 string ConnectionStringName = nameof(DbContexts.PhotoCtx);
                 string ConnectionString = hostApplicationBuilder.Configuration.GetConnectionString($"{ConnectionStringName}")

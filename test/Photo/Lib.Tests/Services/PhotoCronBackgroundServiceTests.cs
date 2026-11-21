@@ -150,10 +150,10 @@ public sealed class PhotoCronBackgroundServiceTests : Libs.Core.Tests.TestClassB
             Entities.Photo photoDb = new()
             {
                 FilePath = Path.GetRelativePath(photoCronBackgroundService!.Settings.PhotoRootPath, photoFile.FullName),
-                PhotoGuid = Guid.NewGuid()
+                //PhotoGuid = Guid.NewGuid()
             };
 
-            _ = photoCronBackgroundService.TryToSyncPhotoMetadata(photoFile, photoDb);
+            _ = photoCronBackgroundService.TryToSyncPhotoMetadata(photoFile, photoDb, null!);
         }
     }
 

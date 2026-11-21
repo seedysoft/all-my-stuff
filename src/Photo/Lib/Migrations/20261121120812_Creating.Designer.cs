@@ -10,8 +10,8 @@ using Seedysoft.Photo.Lib.DbContexts;
 namespace Seedysoft.Photo.Lib.Migrations;
 
 [DbContext(typeof(PhotoCtx))]
-[Migration("20261112094411_Creating")]
-partial class _20261112094411_Creating
+[Migration("20261121120812_Creating")]
+partial class _20261121120812_Creating
 {
     /// <inheritdoc />
     protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -34,11 +34,6 @@ partial class _20261112094411_Creating
 
                 b.Property<double?>("Longitude")
                     .HasColumnType("REAL");
-
-                b.Property<byte[]>("PhotoGuid")
-                    .IsRequired()
-                    .HasColumnType("BLOB")
-                    .IsFixedLength();
 
                 b.Property<int>("Year")
                     .HasColumnType("INTEGER");

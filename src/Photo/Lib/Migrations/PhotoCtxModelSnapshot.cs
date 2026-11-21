@@ -14,7 +14,7 @@ partial class PhotoCtxModelSnapshot : ModelSnapshot
     // If you encounter a merge conflict in the line below, it means you need to
     // discard one of the migration branches and recreate its migrations on top of
     // the other branch. See https://aka.ms/efcore-docs-migrations-conflicts for more info.
-    public override string LastMigrationId => "20261112094411_Creating";
+    public override string LastMigrationId => "20261121120812_Creating";
 
     protected override void BuildModel(ModelBuilder modelBuilder)
     {
@@ -36,11 +36,6 @@ partial class PhotoCtxModelSnapshot : ModelSnapshot
 
                 b.Property<double?>("Longitude")
                     .HasColumnType("REAL");
-
-                b.Property<byte[]>("PhotoGuid")
-                    .IsRequired()
-                    .HasColumnType("BLOB")
-                    .IsFixedLength();
 
                 b.Property<int>("Year")
                     .HasColumnType("INTEGER");

@@ -41,7 +41,7 @@ public record ReverseServiceApi(string Name, string UrlFormat) : Api(UrlFormat)
     {
         return obj is Core.Models.Location location
             ? string.Format(UrlFormat, location.Latitude, location.Longitude)
-            : base.GetUrl<T>(obj);
+            : base.GetUrl(obj);
     }
 }
 

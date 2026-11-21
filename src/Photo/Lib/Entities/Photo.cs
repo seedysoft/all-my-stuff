@@ -26,7 +26,7 @@ public sealed class Photo
 
     public int Year { get; set; }
 
-    public required Guid PhotoGuid { get; set; }
+    //public required Guid PhotoGuid { get; set; }
 
     //public DateTimeOffset? UpdatedAtDateTimeOffset { get; set; }
 

@@ -4,6 +4,6 @@
   "framework": "net11.0",
   "noColor": false,
   "prefixOutput": false,
-  "startupProject": "src/BlazorWebApp/Server/Seedysoft.BlazorWebApp.Server",
+  "startupProject": "src/BlazorWebApp/Server/Seedysoft.BlazorWebApp.Server.csproj",
   "verbose": true
 }

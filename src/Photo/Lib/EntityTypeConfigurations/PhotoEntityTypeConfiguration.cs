@@ -27,11 +27,11 @@ internal sealed class PhotoEntityTypeConfiguration : IEntityTypeConfiguration<En
         _ = builder
             .Property(static x => x.Year);
 
-        _ = builder
-            .Property(static x => x.PhotoGuid)
-            .HasColumnType("BLOB")
-            .HasConversion(Libs.Infrastructure.ValueConverters.GuidBytes.GuidBytesValueConverter)
-            .IsFixedLength();
+        //_ = builder
+        //    .Property(static x => x.PhotoGuid)
+        //    .HasColumnType("BLOB")
+        //    .HasConversion(Libs.Infrastructure.ValueConverters.GuidBytes.GuidBytesValueConverter)
+        //    .IsFixedLength();
 
         //_ = builder
         //    .Property(static x => x.UpdatedAtDateTimeOffset)
