@@ -51,7 +51,7 @@
         <PackageReference Include="CommandLineParser" Version="2.9.1" />
         <PackageReference Include="Cronos" Version="0.13.0" />
         <PackageReference Include="DiffPlex" Version="1.9.0" />
-        <PackageReference Include="EFCore.BulkExtensions.Sqlite" Version="10.0.1" />
+        <PackageReference Include="EFCore.BulkExtensions.Sqlite" Version="11.0.0" />
         <PackageReference Include="EfCore.SchemaCompare" Version="10.0.0" />
         <PackageReference Include="FluentValidation" Version="12.2.0" />
         <PackageReference Include="HtmlAgilityPack" Version="1.13.1" />
@@ -63,16 +63,16 @@
         <PackageReference Include="Microsoft.Extensions.DependencyModel" Version="11.0.0" />
         <PackageReference Include="Microsoft.Extensions.Hosting.Systemd" Version="11.0.0" />
         <PackageReference Include="Microsoft.Web.LibraryManager.Build" Version="3.0.114" />
-        <PackageReference Include="MudBlazor" Version="9.12.0" />
+        <PackageReference Include="MudBlazor" Version="9.14.0" />
         <PackageReference Include="Octokit" Version="14.0.0" />
         <PackageReference Include="Serilog" Version="4.4.0" />
-        <PackageReference Include="Serilog.Extensions.Logging" Version="10.0.0" />
-        <PackageReference Include="Serilog.Settings.Configuration" Version="10.0.1" />
+        <PackageReference Include="Serilog.Extensions.Logging" Version="11.0.0" />
+        <PackageReference Include="Serilog.Settings.Configuration" Version="11.0.0" />
         <PackageReference Include="Serilog.Sinks.Console" Version="6.1.1" />
         <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
         <PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" Version="3.0.5" />
         <PackageReference Include="System.IO.Hashing" Version="11.0.0" />
-        <PackageReference Include="Telegram.Bot" Version="22.10.4" />
+        <PackageReference Include="Telegram.Bot" Version="22.10.5" />
     </ItemGroup>
 
     <ItemGroup>
