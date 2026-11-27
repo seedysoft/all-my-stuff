@@ -10,7 +10,7 @@ public partial class TravelSearch
 {
     [Inject] private ILogger<TravelSearch> Logger { get; set; } = default!;
     [Inject] private MudBlazor.ISnackbar Snackbar { get; set; } = default!;
-    [Inject] private Libs.Travel.Services.Geocoding.GeocodingService GeocodingService { get; set; } = default!;
+    [Inject] private Libs.Travel.Interfaces.IGeocodingService GeocodingService { get; set; } = default!;
 
     private Libs.MapRazorClassLibrary.MapComponent TravelMap { get; set; } = default!;
 
@@ -32,7 +32,7 @@ public partial class TravelSearch
         try
         {
             if (!string.IsNullOrWhiteSpace(textToFind))
-                return await GeocodingService.FindPlacesAsync(textToFind, cancellationToken) ?? [];
+                return await GeocodingService.GeocodeAsync(textToFind, cancellationToken) ?? [];
         }
         catch (Exception e) when (Logger.LogAndHandle(e, "Unexpected error"))
         {

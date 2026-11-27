@@ -8,49 +8,24 @@ public sealed class Configurator : Core.Dependencies.ConfiguratorBase
 {
     protected override void AddJsonFiles(Microsoft.Extensions.Hosting.IHostApplicationBuilder hostApplicationBuilder)
     {
-        string CurrentEnvironmentName = hostApplicationBuilder.Environment.EnvironmentName;
+        //string CurrentEnvironmentName = hostApplicationBuilder.Environment.EnvironmentName;
 
-        _ = hostApplicationBuilder.Configuration
-            .AddJsonFile($"appsettings.{nameof(Settings.TravelSettings)}.json", optional: false, reloadOnChange: true)
-            .AddJsonFile($"appsettings.{nameof(Settings.TravelSettings)}.{CurrentEnvironmentName}.json", optional: false, reloadOnChange: true);
-        ;
+        //_ = hostApplicationBuilder.Configuration
+        //    .AddJsonFile($"appsettings.{nameof(Settings.TravelSettings)}.json", optional: false, reloadOnChange: true)
+        //    .AddJsonFile($"appsettings.{nameof(Settings.TravelSettings)}.{CurrentEnvironmentName}.json", optional: false, reloadOnChange: true);
+        //;
     }
 
     protected override void AddDbContexts(Microsoft.Extensions.Hosting.IHostApplicationBuilder hostApplicationBuilder) { /* No DbContexts */ }
 
     protected override void AddMyServices(Microsoft.Extensions.Hosting.IHostApplicationBuilder hostApplicationBuilder)
     {
-        hostApplicationBuilder.Services.TryAddScoped<Services.Geocoding.GeocodingService>();
-        hostApplicationBuilder.Services.TryAddScoped<Services.Reverse.ReverseService>();
-        hostApplicationBuilder.Services.TryAddScoped<Services.Routing.RoutingService>();
+        hostApplicationBuilder.Services.TryAddTransient<Interfaces.IGeocodingService, Services.NominatimService>();
+        hostApplicationBuilder.Services.TryAddTransient<Interfaces.IReverseService, Services.NominatimService>();
+        hostApplicationBuilder.Services.TryAddTransient<Interfaces.IRoutingService, Services.OsrmService>();
 
-        _ = hostApplicationBuilder.Services.AddHttpClient(name: nameof(Travel))
-            .ConfigureHttpClient(static configureClient =>
-            {
-                configureClient.DefaultRequestHeaders.Accept.Clear();
-                configureClient.DefaultRequestHeaders.Accept.ParseAdd("*/*");
-                configureClient.DefaultRequestHeaders.AcceptEncoding.Clear();
-                configureClient.DefaultRequestHeaders.AcceptEncoding.ParseAdd("gzip, deflate, br");
-                configureClient.DefaultRequestHeaders.Connection.Clear();
-                configureClient.DefaultRequestHeaders.Connection.ParseAdd("keep-alive");
-                configureClient.DefaultRequestHeaders.UserAgent.Clear();
-                configureClient.DefaultRequestHeaders.UserAgent.ParseAdd($"{nameof(Travel)}/1.0 (Windows 10; Contact: seedysoft@gmail.com)");
-            })
+        _ = Services.NominatimService.ConfigureHttpClient(hostApplicationBuilder);
 
-            .ConfigurePrimaryHttpMessageHandler(static () =>
-            {
-                HttpClientHandler handler = new()
-                {
-                    AutomaticDecompression = System.Net.DecompressionMethods.Deflate | System.Net.DecompressionMethods.GZip,
-                    AllowAutoRedirect = true,
-                    ClientCertificateOptions = ClientCertificateOption.Automatic,
-                    PreAuthenticate = true,
-                    ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator,
-                    SslProtocols = System.Security.Authentication.SslProtocols.None,
-                };
-
-                return handler;
-            })
-        ;
+        _ = Services.OsrmService.ConfigureHttpClient(hostApplicationBuilder);
     }
 }

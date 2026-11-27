@@ -1,0 +1,43 @@
+info:
+  name: trip
+  type: http
+  seq: 1
+
+http:
+  method: GET
+  url: "{{BaseUrl}}{{Service}}/{{Version}}/driving/{{origin}};{{dest}}?roundtrip=false&source=first&destination=last&geometries=geojson"
+  params:
+    - name: roundtrip
+      value: "false"
+      type: query
+    - name: source
+      value: first
+      type: query
+    - name: destination
+      value: last
+      type: query
+    - name: geometries
+      value: geojson
+      type: query
+  auth: inherit
+
+runtime:
+  variables:
+    - name: Service
+      value: trip
+      description: "One of the following values: route, nearest, table, match, trip, tile"
+    - name: origin
+      value:
+        type: object
+        data: 42.0,-3.0
+    - name: dest
+      value:
+        type: object
+        data: 41.5,-3.5
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false

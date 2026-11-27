@@ -1,0 +1,61 @@
+info:
+  name: reverse
+  type: http
+  seq: 2
+
+http:
+  method: GET
+  url: "{{BaseUrl}}reverse?lat=42&lon=-3&format=json&addressdetails=0&extratags=0&namedetails=0&entrances=0&zoom=18"
+  params:
+    - name: lat
+      value: "42"
+      type: query
+      description: latitude of a coordinate in WGS84 projection
+    - name: lon
+      value: "-3"
+      type: query
+      description: longitude of a coordinate in WGS84 projection
+    - name: format
+      value: json
+      type: query
+      description: xml (default), json, jsonv2, geojson, geocodejson
+    - name: addressdetails
+      value: "0"
+      type: query
+      description: When set to 1, include a breakdown of the address into elements. The exact content of the address breakdown depends on the output format.
+    - name: extratags
+      value: "0"
+      type: query
+      description: When set to 1, the response include any additional information in the result that is available in the database, e.g. wikipedia link, opening hours.
+    - name: namedetails
+      value: "0"
+      type: query
+      description: When set to 1, include a full list of names for the result. These may include language variants, older names, references and brand.
+    - name: entrances
+      value: "0"
+      type: query
+      description: When set to 1, include the tagged entrances in the result.
+    - name: zoom
+      value: "18"
+      type: query
+      description: |
+        Level of detail required for the address. zoom	address detail
+        3	  country
+        5	  state
+        8	  county
+        10	city
+        12	town / borough
+        13	village / suburb
+        14	neighbourhood
+        15	any settlement
+        16	major streets
+        17	major and minor streets
+        18	building
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false

@@ -1,0 +1,15 @@
+info:
+  name: OSRM
+  type: folder
+  seq: 2
+
+request:
+  auth: inherit
+  variables:
+    - name: BaseUrl
+      value: http://router.project-osrm.org/
+    - name: Version
+      value: v1
+    - name: Service
+      value: ""
+      description: "One of the following values: route, nearest, table, match, trip, tile"

@@ -16,7 +16,7 @@ public partial class MapComponent
         IReadOnlyList<(string NombreRuta, double[,] Coordenadas)> res;
         try
         {
-            res = await RoutingService.GetRoutesAsync(TravelQueryModel.Orig.Location, TravelQueryModel.Dest.Location, cancellationToken);
+            res = await RoutingService.RouteAsync(TravelQueryModel.Orig.Location, TravelQueryModel.Dest.Location, cancellationToken);
         }
         catch (Exception e)
         {

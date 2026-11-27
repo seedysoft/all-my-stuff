@@ -54,6 +54,7 @@
         <ProjectReference Include="..\..\Libs\BackgroundServices\Seedysoft.Libs.BackgroundServices.csproj" />
         <ProjectReference Include="..\..\Libs\Core\Seedysoft.Libs.Core.csproj" />
         <ProjectReference Include="..\..\Libs\Infrastructure\Seedysoft.Libs.Infrastructure.csproj" />
+        <ProjectReference Include="..\..\Libs\Travel\Seedysoft.Libs.Travel.csproj" />
     </ItemGroup>
 
     <ItemGroup>

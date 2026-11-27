@@ -3531,7 +3531,7 @@ internal partial class ExifService
         public int ValueIndex; // Array index from which the tag data starts.
         public int AllocatedByteCount; // Number of bytes which are allocated for the tag data.
                                        // This number can be greater than the required number of bytes.
-        public int ByteCount => ExifService.GetTagByteCount(TagType, ValueCount); // The number of bytes required to store the tag data, i. e. the number of bytes actually used for the tag data.
+        public int ByteCount => GetTagByteCount(TagType, ValueCount); // The number of bytes required to store the tag data, i. e. the number of bytes actually used for the tag data.
         public int OriginalDataOffset; // Offset of outsourced data in the image file. 0 = Tag does not have outsourced data or
                                        // tag was created after loading.
 
