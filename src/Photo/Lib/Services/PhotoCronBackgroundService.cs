@@ -43,6 +43,9 @@ public sealed class PhotoCronBackgroundService : Libs.BackgroundServices.Cron
             }
 
             DbContexts.PhotoCtx photoCtx = ServiceProvider.GetRequiredService<DbContexts.PhotoCtx>();
+            Entities.Tag noGeoLocationTag = await photoCtx.Tags.FirstAsync(static x => x.TagGuid == Entities.Tag.NoGeoLocation.TagGuid, stoppingToken);
+
+            Libs.Travel.Interfaces.IReverseService reverseService = ServiceProvider.GetRequiredService<Libs.Travel.Interfaces.IReverseService>();
 
             DirectoryInfo directoryInfo = new(Settings.PhotoRootPath);
 
@@ -85,10 +88,30 @@ public sealed class PhotoCronBackgroundService : Libs.BackgroundServices.Cron
                             //UpdatedAtDateTimeOffset = DateTimeOffset.UtcNow,
                             Year = photoYear,
                         };
-                        _ = photoCtx.Add(photoDb);
+                        _ = await photoCtx.AddAsync(photoDb, stoppingToken);
                     }
 
-                    _ = TryToSyncPhotoMetadata(photoFile, photoDb, photoCtx.Tags.First(x => x.TagGuid == Entities.Tag.NoGeoLocation.TagGuid));
+                    bool IsGeoSetted = TryToSyncPhotoMetadata(photoFile, photoDb/*, noGeoLocationTag*/);
+                    if (IsGeoSetted)
+                    {
+                        Libs.Travel.ViewModels.Place place = await reverseService.ReverseAsync(photoDb.Location!, stoppingToken);
+
+                        string[] datas = place.Address.Split(" ", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+                        for (int l = 0; l < datas.Length; l++)
+                        {
+                            string data = datas[l];
+                            Entities.Tag? dataTag = await photoCtx.Tags.FirstOrDefaultAsync(x => x.Text == data, stoppingToken);
+                            if (dataTag == null)
+                            {
+                                dataTag = new Entities.Tag() { TagGuid = Guid.NewGuid(), Text = data };
+                                _ = await photoCtx.Tags.AddAsync(dataTag, stoppingToken);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        photoDb.Tags.Add(noGeoLocationTag);
+                    }
                 }
 
                 _ = await photoCtx.SaveChangesAsync(stoppingToken);
@@ -101,7 +124,7 @@ public sealed class PhotoCronBackgroundService : Libs.BackgroundServices.Cron
             Logger.LogInformation("End {ApplicationName}", AppName);
     }
 
-    internal bool TryToSyncPhotoMetadata(FileInfo photoFile, Entities.Photo photoDb, Entities.Tag noGeoLocationTag)
+    internal bool TryToSyncPhotoMetadata(FileInfo photoFile, Entities.Photo photoDb/*, Entities.Tag noGeoLocationTag*/)
     {
         bool IsSuccess = false;
 
@@ -112,11 +135,13 @@ public sealed class PhotoCronBackgroundService : Libs.BackgroundServices.Cron
             {
                 photoDb.Location = location;
                 //photoDb.UpdatedAtDateTimeOffset = DateTimeOffset.UtcNow;
+
+                IsSuccess = true;
             }
-            else
-            {
-                photoDb.Tags.Add(noGeoLocationTag);
-            }
+            //else
+            //{
+            //    photoDb.Tags.Add(noGeoLocationTag);
+            //}
 
             //if (exifService.GetTagRawData(
             //    tagSpec: Exif.ExifTag.ImageUniqueId,

@@ -9,8 +9,6 @@ public class Program
     {
         WebApplicationBuilder webApplicationBuilder = CreateHostBuilder(args);
 
-        _ = webApplicationBuilder.AddAllMyDependencies();
-
         WebApplication webApplication = webApplicationBuilder.Build();
 
         // Configure the HTTP request pipeline.

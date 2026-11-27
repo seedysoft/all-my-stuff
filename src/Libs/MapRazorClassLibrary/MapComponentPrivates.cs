@@ -59,7 +59,7 @@ public partial class MapComponent
     [Inject] private ILogger<MapComponent> Logger { get; set; } = default!;
 
     [Inject] private GasStationPrices.Services.GasStationPricesService GasStationPricesService { get; set; } = default!;
-    [Inject] private Travel.Services.Routing.RoutingService RoutingService { get; set; } = default!;
+    [Inject] private Travel.Interfaces.IRoutingService RoutingService { get; set; } = default!;
 
     private readonly Travel.ViewModels.TravelQueryModelFluentValidator TravelQueryModelFluentValidator = new();
 

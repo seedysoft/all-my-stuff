@@ -434,7 +434,7 @@ public class TelegramHostedService : Core.NonBackgroundServiceBase, IHostedServi
         if (data.Length < 2 || !DateTime.TryParseExact(
             data[1],
             Core.Constants.Formats.YearMonthDay,
-            Core.Constants.Globalization.CultureInfoInvariant,
+            System.Globalization.CultureInfo.InvariantCulture,
             System.Globalization.DateTimeStyles.None,
             out DateTime dateTimeToObtain))
         {

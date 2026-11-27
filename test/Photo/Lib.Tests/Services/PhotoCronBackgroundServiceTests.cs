@@ -153,7 +153,7 @@ public sealed class PhotoCronBackgroundServiceTests : Libs.Core.Tests.TestClassB
                 //PhotoGuid = Guid.NewGuid()
             };
 
-            _ = photoCronBackgroundService.TryToSyncPhotoMetadata(photoFile, photoDb, null!);
+            _ = photoCronBackgroundService.TryToSyncPhotoMetadata(photoFile, photoDb);
         }
     }
 
