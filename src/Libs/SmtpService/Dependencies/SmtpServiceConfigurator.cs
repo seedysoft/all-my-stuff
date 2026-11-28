@@ -4,7 +4,7 @@ using Microsoft.Extensions.Hosting;
 
 namespace Seedysoft.Libs.SmtpService.Dependencies;
 
-public sealed class Configurator : Core.Dependencies.ConfiguratorBase
+public sealed class SmtpServiceConfigurator : Core.Dependencies.ConfiguratorBase
 {
     protected override void AddJsonFiles(IHostApplicationBuilder hostApplicationBuilder)
     {

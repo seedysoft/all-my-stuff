@@ -8,7 +8,7 @@ using Serilog;
 
 namespace Seedysoft.Libs.Infrastructure.Dependencies;
 
-public sealed class Configurator : Core.Dependencies.ConfiguratorBase
+public sealed class InfrastructureConfigurator : Core.Dependencies.ConfiguratorBase
 {
     protected override void AddJsonFiles(IHostApplicationBuilder hostApplicationBuilder)
     {

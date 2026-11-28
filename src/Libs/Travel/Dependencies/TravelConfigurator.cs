@@ -4,7 +4,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Seedysoft.Libs.Travel.Dependencies;
 
-public sealed class Configurator : Core.Dependencies.ConfiguratorBase
+public sealed class TravelConfigurator : Core.Dependencies.ConfiguratorBase
 {
     protected override void AddJsonFiles(Microsoft.Extensions.Hosting.IHostApplicationBuilder hostApplicationBuilder)
     {

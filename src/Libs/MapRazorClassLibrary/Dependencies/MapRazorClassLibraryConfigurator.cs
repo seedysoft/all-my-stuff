@@ -3,7 +3,7 @@ using MudBlazor.Services;
 
 namespace Seedysoft.Libs.MapRazorClassLibrary.Dependencies;
 
-public sealed class Configurator : Core.Dependencies.ConfiguratorBase
+public sealed class MapRazorClassLibraryConfigurator : Core.Dependencies.ConfiguratorBase
 {
     protected override void AddJsonFiles(Microsoft.Extensions.Hosting.IHostApplicationBuilder hostApplicationBuilder) { /* No JsonFiles */ }
 

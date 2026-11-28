@@ -3,7 +3,7 @@ using MudBlazor.Services;
 
 namespace Seedysoft.BlazorWebApp.Server.Dependencies;
 
-public sealed class Configurator : Libs.Core.Dependencies.ConfiguratorBase
+public sealed class BlazorWebAppServerConfigurator : Libs.Core.Dependencies.ConfiguratorBase
 {
     protected override void AddJsonFiles(IHostApplicationBuilder hostApplicationBuilder)
     {

@@ -2,7 +2,7 @@
 
 namespace Seedysoft.BlazorWebApp.Client.Dependencies;
 
-public sealed class Configurator : Libs.Core.Dependencies.ConfiguratorBase
+public sealed class BlazorWebAppClientConfigurator : Libs.Core.Dependencies.ConfiguratorBase
 {
     protected override void AddJsonFiles(IHostApplicationBuilder hostApplicationBuilder) { /* No JsonFiles */ }
 
