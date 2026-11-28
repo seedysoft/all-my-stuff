@@ -5,7 +5,7 @@ public record GasStationModel
     [J("lat")] public double Lat { get; init; }
     [J("lng")] public double Lon { get; init; }
 
-    public Travel.Models.Location Location => new(Lat, Lon);
+    public Core.Models.Location Location => new(Lat, Lon);
 
     [J("localizacion")] public string? Localizacion { get; init; }
 

@@ -1,28 +1,25 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Seedysoft.Libs.Core.Extensions;
 using Seedysoft.Libs.Infrastructure.Extensions;
 
 namespace Seedysoft.Pvpc.ConsoleApp;
 
-public sealed class Program : Libs.Core.ProgramBase
+public sealed class Program : Libs.Infrastructure.ProgramBase
 {
     [STAThread]
     public static async Task Main(string[] args)
     {
-        await ObtainCommandLineAsync(args);
+        Microsoft.Extensions.Hosting.HostApplicationBuilder hostBuilder = CreateHostBuilder(args);
 
-        HostApplicationBuilder hostApplicationBuilder = new(args);
+        _ = hostBuilder.AddAllMyDependencies();
 
-        _ = hostApplicationBuilder.AddAllMyDependencies();
-
-        IHost host = hostApplicationBuilder.Build();
+        Microsoft.Extensions.Hosting.IHost host = hostBuilder.Build();
 
         ILogger<Program> Logger = host.Services.GetRequiredService<ILogger<Program>>();
 
-        string AppName = host.Services.GetRequiredService<IHostEnvironment>().ApplicationName;
+        string AppName = host.Services.GetRequiredService<Microsoft.Extensions.Hosting.IHostEnvironment>().ApplicationName;
 
         if (Logger.IsEnabled(LogLevel.Information))
             Logger.LogInformation("Called {ApplicationName} version {Version}", AppName, System.Reflection.Assembly.GetExecutingAssembly().GetName().Version);
@@ -37,10 +34,13 @@ public sealed class Program : Libs.Core.ProgramBase
             //    Logger.LogDebug($"{item.Key}: {item.Value ?? "<<NULL>>"}");
 
             // Migrate and seed the database during startup. Must be synchronous.
-            using IServiceScope serviceScope = host.Services.CreateScope();
-            {
-                serviceScope.ServiceProvider.GetRequiredService<Libs.Infrastructure.DbContexts.DbCxt>().Database.Migrate();
-            }
+            using (IServiceScope serviceScope = host.Services.CreateScope())
+                serviceScope.ServiceProvider.GetRequiredService<Libs.Infrastructure.DbContexts.DbCtx>().Database.Migrate();
+
+            // var host = CreateHostBuilder(args).Build();
+            //   using (var scope = host.Services.CreateScope()) {
+            //     var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+            //     db.Database.Migrate();...
 
             DateTime ForDate = DateTime.MinValue;
 
@@ -48,7 +48,7 @@ public sealed class Program : Libs.Core.ProgramBase
                 || !DateTime.TryParseExact(
                     args?[0],
                     Libs.Core.Constants.Formats.YearMonthDay,
-                    Libs.Core.Constants.Globalization.CultureInfoInvariant,
+                    System.Globalization.CultureInfo.InvariantCulture,
                     System.Globalization.DateTimeStyles.None,
                     out ForDate))
             {

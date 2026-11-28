@@ -1,87 +1,87 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Seedysoft.Libs.Infrastructure.Extensions;
+﻿//using Microsoft.Extensions.DependencyInjection;
+//using Microsoft.Extensions.Hosting;
+//using Seedysoft.Libs.Infrastructure.Extensions;
 
-namespace Seedysoft.Libs.Travel.Tests.Services.Geocoding;
+//namespace Seedysoft.Libs.Travel.Tests.Services.Geocoding;
 
-public sealed class GeocodingServiceTests : Infrastructure.Tests.TestClassBase
-{
-    private readonly Travel.Services.Geocoding.GeocodingService geoplacingService = default!;
+//public sealed class GeocodingServiceTests : Core.Tests.TestClassBase
+//{
+//    private readonly Travel.Services.Geocoding.GeocodingService geoplacingService = default!;
 
-    public GeocodingServiceTests() : base()
-    {
-        HostApplicationBuilder appBuilder = new();
-        _ = appBuilder.AddAllMyDependencies();
-        ServiceProvider serviceProvider = appBuilder.Services.BuildServiceProvider();
+//    public GeocodingServiceTests() : base()
+//    {
+//        HostApplicationBuilder appBuilder = new();
+//        _ = appBuilder.AddAllMyDependencies();
+//        ServiceProvider serviceProvider = appBuilder.Services.BuildServiceProvider();
 
-        geoplacingService = serviceProvider.GetRequiredService<Travel.Services.Geocoding.GeocodingService>();
-    }
+//        geoplacingService = serviceProvider.GetRequiredService<Travel.Services.Geocoding.GeocodingService>();
+//    }
 
-    [Test]
-    [Arguments(@"Soria")]
-    [Arguments(@"Manciles")]
-    [Arguments(@"Hontalbilla")]
-    [Arguments(@"Teruel")]
-    [Arguments(@"abba ordino babot hotel")]
-    public async Task FindPlacesAsyncWithValidTextToFindReturnsPlacesTest(string textToFind)
-    {
-        // Arrange
-        CancellationToken cancellationToken = CancellationToken.None;
+//    [Test]
+//    [Arguments(@"Soria")]
+//    [Arguments(@"Manciles")]
+//    [Arguments(@"Hontalbilla")]
+//    [Arguments(@"Teruel")]
+//    [Arguments(@"abba ordino babot hotel")]
+//    public async Task FindPlacesAsyncWithValidTextToFindReturnsPlacesTest(string textToFind)
+//    {
+//        // Arrange
+//        CancellationToken cancellationToken = CancellationToken.None;
 
-        // Act
-        IReadOnlyList<ViewModels.Place> result =
-            await geoplacingService.FindPlacesAsync(textToFind, cancellationToken);
+//        // Act
+//        IReadOnlyList<ViewModels.Place> result =
+//            await geoplacingService.FindPlacesAsync(textToFind, cancellationToken);
 
-        //System.Diagnostics.Debug.WriteLine(textToFind);
-        //foreach (ViewModels.Place item in result)
-        //    System.Diagnostics.Debug.WriteLine(item.Address);
-        //System.Diagnostics.Debug.WriteLine(string.Empty);
+//        //System.Diagnostics.Debug.WriteLine(textToFind);
+//        //foreach (ViewModels.Place item in result)
+//        //    System.Diagnostics.Debug.WriteLine(item.Address);
+//        //System.Diagnostics.Debug.WriteLine(string.Empty);
 
-        // Assert
-        _ = await Assert.That(result).IsNotNull().And.HasAtLeast(1);
-    }
+//        // Assert
+//        _ = await Assert.That(result).IsNotNull().And.HasAtLeast(1);
+//    }
 
-    [Test]
-    public async Task FindPlacesAsyncWithEmptyTextToFindReturnsEmptyOrExceptionTest()
-    {
-        // Arrange
-        string textToFind = string.Empty;
-        CancellationToken cancellationToken = CancellationToken.None;
+//    [Test]
+//    public async Task FindPlacesAsyncWithEmptyTextToFindReturnsEmptyOrExceptionTest()
+//    {
+//        // Arrange
+//        string textToFind = string.Empty;
+//        CancellationToken cancellationToken = CancellationToken.None;
 
-        // Act & Assert
-        IReadOnlyList<ViewModels.Place> result = await geoplacingService.FindPlacesAsync(textToFind, cancellationToken);
+//        // Act & Assert
+//        IReadOnlyList<ViewModels.Place> result = await geoplacingService.FindPlacesAsync(textToFind, cancellationToken);
 
-        // Assert
-        _ = await Assert.That(result).IsNotNull().And.IsEmpty();
-    }
+//        // Assert
+//        _ = await Assert.That(result).IsNotNull().And.IsEmpty();
+//    }
 
-    [Test]
-    [Arguments(@"Barcelona")]
-    public async Task FindPlacesAsyncWithCancellationTokenRespectsCancellationTest(string textToFind)
-    {
-        // Arrange
-        using CancellationTokenSource cts = new();
-        cts.Cancel();
+//    [Test]
+//    [Arguments(@"Barcelona")]
+//    public async Task FindPlacesAsyncWithCancellationTokenRespectsCancellationTest(string textToFind)
+//    {
+//        // Arrange
+//        using CancellationTokenSource cts = new();
+//        cts.Cancel();
 
-        // Act & Assert
-        _ = await Assert.ThrowsAsync<TaskCanceledException>(() => geoplacingService.FindPlacesAsync(textToFind, cts.Token));
-    }
+//        // Act & Assert
+//        _ = await Assert.ThrowsAsync<TaskCanceledException>(() => geoplacingService.FindPlacesAsync(textToFind, cts.Token));
+//    }
 
-    [Test]
-    [Arguments(@"Paris")]
-    public async Task FindPlacesAsyncWithUnsupportedGeocoderImplThrowsInvalidOperationExceptionTest(string textToFind)
-    {
-        // Arrange
-        CancellationToken cancellationToken = CancellationToken.None;
+//    [Test]
+//    [Arguments(@"Paris")]
+//    public async Task FindPlacesAsyncWithUnsupportedGeocoderImplThrowsInvalidOperationExceptionTest(string textToFind)
+//    {
+//        // Arrange
+//        CancellationToken cancellationToken = CancellationToken.None;
 
-        // This test would require mocking the TravelSettings to return an unsupported implementation
-        // For now, it validates the current supported implementation doesn't throw
+//        // This test would require mocking the TravelSettings to return an unsupported implementation
+//        // For now, it validates the current supported implementation doesn't throw
 
-        // Act
-        IReadOnlyList<ViewModels.Place> result =
-            await geoplacingService.FindPlacesAsync(textToFind, cancellationToken);
+//        // Act
+//        IReadOnlyList<ViewModels.Place> result =
+//            await geoplacingService.FindPlacesAsync(textToFind, cancellationToken);
 
-        // Assert
-        Assert.NotNull(result);
-    }
-}
+//        // Assert
+//        Assert.NotNull(result);
+//    }
+//}

@@ -45,9 +45,9 @@ public sealed class TuyaManagerCronBackgroundService : Libs.BackgroundServices.C
 
         try
         {
-            Libs.Infrastructure.DbContexts.DbCxt dbCxt = ServiceProvider.GetRequiredService<Libs.Infrastructure.DbContexts.DbCxt>();
+            Libs.Infrastructure.DbContexts.DbCtx dbCtx = ServiceProvider.GetRequiredService<Libs.Infrastructure.DbContexts.DbCtx>();
 
-            Libs.Core.Entities.TuyaDevice[] Devices = await dbCxt.TuyaDevices.AsNoTracking().ToArrayAsync(stoppingToken);
+            Libs.Core.Entities.TuyaDevice[] Devices = await dbCtx.TuyaDevices.AsNoTracking().ToArrayAsync(stoppingToken);
 
             if (Devices.Length == 0)
             {
@@ -61,7 +61,7 @@ public sealed class TuyaManagerCronBackgroundService : Libs.BackgroundServices.C
             if (Logger.IsEnabled(LogLevel.Information))
                 Logger.LogInformation("Obtaining PVPCs from {dateToQueryDateTimeOffset} to {PlusDay}", dateToQueryDateTimeOffset, dateToQueryDateTimeOffset.AddDays(1));
 
-            Libs.Core.Entities.Pvpc[] PricesForDayPvpcs = await dbCxt.Pvpcs.AsNoTracking()
+            Libs.Core.Entities.Pvpc[] PricesForDayPvpcs = await dbCtx.Pvpcs.AsNoTracking()
                 .Where(x => x.AtDateTimeOffset >= dateToQueryDateTimeOffset)
                 .Where(x => x.AtDateTimeOffset < dateToQueryDateTimeOffset.AddDays(1))
                 .ToArrayAsync(stoppingToken);

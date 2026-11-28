@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Seedysoft.Pvpc.Lib.Tests.Services;
 
-public sealed class PvpcCronBackgroundServiceTests : Libs.Infrastructure.Tests.TestClassBase, IDisposable
+public sealed class PvpcCronBackgroundServiceTests : Libs.Core.Tests.TestClassBase, IDisposable
 {
     private readonly Lib.Services.PvpcCronBackgroundService pvpcCronBackgroundService = default!;
     private readonly Libs.Core.Entities.Pvpc[] Prices = default!;
@@ -16,7 +16,7 @@ public sealed class PvpcCronBackgroundServiceTests : Libs.Infrastructure.Tests.T
         Settings.PvpcSettings pvpcSettings = new()
         {
             CronExpression = "* * 30 2 *", // At every minute on day-of-month 30 in February.
-            DelayBetweenExecutionsTimeSpan= TimeSpan.FromSeconds(1),
+            DelayBetweenExecutionsTimeSpan = TimeSpan.FromSeconds(1),
             TimeZoneInfo = TimeZoneInfo.Local,
             DataUrlTemplate = @"https://apidatos.ree.es/es/datos/mercados/precios-mercados-tiempo-real?start_date={0:yyyy-MM-dd}T00:00&end_date={0:yyyy-MM-dd}T23:59&time_trunc=hour&geo_limit=peninsular",
             PvpcId = "1001",

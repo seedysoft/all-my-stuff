@@ -3,6 +3,7 @@
 public record class BlazorWebAppServerSettings
 {
     public bool UseOutbox { get; init; }
+    public bool UsePhoto { get; init; }
     public bool UsePvpc { get; init; }
     public bool UseTelegram { get; init; }
     public bool UseTuyaManager { get; init; }

@@ -8,7 +8,7 @@ internal sealed class PvpcEntityTypeConfiguration : IEntityTypeConfiguration<Cor
     {
         _ = builder
             .Property(static x => x.AtDateTimeOffset)
-            .HasConversion(ValueConverters.DateTimeOffsetString.DateTimeOffsetStringValueConverter);
+            .HasConversion(ValueConverters.DatetimeoffsetString.DatetimeoffsetStringValueConverter);
 
         _ = builder
             .Property(static x => x.MWhPriceInEuros);

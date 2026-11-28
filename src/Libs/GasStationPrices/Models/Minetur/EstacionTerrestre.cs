@@ -46,7 +46,7 @@ public sealed class EstacionTerrestre
     [J("Longitud (WGS84)")] public required string Longitud { get; init; }
     public double Lon => double.Parse(Longitud, Core.Constants.Globalization.NumberFormatInfoES);
 
-    public Travel.Models.Location LatLng => new(Lat, Lon);
+    public Core.Models.Location LatLng => new(Lat, Lon);
 
     public string? Margen { get; init; }
 

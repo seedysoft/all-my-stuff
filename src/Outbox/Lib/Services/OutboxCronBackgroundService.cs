@@ -35,7 +35,7 @@ public sealed class OutboxCronBackgroundService : Libs.BackgroundServices.Cron
 
         try
         {
-            Libs.Infrastructure.DbContexts.DbCxt dbCtx = ServiceProvider.GetRequiredService<Libs.Infrastructure.DbContexts.DbCxt>();
+            Libs.Infrastructure.DbContexts.DbCtx dbCtx = ServiceProvider.GetRequiredService<Libs.Infrastructure.DbContexts.DbCtx>();
 
             Libs.Core.Entities.Outbox[] PendingMessages = await dbCtx.Outbox.Where(x => x.SentAtDateTimeOffset == null).ToArrayAsync(stoppingToken);
 

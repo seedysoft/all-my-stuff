@@ -10,7 +10,7 @@ public sealed class GasStationPricesService
 {
     public Settings.GasStationPricesSettings GasStationPricesSettings { get; init; }
 
-    private readonly IHttpClientFactory httpClientFactory;
+    //private readonly IHttpClientFactory httpClientFactory;
 
     private readonly ILogger<GasStationPricesService> Logger;
 
@@ -22,14 +22,14 @@ public sealed class GasStationPricesService
             .GetSection(nameof(Settings.GasStationPricesSettings))
             .Get<Settings.GasStationPricesSettings>()!;
 
-        httpClientFactory = serviceProvider.GetRequiredService<IHttpClientFactory>();
+        //httpClientFactory = serviceProvider.GetRequiredService<IHttpClientFactory>();
 
         Logger = serviceProvider.GetRequiredService<ILogger<GasStationPricesService>>();
 
         _ = Task.Run(async () => { _ = await LoadGasStationsAsync(); });
     }
 
-    public async Task<ViewModels.GasStationModel?> GetGasStationAsync(Travel.Models.Location latLng)
+    public async Task<ViewModels.GasStationModel?> GetGasStationAsync(Core.Models.Location latLng)
     {
         return await LoadGasStationsAsync() && MineturResponse.EstacionesTerrestres != null && MineturResponse.EstacionesTerrestres.Length > 0
             ? MineturResponse.EstacionesTerrestres.FirstOrDefault(x => latLng.Equals(x.LatLng)).ToGasStationModel()
