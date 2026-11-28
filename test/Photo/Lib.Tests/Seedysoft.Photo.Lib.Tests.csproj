@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <IsTestProject>true</IsTestProject>
+        <OutputType>Exe</OutputType>
+        <UseTestingPlatform>true</UseTestingPlatform>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="TUnit" Version="1.87.12" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\..\src\Libs\Core\Seedysoft.Libs.Core.csproj" />
+        <ProjectReference Include="..\..\..\src\Photo\Lib\Seedysoft.Photo.Lib.csproj" />
+        <ProjectReference Include="..\..\Libs\Core.Tests\Seedysoft.Libs.Core.Tests.csproj" />
+        <ProjectReference Include="..\..\Libs\Infrastructure.Tests\Seedysoft.Libs.Infrastructure.Tests.csproj" />
+    </ItemGroup>
+</Project>

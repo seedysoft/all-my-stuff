@@ -13,13 +13,13 @@
     <MudGrid Justify="@Justify.SpaceBetween">
 
         <MudItem xs="12" md="6">
-            <MudAutocomplete @bind-Value="@TravelQueryModel.Orig"
+            <MudAutocomplete @bind-Value="@PageQueryModel.Orig"
                              AdornmentIcon="@Icons.Material.Filled.Search"
                              AutoFocus="@(!System.Diagnostics.Debugger.IsAttached)"
                              Clearable
-                             DebounceInterval="450"
+                             DebounceInterval="750"
                              Dense
-                             For="@(() => TravelQueryModel.Orig)"
+                             For="@(() => PageQueryModel.Orig)"
                              FullWidth
                              Label="Origin"
                              MaxItems="8"
@@ -38,12 +38,12 @@
         </MudItem>
 
         <MudItem xs="12" md="6">
-            <MudAutocomplete @bind-Value="@TravelQueryModel.Dest"
+            <MudAutocomplete @bind-Value="@PageQueryModel.Dest"
                              AdornmentIcon="@Icons.Material.Filled.Search"
                              Clearable
-                             DebounceInterval="450"
+                             DebounceInterval="750"
                              Dense
-                             For="@(() => TravelQueryModel.Dest)"
+                             For="@(() => PageQueryModel.Dest)"
                              FullWidth
                              Label="Destination"
                              MaxItems="8"
@@ -78,7 +78,8 @@
                           Height="calc(50vh)"
                           Width="100%"
                           Center="@(new Libs.MapRazorClassLibrary.MapModels.Basic.LatLng(Libs.Travel.Constants.Earth.Burgos.Latitude, Libs.Travel.Constants.Earth.Burgos.Longitude))"
-                          Zoom="18">
+                          Zoom="18"
+                          MapQueryModel="@PageQueryModel">
             </MapComponent>
             @{
                 // OnMapClickAsyncEventCallback="OnMapClickAsyncEventCallback"

@@ -8,13 +8,6 @@ public static class JsonExtensions
             options: Serialization.DefaultJsonSerializerOptions.DefaultsReadOnly)
         ?? throw new InvalidOperationException();
 
-    public static async Task<T> FromJsonAsync<T>(this HttpContent content, CancellationToken cancellationToken) =>
-        await System.Text.Json.JsonSerializer.DeserializeAsync<T>(
-            utf8Json: await content.ReadAsStreamAsync(cancellationToken),
-            options: Serialization.DefaultJsonSerializerOptions.DefaultsReadOnly,
-            cancellationToken: cancellationToken)
-        ?? throw new InvalidOperationException();
-
     public static string ToJson<T>(
         this T self,
         bool allowReadOnlyFields = false,

@@ -26,15 +26,14 @@ public sealed class InfrastructureConfigurator : Core.Dependencies.ConfiguratorB
         if (System.Diagnostics.Debugger.IsAttached)
             System.Diagnostics.Debugger.Break();
 #endif
-        string FullFilePath = default!;
-
-        _ = hostApplicationBuilder.Services.AddDbContext<DbContexts.DbCxt>(dbContextOptionsBuilder =>
+        string DbCtxFullFilePath = default!;
+        _ = hostApplicationBuilder.Services.AddDbContext<DbContexts.DbCtx>(dbContextOptionsBuilder =>
         {
-            if (string.IsNullOrEmpty(FullFilePath))
-                FullFilePath = FindDatabaseFullFilePath(hostApplicationBuilder);
+            if (string.IsNullOrEmpty(DbCtxFullFilePath))
+                DbCtxFullFilePath = FindDatabaseFullFilePath(hostApplicationBuilder);
 
             _ = dbContextOptionsBuilder
-                .UseSqlite($"{Core.Constants.DatabaseStrings.DataSource}{FullFilePath}")
+                .UseSqlite($"{Core.Constants.DatabaseStrings.DataSource}{DbCtxFullFilePath}")
                 .ConfigureDebugOptions();
 
             static string FindDatabaseFullFilePath(IHostApplicationBuilder hostApplicationBuilder)
@@ -47,7 +46,7 @@ public sealed class InfrastructureConfigurator : Core.Dependencies.ConfiguratorB
                 });
                 Microsoft.Extensions.Logging.ILogger logger = loggerFactory.CreateLogger(nameof(AddDbContexts));
 
-                string ConnectionStringName = nameof(DbContexts.DbCxt);
+                string ConnectionStringName = nameof(DbContexts.DbCtx);
                 string ConnectionString = hostApplicationBuilder.Configuration.GetConnectionString($"{ConnectionStringName}")
                     ?? throw new KeyNotFoundException($"Connection string '{ConnectionStringName}' not found.");
                 string FullFilePath = Path.GetFullPath(ConnectionString);

@@ -4,16 +4,18 @@
         <OutputType>Exe</OutputType>
         <UseTestingPlatform>true</UseTestingPlatform>
     </PropertyGroup>
+
     <ItemGroup>
-      <Compile Include="..\..\TUnitTestClassBase.cs" Link="TUnitTestClassBase.cs" />
+        <Compile Include="..\..\TUnitTestClassBase.cs" Link="TUnitTestClassBase.cs" />
     </ItemGroup>
 
     <ItemGroup>
         <PackageReference Include="CommandLineParser" Version="2.9.1" />
+        <PackageReference Include="Moq" Version="4.21.0" />
         <PackageReference Include="TUnit" Version="1.87.12" />
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\..\src\Libs\Core\Seedysoft.Libs.Core.csproj" />
+        <ProjectReference Include="..\..\..\src\Libs\Core\Seedysoft.Libs.Core.csproj" />
     </ItemGroup>
 </Project>

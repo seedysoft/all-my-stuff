@@ -6,18 +6,16 @@ using Seedysoft.Libs.Infrastructure.Extensions;
 
 namespace Seedysoft.Libs.GasStationPrices.ConsoleApp;
 
-public sealed class Program : Core.ProgramBase
+public sealed class Program : Infrastructure.ProgramBase
 {
     [STAThread]
     public static async Task Main(string[] args)
     {
-        await ObtainCommandLineAsync(args);
+        Microsoft.Extensions.Hosting.HostApplicationBuilder hostBuilder = CreateHostBuilder(args);
 
-        Microsoft.Extensions.Hosting.HostApplicationBuilder hostApplicationBuilder = new(args);
+        _ = hostBuilder.AddAllMyDependencies();
 
-        _ = hostApplicationBuilder.AddAllMyDependencies();
-
-        Microsoft.Extensions.Hosting.IHost host = hostApplicationBuilder.Build();
+        Microsoft.Extensions.Hosting.IHost host = hostBuilder.Build();
 
         ILogger<Program> Logger = host.Services.GetRequiredService<ILogger<Program>>();
 
@@ -36,10 +34,8 @@ public sealed class Program : Core.ProgramBase
             //    Logger.LogDebug($"{item.Key}: {item.Value ?? "<<NULL>>"}");
 
             //// Migrate and seed the database during startup. Must be synchronous.
-            using IServiceScope serviceScope = host.Services.CreateScope();
-            {
-                serviceScope.ServiceProvider.GetRequiredService<Infrastructure.DbContexts.DbCxt>().Database.Migrate();
-            }
+            using (IServiceScope serviceScope = host.Services.CreateScope())
+                serviceScope.ServiceProvider.GetRequiredService<Infrastructure.DbContexts.DbCtx>().Database.Migrate();
 
             Console.WriteLine("Awaiting debugger connection...");
 
@@ -52,8 +48,8 @@ public sealed class Program : Core.ProgramBase
             {
                 Services.GasStationPricesService gasStationPricesService = host.Services.GetRequiredService<Services.GasStationPricesService>();
                 Travel.Models.Bounds bounds = new(
-                    new Travel.Models.Location(Travel.Constants.Earth.Burgos.Latitude, Travel.Constants.Earth.Burgos.Longitude),
-                    new Travel.Models.Location(Travel.Constants.Earth.Brazuelo.Latitude, Travel.Constants.Earth.Brazuelo.Longitude));
+                    new Core.Models.Location(Travel.Constants.Earth.Burgos.Latitude, Travel.Constants.Earth.Burgos.Longitude),
+                    new Core.Models.Location(Travel.Constants.Earth.Brazuelo.Latitude, Travel.Constants.Earth.Brazuelo.Longitude));
 
                 //IReadOnlyList<ViewModels.GasStationModel> Result =
                 //    await gasStationPricesService.GetNearGasStationsAsync(

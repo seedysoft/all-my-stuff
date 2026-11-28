@@ -2,19 +2,57 @@ using Seedysoft.Libs.Infrastructure.Extensions;
 
 namespace Seedysoft.BlazorWebApp.Server;
 
-public class Program : Libs.Core.ProgramBase
+public class Program
 {
     [STAThread]
     public static async Task Main(string[] args)
     {
-        await ObtainCommandLineAsync(args);
+        WebApplicationBuilder webApplicationBuilder = CreateHostBuilder(args);
+
+        WebApplication webApplication = webApplicationBuilder.Build();
+
+        // Configure the HTTP request pipeline.
+        if (!webApplication.Environment.IsDevelopment())
+            _ = webApplication.UseExceptionHandler("/Error");
+
+        // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/servers/kestrel/security-considerations?view=aspnetcore-10.0#security-checklist
+        _ = webApplication.UseHostFiltering();      // Validate Host header
+        _ = webApplication.UseHttpsRedirection();   // Redirect HTTP -> HTTPS
+        _ = webApplication.UseHsts();               // Add Strict-Transport-Security
+        _ = webApplication.UseRateLimiter();        // Rate limiting
+        //_ = webApplication.UseCors();               // CORS (if needed)
+        //_ = webApplication.UseAuthentication();
+        //_ = webApplication.UseAuthorization();
+
+        _ = webApplication
+            .UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true)
+            .UseAntiforgery();
+
+        _ = webApplication.MapStaticAssets();
+
+        _ = webApplication.MapRazorComponents<Components.App>()
+            .AddInteractiveServerRenderMode()
+            .AddInteractiveWebAssemblyRenderMode()
+            .AddAdditionalAssemblies([
+                typeof(Libs.MapRazorClassLibrary.MapComponent).Assembly,
+                typeof(Client._Imports).Assembly,
+            ]);
+
+        ConfigureMaps(webApplication);
+
+        await webApplication.RunAsync();
+    }
+
+    private static WebApplicationBuilder CreateHostBuilder(string[] args)
+    {
+        Libs.Infrastructure.ProgramBase.ObtainCommandLineArgs(args);
 
         WebApplicationBuilder webApplicationBuilder = WebApplication.CreateBuilder(args);
 
-        _ = webApplicationBuilder.AddAllMyDependencies();
-
         // TODO         Learn how it works
-        _ = webApplicationBuilder.Configuration.AddInMemoryCollection(Libs.Core.Models.Config.RuntimeSettings.GetValues(Settings));
+        _ = webApplicationBuilder.Configuration.AddInMemoryCollection(Libs.Core.Models.Config.RuntimeSettings.GetValues(Libs.Infrastructure.ProgramBase.Settings));
+
+        _ = webApplicationBuilder.AddAllMyDependencies();
 
         // Add services to the container.
         _ = webApplicationBuilder.Services.AddRazorComponents()
@@ -118,38 +156,7 @@ public class Program : Libs.Core.ProgramBase
             //});
         });
 
-        WebApplication webApplication = webApplicationBuilder.Build();
-
-        // Configure the HTTP request pipeline.
-        if (!webApplication.Environment.IsDevelopment())
-            _ = webApplication.UseExceptionHandler("/Error");
-
-        // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/servers/kestrel/security-considerations?view=aspnetcore-11.0#security-checklist
-        _ = webApplication.UseHostFiltering();      // Validate Host header
-        _ = webApplication.UseHttpsRedirection();   // Redirect HTTP -> HTTPS
-        _ = webApplication.UseHsts();               // Add Strict-Transport-Security
-        _ = webApplication.UseRateLimiter();        // Rate limiting
-        //_ = webApplication.UseCors();               // CORS (if needed)
-        //_ = webApplication.UseAuthentication();
-        //_ = webApplication.UseAuthorization();
-
-        _ = webApplication
-            .UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true)
-            .UseAntiforgery();
-
-        _ = webApplication.MapStaticAssets();
-
-        _ = webApplication.MapRazorComponents<Components.App>()
-            .AddInteractiveServerRenderMode()
-            .AddInteractiveWebAssemblyRenderMode()
-            .AddAdditionalAssemblies([
-                typeof(Libs.MapRazorClassLibrary.MapComponent).Assembly,
-                typeof(Client._Imports).Assembly,
-            ]);
-
-        ConfigureMaps(webApplication);
-
-        await webApplication.RunAsync();
+        return webApplicationBuilder;
     }
 
     private static void ConfigureMaps(WebApplication webApplication)
