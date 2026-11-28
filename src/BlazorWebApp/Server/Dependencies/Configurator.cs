@@ -32,6 +32,9 @@ public sealed class Configurator : Libs.Core.Dependencies.ConfiguratorBase
         if (BlazorWebAppServerSettings.UseOutbox)
             _ = hostApplicationBuilder.Services.AddHostedService<Outbox.Lib.Services.OutboxCronBackgroundService>();
 
+        if (BlazorWebAppServerSettings.UsePhoto)
+            _ = hostApplicationBuilder.Services.AddHostedService<Photo.Lib.Services.PhotoCronBackgroundService>();
+
         if (BlazorWebAppServerSettings.UsePvpc)
             _ = hostApplicationBuilder.Services.AddHostedService<Pvpc.Lib.Services.PvpcCronBackgroundService>();
 

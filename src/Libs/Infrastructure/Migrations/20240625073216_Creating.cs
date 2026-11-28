@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace Seedysoft.Libs.Infrastructure.Migrations
+namespace Seedysoft.Libs.Infrastructure.Migrations.DbCtx
 {
     /// <inheritdoc />
     public partial class Creating : Migration

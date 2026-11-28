@@ -8,7 +8,5 @@ public readonly record struct Globalization
 
     public static readonly System.Globalization.NumberFormatInfo NumberFormatInfoES = CultureInfoES.NumberFormat;
 
-    public static readonly System.Globalization.CultureInfo CultureInfoInvariant = System.Globalization.CultureInfo.InvariantCulture;
-
-    public static readonly System.Globalization.NumberFormatInfo NumberFormatInfoInvariant = CultureInfoInvariant.NumberFormat;
+    public static readonly System.Globalization.NumberFormatInfo NumberFormatInfoInvariant = System.Globalization.CultureInfo.InvariantCulture.NumberFormat;
 }

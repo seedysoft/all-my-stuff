@@ -24,6 +24,11 @@
     <Project Path="src/Outbox/ConsoleApp/Seedysoft.Outbox.ConsoleApp.csproj" />
     <Project Path="src/Outbox/Lib/Seedysoft.Outbox.Lib.csproj" />
   </Folder>
+  <Folder Name="/Photo/">
+    <Project Path="src/Photo/ConsoleApp/Seedysoft.Photo.ConsoleApp.csproj" />
+    <Project Path="src/Photo/Lib/Seedysoft.Photo.Lib.csproj" />
+    <Project Path="test/Photo/Lib.Tests/Seedysoft.Photo.Lib.Tests.csproj" />
+  </Folder>
   <Folder Name="/Pvpc/">
     <Project Path="src/Pvpc/ConsoleApp/Seedysoft.Pvpc.ConsoleApp.csproj" />
     <Project Path="src/Pvpc/Lib/Seedysoft.Pvpc.Lib.csproj" />
@@ -41,6 +46,19 @@
     <File Path="global.json" />
     <File Path="nuget.config" />
     <File Path="Directory.Build.props" />
+  </Folder>
+  <Folder Name="/_SolutionItems/.config/">
+    <File Path=".config/dotnet-ef.json" />
+    <File Path=".config/dotnet-ef.txt" />
+  </Folder>
+  <Folder Name="/_SolutionItems/.github/">
+    <File Path=".github/dependabot.yml" />
+  </Folder>
+  <Folder Name="/_SolutionItems/.github/workflows/">
+    <File Path=".github/workflows/analize-with-codeql.yml" />
+    <File Path=".github/workflows/continuous-integration.yml" />
+    <File Path=".github/workflows/delete-old-runs.yml" />
+    <File Path=".github/workflows/publish-release.yml" />
   </Folder>
   <Folder Name="/_SolutionItems/doc/">
     <File Path="doc/DotnetInstallDocumentation.txt" />

@@ -4,6 +4,9 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <Content Include="appsettings.photoConnectionString.json">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
         <Content Include="appsettings.dbConnectionString.json">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>

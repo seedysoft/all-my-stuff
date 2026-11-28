@@ -36,6 +36,7 @@
     <ItemGroup>
         <ProjectReference Include="..\..\..\src\Libs\Core\Seedysoft.Libs.Core.csproj" />
         <ProjectReference Include="..\..\..\src\Pvpc\Lib\Seedysoft.Pvpc.Lib.csproj" />
+        <ProjectReference Include="..\..\Libs\Core.Tests\Seedysoft.Libs.Core.Tests.csproj" />
         <ProjectReference Include="..\..\Libs\Infrastructure.Tests\Seedysoft.Libs.Infrastructure.Tests.csproj" />
     </ItemGroup>
 </Project>

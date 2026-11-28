@@ -1,0 +1,67 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <IsPublishable>False</IsPublishable>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Content Include="appsettings.photoConnectionString.json">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+        <Content Include="appsettings.PhotoSettings.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+    </ItemGroup>
+    
+    <ItemGroup Condition="'$(Configuration)' == 'Debug'">
+        <PackageReference Include="EfCore.SchemaCompare" Version="10.0.0" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="11.0.0">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="11.0.0">
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+            <PrivateAssets>all</PrivateAssets>
+        </PackageReference>
+    </ItemGroup>
+
+    <ItemGroup Condition="'$(Configuration)' == 'Debug'">
+        <Content Include="appsettings.PhotoSettings.Development.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <DependentUpon>appsettings.PhotoSettings.json</DependentUpon>
+        </Content>
+        <None Include="appsettings.PhotoSettings.Production.json">
+            <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+            <DependentUpon>appsettings.PhotoSettings.json</DependentUpon>
+        </None>
+    </ItemGroup>
+
+    <ItemGroup Condition="'$(Configuration)' == 'Release'">
+        <None Include="appsettings.PhotoSettings.Development.json">
+            <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+            <DependentUpon>appsettings.PhotoSettings.json</DependentUpon>
+        </None>
+        <Content Include="appsettings.PhotoSettings.Production.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <DependentUpon>appsettings.PhotoSettings.json</DependentUpon>
+        </Content>
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="System.Security.Cryptography.Pkcs" Version="11.0.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\Libs\BackgroundServices\Seedysoft.Libs.BackgroundServices.csproj" />
+        <ProjectReference Include="..\..\Libs\Core\Seedysoft.Libs.Core.csproj" />
+        <ProjectReference Include="..\..\Libs\Infrastructure\Seedysoft.Libs.Infrastructure.csproj" />
+        <ProjectReference Include="..\..\Libs\Travel\Seedysoft.Libs.Travel.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Compile Include="..\..\Usings.cs" Link="Usings.cs" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <InternalsVisibleTo Include="Seedysoft.Photo.Lib.Tests" />
+    </ItemGroup>
+</Project>

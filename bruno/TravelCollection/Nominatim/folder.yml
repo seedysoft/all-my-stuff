@@ -1,0 +1,10 @@
+info:
+  name: Nominatim
+  type: folder
+  seq: 1
+
+request:
+  auth: inherit
+  variables:
+    - name: BaseUrl
+      value: https://nominatim.openstreetmap.org/

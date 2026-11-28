@@ -1,15 +1,16 @@
 ﻿using CommandLine;
+using Microsoft.Extensions.Configuration;
 
-namespace Seedysoft.Libs.Core;
+namespace Seedysoft.Libs.Infrastructure;
 
 public class ProgramBase
 {
-    public static Models.Config.RuntimeSettings Settings { get; set; } = default!;
+    public static Core.Models.Config.RuntimeSettings Settings { get; set; } = default!;
 
-    public static async Task ObtainCommandLineAsync(string[] args)
+    public static void ObtainCommandLineArgs(string[] args)
     {
         Parser commandLineParser = new(settings => settings.CaseSensitive = false);
-        ParserResult<Models.Config.ConsoleOptions> parserResult = commandLineParser.ParseArguments<Models.Config.ConsoleOptions>(args);
+        ParserResult<Core.Models.Config.ConsoleOptions> parserResult = commandLineParser.ParseArguments<Core.Models.Config.ConsoleOptions>(args);
 
         _ = parserResult.WithNotParsed(errors =>
         {
@@ -20,7 +21,7 @@ public class ProgramBase
             Environment.Exit(1);
         });
 
-        Models.Config.ConsoleOptions consoleOptions = new();
+        Core.Models.Config.ConsoleOptions consoleOptions = new();
         _ = parserResult.WithParsed(options =>
         {
             //if (string.IsNullOrEmpty(options.Client))
@@ -30,13 +31,26 @@ public class ProgramBase
             consoleOptions = options;
         });
 
+        // https://learn.microsoft.com/en-us/dotnet/standard/base-types/formatting-types#composite-formatting
         for (int i = Settings.SecondsToDelayWebApplicationStart; i > 0; --i)
         {
             Console.Write("{0,-30}", $"\rWaiting for {i} seconds");
-            await Task.Delay(TimeSpan.FromSeconds(1));
+            Thread.Sleep(TimeSpan.FromSeconds(1));
         }
 
         Console.Write("{0,-30}", "\rStarting ...");
         Console.WriteLine(string.Empty);
+    }
+
+    public static Microsoft.Extensions.Hosting.HostApplicationBuilder CreateHostBuilder(string[] args)
+    {
+        ObtainCommandLineArgs(args);
+
+        Microsoft.Extensions.Hosting.HostApplicationBuilder hostApplicationBuilder = new(args);
+
+        // TODO         Learn how it works
+        _ = hostApplicationBuilder.Configuration.AddInMemoryCollection(Core.Models.Config.RuntimeSettings.GetValues(Settings));
+
+        return hostApplicationBuilder;
     }
 }

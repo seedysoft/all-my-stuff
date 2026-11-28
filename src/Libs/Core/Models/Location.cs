@@ -1,9 +1,9 @@
-﻿namespace Seedysoft.Libs.Travel.Models;
+﻿namespace Seedysoft.Libs.Core.Models;
 
-[System.Diagnostics.DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)},nq}}")]
 /// <summary>
 /// Represents a geographic location using double latitude and longitude in degrees.
 /// </summary>
+[System.Diagnostics.DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
 public class Location
 {
     private Location() { }
@@ -24,8 +24,22 @@ public class Location
     /// </summary>
     /// <returns>A culture-invariant string containing the latitude and longitude.</returns>
     private string GetDebuggerDisplay() =>
-        $"Lat: {Latitude.ToString(Core.Constants.Globalization.NumberFormatInfoInvariant)}; " +
-        $"Lon: {Longitude.ToString(Core.Constants.Globalization.NumberFormatInfoInvariant)}";
+        $"Lat: {Latitude.ToString(Constants.Globalization.NumberFormatInfoInvariant)}; " +
+        $"Lon: {Longitude.ToString(Constants.Globalization.NumberFormatInfoInvariant)}";
+
+    public override string ToString() => GetDebuggerDisplay();
+
+    public static bool IsEmpty(Location location) => location is null || location == Empty;
+
+    public override bool Equals(object? obj) => obj is Location location && Equals(location);
+
+    public bool Equals(Location? other) => other is not null && Latitude.Equals(other.Latitude) && Longitude.Equals(other.Longitude);
+
+    public override int GetHashCode() => HashCode.Combine(Latitude, Longitude);
+
+    public static bool operator ==(Location? left, Location? right) => left is null ? right is null : left.Equals(right);
+
+    public static bool operator !=(Location? left, Location? right) => !(left == right);
 
     //    public readonly Location AddMetters(double angle, double distanceInMetters)
     //    {
